@@ -17,7 +17,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
    _colorSpace=[colorSpace retain];
    _pattern=[pattern retain];
    _numberOfComponents=O2ColorSpaceGetNumberOfComponents(_colorSpace)+1;
-   _components=NSZoneMalloc([self zone],sizeof(O2Float)*_numberOfComponents);
+   _components=(CGFloat*)NSZoneMalloc([self zone],sizeof(O2Float)*_numberOfComponents);
    for(i=0;i<_numberOfComponents;i++)
     _components[i]=components[i];
     
@@ -30,7 +30,7 @@ O2ColorRef O2ColorInitWithColorSpace(O2ColorRef self,O2ColorSpaceRef colorSpace,
    self->_colorSpace=[colorSpace retain];
    self->_pattern=nil;
    self->_numberOfComponents=O2ColorSpaceGetNumberOfComponents(self->_colorSpace)+1;
-   self->_components=NSZoneMalloc([self zone],sizeof(O2Float)*self->_numberOfComponents);
+   self->_components=(CGFloat*)NSZoneMalloc([self zone],sizeof(O2Float)*self->_numberOfComponents);
    for(i=0;i<self->_numberOfComponents;i++)
     self->_components[i]=components[i];
     
@@ -109,7 +109,7 @@ O2ColorRef O2ColorCreateCopyWithAlpha(O2ColorRef self,O2Float alpha) {
     components[i]=self->_components[i];
    components[i]=alpha;
       
-   return O2ColorInitWithColorSpace([self->isa alloc],self->_colorSpace,components);
+   return O2ColorInitWithColorSpace([[self class] alloc],self->_colorSpace,components);
 }
 
 O2ColorRef O2ColorRetain(O2ColorRef self) {
@@ -175,6 +175,7 @@ int O2ColorConvertComponentsToDeviceRGB(O2ColorSpaceRef inputSpace,const O2Float
     case kO2ColorSpaceModelCMYK:;
 #if 1
 // CMYK to CMY to RGB
+    {
      float K=components[3];
      float C=(components[0]*(1-K)+K);
      float M=(components[1]*(1-K)+K);
@@ -184,6 +185,7 @@ int O2ColorConvertComponentsToDeviceRGB(O2ColorSpaceRef inputSpace,const O2Float
      rgbComponents[1]=(1-M);
      rgbComponents[2]=(1-Y);
      rgbComponents[3]=components[4];
+    }
 #else
      float white=1-input[3];
    

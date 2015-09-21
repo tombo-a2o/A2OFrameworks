@@ -117,7 +117,7 @@ static uint8_t eightBitCLUT[256][3]={
 -initWithDataProvider:(O2DataProvider *)provider options:(NSDictionary *)options {
    [super initWithDataProvider:provider options:options];
    _data=(NSData *)O2DataProviderCopyData(provider);
-   _bytes=[_data bytes];
+   _bytes=(const unsigned char *)[_data bytes];
    _length=[_data length];
    _position=0;
    _images=[NSMutableArray new];
@@ -157,7 +157,7 @@ static uint32_t nextUnsigned32(O2ImageSource_ICNS *self) {
 }
 
 -(O2ICNSNode *)createNodeForWidth:(size_t)width height:(size_t)height bitsPerPixel:(size_t)bitsPerPixel isMask:(bool)isMask {
-   O2ICNSNode *result=NSZoneMalloc(NULL,sizeof(O2ICNSNode));
+   O2ICNSNode *result=(O2ICNSNode *)NSZoneMalloc(NULL,sizeof(O2ICNSNode));
    result->width=width;
    result->height=height;
    result->bitsPerPixel=bitsPerPixel;   
@@ -167,7 +167,7 @@ static uint32_t nextUnsigned32(O2ImageSource_ICNS *self) {
    else {
     result->samples=NSZoneCalloc(NULL,width*height,sizeof(O2rgba8u_BE));
     
-    O2rgba8u_BE *pixels=result->samples;
+    O2rgba8u_BE *pixels= (O2rgba8u_BE *)result->samples;
     int i;
     
     for(i=0;i<width*height;i++)
@@ -352,7 +352,7 @@ static uint32_t nextUnsigned32(O2ImageSource_ICNS *self) {
    
    if(isMask){
     O2ICNSNode    *node=[self createNodeForWidth:width height:height bitsPerPixel:bitsPerPixel isMask:TRUE];
-    uint8_t       *pixels=node->samples;
+    uint8_t       *pixels= (uint8_t *)node->samples;
     int            pixelOffset=0,byteOffset=0,byteLength;
     const uint8_t *bytes=_bytes+_position;
     
@@ -444,7 +444,7 @@ static uint32_t nextUnsigned32(O2ImageSource_ICNS *self) {
    else if(bitsPerPixel==24){
     O2ICNSNode    *node=[self createNodeForWidth:width height:height bitsPerPixel:bitsPerPixel isMask:FALSE];
     int            pixelCount=width*height;
-    O2rgba8u_BE   *pixels=node->samples;
+    O2rgba8u_BE   *pixels=(O2rgba8u_BE *)node->samples;
         
     if(length==width*height*3){
      int            pixelOffset=0,byteOffset=0;

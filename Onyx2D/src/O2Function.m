@@ -19,7 +19,7 @@ O2FunctionRef O2FunctionInit(O2FunctionRef self,void *info,size_t domainCount,co
    self->_info=info;
    
    self->_domainCount=domainCount*2;
-   self->_domain=NSZoneMalloc(NULL,sizeof(float)*self->_domainCount);
+   self->_domain=(float *)NSZoneMalloc(NULL,sizeof(float)*self->_domainCount);
    if(domain==NULL){
     for(i=0;i<self->_domainCount;i++)
      self->_domain[i]=i%2;
@@ -30,7 +30,7 @@ O2FunctionRef O2FunctionInit(O2FunctionRef self,void *info,size_t domainCount,co
    }
    
    self->_rangeCount=rangeCount*2;
-   self->_range=NSZoneMalloc(NULL,sizeof(float)*self->_rangeCount);
+   self->_range=(float *)NSZoneMalloc(NULL,sizeof(float)*self->_rangeCount);
    if(range==NULL){
     for(i=0;i<self->_rangeCount;i++)
      self->_range[i]=i%2;

@@ -8,7 +8,7 @@
 
 #ifdef __APPLE__
 #else
-#import "O2Defines_zlib.h"
+//#import "O2Defines_zlib.h"
 #endif
 
 #if ZLIB_PRESENT
@@ -118,7 +118,7 @@ const char *O2ImageNameWithIntent(O2ColorRenderingIntent intent){
         
         // Export RGB bytes, without the alpha data, in the expected order
         // TODO : support non 32 bits pixels, respect the premultiplied state, non-RGB pixels...
-        const uint8_t *ptr = bytes;
+        const uint8_t *ptr = (const uint8_t *)bytes;
         int alphaInfo = _bitmapInfo & kO2BitmapAlphaInfoMask;
         BOOL hasAlpha = alphaInfo != kO2ImageAlphaNone;
         BOOL alphaFirst = alphaInfo == kO2ImageAlphaPremultipliedFirst || alphaInfo == kO2ImageAlphaFirst || alphaInfo == kO2ImageAlphaNoneSkipFirst;
@@ -287,13 +287,13 @@ const char *O2ImageNameWithIntent(O2ColorRenderingIntent intent){
    
    if(height*bytesPerRow>[data length]){
     // provide some gray data
-     NSMutableData *mutable=[NSMutableData dataWithLength:height*bytesPerRow];
-     char *mbytes=[mutable mutableBytes];
+     NSMutableData *mutable_=[NSMutableData dataWithLength:height*bytesPerRow];
+     char *mbytes=(char *)[mutable_ mutableBytes];
       int i;
       for(i=0;i<height*bytesPerRow;i++)
      mbytes[i]=i;
        
-     data=mutable;
+     data=mutable_;
     }
         
     provider=O2DataProviderCreateWithCFData((CFDataRef)data);

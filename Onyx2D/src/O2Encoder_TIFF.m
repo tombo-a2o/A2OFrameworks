@@ -2,7 +2,7 @@
 #import <Onyx2D/O2Decoder_TIFF.h>
 
 O2TIFFEncoderRef O2TIFFEncoderCreate(O2DataConsumerRef consumer) {
-   O2TIFFEncoderRef self=NSZoneCalloc(NULL,1,sizeof(struct O2TIFFEncoder));
+   O2TIFFEncoderRef self=(O2TIFFEncoderRef)NSZoneCalloc(NULL,1,sizeof(struct O2TIFFEncoder));
    self->_bigEndian=YES;
    self->_consumerOffset=0;
    self->_consumerPosition=0;
@@ -24,7 +24,7 @@ void O2TIFFEncoderDealloc(O2TIFFEncoderRef self) {
 static void beginBuffering(O2TIFFEncoderRef self){
    self->_bufferCapacity=256;
    self->_bufferCount=0;
-   self->_mutableBytes=NSZoneMalloc(NULL,self->_bufferCapacity);
+   self->_mutableBytes=(uint8_t *)NSZoneMalloc(NULL,self->_bufferCapacity);
 }
 
 static void endBuffering(O2TIFFEncoderRef self){
@@ -53,7 +53,7 @@ static void ensureByteCount(O2TIFFEncoderRef self,size_t count){
     while(self->_bufferCount+count>self->_bufferCapacity)
      self->_bufferCapacity*=2;
     
-    self->_mutableBytes=NSZoneRealloc(NULL,self->_mutableBytes,self->_bufferCapacity);
+    self->_mutableBytes=(uint8_t *)NSZoneRealloc(NULL,self->_mutableBytes,self->_bufferCapacity);
    }
 }
 

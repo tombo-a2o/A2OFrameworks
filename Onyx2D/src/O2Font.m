@@ -375,7 +375,7 @@ NSString *O2MacRomanGlyphNames[256]={
    if(_MacRomanEncoding==NULL){
     int i;
    
-    _MacRomanEncoding=NSZoneMalloc(NULL,sizeof(O2Glyph)*256);
+    _MacRomanEncoding=(O2Glyph *)NSZoneMalloc(NULL,sizeof(O2Glyph)*256);
     
     for(i=0;i<256;i++)
      _MacRomanEncoding[i]=O2FontGetGlyphWithGlyphName(self,(CFStringRef)O2MacRomanGlyphNames[i]);

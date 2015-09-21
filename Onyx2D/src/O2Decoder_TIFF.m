@@ -201,7 +201,7 @@ static unsigned nextUnsigned32AtOffset(O2Decoder_TIFF *self,unsigned *offset) {
    unsigned       numberOfValues=nextUnsigned32(self);
    unsigned char *values;
 
-   values=NSZoneMalloc([self zone],numberOfValues*sizeof(unsigned));
+   values=(unsigned char *)NSZoneMalloc([self zone],numberOfValues*sizeof(unsigned));
 
    if(numberOfValues==1)
     values[0]=nextUnsigned8(self);
@@ -224,7 +224,7 @@ static void _decodeArrayOfUnsigned16(O2Decoder_TIFF *self,unsigned **valuesp,uns
    unsigned  numberOfValues=nextUnsigned32(self);
    unsigned *values;
 
-   values=NSZoneMalloc([self zone],numberOfValues*sizeof(unsigned));
+   values=(unsigned int *)NSZoneMalloc([self zone],numberOfValues*sizeof(unsigned));
 
    if(numberOfValues==1)
     values[0]=nextUnsigned16(self);
@@ -247,7 +247,7 @@ static void _decodeArrayOfUnsigned32(O2Decoder_TIFF *self,unsigned **valuesp,uns
    unsigned  numberOfValues=nextUnsigned32(self);
    unsigned *values;
 
-   values=NSZoneMalloc([self zone],numberOfValues*sizeof(unsigned));
+   values=(unsigned int *)NSZoneMalloc([self zone],numberOfValues*sizeof(unsigned));
 
    if(numberOfValues==1)
     values[0]=nextUnsigned32(self);
@@ -383,7 +383,7 @@ static void _decodeArrayOfUnsigned32(O2Decoder_TIFF *self,unsigned **valuesp,uns
 
 -initWithData:(NSData *)data {
    _data=[data copy];
-   _bytes=[_data bytes];
+   _bytes=(const unsigned char *)[_data bytes];
    _length=[_data length];
    _position=0;
 

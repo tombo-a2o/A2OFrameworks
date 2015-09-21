@@ -137,7 +137,7 @@ O2ColorSpaceModel O2ColorSpaceGetModel(O2ColorSpaceRef self) {
    _type=kO2ColorSpaceModelIndexed;
    _base=[baseColorSpace retain];
    _hival=hival;
-   _bytes=NSZoneMalloc(NSDefaultMallocZone(),max);
+   _bytes=(unsigned char*)NSZoneMalloc(NSDefaultMallocZone(),max);
    for(i=0;i<max;i++)
     _bytes[i]=bytes[i];
    return self;
@@ -150,7 +150,7 @@ O2ColorSpaceModel O2ColorSpaceGetModel(O2ColorSpaceRef self) {
 }
 
 -(BOOL)isEqualToColorSpace:(O2ColorSpaceRef)otherX {
-   O2ColorSpace_indexed *other=(O2ColorSpace_indexed *)other;
+   O2ColorSpace_indexed *other=(O2ColorSpace_indexed *)otherX;
    if(self->_type!=other->_type)
     return NO;
     
@@ -190,11 +190,11 @@ O2ColorSpaceModel O2ColorSpaceGetModel(O2ColorSpaceRef self) {
    for(i=0;names[i]!=NULL;i++)
     _numberOfComponents++;
     
-   _names=malloc(sizeof(char *)*_numberOfComponents);
+   _names=(char**)malloc(sizeof(char *)*_numberOfComponents);
    
    for(i=0;i<_numberOfComponents;i++){
     size_t length=strlen(names[i]);
-    _names[i]=malloc(length+1);
+    _names[i]=(char*)malloc(length+1);
     
     strcpy(_names[i],names[i]);
    }

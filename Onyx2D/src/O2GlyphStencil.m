@@ -1,12 +1,12 @@
 #import <Onyx2D/O2GlyphStencil.h>
 
 O2GlyphStencilRef O2GlyphStencilCreate(size_t width,size_t height,uint8_t *coverage,size_t bytesPerRow,size_t left,size_t top) {
-   O2GlyphStencilRef self=NSZoneMalloc(NULL,sizeof(struct O2GlyphStencil));
+   O2GlyphStencilRef self=(O2GlyphStencilRef)NSZoneMalloc(NULL,sizeof(struct O2GlyphStencil));
    self->_width=width;
    self->_height=height;
    self->_left=left;
    self->_top=top;
-   self->_coverage=NSZoneMalloc(NULL,width*height);
+   self->_coverage=(uint8_t *)NSZoneMalloc(NULL,width*height);
    
    int r,c,i=0;
    

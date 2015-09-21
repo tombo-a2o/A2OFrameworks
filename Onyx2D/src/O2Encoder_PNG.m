@@ -1,11 +1,11 @@
 #import <Onyx2D/O2Encoder_PNG.h>
 
 #ifndef __APPLE__
-#import "O2Defines_libpng.h"
+//#import "O2Defines_libpng.h"
 #endif
 
 O2PNGEncoderRef O2PNGEncoderCreate(O2DataConsumerRef consumer) {
-   O2PNGEncoderRef self=NSZoneCalloc(NULL,1,sizeof(struct O2PNGEncoder));
+   O2PNGEncoderRef self=(O2PNGEncoderRef)NSZoneCalloc(NULL,1,sizeof(struct O2PNGEncoder));
    self->_consumer=(id)CFRetain(consumer);
    return self;
 }
@@ -422,10 +422,10 @@ unsigned char *stbi_write_png_to_mem(O2ImageRef image, int x, int y, int *out_le
    filt = (unsigned char *) malloc((x*n+1) * y); if (!filt) return 0;
    line_buffer = (signed char *) malloc(x * n); if (!line_buffer) { free(filt); return 0; }
    
-   O2argb8u *pixelBuffer=malloc(x*sizeof(O2argb8u));
+   O2argb8u *pixelBuffer=(O2argb8u *)malloc(x*sizeof(O2argb8u));
    O2argb8u *pixels;
-    unsigned char *lastZ=calloc(1,x*n);
-   unsigned char *z=calloc(1,x*n);
+    unsigned char *lastZ=(unsigned char *)calloc(1,x*n);
+   unsigned char *z=(unsigned char *)calloc(1,x*n);
        
    for (j=0; j < y; ++j) {
       static int mapping[] = { 0,1,2,3,4 };

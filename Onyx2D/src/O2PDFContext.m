@@ -6,6 +6,8 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
+#if 0
+
 #import <Onyx2D/O2PDFContext.h>
 #import <Onyx2D/O2PDFArray.h>
 #import <Onyx2D/O2PDFDictionary.h>
@@ -344,11 +346,11 @@ const NSString *kO2PDFContextTitle=@"kO2PDFContextTitle";
    }
 }
 
-- (void)translateCTM:(float)x:(float)y
+- (void)translateCTM:(float)x y:(float)y
 {
 	[self contentWithFormat:@"1 0 0 1 %f %f cm ", x, y];
 }
-- (void)scaleCTM:(float)x:(float)y
+- (void)scaleCTM:(float)x y:(float)y
 {
 	[self contentWithFormat:@"%f 0 0 %f 0 0 cm ", x, y];
 }
@@ -476,7 +478,7 @@ const NSString *kO2PDFContextTitle=@"kO2PDFContextTitle";
       O2PDFObject *name=[self nameForResource:pdfObject inCategory:"XObject"];
    
      [self contentWithString:@"q "];
-     [self translateCTM:rect.origin.x:rect.origin.y];
+     [self translateCTM:rect.origin.x y:rect.origin.y];
      [self scaleCTM:rect.size.width:rect.size.height];
      [self contentWithFormat:@"%@ Do ",name];
      [self contentWithString:@"Q "];
@@ -565,8 +567,8 @@ const NSString *kO2PDFContextTitle=@"kO2PDFContextTitle";
 	[self emitCurrentGState];
 	
    [self emitSaveGState];
-   [self translateCTM:rect.origin.x:rect.origin.y];
-   [self scaleCTM:rect.size.width:rect.size.height];
+   [self translateCTM:rect.origin.x y:rect.origin.y];
+   [self scaleCTM:rect.size.width y:rect.size.height];
    [self contentWithFormat:@"%@ Do ",name];
    [self emitRestoreGState];
 	
@@ -664,3 +666,5 @@ const NSString *kO2PDFContextTitle=@"kO2PDFContextTitle";
 }
 
 @end
+
+#endif

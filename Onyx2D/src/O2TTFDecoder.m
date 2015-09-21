@@ -1,3 +1,5 @@
+#if 0
+
 #import <Onyx2D/O2TTFDecoder.h>
 #import <Onyx2D/O2DataProvider.h>
 #import <Onyx2D/O2Font.h>
@@ -758,3 +760,4 @@ void O2TTFDecoderGetNameTable(O2TTFDecoderRef self) {
 }
 
 @end
+#endif

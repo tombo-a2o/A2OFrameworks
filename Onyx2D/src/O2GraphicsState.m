@@ -71,7 +71,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
    if(_dashLengths!=NULL)
     NSZoneFree(NULL,_dashLengths);
    O2ColorRelease(_shadowColor);
-   O2GaussianKernelRelease(_shadowKernel);
+   O2GaussianKernelRelease((O2GaussianKernelRef)_shadowKernel);
    NSDeallocateObject(self);
    return;
    [super dealloc];
@@ -90,14 +90,14 @@ O2GState *O2GStateCopyWithZone(O2GState *self,NSZone *zone) {
    if(self->_dashLengths!=NULL){
     int i;
     
-    copy->_dashLengths=NSZoneMalloc(zone,sizeof(float)*self->_dashLengthsCount);
+    copy->_dashLengths=(float *)NSZoneMalloc(zone,sizeof(float)*self->_dashLengthsCount);
     for(i=0;i<self->_dashLengthsCount;i++)
      copy->_dashLengths[i]=self->_dashLengths[i];
    }
     
    copy->_shadowColor=O2ColorCreateCopy(self->_shadowColor);
    
-   copy->_shadowKernel=O2GaussianKernelRetain(self->_shadowKernel);
+   copy->_shadowKernel=O2GaussianKernelRetain((O2GaussianKernelRef)self->_shadowKernel);
    
 	copy->_alpha = self->_alpha;
 	
@@ -353,11 +353,11 @@ void O2GStateSetLineWidth(O2GState *self,float width){
 }
 
 void O2GStateSetLineCap(O2GState *self,int lineCap){
-   self->_lineCap=lineCap;
+   self->_lineCap=(O2LineCap)lineCap;
 }
 
 void O2GStateSetLineJoin(O2GState *self,int lineJoin) {
-   self->_lineJoin=lineJoin;
+   self->_lineJoin=(O2LineJoin)lineJoin;
 }
 
 void O2GStateSetMiterLimit(O2GState *self,float limit) {
@@ -376,7 +376,7 @@ void O2GStateSetLineDash(O2GState *self,float phase,const float *lengths,unsigne
    else {
     int i;
     
-    self->_dashLengths=NSZoneMalloc(NULL,sizeof(float)*count);
+    self->_dashLengths=(float *)NSZoneMalloc(NULL,sizeof(float)*count);
     for(i=0;i<count;i++)
      self->_dashLengths[i]=lengths[i];
    }
@@ -416,7 +416,7 @@ void O2GStateSetAlpha(O2GState *self,float alpha){
    color=[color retain];
    [_shadowColor release];
    _shadowColor=color;
-   O2GaussianKernelRelease(_shadowKernel);
+   O2GaussianKernelRelease((O2GaussianKernelRef)_shadowKernel);
    _shadowKernel=(_shadowColor==nil)?NULL:O2CreateGaussianKernelWithDeviation(blur);
 }
 

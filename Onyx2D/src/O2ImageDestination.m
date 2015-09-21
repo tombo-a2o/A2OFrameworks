@@ -73,7 +73,7 @@ O2ImageDestinationRef O2ImageDestinationCreateWithDataConsumer(O2DataConsumerRef
        self->_consumer=O2DataConsumerRetain(dataConsumer);
        self->_type=fileTypeForUTI(type);
        self->_imageCount=imageCount;
-       self->_options=(options==NULL)?NULL:CFRetain(options);
+       self->_options=(options==NULL)?NULL:(CFDictionaryRef)CFRetain(options);
        
        switch(self->_type){
        
@@ -82,7 +82,7 @@ O2ImageDestinationRef O2ImageDestinationCreateWithDataConsumer(O2DataConsumerRef
          
         case O2ImageFileTIFF:
          self->_encoder=O2TIFFEncoderCreate(self->_consumer);
-         O2TIFFEncoderBegin(self->_encoder);
+         O2TIFFEncoderBegin((O2TIFFEncoderRef)self->_encoder);
          break;
 
         case O2ImageFileBMP:
@@ -128,7 +128,7 @@ void O2ImageDestinationAddImage(O2ImageDestinationRef self,O2ImageRef image,CFDi
      break;
      
     case O2ImageFileTIFF:
-     O2TIFFEncoderWriteImage(self->_encoder,image,properties,(self->_imageCount==0)?YES:NO);
+     O2TIFFEncoderWriteImage((O2TIFFEncoderRef)self->_encoder,image,properties,(self->_imageCount==0)?YES:NO);
      break;
 
     case O2ImageFileBMP:
@@ -144,7 +144,7 @@ void O2ImageDestinationAddImage(O2ImageDestinationRef self,O2ImageRef image,CFDi
      break;
 
     case O2ImageFilePNG:
-     O2PNGEncoderWriteImage(self->_encoder,image,properties);
+     O2PNGEncoderWriteImage((O2PNGEncoderRef)self->_encoder,image,properties);
      break;
 
     case O2ImageFileJPEG2000:
@@ -166,8 +166,8 @@ bool O2ImageDestinationFinalize(O2ImageDestinationRef self) {
      break;
      
     case O2ImageFileTIFF:
-     O2TIFFEncoderEnd(self->_encoder);
-     O2TIFFEncoderDealloc(self->_encoder);
+     O2TIFFEncoderEnd((O2TIFFEncoderRef)self->_encoder);
+     O2TIFFEncoderDealloc((O2TIFFEncoderRef)self->_encoder);
      self->_encoder=NULL;
      break;
 
@@ -185,7 +185,7 @@ bool O2ImageDestinationFinalize(O2ImageDestinationRef self) {
      break;
 
     case O2ImageFilePNG:
-     O2PNGEncoderDealloc(self->_encoder);
+     O2PNGEncoderDealloc((O2PNGEncoderRef)self->_encoder);
      self->_encoder=NULL;
      break;
 

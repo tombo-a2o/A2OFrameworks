@@ -10,9 +10,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <Onyx2D/O2Decoder_TIFF.h>
 #import <Onyx2D/O2ImageSource.h>
 #import <Onyx2D/O2LZW.h>
-#import <Foundation/NSDebug.h>
+//#import <Foundation/NSDebug.h>
 
-#import "O2Defines_libtiff.h"
+//#import "O2Defines_libtiff.h"
 
 #if LIBTIFF_PRESENT
 #import <libtiff/include/tiffio.h>
@@ -400,8 +400,8 @@ static void sTIFFUnmapFileProc(thandle_t userData, tdata_t data, toff_t size)
       break;
 
      default:
-      if(NSDebugEnabled)
-       NSLog(@"TIFF trace: unknown tag=%d",tag);
+      //if(NSDebugEnabled)
+      // NSLog(@"TIFF trace: unknown tag=%d",tag);
       break;
 
     }

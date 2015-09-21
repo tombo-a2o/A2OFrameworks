@@ -15,14 +15,14 @@ static void O2ContextDistillShowText(O2ContextRef self,const char *text,unsigned
    O2Glyph          glyphs[length];
    uint16_t         unicode[length];
       
-   O2EncodingGetGlyphsForBytes(encoding,glyphs,text,length);
-   O2EncodingGetUnicodeForBytes(encoding,unicode,text,length);
+   O2EncodingGetGlyphsForBytes(encoding,glyphs,(const uint8_t *)text,length);
+   O2EncodingGetUnicodeForBytes(encoding,unicode,(const uint8_t *)text,length);
    
    O2Size advances[length];
    int    i;
     
    if(widths!=nil)
-    O2PDFCharWidthsGetAdvances(widths,advances,text,length);
+    O2PDFCharWidthsGetAdvances(widths,advances,(const uint8_t *)text,length);
    else
     O2ContextGetDefaultAdvances(self,glyphs,advances,length);
     

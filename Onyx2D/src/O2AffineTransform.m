@@ -16,7 +16,7 @@ O2AffineTransform O2AffineTransformMake(O2Float a,O2Float b,O2Float c,O2Float d,
 }
 
 O2AffineTransform O2AffineTransformMakeRotation(O2Float radians){
-   O2AffineTransform xform={cos(radians),sin(radians),-sin(radians),cos(radians),0,0};
+   O2AffineTransform xform={cosf(radians),sinf(radians),-sinf(radians),cosf(radians),0,0};
    return xform;
 }
 

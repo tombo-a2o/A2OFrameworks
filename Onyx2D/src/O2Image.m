@@ -399,12 +399,12 @@ ONYX2D_STATIC_INLINE const void *directBytes(O2Image *self){
    if(self->_directBytes==NULL){
     if([self->_provider isDirectAccess]){
      self->_directData=[[self->_provider data] retain];
-     self->_directBytes=[self->_provider bytes];
+     self->_directBytes=(const unsigned char *)[self->_provider bytes];
      self->_directLength=[self->_provider length];
    }
     else {
      self->_directData=(NSData *)O2DataProviderCopyData(self->_provider);
-     self->_directBytes=[self->_directData bytes];
+     self->_directBytes=(const unsigned char *)[self->_directData bytes];
      self->_directLength=[self->_directData length];
     }
    }
@@ -412,7 +412,7 @@ ONYX2D_STATIC_INLINE const void *directBytes(O2Image *self){
 }
 
 ONYX2D_STATIC_INLINE const void *scanlineAtY(O2Image *self,int y){
-   const void *bytes=directBytes(self);
+   const uint8_t *bytes=(const uint8_t *)directBytes(self);
    int         offset=self->_bytesPerRow*y;
    int         max=offset+self->_bytesPerRow;
    
@@ -471,9 +471,9 @@ O2ImageRef O2ImageCreateWithImageInRect(O2ImageRef self,O2Rect rect) {
    size_t         col,width=rect.size.width;
    size_t         row,height=rect.size.height;
    size_t         childBytesPerRow=(width*self->_bitsPerPixel+7)/8;
-   uint8_t       *childPixelBytes=malloc(height*childBytesPerRow);
+   uint8_t       *childPixelBytes=(uint8_t *)malloc(height*childBytesPerRow);
    size_t         childIndex=0;
-   const uint8_t *pixelBytes=directBytes(self);
+   const uint8_t *pixelBytes=(const uint8_t *)directBytes(self);
    
    pixelBytes+=self->_bytesPerRow*y;
    
@@ -566,9 +566,9 @@ O2ColorSpaceRef O2ImageGetColorSpace(O2ImageRef self) {
 
 O2ImageAlphaInfo O2ImageGetAlphaInfo(O2ImageRef self) {
    if(self==NULL)
-    return 0;
+    return kO2ImageAlphaNone;
 
-   return self->_bitmapInfo&kO2BitmapAlphaInfoMask;
+   return (O2ImageAlphaInfo)(self->_bitmapInfo&kO2BitmapAlphaInfoMask);
 }
 
 O2DataProviderRef O2ImageGetDataProvider(O2ImageRef self) {
@@ -594,7 +594,7 @@ BOOL O2ImageGetShouldInterpolate(O2ImageRef self) {
 
 O2ColorRenderingIntent O2ImageGetRenderingIntent(O2ImageRef self) {
    if(self==NULL)
-    return 0;
+    return kO2RenderingIntentDefault;
 
    return self->_renderingIntent;
 }
@@ -621,7 +621,7 @@ O2ImageDecoderRef O2ImageGetImageDecoder(O2ImageRef self) {
 }
 
 O2argb32f *O2ImageRead_ANY_to_argb8u_to_argb32f(O2Image *self,int x,int y,O2argb32f *span,int length){
-   O2argb8u *span8888=__builtin_alloca(length*sizeof(O2argb8u));
+   O2argb8u *span8888=(O2argb8u *)__builtin_alloca(length*sizeof(O2argb8u));
    O2argb8u *direct=self->_read_argb8u(self,x,y,span8888,length);
    
    if(direct!=NULL)
@@ -662,7 +662,7 @@ float bytesLittleToFloat(const unsigned char *scanline){
 }
 
 O2argb32f *O2ImageRead_argb32fLittle_to_argb32f(O2Image *self,int x,int y,O2argb32f *span,int length){
-   const uint8_t *scanline = scanlineAtY(self,y);
+   const uint8_t *scanline = (const uint8_t *)scanlineAtY(self,y);
    int i;
    
    if(scanline==NULL)
@@ -708,7 +708,7 @@ float bytesBigToFloat(const unsigned char *scanline){
 }
 
 O2argb32f *O2ImageRead_argb32fBig_to_argb32f(O2Image *self,int x,int y,O2argb32f *span,int length){
-   const uint8_t *scanline = scanlineAtY(self,y);
+   const uint8_t *scanline = (const uint8_t *)scanlineAtY(self,y);
    int i;
    
    if(scanline==NULL)
@@ -733,7 +733,7 @@ O2argb32f *O2ImageRead_argb32fBig_to_argb32f(O2Image *self,int x,int y,O2argb32f
 }
 
 uint8_t *O2ImageRead_G8_to_A8(O2Image *self,int x,int y,uint8_t *alpha,int length) {
-   const uint8_t *scanline = scanlineAtY(self,y);
+   const uint8_t *scanline = (const uint8_t *)scanlineAtY(self,y);
    int i;
    
    if(scanline==NULL)
@@ -747,7 +747,7 @@ uint8_t *O2ImageRead_G8_to_A8(O2Image *self,int x,int y,uint8_t *alpha,int lengt
 }
 
 uint8_t *O2Image_read_a8u_src_argb8u(O2Image *self,int x,int y,uint8_t *alpha,int length) {
-   O2argb8u *span=__builtin_alloca(length*sizeof(O2argb8u));
+   O2argb8u *span=(O2argb8u *)__builtin_alloca(length*sizeof(O2argb8u));
    int i;
    
    O2argb8u *direct=self->_read_argb8u(self,x,y,span,length);
@@ -772,7 +772,7 @@ O2Float *O2ImageRead_ANY_to_A8_to_Af(O2Image *self,int x,int y,O2Float *alpha,in
 }
 
 O2argb8u *O2ImageRead_G8_to_argb8u(O2Image *self,int x,int y,O2argb8u *span,int length){
-   const uint8_t *scanline = scanlineAtY(self,y);
+   const uint8_t *scanline = (const uint8_t *)scanlineAtY(self,y);
    int i;
 
    if(scanline==NULL)
@@ -793,7 +793,7 @@ O2argb8u *O2ImageRead_G8_to_argb8u(O2Image *self,int x,int y,O2argb8u *span,int 
 }
 
 O2argb8u *O2ImageRead_GA88_to_argb8u(O2Image *self,int x,int y,O2argb8u *span,int length){
-   const uint8_t *scanline = scanlineAtY(self,y);
+   const uint8_t *scanline = (const uint8_t *)scanlineAtY(self,y);
    int i;
 
    if(scanline==NULL)
@@ -813,7 +813,7 @@ O2argb8u *O2ImageRead_GA88_to_argb8u(O2Image *self,int x,int y,O2argb8u *span,in
 }
 
 O2argb8u *O2ImageRead_RGBA8888_to_argb8u(O2Image *self,int x,int y,O2argb8u *span,int length){
-   const uint8_t *scanline = scanlineAtY(self,y);
+   const uint8_t *scanline = (const uint8_t *)scanlineAtY(self,y);
    int i;
    
    if(scanline==NULL)
@@ -834,7 +834,7 @@ O2argb8u *O2ImageRead_RGBA8888_to_argb8u(O2Image *self,int x,int y,O2argb8u *spa
 }
 
 O2argb8u *O2ImageRead_ABGR8888_to_argb8u(O2Image *self,int x,int y,O2argb8u *span,int length){
-   const uint8_t *scanline = scanlineAtY(self,y);
+   const uint8_t *scanline = (const uint8_t *)scanlineAtY(self,y);
    int i;
    
    if(scanline==NULL)
@@ -854,7 +854,7 @@ O2argb8u *O2ImageRead_ABGR8888_to_argb8u(O2Image *self,int x,int y,O2argb8u *spa
 }
 
 O2argb8u *O2ImageRead_BGRA8888_to_argb8u(O2Image *self,int x,int y,O2argb8u *span,int length) {
-   const uint8_t *scanline = scanlineAtY(self,y);
+   const uint8_t *scanline = (const uint8_t *)scanlineAtY(self,y);
    int i;
    
    if(scanline==NULL)
@@ -878,7 +878,7 @@ O2argb8u *O2ImageRead_BGRA8888_to_argb8u(O2Image *self,int x,int y,O2argb8u *spa
 }
 
 O2argb8u *O2ImageRead_RGB888_to_argb8u(O2Image *self,int x,int y,O2argb8u *span,int length) {
-   const uint8_t *scanline = scanlineAtY(self,y);
+   const uint8_t *scanline = (const uint8_t *)scanlineAtY(self,y);
    int i;
    
    if(scanline==NULL)
@@ -899,7 +899,7 @@ O2argb8u *O2ImageRead_RGB888_to_argb8u(O2Image *self,int x,int y,O2argb8u *span,
 }
 
 O2argb8u *O2ImageRead_BGRX8888_to_argb8u(O2Image *self,int x,int y,O2argb8u *span,int length) {
-   const uint8_t *scanline = scanlineAtY(self,y);
+   const uint8_t *scanline = (const uint8_t *)scanlineAtY(self,y);
    int i;
    
    if(scanline==NULL)
@@ -920,7 +920,7 @@ O2argb8u *O2ImageRead_BGRX8888_to_argb8u(O2Image *self,int x,int y,O2argb8u *spa
 }
 
 O2argb8u *O2ImageRead_XRGB8888_to_argb8u(O2Image *self,int x,int y,O2argb8u *span,int length) {
-   const uint8_t *scanline = scanlineAtY(self,y);
+   const uint8_t *scanline = (const uint8_t *)scanlineAtY(self,y);
    int i;
    
    if(scanline==NULL)
@@ -942,7 +942,7 @@ O2argb8u *O2ImageRead_XRGB8888_to_argb8u(O2Image *self,int x,int y,O2argb8u *spa
 
 // kO2BitmapByteOrder16Little|kO2ImageAlphaNoneSkipFirst
 O2argb8u *O2ImageRead_G3B5X1R5G2_to_argb8u(O2Image *self,int x,int y,O2argb8u *span,int length){
-   const uint8_t *scanline = scanlineAtY(self,y);
+   const uint8_t *scanline = (const uint8_t *)scanlineAtY(self,y);
    int i;
    
    if(scanline==NULL)
@@ -966,7 +966,7 @@ O2argb8u *O2ImageRead_G3B5X1R5G2_to_argb8u(O2Image *self,int x,int y,O2argb8u *s
 }
 
 O2argb8u *O2ImageRead_RGBA4444_to_argb8u(O2Image *self,int x,int y,O2argb8u *span,int length){
-   const uint8_t *scanline = scanlineAtY(self,y);
+   const uint8_t *scanline = (const uint8_t *)scanlineAtY(self,y);
    int i;
    
    if(scanline==NULL)
@@ -988,7 +988,7 @@ O2argb8u *O2ImageRead_RGBA4444_to_argb8u(O2Image *self,int x,int y,O2argb8u *spa
 }
 
 O2argb8u *O2ImageRead_BARG4444_to_argb8u(O2Image *self,int x,int y,O2argb8u *span,int length){
-   const uint8_t *scanline = scanlineAtY(self,y);
+   const uint8_t *scanline = (const uint8_t *)scanlineAtY(self,y);
    int i;
    
    if(scanline==NULL)
@@ -1010,7 +1010,7 @@ O2argb8u *O2ImageRead_BARG4444_to_argb8u(O2Image *self,int x,int y,O2argb8u *spa
 }
 
 O2argb8u *O2ImageRead_RGBA2222_to_argb8u(O2Image *self,int x,int y,O2argb8u *span,int length){
-   const uint8_t *scanline = scanlineAtY(self,y);
+   const uint8_t *scanline = (const uint8_t *)scanlineAtY(self,y);
    int i;
    
    if(scanline==NULL)
@@ -1032,7 +1032,7 @@ O2argb8u *O2ImageRead_RGBA2222_to_argb8u(O2Image *self,int x,int y,O2argb8u *spa
 
 O2argb8u *O2ImageRead_CMYK8888_to_argb8u(O2Image *self,int x,int y,O2argb8u *span,int length){
 // poor results
-   const uint8_t *scanline = scanlineAtY(self,y);
+   const uint8_t *scanline = (const uint8_t *)scanlineAtY(self,y);
    int i;
    
    if(scanline==NULL)
@@ -1061,7 +1061,7 @@ O2argb8u *O2ImageRead_I8_to_argb8u(O2Image *self,int x,int y,O2argb8u *span,int 
    unsigned hival=[indexed hival];
    const unsigned char *palette=[indexed paletteBytes];
 
-   const uint8_t *scanline = scanlineAtY(self,y);
+   const uint8_t *scanline = (const uint8_t *)scanlineAtY(self,y);
    int i;
    
    if(scanline==NULL)
@@ -1578,7 +1578,7 @@ void O2ImageReadPatternSpan_largb32f_PRE(O2Image *self,O2Float x, O2Float y, O2a
 }
 
 -(NSString *)description {
-   return [NSString stringWithFormat:@"<%@:%p> width=%d,height=%d,bpc=%d,bpp=%d,bpr=%d,bminfo=%x data length=%d",isa,self,_width,_height,_bitsPerComponent,_bitsPerPixel,_bytesPerRow,_bitmapInfo,[_provider length]];
+   return [NSString stringWithFormat:@"<%@:%p> width=%d,height=%d,bpc=%d,bpp=%d,bpr=%d,bminfo=%x data length=%d",[self class],self,_width,_height,_bitsPerComponent,_bitsPerPixel,_bytesPerRow,_bitmapInfo,[_provider length]];
 }
 
 @end

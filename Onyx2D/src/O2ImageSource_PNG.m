@@ -16,7 +16,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <Onyx2D/O2ColorSpace.h>
 #import <Onyx2D/O2Image.h>
 
-#import "O2Defines_libpng.h"
+//#import "O2Defines_libpng.h"
 #import <assert.h>
 
 // clang-format off

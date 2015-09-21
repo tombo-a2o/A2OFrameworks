@@ -90,9 +90,9 @@ enum
 typedef unsigned char stbi_uc;
 
 // this is not threadsafe
-static char *failure_reason;
+static const char *failure_reason;
 
-static int e(char *str)
+static int e(const char *str)
 {
     failure_reason = str;
     return 0;
@@ -1154,7 +1154,7 @@ static unsigned char *stbi_jpeg_load_from_memory(jpeg *j,stbi_uc const *buffer, 
 }
 
 -(CFDataRef)createPixelData {
-    return CFRetain(_pixelData);
+    return (CFDataRef)CFRetain(_pixelData);
 }
 
 @end

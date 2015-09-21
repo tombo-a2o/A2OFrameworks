@@ -13,7 +13,7 @@
 }
 
 -(O2Glyph)glyphWithGlyphName:(NSString *)name {
-   return (O2Glyph)(int)NSMapGet(_nameToGlyph,name);
+   return (O2Glyph)(int)[_nameToGlyph objectForKey:name];
 }
 
 O2FontRef O2FontCreateWithFontName_platform(NSString *name) {

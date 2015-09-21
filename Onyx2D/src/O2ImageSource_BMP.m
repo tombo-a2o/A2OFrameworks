@@ -41,8 +41,8 @@ static uint8  *out;
 static const uint8 *img_buffer, *img_buffer_end;
 
 
-static char *failure_reason;
-static int e(char *str)
+static const char *failure_reason;
+static int e(const char *str)
 {
    failure_reason = str;
    NSLog(@"BMP failure: %s",str);
@@ -99,7 +99,7 @@ static unsigned char *convert_format(unsigned char *data, int img_n, int req_com
    good = (unsigned char *) NSZoneMalloc(NULL,req_comp * img_x * img_y);
    if (good == NULL) {
       NSZoneFree(NULL,data);
-      return ep("outofmem", "Out of memory");
+      return (unsigned char *)ep("outofmem", "Out of memory");
    }
 
    for (j=0; j < img_y; ++j) {
@@ -199,13 +199,13 @@ static stbi_uc *bmp_load(int *x, int *y, int *comp, int req_comp)
    stbi_uc pal[256][4];
    int psize=0,i,j,compress=0,width;
    int bpp, flip_vertically, pad, target, offset, hsz;
-   if (get8() != 'B' || get8() != 'M') return ep("not BMP", "Corrupt BMP");
+   if (get8() != 'B' || get8() != 'M') return (stbi_uc *)ep("not BMP", "Corrupt BMP");
    get32le(); // discard filesize
    get16le(); // discard reserved
    get16le(); // discard reserved
    offset = get32le();
    hsz = get32le();
-   if (hsz != 12 && hsz != 40 && hsz != 56 && hsz != 108) return ep("unknown BMP", "BMP type not supported: unknown");
+   if (hsz != 12 && hsz != 40 && hsz != 56 && hsz != 108) return (stbi_uc *)ep("unknown BMP", "BMP type not supported: unknown");
    failure_reason = "bad BMP";
    if (hsz == 12) {
       img_x = get16le();
@@ -216,7 +216,7 @@ static stbi_uc *bmp_load(int *x, int *y, int *comp, int req_comp)
    }
    if (get16le() != 1) return 0;
    bpp = get16le();
-   if (bpp == 1) return ep("monochrome", "BMP type not supported: 1-bit");
+   if (bpp == 1) return (stbi_uc *)ep("monochrome", "BMP type not supported: 1-bit");
    flip_vertically = img_y > 0;
    img_y = abs(img_y);
    if (hsz == 12) {
@@ -224,7 +224,7 @@ static stbi_uc *bmp_load(int *x, int *y, int *comp, int req_comp)
          psize = (offset - 14 - 24) / 3;
    } else {
       compress = get32le();
-      if (compress == 1 || compress == 2) return ep("BMP RLE", "BMP type not supported: RLE");
+      if (compress == 1 || compress == 2) return (stbi_uc *)ep("BMP RLE", "BMP type not supported: RLE");
       get32le(); // discard sizeof
       get32le(); // discard hres
       get32le(); // discard vres
@@ -281,10 +281,10 @@ static stbi_uc *bmp_load(int *x, int *y, int *comp, int req_comp)
    else
       target = img_n; // if they want monochrome, we'll post-convert
    out = (stbi_uc *) NSZoneMalloc(NULL,target * img_x * img_y);
-   if (!out) return ep("outofmem", "Out of memory");
+   if (!out) return (stbi_uc *)ep("outofmem", "Out of memory");
    if (bpp < 16) {
       int z=0;
-      if (psize == 0 || psize > 256) return ep("invalid", "Corrupt BMP");
+      if (psize == 0 || psize > 256) return (stbi_uc *)ep("invalid", "Corrupt BMP");
       for (i=0; i < psize; ++i) {
          pal[i][2] = get8();
          pal[i][1] = get8();
@@ -295,7 +295,7 @@ static stbi_uc *bmp_load(int *x, int *y, int *comp, int req_comp)
       skip(offset - 14 - hsz - psize * (hsz == 12 ? 3 : 4));
       if (bpp == 4) width = (img_x + 1) >> 1;
       else if (bpp == 8) width = img_x;
-      else return ep("bad bpp", "Corrupt BMP");
+      else return (stbi_uc *)ep("bad bpp", "Corrupt BMP");
       pad = (-width)&3;
       for (j=0; j < (int) img_y; ++j) {
          for (i=0; i < (int) img_x; i += 2) {
@@ -333,7 +333,7 @@ static stbi_uc *bmp_load(int *x, int *y, int *comp, int req_comp)
             easy = 2;
       }
       if (!easy) {
-         if (!mr || !mg || !mb) return ep("bad masks", "Corrupt BMP");
+         if (!mr || !mg || !mb) return (stbi_uc *)ep("bad masks", "Corrupt BMP");
          // right shift amt to put high bit in position #7
          rshift = high_bit(mr)-7; rcount = bitcount(mr);
          gshift = high_bit(mg)-7; gcount = bitcount(mr);
@@ -434,7 +434,7 @@ stbi_uc *stbi_bmp_load_from_memory (const stbi_uc *buffer, int len, int *x, int 
 -(O2Image *)createImageAtIndex:(unsigned)index options:(NSDictionary *)options {
    int            width,height;
    int            comp;
-   unsigned char *pixels=stbi_bmp_load_from_memory([_bmp bytes],[_bmp length],&width,&height,&comp,STBI_rgb_alpha);
+   unsigned char *pixels=stbi_bmp_load_from_memory((const stbi_uc *)[_bmp bytes],[_bmp length],&width,&height,&comp,STBI_rgb_alpha);
    int            bitsPerPixel=32;
    int            bytesPerRow=(bitsPerPixel/(sizeof(char)*8))*width;
    NSData        *bitmap;

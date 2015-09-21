@@ -288,13 +288,13 @@ BOOL O2PathContainsPoint(O2PathRef self,const O2AffineTransform *xform,O2Point p
 			case kO2PathElementAddQuadCurveToPoint:
 			{
 				toPoint = points[1];
-				CGPoint control = points[0];
+				O2Point control = points[0];
 
 				// Calc the equivalent Cubic curve control points
-				CGPoint control1;
+				O2Point control1;
 				control1.x = currentPoint.x/3.f + 2.f*control.x/3.f;
 				control1.y = currentPoint.y/3.f + 2.f*control.y/3.f;
-				CGPoint control2;
+				O2Point control2;
 				control2.x = toPoint.x/3.f + 2.f*control.x/3.f;
 				control2.y = toPoint.y/3.f + 2.f*control.y/3.f;
 				

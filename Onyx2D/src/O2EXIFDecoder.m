@@ -7,7 +7,7 @@
 //
 
 #import "O2EXIFDecoder.h"
-#import "O2ImageSource.h"
+#import <Onyx2D/O2ImageSource.h>
 
 @implementation O2EXIFDecoder
 

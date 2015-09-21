@@ -1,6 +1,6 @@
 #import "O2ImageDecoder_JPEG_libjpeg.h"
 
-#import "O2Defines_libjpeg.h"
+//#import "O2Defines_libjpeg.h"
 
 #ifdef LIBJPEG_PRESENT
 

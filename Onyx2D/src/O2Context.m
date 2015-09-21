@@ -302,7 +302,7 @@ O2ColorRef O2ContextFillColor(O2ContextRef self) {
 }
 
 -(O2ContextRef)createCompatibleContextWithSize:(O2Size)size unused:(NSDictionary *)unused {
-   return [[isa alloc] initWithSize:size context:self];
+   return [[[self class] alloc] initWithSize:size context:self];
 }
 
 -(BOOL)getImageableRect:(O2Rect *)rect {
@@ -591,7 +591,7 @@ O2AffineTransform      O2ContextGetTextMatrix(O2ContextRef self) {
 
 O2InterpolationQuality O2ContextGetInterpolationQuality(O2ContextRef self) {
    if(self==nil)
-    return 0;
+    return kO2InterpolationDefault;
 
    return [O2ContextCurrentGState(self) interpolationQuality];
 }
@@ -1306,7 +1306,7 @@ void O2ContextDrawPDFPage(O2ContextRef self,O2PDFPageRef page) {
    O2ContextSetWordSpacing(self,0);
    O2ContextSetTextHorizontalScaling(self,100);
    O2ContextSetTextLeading(self,0);
-   O2ContextSetTextDrawingMode(self,0);
+   O2ContextSetTextDrawingMode(self, kO2TextFill);
    O2ContextSetTextRise(self,0);
 
    [page drawInContext:self];

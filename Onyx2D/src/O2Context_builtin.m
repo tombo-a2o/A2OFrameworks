@@ -33,8 +33,8 @@
 #import <Onyx2D/O2Paint_axialGradient.h>
 #import <Onyx2D/O2Paint_radialGradient.h>
 #import <Onyx2D/O2Paint_pattern.h>
-#import "O2ClipState.h"
-#import "O2ClipPhase.h"
+#import <Onyx2D/O2ClipState.h>
+#import <Onyx2D/O2ClipPhase.h>
 #import <Onyx2D/O2Shading.h>
 
 #define MAX_SAMPLES     COVERAGE_MULTIPLIER
@@ -62,10 +62,10 @@ void O2DContextClipAndFillEdges(O2Context_builtin *self,int fillRuleMask);
    if(self->_winding!=NULL)
     free(self->_winding);
     // +1 is so we can modify the the next winding value without a bounds check
-    self->_winding=calloc((width*MAX_SAMPLES)+1,sizeof(int));
+    self->_winding=(int *)calloc((width*MAX_SAMPLES)+1,sizeof(int));
    if(self->_increase!=NULL)
     free(self->_increase);
-    self->_increase=malloc(width*sizeof(int));
+    self->_increase=(int *)malloc(width*sizeof(int));
     int i;
     for(i=0;i<width;i++)
      self->_increase[i]=INT_MAX;
@@ -87,13 +87,13 @@ void O2DContextClipAndFillEdges(O2Context_builtin *self,int fillRuleMask);
    
    _edgeCount=0;
    _edgeCapacity=256;
-   _edges=NSZoneMalloc(NULL,self->_edgeCapacity*sizeof(Edge *));
-   _sortCache=NSZoneMalloc(NULL,(self->_edgeCapacity/2 + 1)*sizeof(Edge *));
+   _edges=(Edge **)NSZoneMalloc(NULL,self->_edgeCapacity*sizeof(Edge *));
+   _sortCache=(Edge **)NSZoneMalloc(NULL,(self->_edgeCapacity/2 + 1)*sizeof(Edge *));
    
    sampleSizeShift=0;
    numSamples=0;
    samplesWeight=0;
-   samplesX=NSZoneMalloc(NULL,MAX_SAMPLES*sizeof(O2Float));
+   samplesX=(O2Float *)NSZoneMalloc(NULL,MAX_SAMPLES*sizeof(O2Float));
 
    O2RasterizerSetViewport(self,0,0,O2ImageGetWidth(_surface),O2ImageGetHeight(_surface));
    [self reallocateForSurface];
@@ -147,7 +147,7 @@ void O2DContextClipAndFillEdges(O2Context_builtin *self,int fillRuleMask);
    [_surface setWidth:width height:height reallocateOnlyIfRequired:roir];
    [self reallocateForSurface];
    O2RasterizerSetViewport(self,0,0,O2ImageGetWidth(_surface),O2ImageGetHeight(_surface));
-   O2AffineTransform flip={1,0,0,-1,0,O2ImageGetHeight(_surface)};
+   O2AffineTransform flip={1,0,0,-1,0,(O2Float)O2ImageGetHeight(_surface)};
    O2GStateSetDeviceSpaceCTM(O2ContextCurrentGState(self),flip);
 }
 
@@ -187,7 +187,7 @@ void O2DContextClipAndFillEdges(O2Context_builtin *self,int fillRuleMask);
    if (O2ContextCurrentGState(self)->_shadowKernel) {
     O2Surface *shadow=[self createSurfaceWithWidth:O2ImageGetWidth(_surface) height:O2ImageGetHeight(_surface)];
    
-    O2SurfaceGaussianBlur(shadow,O2LayerGetSurface(layer),O2ContextCurrentGState(self)->_shadowKernel,O2ContextCurrentGState(self)->_shadowColor);
+    O2SurfaceGaussianBlur(shadow,O2LayerGetSurface(layer),(O2GaussianKernelRef)O2ContextCurrentGState(self)->_shadowKernel,O2ContextCurrentGState(self)->_shadowColor);
     O2ContextDrawImage(self,O2RectMake(O2ContextCurrentGState(self)->_shadowOffset.width,O2ContextCurrentGState(self)->_shadowOffset.height,size.width,size.height),shadow);
    }
    
@@ -259,7 +259,7 @@ ONYX2D_STATIC O2Paint *paintFromColor(O2Context_builtin *self,O2ColorRef color,O
     O2GState        *gState=O2ContextCurrentGState(self);
     O2Size           size=[pattern bounds].size;
     O2Surface       *surface=[self createSurfaceWithWidth:size.width height:size.height];
-    O2BitmapContext *context=[[self->isa alloc] initWithSurface:surface flipped:NO];
+    O2BitmapContext *context=[[[self class] alloc] initWithSurface:surface flipped:NO];
 
     O2ContextClearRect(context,O2RectMake(0,0,size.width,size.height));
 // do save/restore? probably pointless
@@ -370,10 +370,11 @@ ONYX2D_STATIC O2Paint *paintFromColor(O2Context_builtin *self,O2ColorRef color,O
    
     case O2ClipStateTypeOnePath:
     case O2ClipStateTypeOneRectOnePath:;
+    {
      VGPath *vgPath=[[VGPath alloc] initWithKGPath:O2ClipStateOnePath(clipState)];
      VGPathFill(vgPath,O2AffineTransformIdentity,self);
      break;
-    
+    } 
     default:
     case O2ClipStateTypeNone:     
     case O2ClipStateTypeOneRect:
@@ -497,11 +498,11 @@ void O2DContextAddEdge(O2Context_builtin *self,const O2Point v0, const O2Point v
     if(v0.y>=MaxY && v1.y>=MaxY) // ignore above maxy
      return;
          
-	Edge *edge=NSZoneMalloc(NULL,sizeof(Edge));
+	Edge *edge=(Edge *)NSZoneMalloc(NULL,sizeof(Edge));
     if(self->_edgeCount+1>=self->_edgeCapacity){
      self->_edgeCapacity*=2;
-     self->_edges=NSZoneRealloc(NULL,self->_edges,self->_edgeCapacity*sizeof(Edge *));
-     self->_sortCache=NSZoneRealloc(NULL,self->_sortCache,(self->_edgeCapacity/2 + 1)*sizeof(Edge *));
+     self->_edges=(Edge **)NSZoneRealloc(NULL,self->_edges,self->_edgeCapacity*sizeof(Edge *));
+     self->_sortCache=(Edge **)NSZoneRealloc(NULL,self->_sortCache,(self->_edgeCapacity/2 + 1)*sizeof(Edge *));
     }
     self->_edges[self->_edgeCount]=edge;
     self->_edgeCount++;
@@ -609,13 +610,13 @@ ONYX2D_STATIC void O2ApplyCoverageToSpan_largb32f_PRE(O2argb32f *dst,int icovera
 /* Paint functions can selectively paint or not paint at all, e.g. gradients with extend turned off, they do this by returning a negative chunk for a pixels which aren't generated and positive chunk for pixels that are. We need to make sure we cover the entire span so we loop until the span is complete.
  */
 ONYX2D_STATIC_INLINE void O2RasterizeWriteCoverageSpan8888_Normal(O2Surface *surface,O2Surface *mask,O2Paint *paint,int x, int y,int coverage,int length,O2BlendSpan_argb8u blendFunction) {
-    O2argb8u *dst=__builtin_alloca(length*sizeof(O2argb8u));
+    O2argb8u *dst=(O2argb8u *)__builtin_alloca(length*sizeof(O2argb8u));
     O2argb8u *direct=surface->_read_argb8u(surface,x,y,dst,length);
    
     if(direct!=NULL)
      dst=direct;
      
-    O2argb8u *src=__builtin_alloca(length*sizeof(O2argb8u));
+    O2argb8u *src=(O2argb8u *)__builtin_alloca(length*sizeof(O2argb8u));
     
     while(YES){
      int chunk=O2PaintReadSpan_argb8u_PRE(paint,x,y,src,length);
@@ -643,13 +644,13 @@ ONYX2D_STATIC_INLINE void O2RasterizeWriteCoverageSpan8888_Normal(O2Surface *sur
 
 
 ONYX2D_STATIC_INLINE void O2RasterizeWriteCoverageSpan8888_Copy(O2Surface *surface,O2Surface *mask,O2Paint *paint,int x, int y,int coverage,int length,O2BlendSpan_argb8u blendFunction) {
-   O2argb8u *dst=__builtin_alloca(length*sizeof(O2argb8u));
+   O2argb8u *dst=(O2argb8u *)__builtin_alloca(length*sizeof(O2argb8u));
    O2argb8u *direct=surface->_read_argb8u(surface,x,y,dst,length);
    
    if(direct!=NULL)
     dst=direct;
      
-   O2argb8u *src=__builtin_alloca(length*sizeof(O2argb8u));
+   O2argb8u *src=(O2argb8u *)__builtin_alloca(length*sizeof(O2argb8u));
     
    while(YES){
     int chunk=O2PaintReadSpan_argb8u_PRE(paint,x,y,src,length);
@@ -677,13 +678,13 @@ ONYX2D_STATIC_INLINE void O2RasterizeWriteCoverageSpan8888_Copy(O2Surface *surfa
 }
 
 ONYX2D_STATIC_INLINE void O2RasterizeWriteCoverageSpan8888(O2Surface *surface,O2Surface *mask,O2Paint *paint,int x, int y,int coverage,int length,O2BlendSpan_argb8u blendFunction) {
-   O2argb8u *dst=__builtin_alloca(length*sizeof(O2argb8u));
+   O2argb8u *dst=(O2argb8u *)__builtin_alloca(length*sizeof(O2argb8u));
    O2argb8u *direct=surface->_read_argb8u(surface,x,y,dst,length);
    
    if(direct!=NULL)
     dst=direct;
      
-   O2argb8u *src=__builtin_alloca(length*sizeof(O2argb8u));
+   O2argb8u *src=(O2argb8u *)__builtin_alloca(length*sizeof(O2argb8u));
    
    while(YES){
     int chunk=O2PaintReadSpan_argb8u_PRE(paint,x,y,src,length);
@@ -720,13 +721,13 @@ ONYX2D_STATIC_INLINE void O2RasterizeWriteCoverageSpan8888(O2Surface *surface,O2
 }
 
 ONYX2D_STATIC_INLINE void O2RasterizeWriteCoverageSpanffff(O2Surface *surface,O2Surface *mask,O2Paint *paint,int x, int y,int coverage,int length,O2BlendSpan_argb32f blendFunction) {
-   O2argb32f *dst=__builtin_alloca(length*sizeof(O2argb32f));
+   O2argb32f *dst=(O2argb32f *)__builtin_alloca(length*sizeof(O2argb32f));
    O2argb32f *direct=O2Image_read_argb32f(surface,x,y,dst,length);
 
    if(direct!=NULL)
     dst=direct;
 
-   O2argb32f *src=__builtin_alloca(length*sizeof(O2argb32f));
+   O2argb32f *src=(O2argb32f *)__builtin_alloca(length*sizeof(O2argb32f));
 
    while(YES){
     int chunk=O2PaintReadSpan_largb32f_PRE(paint,x,y,src,length);
@@ -823,7 +824,7 @@ ONYX2D_STATIC_INLINE void initEdgeForAET(O2Context_builtin *self,Edge *edge,int 
    O2Float minx=RI_MIN(autosx,autoex);
       
    edge->minx = MAX(self->_vpx,minx);
-   edge->samples=NSZoneMalloc(NULL,sizeof(O2Float)*self->numSamples);
+   edge->samples=(O2Float *)NSZoneMalloc(NULL,sizeof(O2Float)*self->numSamples);
    
    O2Float *pre=edge->samples;
    int      i,numberOfSamples=self->numSamples;
@@ -977,7 +978,7 @@ void O2DContextFillEdgesOnSurface(O2Context_builtin *self,O2Surface *surface,O2I
         NSLog(@"xlimit=%d,ylimit=%d",xlimit,ylimit);
         }
 #endif
-       self->_writeCoverageFunction(surface,mask,paint,node->scanx,scany,node->coverage,node->length,self->_blendFunction);
+       ((O2WriteCoverage_argb8u)self->_writeCoverageFunction)(surface,mask,paint,node->scanx,scany,node->coverage,node->length,(O2BlendSpan_argb8u)self->_blendFunction);
       }
       continue;
      }
@@ -1142,7 +1143,7 @@ void O2DContextFillEdgesOnSurface(O2Context_builtin *self,O2Surface *surface,O2I
       CoverageNode *node;
       
       if(freeCoverage==NULL)
-       node=NSZoneMalloc(NULL,sizeof(CoverageNode));
+       node=(CoverageNode *)NSZoneMalloc(NULL,sizeof(CoverageNode));
       else {
        node=freeCoverage;
        freeCoverage=freeCoverage->next;
@@ -1171,7 +1172,7 @@ void O2DContextFillEdgesOnSurface(O2Context_builtin *self,O2Surface *surface,O2I
         NSLog(@"xlimit=%d,ylimit=%d",xlimit,ylimit);
         }
 #endif
-     self->_writeCoverageFunction(surface,mask,paint,node->scanx,scany,node->coverage,node->length,self->_blendFunction);
+     ((O2WriteCoverage_argb8u)self->_writeCoverageFunction)(surface,mask,paint,node->scanx,scany,node->coverage,node->length,(O2BlendSpan_argb8u)self->_blendFunction);
     }
    }
       
@@ -1337,16 +1338,16 @@ void O2ContextSetupPaintAndBlendMode(O2Context_builtin *self,O2PaintRef paint,O2
 
    if(self->_writeCoverage_argb8u_PRE!=NULL){
     self->_blendFunction=NULL;
-    self->_writeCoverageFunction=self->_writeCoverage_argb8u_PRE;
+    self->_writeCoverageFunction=(void (*)())self->_writeCoverage_argb8u_PRE;
    }
    else {
     if(self->_blend_argb8u_PRE!=NULL){
-     self->_blendFunction=self->_blend_argb8u_PRE;
-     self->_writeCoverageFunction=O2RasterizeWriteCoverageSpan8888;
+     self->_blendFunction=(void (*)())self->_blend_argb8u_PRE;
+     self->_writeCoverageFunction=(void (*)())O2RasterizeWriteCoverageSpan8888;
     }
     else {
-     self->_blendFunction=self->_blend_argb32f_PRE;
-     self->_writeCoverageFunction=O2RasterizeWriteCoverageSpanffff;
+     self->_blendFunction=(void (*)())self->_blend_argb32f_PRE;
+     self->_writeCoverageFunction=(void (*)())O2RasterizeWriteCoverageSpanffff;
     }
    }
 }

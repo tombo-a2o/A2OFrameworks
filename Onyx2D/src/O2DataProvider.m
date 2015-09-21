@@ -146,7 +146,7 @@ CFDataRef O2DataProviderCopyData(O2DataProviderRef self) {
     NSNumber *number=[[NSNumber alloc] initWithInt:range.location];
 
    if([_inputStream setProperty:number forKey:NSStreamFileCurrentOffsetKey])
-    check=[_inputStream read:bytes maxLength:range.length];
+    check=[_inputStream read:(uint8_t *)bytes maxLength:range.length];
 
     [number release];
     

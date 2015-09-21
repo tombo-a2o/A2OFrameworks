@@ -1,7 +1,7 @@
 #ifdef __APPLE__
 // compiling on OS X
 #else
-#import "O2Defines_libjpeg.h"
+//#import "O2Defines_libjpeg.h"
 #endif
 
 #ifdef LIBJPEG_PRESENT
