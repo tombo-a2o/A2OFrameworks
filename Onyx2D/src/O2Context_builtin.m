@@ -874,7 +874,7 @@ typedef struct CoverageNode {
    int length;
 } CoverageNode;
 
-void O2DContextFillEdgesOnSurface(O2Context_builtin *self,O2Surface *surface,O2Image *mask,O2Paint *paint,int fillRuleMask) {
+void O2DContextFillEdgesOnSurface(O2Context_builtin *self,O2Surface *surface,O2Surface *mask,O2Paint *paint,int fillRuleMask) {
    int    edgeCount=self->_edgeCount;
    Edge **edges=self->_edges;
       
@@ -1191,7 +1191,7 @@ void O2DContextFillEdgesOnSurface(O2Context_builtin *self,O2Surface *surface,O2I
 }
 
 void O2DContextClipAndFillEdges(O2Context_builtin *self,int fillRuleMask){
-   O2Image *mask=(self->_clipContext!=nil)?self->_clipContext->_surface:nil;
+   O2Surface *mask=(self->_clipContext!=nil)?self->_clipContext->_surface:nil;
    O2Surface *surface;
    
    if([self->_layerStack count]>0)
