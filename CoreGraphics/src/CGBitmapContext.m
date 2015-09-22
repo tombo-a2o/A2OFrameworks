@@ -10,7 +10,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <Onyx2D/O2BitmapContext.h>
 
 CGContextRef CGBitmapContextCreate(void *bytes,size_t width,size_t height,size_t bitsPerComponent,size_t bytesPerRow,CGColorSpaceRef colorSpace,CGBitmapInfo bitmapInfo) {
-   return O2BitmapContextCreate(bytes,width,height,bitsPerComponent,bytesPerRow,colorSpace,bitmapInfo);
+   return O2BitmapContextCreate(bytes,width,height,bitsPerComponent,bytesPerRow,(O2ColorSpaceRef)colorSpace,bitmapInfo);
 }
 
 void *CGBitmapContextGetData(CGContextRef self) {
@@ -34,7 +34,7 @@ size_t CGBitmapContextGetBytesPerRow(CGContextRef self) {
 }
 
 CGColorSpaceRef CGBitmapContextGetColorSpace(CGContextRef self) {
-   return O2BitmapContextGetColorSpace(self);
+   return (CGColorSpaceRef)O2BitmapContextGetColorSpace(self);
 }
 
 CGBitmapInfo CGBitmapContextGetBitmapInfo(CGContextRef self) {
@@ -46,10 +46,10 @@ size_t CGBitmapContextGetBitsPerPixel(CGContextRef self) {
 }
 
 CGImageAlphaInfo CGBitmapContextGetAlphaInfo(CGContextRef self) {
-   return O2BitmapContextGetAlphaInfo(self);
+   return (CGImageAlphaInfo)O2BitmapContextGetAlphaInfo(self);
 }
 
 CGImageRef CGBitmapContextCreateImage(CGContextRef self) {
-   return O2BitmapContextCreateImage(self);
+   return (CGImageRef)O2BitmapContextCreateImage(self);
 }
 

@@ -7,8 +7,29 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
 #import <CoreGraphics/CoreGraphicsExport.h>
-#import <CoreFoundation/CFBase.h>
+#import <CoreGraphics/CGBase.h>
 #include <stdbool.h>
+#include <math.h>
+
+struct CGPoint {
+      CGFloat x;
+        CGFloat y;
+};
+typedef struct CGPoint CGPoint;
+
+
+struct CGSize {
+      CGFloat width;
+        CGFloat height;
+};
+typedef struct CGSize CGSize;
+
+
+struct CGRect {
+      CGPoint origin;
+        CGSize size;
+};
+typedef struct CGRect CGRect;
 
 COREGRAPHICS_EXPORT const CGRect CGRectZero;
 COREGRAPHICS_EXPORT const CGRect CGRectNull;
@@ -71,7 +92,7 @@ static inline bool CGRectContainsPoint(CGRect rect, CGPoint point) {
 }
 
 static inline bool CGPointEqualToPoint(CGPoint a, CGPoint b) {
-    return ((a.x == b.x) && (a.y == b.y)) ? TRUE : FALSE;
+    return ((a.x == b.x) && (a.y == b.y)) ? true : false;
 }
 
 static inline CGRect CGRectInset(CGRect rect, CGFloat dx, CGFloat dy) {
@@ -89,7 +110,7 @@ static inline CGRect CGRectOffset(CGRect rect, CGFloat dx, CGFloat dy) {
 }
 
 static inline bool CGRectIsEmpty(CGRect rect) {
-    return ((rect.size.width == 0) && (rect.size.height == 0)) ? TRUE : FALSE;
+    return ((rect.size.width == 0) && (rect.size.height == 0)) ? true : false;
 }
 
 static inline bool CGRectIntersectsRect(CGRect a, CGRect b) {

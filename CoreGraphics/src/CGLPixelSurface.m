@@ -1,7 +1,9 @@
 #import <CoreGraphics/CGLPixelSurface.h>
 #import <CoreGraphics/CGWindow.h>
 #import <Onyx2D/O2Image.h>
-#import <AppKit/O2Surface_DIBSection.h>
+#import <Onyx2D/O2Surface.h>
+#import <OpenGL/glweak.h>
+//#import <AppKit/O2Surface_DIBSection.h>
 
 @implementation CGLPixelSurface
 
@@ -59,7 +61,7 @@
    _bufferObjects=malloc(_numberOfBuffers*sizeof(GLuint));
    _readPixels=malloc(_numberOfBuffers*sizeof(void *));
    _staticPixels=malloc(_numberOfBuffers*sizeof(void *));
-   _surface=[[O2Surface_DIBSection alloc] initWithWidth:_width height:-_height compatibleWithDeviceContext:nil];
+   //_surface=[[O2Surface_DIBSection alloc] initWithWidth:_width height:-_height compatibleWithDeviceContext:nil];
    
    for(i=0;i<_numberOfBuffers;i++){
     _bufferObjects[i]=0;
@@ -251,7 +253,7 @@ static inline uint32_t premultiplyPixel(uint32_t value){
 }
 
 -(NSString *)description {
-   return [NSString stringWithFormat:@"<%@ %p:size={  %d %d } surface=%@",isa,self,_width,_height,_surface];
+   return [NSString stringWithFormat:@"<%@ %p:size={  %d %d } surface=%@",[self class],self,_width,_height,_surface];
 }
 
 @end
