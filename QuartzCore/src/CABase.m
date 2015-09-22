@@ -1,5 +1,6 @@
 #import <QuartzCore/CABase.h>
 #import <Foundation/NSString.h>
+#import <mach/mach_time.h>
 
 static double conversionFactor(){
    struct mach_timebase_info timebase;

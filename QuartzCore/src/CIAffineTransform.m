@@ -1,5 +1,5 @@
 #import <QuartzCore/CIAffineTransform.h>
-#import <Foundation/NSKeyedUnarchiver.h>
+#import <Foundation/NSKeyedArchiver.h>
 #import <Foundation/NSString.h>
 #import <AppKit/NSRaise.h>
 

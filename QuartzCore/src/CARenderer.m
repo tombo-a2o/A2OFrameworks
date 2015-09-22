@@ -2,7 +2,7 @@
 #import <QuartzCore/CALayer.h>
 #import <QuartzCore/CAAnimation.h>
 #import <QuartzCore/CAMediaTimingFunction.h>
-#import <CoreVideo/CoreVideo.h>
+//#import <CoreVideo/CoreVideo.h>
 #import <OpenGL/OpenGL.h>
 #import <Onyx2D/O2Surface.h>
 
@@ -53,9 +53,11 @@ static void startAnimationsInLayer(CALayer *layer,CFTimeInterval currentTime){
     startAnimationsInLayer(child,currentTime);
 }
 
+#if 0
 -(void)beginFrameAtTime:(CFTimeInterval)currentTime timeStamp:(CVTimeStamp *)timeStamp {
    startAnimationsInLayer(_rootLayer,currentTime);
 }
+#endif
 
 static inline float cubed(float value){
    return value*value*value;

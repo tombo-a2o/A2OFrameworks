@@ -1,6 +1,6 @@
 #import "CATransactionGroup.h"
 #import <QuartzCore/CATransaction.h>
-#import <Foundation/NSNumber.h>
+#import <Foundation/NSValue.h>
 #import <Foundation/NSDictionary.h>
 
 @implementation CATransactionGroup

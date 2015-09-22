@@ -4,7 +4,7 @@
 #import <QuartzCore/CIColor.h>
 #import <QuartzCore/CIVector.h>
 #import <AppKit/NSRaise.h>
-#import <Foundation/NSNumber.h>
+#import <Foundation/NSValue.h>
 
 @interface CIImage(private)
 -(CIFilter *)filter;
