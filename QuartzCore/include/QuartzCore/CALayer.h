@@ -1,6 +1,6 @@
 
 #import <Foundation/Foundation.h>
-#import <ApplicationServices/ApplicationServices.h>
+#import <CoreGraphics/CoreGraphics.h>
 #import <QuartzCore/CATransform3D.h>
 #import <QuartzCore/CAAction.h>
 
