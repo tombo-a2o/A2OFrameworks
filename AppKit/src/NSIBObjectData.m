@@ -24,9 +24,7 @@
 #import <Foundation/NSIndexSet.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSSet.h>
-#import <Foundation/NSDebug.h>
 #import <Foundation/NSKeyedArchiver.h>
-#import <Foundation/NSKeyedUnarchiver.h>
 #import "NSCustomObject.h"
 #import <AppKit/NSNibConnector.h>
 #import <AppKit/NSFontManager.h>
@@ -196,7 +194,7 @@
 		NS_DURING
 		[[_connections objectAtIndex:i] establishConnection];
 		NS_HANDLER
-		if(NSDebugEnabled)
+		//if(NSDebugEnabled)
 			NSLog(@"Exception during -establishConnection %@",localException);
 		NS_ENDHANDLER
 	}

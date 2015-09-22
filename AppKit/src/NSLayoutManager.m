@@ -27,7 +27,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <CoreGraphics/CoreGraphics.h>
 #import "../../Foundation/NSAttributedString/NSRangeEntries.h"
 #import <Foundation/NSKeyedArchiver.h>
-#import <Foundation/NSRaiseException.h>
+#import <Foundation/NSException.h>
 
 #import "NSRulerMarker+NSTextExtensions.h"
 #import "NSBidiHelper.h"
@@ -2121,7 +2121,8 @@ static inline void _appendRectToCache(NSLayoutManager *self,NSRect rect){
 	NSDictionary *result;
 	
 	if (charIndex >= [_textStorage length]) {
-		NSRaiseException(NSRangeException,self,_cmd,@"index %d beyond length %d",charIndex, [_textStorage length]);
+		//NSRaiseException(NSRangeException,self,_cmd,@"index %d beyond length %d",charIndex, [_textStorage length]);
+        assert(0);
 	}
 	
 	if ((result = NSRangeEntryAtIndex(_rangeToTemporaryAttributes, charIndex, effectiveCharRange)) == nil) {
@@ -2189,7 +2190,8 @@ static inline void _appendRectToCache(NSLayoutManager *self,NSRect rect){
 	NSUInteger location = charRange.location;
 		 
 	if (location >= [_textStorage length]) {
-		NSRaiseException(NSRangeException,self,_cmd,@"index %d beyond length %d", location, [_textStorage length]);
+		//NSRaiseException(NSRangeException,self,_cmd,@"index %d beyond length %d", location, [_textStorage length]);
+        assert(0);
 	}
 	
 	NSUInteger limit = MIN(NSMaxRange(charRange), [_textStorage length]);

@@ -1,6 +1,6 @@
 
 #import <AppKit/AppKit.h>
-#import "NSColorPickerWheel.h"
+#import <AppKit/NSColorPickerWheel.h>
 
 @implementation NSColorPickerWheel
 

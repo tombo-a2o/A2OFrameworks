@@ -6,6 +6,8 @@
 //  Copyright 2011 __MyCompanyName__. All rights reserved.
 //
 
+#if 0
+
 #import "NSSpellCheckerTagData.h"
 #import <Foundation/NSMutableSet.h>
 
@@ -34,3 +36,5 @@
 }
 
 @end
+
+#endif

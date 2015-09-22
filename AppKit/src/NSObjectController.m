@@ -11,7 +11,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <Foundation/NSKeyValueObserving.h>
 #import <Foundation/NSSet.h>
 #import "NSControllerSelectionProxy.h"
-#import "NSObservationProxy.h"
+#import <AppKit/NSObservationProxy.h>
 
 @interface NSObjectController(forward)
 -(void)_selectionWillChange;

@@ -7,7 +7,7 @@ CFLAGS			= -v -c -x objective-c -std=gnu99 -pipe -Wmost -Wno-trigraphs -Wreturn-
 BUILD_DIR		= build/debug
 INSTALL_DIR		= $(EMSCRIPTEN)/system/frameworks
 
-SOURCES			= $(wildcard src/NS*.m)
+SOURCES			= $(filter-out src/NSOpenGLDrawable_X11.m, $(wildcard src/NS*.m))
 PUBLIC_HEADERS	= $(wildcard include/AppKit/*.h)
 PRIVATE_HEADERS	= $(wildcard private_include/AppKit/*.h)
 RESOURCE_DIR	= resource

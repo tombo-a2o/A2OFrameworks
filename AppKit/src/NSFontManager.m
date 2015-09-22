@@ -16,6 +16,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <AppKit/NSMenuItem.h>
 #import <AppKit/NSMenu.h>
 #import <AppKit/NSRaise.h>
+#import <objc/runtime.h>
+#import "NSThreadPrivate.h"
 
 @implementation NSFontManager
 

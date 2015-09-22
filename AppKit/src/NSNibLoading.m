@@ -12,7 +12,9 @@
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSAutoreleasePool.h>
 #import <AppKit/NSRaise.h>
-#import <Foundation/NSPlatform.h>
+//#import <Foundation/NSPlatform.h>
+
+#define NIBDEBUG(...)
 
 @implementation NSObject(NSNibLoading)
 
@@ -56,7 +58,7 @@
 		NSString *name = [[fileName copy] autorelease];
 		name = [name stringByDeletingPathExtension];
 		NSBundle     *bundle=self;
-		NSString     *platformName=[name stringByAppendingFormat:@"-%@",NSPlatformResourceNameSuffix];
+		NSString     *platformName=@"-emscripten"; // [name stringByAppendingFormat:@"-%@",NSPlatformResourceNameSuffix];
 		
 		path=[bundle pathForResource:platformName ofType:@"nib"];
 		if(path==nil)

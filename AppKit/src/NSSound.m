@@ -8,11 +8,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #import <AppKit/NSSound.h>
 #import <Foundation/NSString.h>
-#import <Foundation/NSNumber.h>
+#import <Foundation/NSValue.h>
 #import <Foundation/NSPathUtilities.h>
 #import <Foundation/NSEnumerator.h>
 #import <Foundation/NSArray.h>
-#import <Foundation/NSMutableDictionary.h>
+#import <Foundation/NSDictionary.h>
 #import <AppKit/NSRaise.h>
 
 static NSMutableDictionary* sSounds = nil;

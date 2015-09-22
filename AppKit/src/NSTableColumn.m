@@ -11,8 +11,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <Foundation/NSKeyedArchiver.h>
 #import <AppKit/NSObject+BindingSupport.h>
 
-#import "NSKeyValueBinding/NSMultipleValueBinder.h"
-#import "NSKeyValueBinding/NSKVOBinder.h"
+#import "NSMultipleValueBinder.h"
+#import "NSKVOBinder.h"
 #import <AppKit/NSRaise.h>
 
 @interface NSTableView(Private)

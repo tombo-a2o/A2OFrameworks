@@ -12,6 +12,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <Foundation/NSValue.h>
 #import <Foundation/NSThread.h>
 #import <CoreGraphics/CoreGraphics.h>
+#import "NSThreadPrivate.h"
 
 NSString * const NSPrintPrinter=@"NSPrintPrinter";	
 NSString * const NSPrintPrinterName=@"NSPrintPrinterName"; 

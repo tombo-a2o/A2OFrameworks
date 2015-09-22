@@ -15,6 +15,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <AppKit/NSView.h>
 #import <AppKit/NSGraphicsContextFunctions.h>
 #import <CoreGraphics/CoreGraphics.h>
+#import "NSThreadPrivate.h"
 
 const float NSStringDrawerLargeDimension=1000000.;
 

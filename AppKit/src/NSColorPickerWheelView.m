@@ -1,7 +1,7 @@
 
 #import <AppKit/AppKit.h>
 
-#import "NSColorPickerWheelView.h"
+#import <AppKit/NSColorPickerWheelView.h>
 
 
 @implementation NSColorPickerWheelView

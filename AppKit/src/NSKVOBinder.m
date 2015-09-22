@@ -13,7 +13,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <Foundation/NSDictionary.h>
 #import <AppKit/NSController.h>
 #import <AppKit/NSControl.h>
-#import "NSObject+BindingSupport.h"
+#import <AppKit/NSObject+BindingSupport.h>
 
 static void *NSKVOBinderChangeContext;
 

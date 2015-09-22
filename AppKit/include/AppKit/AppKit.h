@@ -50,7 +50,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <AppKit/NSDrawer.h>
 #import <AppKit/NSEPSImageRep.h>
 #import <AppKit/NSEvent.h>
-#import <AppKit/NSFileWrapper.h>
 #import <AppKit/NSFont.h>
 #import <AppKit/NSFontDescriptor.h>
 #import <AppKit/NSFontManager.h>

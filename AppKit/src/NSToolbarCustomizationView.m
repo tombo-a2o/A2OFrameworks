@@ -14,6 +14,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <AppKit/NSImage.h>
 #import <AppKit/NSPasteboard.h>
 #import <AppKit/NSDragging.h>
+#import <Foundation/NSKeyedArchiver.h>
 
 @interface NSToolbar (Private)
 -(NSArray *)_allowedToolbarItems;

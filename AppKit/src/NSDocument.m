@@ -12,12 +12,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <AppKit/NSSavePanel.h>
 #import <AppKit/NSApplication.h>
 #import <AppKit/NSMenuItem.h>
-#import <AppKit/NSFileWrapper.h>
 #import <AppKit/NSPrintOperation.h>
 #import <AppKit/NSPageLayout.h>
 #import <AppKit/NSPrintInfo.h>
 #import <AppKit/NSRaise.h>
-#import "NSKeyValueBinding/NSObject+BindingSupport.h"
+#import <AppKit/NSObject+BindingSupport.h>
+#import <objc/runtime.h>
 
 @implementation NSDocument
 

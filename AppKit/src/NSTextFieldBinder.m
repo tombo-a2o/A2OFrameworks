@@ -11,7 +11,7 @@
 #import <Foundation/Foundation.h>
 #import <AppKit/NSControl.h>
 #import <AppKit/NSText.h>
-#import "NSObject+BindingSupport.h"
+#import <AppKit/NSObject+BindingSupport.h>
 #import <AppKit/NSWindow.h>
 #import <AppKit/NSDocument.h>
 

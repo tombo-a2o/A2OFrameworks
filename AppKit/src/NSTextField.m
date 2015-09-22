@@ -14,8 +14,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <AppKit/NSCursor.h>
 #import <AppKit/NSPasteboard.h>
 #import <AppKit/NSDragging.h>
-#import "NSKeyValueBinding/NSTextFieldBinder.h"
-#import "NSKeyValueBinding/NSObject+BindingSupport.h"
+#import "NSTextFieldBinder.h"
+#import <AppKit/NSObject+BindingSupport.h>
 
 
 @interface NSTextFieldCell (Private)

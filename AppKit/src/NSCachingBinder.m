@@ -12,7 +12,7 @@
 #import <Foundation/Foundation.h>
 #import <AppKit/NSController.h>
 #import <AppKit/NSControl.h>
-#import "NSObject+BindingSupport.h"
+#import <AppKit/NSObject+BindingSupport.h>
 
 static void * NSCachingBinderChangeContext = (void *)@"NSCachingBinderChangeContext";
 

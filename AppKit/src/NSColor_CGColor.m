@@ -11,7 +11,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <AppKit/NSGraphicsContextFunctions.h>
 #import <CoreGraphics/CoreGraphics.h>
 
-#import <AppKit/conversions.h>
+#import "conversions.h"
 
 @implementation NSColor_CGColor
 
@@ -234,7 +234,7 @@ static inline CGFloat calibratedWhiteFromRGB(CGFloat r, CGFloat g, CGFloat b) {
      return [NSColor colorWithDeviceRed:red green:green blue:blue alpha:alpha];
    }
     
-   if(NSDebugEnabled)
+   //if(NSDebugEnabled)
     NSLog(@"Unable to convert color to space %@",otherSpaceName);
    return nil;
 }

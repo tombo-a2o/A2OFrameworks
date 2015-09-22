@@ -12,7 +12,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <AppKit/NSView.h>
 #import <AppKit/NSWindow-Private.h>
 #import <OpenGL/OpenGL.h>
-#import <Foundation/NSThread-Private.h>
+//#import <Foundation/NSThread-Private.h>
+#import "NSThreadPrivate.h"
 
 @interface NSOpenGLContext(Private)
 -(void)_clearCurrentContext;
@@ -25,7 +26,7 @@ static inline NSOpenGLContext *_currentContext(){
 }
 
 static void _setCurrentContext(NSOpenGLContext *context){
-   [NSCurrentThread() setSharedObject:context forClassName:@"NSOpenGLContext"];
+   [[NSThread currentThread] setSharedObject:context forClassName:@"NSOpenGLContext"];
 }
 
 static inline void _clearCurrentContext(){
