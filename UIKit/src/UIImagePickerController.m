@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIImagePickerController.h"
+#import <UIKit/UIImagePickerController.h>
 
 NSString *const UIImagePickerControllerMediaType = @"UIImagePickerControllerMediaType";
 NSString *const UIImagePickerControllerOriginalImage = @"UIImagePickerControllerOriginalImage";

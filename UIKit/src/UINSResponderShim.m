@@ -28,7 +28,7 @@
  */
 
 #import "UINSResponderShim.h"
-#import "UIResponder.h"
+#import <UIKit/UIResponder.h>
 
 @implementation UINSResponderShim
 

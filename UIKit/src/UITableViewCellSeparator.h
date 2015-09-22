@@ -27,8 +27,8 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIView.h"
-#import "UITableViewCell.h"
+#import <UIKit/UIView.h>
+#import <UIKit/UITableViewCell.h>
 
 @class UIColor;
 

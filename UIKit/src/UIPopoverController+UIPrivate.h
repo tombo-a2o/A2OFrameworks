@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIPopoverController.h"
+#import <UIKit/UIPopoverController.h>
 
 @interface UIPopoverController (UIPrivate)
 - (void)_closePopoverWindowIfPossible;

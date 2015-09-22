@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIScreen.h"
+#import <UIKit/UIScreen.h>
 
 @class UIKitView, CALayer;
 

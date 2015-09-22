@@ -27,14 +27,14 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UITableView.h"
+#import <UIKit/UITableView.h>
 #import "UITableViewCell+UIPrivate.h"
-#import "UIColor.h"
-#import "UITouch.h"
+#import <UIKit/UIColor.h>
+#import <UIKit/UITouch.h>
 #import "UITableViewSection.h"
 #import "UITableViewSectionLabel.h"
 #import "UIScreenAppKitIntegration.h"
-#import "UIWindow.h"
+#import <UIKit/UIWindow.h>
 #import "UIKitView.h"
 #import "UIApplicationAppKitIntegration.h"
 #import <AppKit/NSMenu.h>

@@ -29,7 +29,7 @@
 
 #import "UIColorRep.h"
 #import "UIImageRep.h"
-#import "UIGraphics.h"
+#import <UIKit/UIGraphics.h>
 #import <AppKit/NSApplication.h>
 #import <UIKit/UIGeometry.h>
 

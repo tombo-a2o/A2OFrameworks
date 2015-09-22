@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UITouch.h"
+#import <UIKit/UITouch.h>
 
 @class UIGestureRecognizer;
 

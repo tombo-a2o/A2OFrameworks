@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIWindow.h"
+#import <UIKit/UIWindow.h>
 
 @interface UIWindow (UIPrivate)
 - (UIResponder *)_firstResponder;

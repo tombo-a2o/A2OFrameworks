@@ -28,15 +28,15 @@
  */
 
 #import "UIView+UIPrivate.h"
-#import "UIWindow.h"
-#import "UIGraphics.h"
+#import <UIKit/UIWindow.h>
+#import <UIKit/UIGraphics.h>
 #import "UIViewLayoutManager.h"
 #import "UIViewAnimationGroup.h"
-#import "UIViewController.h"
+#import <UIKit/UIViewController.h>
 #import "UIAppearanceInstance.h"
 #import "UIGestureRecognizer+UIPrivate.h"
 #import "UIApplicationAppKitIntegration.h"
-#import "UIScreen.h"
+#import <UIKit/UIScreen.h>
 #import "UIColor+UIPrivate.h"
 #import "UIColorRep.h"
 #import <QuartzCore/CALayer.h>

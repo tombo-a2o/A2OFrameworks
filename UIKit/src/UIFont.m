@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIFont.h"
+#import <UIKit/UIFont.h>
 #import <Cocoa/Cocoa.h>
 
 static NSString *UIFontSystemFontName = nil;

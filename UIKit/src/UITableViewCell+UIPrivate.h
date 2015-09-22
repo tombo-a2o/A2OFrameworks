@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UITableViewCell.h"
+#import <UIKit/UITableViewCell.h>
 
 @interface UITableViewCell (UIPrivate)
 - (void)_setSeparatorStyle:(UITableViewCellSeparatorStyle)theStyle color:(UIColor *)theColor;

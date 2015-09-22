@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIAccelerometer.h"
+#import <UIKit/UIAccelerometer.h>
 
 @implementation UIAccelerometer
 

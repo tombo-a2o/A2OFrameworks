@@ -28,7 +28,7 @@
  */
 
 #import "UIAction.h"
-#import "UIControl.h"
+#import <UIKit/UIControl.h>
 
 @interface UIControlAction : UIAction
 @property (nonatomic, assign) UIControlEvents controlEvents;

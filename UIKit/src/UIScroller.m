@@ -28,9 +28,9 @@
  */
 
 #import "UIScroller.h"
-#import "UITouch.h"
-#import "UIBezierPath.h"
-#import "UIColor.h"
+#import <UIKit/UITouch.h>
+#import <UIKit/UIBezierPath.h>
+#import <UIKit/UIColor.h>
 
 
 static const BOOL _UIScrollerGutterEnabled = NO;

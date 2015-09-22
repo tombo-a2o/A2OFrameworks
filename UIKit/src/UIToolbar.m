@@ -27,11 +27,11 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIToolbar.h"
-#import "UIBarButtonItem.h"
+#import <UIKit/UIToolbar.h>
+#import <UIKit/UIBarButtonItem.h>
 #import "UIToolbarButton.h"
-#import "UIColor.h"
-#import "UIGraphics.h"
+#import <UIKit/UIColor.h>
+#import <UIKit/UIGraphics.h>
 
 static const CGFloat kBarHeight = 28;
 

@@ -28,10 +28,10 @@
  */
 
 #import "UIToolbarButton.h"
-#import "UIBarButtonItem.h"
+#import <UIKit/UIBarButtonItem.h>
 #import "UIImage+UIPrivate.h"
-#import "UILabel.h"
-#import "UIFont.h"
+#import <UIKit/UILabel.h>
+#import <UIKit/UIFont.h>
 
 // I don't like most of this... the real toolbar button lays things out different than a default button.
 // It also seems to have some padding built into it around the whole thing (even the background)

@@ -27,13 +27,13 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIButton.h"
+#import <UIKit/UIButton.h>
 #import "UIControl+UIPrivate.h"
-#import "UILabel.h"
-#import "UIImage.h"
+#import <UIKit/UILabel.h>
+#import <UIKit/UIImage.h>
 #import "UIImageView+UIPrivate.h"
 #import "UIRoundedRectButton.h"
-#import "UIColor.h"
+#import <UIKit/UIColor.h>
 
 static NSString *UIButtonContentTypeTitle = @"UIButtonContentTypeTitle";
 static NSString *UIButtonContentTypeTitleColor = @"UIButtonContentTypeTitleColor";

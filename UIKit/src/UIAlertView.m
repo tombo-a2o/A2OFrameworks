@@ -27,8 +27,8 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIAlertView.h"
-#import "UIApplication.h"
+#import <UIKit/UIAlertView.h>
+#import <UIKit/UIApplication.h>
 
 #import <AppKit/NSAlert.h>
 #import <AppKit/NSPanel.h>

@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIGestureRecognizer.h"
+#import <UIKit/UIGestureRecognizer.h>
 
 @interface UIGestureRecognizer ()
 - (void)ignoreTouch:(UITouch *)touch forEvent:(UIEvent*)event;		// don't override

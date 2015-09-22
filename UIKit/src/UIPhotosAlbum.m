@@ -28,7 +28,7 @@
  */
 
 #import "UIPhotosAlbum.h"
-#import "UIImage.h"
+#import <UIKit/UIImage.h>
 #import <AppKit/NSSavePanel.h>
 
 @implementation UIPhotosAlbum

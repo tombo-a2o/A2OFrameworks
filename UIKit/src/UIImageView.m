@@ -28,13 +28,13 @@
  */
 
 #import "UIImageView+UIPrivate.h"
-#import "UIImage.h"
-#import "UIGraphics.h"
-#import "UIColor.h"
+#import <UIKit/UIImage.h>
+#import <UIKit/UIGraphics.h>
+#import <UIKit/UIColor.h>
 #import "UIImageAppKitIntegration.h"
-#import "UIWindow.h"
+#import <UIKit/UIWindow.h>
 #import "UIImage+UIPrivate.h"
-#import "UIScreen.h"
+#import <UIKit/UIScreen.h>
 #import <QuartzCore/QuartzCore.h>
 #import "UIImageRep.h"
 

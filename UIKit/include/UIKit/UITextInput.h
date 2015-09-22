@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UITextInputTraits.h"
+#import <UIKit/UITextInputTraits.h>
 
 @interface UITextPosition : NSObject
 @end

@@ -27,11 +27,11 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIGestureRecognizer.h"
+#import <UIKit/UIGestureRecognizer.h>
 #import "UIGestureRecognizerSubclass.h"
 #import "UITouch+UIPrivate.h"
 #import "UIAction.h"
-#import "UIApplication.h"
+#import <UIKit/UIApplication.h>
 #import "UITouchEvent.h"
 
 @implementation UIGestureRecognizer {

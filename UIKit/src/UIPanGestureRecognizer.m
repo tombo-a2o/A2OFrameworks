@@ -27,10 +27,10 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIPanGestureRecognizer.h"
+#import <UIKit/UIPanGestureRecognizer.h>
 #import "UIGestureRecognizerSubclass.h"
 #import "UITouchEvent.h"
-#import "UITouch.h"
+#import <UIKit/UITouch.h>
 
 @implementation UIPanGestureRecognizer {
     CGPoint _translation;

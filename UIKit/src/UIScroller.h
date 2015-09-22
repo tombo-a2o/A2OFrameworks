@@ -27,8 +27,8 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIView.h"
-#import "UIScrollView.h"
+#import <UIKit/UIView.h>
+#import <UIKit/UIScrollView.h>
 
 @class UIImageView, UIScroller;
 

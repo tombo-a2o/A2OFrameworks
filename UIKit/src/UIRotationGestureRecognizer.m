@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIRotationGestureRecognizer.h"
+#import <UIKit/UIRotationGestureRecognizer.h>
 #import "UIGestureRecognizerSubclass.h"
 
 @implementation UIRotationGestureRecognizer

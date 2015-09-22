@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UISwitch.h"
+#import <UIKit/UISwitch.h>
 
 @implementation UISwitch
 

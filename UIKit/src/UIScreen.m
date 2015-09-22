@@ -27,13 +27,13 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIScreen.h"
+#import <UIKit/UIScreen.h>
 #import "UIImage+UIPrivate.h"
-#import "UIImageView.h"
-#import "UIApplication.h"
+#import <UIKit/UIImageView.h>
+#import <UIKit/UIApplication.h>
 #import "UIViewLayoutManager.h"
 #import "UIScreenMode+UIPrivate.h"
-#import "UIWindow.h"
+#import <UIKit/UIWindow.h>
 #import "UIKitView.h"
 #import "UIView+UIPrivate.h"
 #import <AppKit/AppKit.h>

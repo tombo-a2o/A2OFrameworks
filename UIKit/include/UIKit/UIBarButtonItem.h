@@ -27,8 +27,8 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIBarItem.h"
-#import "UIInterface.h"
+#import <UIKit/UIBarItem.h>
+#import <UIKit/UIInterface.h>
 
 typedef NS_ENUM(NSInteger, UIBarButtonSystemItem) {
     UIBarButtonSystemItemDone,

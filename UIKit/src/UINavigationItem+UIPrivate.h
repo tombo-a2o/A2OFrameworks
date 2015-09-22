@@ -27,6 +27,6 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UINavigationItem.h"
+#import <UIKit/UINavigationItem.h>
 
 extern NSString *const UINavigationItemDidChange;

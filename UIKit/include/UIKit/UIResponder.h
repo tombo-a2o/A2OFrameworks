@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIEvent.h"
+#import <UIKit/UIEvent.h>
 
 @interface UIResponder : NSObject
 - (UIResponder *)nextResponder;

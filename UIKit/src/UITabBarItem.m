@@ -33,8 +33,8 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UITabBarItem.h"
-#import "UIImage.h"
+#import <UIKit/UITabBarItem.h>
+#import <UIKit/UIImage.h>
 
 @implementation UITabBarItem
 

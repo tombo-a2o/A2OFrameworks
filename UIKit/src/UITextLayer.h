@@ -29,7 +29,7 @@
 
 #import <QuartzCore/CALayer.h>
 #import <Foundation/Foundation.h>
-#import "UIStringDrawing.h"
+#import <UIKit/UIStringDrawing.h>
 
 @class UICustomNSClipView, UICustomNSTextView, UIColor, UIFont, UIScrollView, UIWindow, UIView;
 

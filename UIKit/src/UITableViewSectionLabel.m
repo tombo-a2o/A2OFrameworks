@@ -28,7 +28,7 @@
  */
 
 #import "UITableViewSectionLabel.h"
-#import "UIGraphics.h"
+#import <UIKit/UIGraphics.h>
 #import "AppKitIntegration.h"
 
 @implementation UITableViewSectionLabel

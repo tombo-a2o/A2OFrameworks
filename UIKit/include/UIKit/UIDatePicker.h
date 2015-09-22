@@ -29,7 +29,7 @@
 
 
 #import <Foundation/Foundation.h>
-#import "UIControl.h"
+#import <UIKit/UIControl.h>
 
 typedef NS_ENUM(NSInteger, UIDatePickerMode) {
     UIDatePickerModeTime,

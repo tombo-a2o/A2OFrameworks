@@ -27,9 +27,9 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIResponder.h"
-#import "UIDevice.h"
-#import "UIApplicationDelegate.h"
+#import <UIKit/UIResponder.h>
+#import <UIKit/UIDevice.h>
+#import <UIKit/UIApplicationDelegate.h>
 
 extern NSString *const UIApplicationWillChangeStatusBarOrientationNotification;
 extern NSString *const UIApplicationDidChangeStatusBarOrientationNotification;

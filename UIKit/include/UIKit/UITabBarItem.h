@@ -33,7 +33,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIBarItem.h"
+#import <UIKit/UIBarItem.h>
 
 @class UIImage;
 

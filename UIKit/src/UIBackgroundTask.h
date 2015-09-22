@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIApplication.h"
+#import <UIKit/UIApplication.h>
 
 @interface UIBackgroundTask : NSObject
 

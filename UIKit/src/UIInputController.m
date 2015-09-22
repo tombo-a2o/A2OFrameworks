@@ -30,8 +30,8 @@
 #import "UIInputController.h"
 #import "UIWindow+UIPrivate.h"
 #import "UIView+UIPrivate.h"
-#import "UIApplication.h"
-#import "UIScreen.h"
+#import <UIKit/UIApplication.h>
+#import <UIKit/UIScreen.h>
 
 
 static UIView *ContainerForView(UIView *view)

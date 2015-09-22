@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIView.h"
+#import <UIKit/UIView.h>
 
 typedef CGFloat UIWindowLevel;
 extern const UIWindowLevel UIWindowLevelNormal;

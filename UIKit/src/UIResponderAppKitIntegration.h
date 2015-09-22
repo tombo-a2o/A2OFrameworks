@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIResponder.h"
+#import <UIKit/UIResponder.h>
 
 @class UIKey, UITouch;
 

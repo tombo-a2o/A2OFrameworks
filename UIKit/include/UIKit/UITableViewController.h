@@ -27,8 +27,8 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIViewController.h"
-#import "UITableView.h"
+#import <UIKit/UIViewController.h>
+#import <UIKit/UITableView.h>
 
 @interface UITableViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
 - (id)initWithStyle:(UITableViewStyle)style;

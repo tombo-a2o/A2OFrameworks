@@ -27,10 +27,10 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIStringDrawing.h"
-#import "UIScrollView.h"
-#import "UIDataDetectors.h"
-#import "UITextInput.h"
+#import <UIKit/UIStringDrawing.h>
+#import <UIKit/UIScrollView.h>
+#import <UIKit/UIDataDetectors.h>
+#import <UIKit/UITextInput.h>
 
 extern NSString *const UITextViewTextDidBeginEditingNotification;
 extern NSString *const UITextViewTextDidChangeNotification;

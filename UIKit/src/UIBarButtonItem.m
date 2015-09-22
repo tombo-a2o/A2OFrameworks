@@ -27,8 +27,8 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIBarButtonItem.h"
-#import "UIView.h"
+#import <UIKit/UIBarButtonItem.h>
+#import <UIKit/UIView.h>
 
 @implementation UIBarButtonItem
 

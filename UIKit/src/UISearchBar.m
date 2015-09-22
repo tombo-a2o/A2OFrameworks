@@ -33,7 +33,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UISearchBar.h"
+#import <UIKit/UISearchBar.h>
 
 @implementation UISearchBar {
     UITextField *_searchField;

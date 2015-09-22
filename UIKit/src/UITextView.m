@@ -27,11 +27,11 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UITextView.h"
-#import "UIColor.h"
-#import "UIFont.h"
+#import <UIKit/UITextView.h>
+#import <UIKit/UIColor.h>
+#import <UIKit/UIFont.h>
 #import "UITextLayer.h"
-#import "UIScrollView.h"
+#import <UIKit/UIScrollView.h>
 #import <AppKit/NSCursor.h>
 
 NSString *const UITextViewTextDidBeginEditingNotification = @"UITextViewTextDidBeginEditingNotification";

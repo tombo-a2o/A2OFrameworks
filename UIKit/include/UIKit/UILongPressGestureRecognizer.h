@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIGestureRecognizer.h"
+#import <UIKit/UIGestureRecognizer.h>
 
 // This will work for normal left-click long presses OR a right-click. The right-click will always
 // be recognized as a long press regardless of how long the user holds down the right mouse button

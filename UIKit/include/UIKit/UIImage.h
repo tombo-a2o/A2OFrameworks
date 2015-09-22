@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIGeometry.h"
+#import <UIKit/UIGeometry.h>
 
 typedef NS_ENUM(NSInteger, UIImageOrientation) {
     UIImageOrientationUp,

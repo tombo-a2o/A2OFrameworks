@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIPasteboard.h"
+#import <UIKit/UIPasteboard.h>
 #import "UIImageAppKitIntegration.h"
 #import "UIColorAppKitIntegration.h"
 #import <AppKit/AppKit.h>

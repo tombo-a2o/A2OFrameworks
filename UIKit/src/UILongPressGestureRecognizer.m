@@ -27,10 +27,10 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UILongPressGestureRecognizer.h"
+#import <UIKit/UILongPressGestureRecognizer.h>
 #import "UIGestureRecognizerSubclass.h"
 #import "UITouchEvent.h"
-#import "UITouch.h"
+#import <UIKit/UITouch.h>
 #import "UIApplicationAppKitIntegration.h"
 
 static CGFloat DistanceBetweenTwoPoints(CGPoint A, CGPoint B)

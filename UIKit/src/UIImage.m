@@ -30,7 +30,7 @@
 #import "UIImage+UIPrivate.h"
 #import "UIThreePartImage.h"
 #import "UINinePartImage.h"
-#import "UIGraphics.h"
+#import <UIKit/UIGraphics.h>
 #import "UIPhotosAlbum.h"
 #import "UIImageRep.h"
 

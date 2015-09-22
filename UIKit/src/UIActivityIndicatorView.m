@@ -27,13 +27,13 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIActivityIndicatorView.h"
-#import "UIImage.h"
-#import "UIGraphics.h"
-#import "UIColor.h"
-#import "UIFont.h"
-#import "UIStringDrawing.h"
-#import "UIBezierPath.h"
+#import <UIKit/UIActivityIndicatorView.h>
+#import <UIKit/UIImage.h>
+#import <UIKit/UIGraphics.h>
+#import <UIKit/UIColor.h>
+#import <UIKit/UIFont.h>
+#import <UIKit/UIStringDrawing.h>
+#import <UIKit/UIBezierPath.h>
 #import <QuartzCore/QuartzCore.h>
 
 static CGSize UIActivityIndicatorViewStyleSize(UIActivityIndicatorViewStyle style)

@@ -27,8 +27,8 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIView.h"
-#import "UIInterface.h"
+#import <UIKit/UIView.h>
+#import <UIKit/UIInterface.h>
 
 typedef NS_ENUM(NSInteger, UIToolbarPosition) {
     UIToolbarPositionAny = 0,

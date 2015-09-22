@@ -27,10 +27,10 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIScrollWheelGestureRecognizer.h"
+#import <UIKit/UIScrollWheelGestureRecognizer.h>
 #import "UIGestureRecognizerSubclass.h"
 #import "UITouchEvent.h"
-#import "UITouch.h"
+#import <UIKit/UITouch.h>
 
 @implementation UIScrollWheelGestureRecognizer {
     CGPoint _translation;

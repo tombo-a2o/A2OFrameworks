@@ -28,7 +28,7 @@
  */
 
 #import "UITableViewSection.h"
-#import "UIView.h"
+#import <UIKit/UIView.h>
 
 @implementation UITableViewSection
 

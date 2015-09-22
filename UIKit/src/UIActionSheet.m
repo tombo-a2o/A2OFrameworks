@@ -27,12 +27,12 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIActionSheet.h"
-#import "UIWindow.h"
+#import <UIKit/UIActionSheet.h>
+#import <UIKit/UIWindow.h>
 #import "UIScreenAppKitIntegration.h"
 #import "UIKitView.h"
 #import "UIApplicationAppKitIntegration.h"
-#import "UIBarButtonItem.h"
+#import <UIKit/UIBarButtonItem.h>
 #import <AppKit/NSMenu.h>
 #import <AppKit/NSMenuItem.h>
 #import <AppKit/NSEvent.h>

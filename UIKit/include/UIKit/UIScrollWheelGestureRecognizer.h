@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIGestureRecognizer.h"
+#import <UIKit/UIGestureRecognizer.h>
 
 // This will only trigger on old-school scroll wheels and momentum scroll events.
 // Unlike UIPanGestureRecognizer, this is a discrete recognizer. It is also,

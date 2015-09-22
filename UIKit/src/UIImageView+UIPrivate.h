@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIImageView.h"
+#import <UIKit/UIImageView.h>
 
 typedef NS_ENUM(NSInteger, _UIImageViewDrawMode) {
     _UIImageViewDrawModeNormal,

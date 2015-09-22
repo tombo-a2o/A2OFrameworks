@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UILabel.h"
+#import <UIKit/UILabel.h>
 
 @interface UITableViewSectionLabel : UILabel
 + (UITableViewSectionLabel *)sectionLabelWithTitle:(NSString *)title;

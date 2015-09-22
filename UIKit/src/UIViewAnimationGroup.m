@@ -29,8 +29,8 @@
 
 #import "UIViewAnimationGroup.h"
 #import <QuartzCore/QuartzCore.h>
-#import "UIColor.h"
-#import "UIApplication.h"
+#import <UIKit/UIColor.h>
+#import <UIKit/UIApplication.h>
 
 static NSMutableSet *runningAnimationGroups = nil;
 

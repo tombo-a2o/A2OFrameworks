@@ -28,9 +28,9 @@
  */
 
 #import "UIControl+UIPrivate.h"
-#import "UIEvent.h"
-#import "UITouch.h"
-#import "UIApplication.h"
+#import <UIKit/UIEvent.h>
+#import <UIKit/UITouch.h>
+#import <UIKit/UIApplication.h>
 #import "UIControlAction.h"
 
 @implementation UIControl {

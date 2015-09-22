@@ -28,8 +28,8 @@
  */
 
 #import "UITableViewCellSeparator.h"
-#import "UIColor.h"
-#import "UIGraphics.h"
+#import <UIKit/UIColor.h>
+#import <UIKit/UIGraphics.h>
 
 @implementation UITableViewCellSeparator {
     UITableViewCellSeparatorStyle _style;

@@ -27,8 +27,8 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIToolbar.h"
-#import "UIView.h"
+#import <UIKit/UIToolbar.h>
+#import <UIKit/UIView.h>
 
 @class UIColor, UINavigationItem, UINavigationBar;
 

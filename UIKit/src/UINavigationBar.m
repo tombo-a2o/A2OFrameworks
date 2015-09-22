@@ -27,15 +27,15 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UINavigationBar.h"
-#import "UIGraphics.h"
-#import "UIColor.h"
-#import "UILabel.h"
+#import <UIKit/UINavigationBar.h>
+#import <UIKit/UIGraphics.h>
+#import <UIKit/UIColor.h>
+#import <UIKit/UILabel.h>
 #import "UINavigationItem+UIPrivate.h"
-#import "UIFont.h"
+#import <UIKit/UIFont.h>
 #import "UIImage+UIPrivate.h"
-#import "UIBarButtonItem.h"
-#import "UIButton.h"
+#import <UIKit/UIBarButtonItem.h>
+#import <UIKit/UIButton.h>
 
 static const UIEdgeInsets kButtonEdgeInsets = {2,2,2,2};
 static const CGFloat kMinButtonWidth = 30;

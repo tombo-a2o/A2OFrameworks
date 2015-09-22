@@ -27,8 +27,8 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIBarItem.h"
-#import "UIImage.h"
+#import <UIKit/UIBarItem.h>
+#import <UIKit/UIImage.h>
 #import "UIAppearanceInstance.h"
 
 @implementation UIBarItem

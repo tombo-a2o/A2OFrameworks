@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIDatePicker.h"
+#import <UIKit/UIDatePicker.h>
 
 @implementation UIDatePicker
 @end

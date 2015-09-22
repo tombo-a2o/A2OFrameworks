@@ -27,10 +27,10 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIStringDrawing.h"
-#import "UIFont.h"
+#import <UIKit/UIStringDrawing.h>
+#import <UIKit/UIFont.h>
 #import <AppKit/AppKit.h>
-#import "UIGraphics.h"
+#import <UIKit/UIGraphics.h>
 
 NSString *const UITextAttributeFont = @"UITextAttributeFont";
 NSString *const UITextAttributeTextColor = @"UITextAttributeTextColor";

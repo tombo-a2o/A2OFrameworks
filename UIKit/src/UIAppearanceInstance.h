@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIAppearance.h"
+#import <UIKit/UIAppearance.h>
 
 @class UIAppearanceProperty;
 

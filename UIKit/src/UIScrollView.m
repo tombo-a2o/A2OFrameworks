@@ -27,14 +27,14 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIScrollView.h"
+#import <UIKit/UIScrollView.h>
 #import "UIScroller.h"
-#import "UITouch.h"
+#import <UIKit/UITouch.h>
 #import "UIResponderAppKitIntegration.h"
 #import "UIScrollViewAnimationScroll.h"
 #import "UIScrollViewAnimationDeceleration.h"
-#import "UIPanGestureRecognizer.h"
-#import "UIScrollWheelGestureRecognizer.h"
+#import <UIKit/UIPanGestureRecognizer.h>
+#import <UIKit/UIScrollWheelGestureRecognizer.h>
 #import <QuartzCore/QuartzCore.h>
 
 static const NSTimeInterval UIScrollViewAnimationDuration = 0.33;

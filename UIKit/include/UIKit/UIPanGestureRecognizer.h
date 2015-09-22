@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIGestureRecognizer.h"
+#import <UIKit/UIGestureRecognizer.h>
 
 // NOTE: This will only match the scroll gestures on touch input devices. If you also
 // need classic wheel mice, you have to use UIScrollWheelGestureRecognizer as well.

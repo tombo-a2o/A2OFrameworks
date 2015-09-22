@@ -30,7 +30,7 @@
 #import "UIColor+UIPrivate.h"
 #import "UIColorRep.h"
 #import "UIImage+UIPrivate.h"
-#import "UIGraphics.h"
+#import <UIKit/UIGraphics.h>
 #import <AppKit/NSColor.h>
 #import <AppKit/NSColorSpace.h>
 

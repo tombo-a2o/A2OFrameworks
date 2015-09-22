@@ -27,8 +27,8 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIBezierPath.h"
-#import "UIGraphics.h"
+#import <UIKit/UIBezierPath.h>
+#import <UIKit/UIGraphics.h>
 
 @implementation UIBezierPath {
     CGFloat *_lineDashPattern;

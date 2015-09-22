@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UITableViewController.h"
+#import <UIKit/UITableViewController.h>
 
 @implementation UITableViewController {
     UITableViewStyle _style;

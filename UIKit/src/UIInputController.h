@@ -27,8 +27,8 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIResponder.h"
-#import "UITextInput.h"
+#import <UIKit/UIResponder.h>
+#import <UIKit/UITextInput.h>
 
 @class UIView, UIWindow;
 

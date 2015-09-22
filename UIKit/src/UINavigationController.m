@@ -27,10 +27,10 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UINavigationController.h"
-#import "UITabBarController.h"
-#import "UINavigationBar.h"
-#import "UIToolbar.h"
+#import <UIKit/UINavigationController.h>
+#import <UIKit/UITabBarController.h>
+#import <UIKit/UINavigationBar.h>
+#import <UIKit/UIToolbar.h>
 
 @interface UIViewController (UIPrivate)
 - (void)_removeFromParentViewController;

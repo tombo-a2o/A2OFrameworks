@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIScreenMode.h"
+#import <UIKit/UIScreenMode.h>
 
 @class NSView;
 

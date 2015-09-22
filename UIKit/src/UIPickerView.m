@@ -33,7 +33,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIPickerView.h"
+#import <UIKit/UIPickerView.h>
 
 @implementation UIPickerView
 

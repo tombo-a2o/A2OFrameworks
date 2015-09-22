@@ -27,8 +27,8 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIScrollView.h"
-#import "UIDataDetectors.h"
+#import <UIKit/UIScrollView.h>
+#import <UIKit/UIDataDetectors.h>
 
 typedef NS_ENUM(NSInteger, UIWebViewNavigationType) {
     UIWebViewNavigationTypeLinkClicked,

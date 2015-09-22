@@ -33,9 +33,9 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UISearchDisplayController.h"
-#import "UISearchBar.h"
-#import "UIViewController.h"
+#import <UIKit/UISearchDisplayController.h>
+#import <UIKit/UISearchBar.h>
+#import <UIKit/UIViewController.h>
 
 
 @implementation UISearchDisplayController {

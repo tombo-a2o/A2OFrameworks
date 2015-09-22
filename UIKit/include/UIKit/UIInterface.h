@@ -27,8 +27,8 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIColor.h"
-#import "UIFont.h"
+#import <UIKit/UIColor.h>
+#import <UIKit/UIFont.h>
 
 
 typedef NS_ENUM(NSInteger, UIBarStyle) {

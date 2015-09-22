@@ -33,8 +33,8 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIView.h"
-#import "UITextField.h"
+#import <UIKit/UIView.h>
+#import <UIKit/UITextField.h>
 
 @protocol UISearchBarDelegate;
 

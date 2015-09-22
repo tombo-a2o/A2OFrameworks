@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIViewController.h"
+#import <UIKit/UIViewController.h>
 
 @protocol UISplitViewControllerDelegate;
 

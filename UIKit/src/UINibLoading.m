@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UINibLoading.h"
+#import <UIKit/UINibLoading.h>
 
 @implementation NSBundle (UINibLoading)
 - (NSArray *)loadNibNamed:(NSString *)name owner:(id)owner options:(NSDictionary *)options

@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIControl.h"
+#import <UIKit/UIControl.h>
 
 typedef NS_ENUM(NSInteger, UIButtonType) {
     UIButtonTypeCustom = 0,

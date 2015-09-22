@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIView.h"
+#import <UIKit/UIView.h>
 
 extern NSString *const UIViewFrameDidChangeNotification;
 extern NSString *const UIViewBoundsDidChangeNotification;

@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIGestureRecognizer.h"
+#import <UIKit/UIGestureRecognizer.h>
 
 @interface UIPinchGestureRecognizer : UIGestureRecognizer
 @property (nonatomic) CGFloat scale;

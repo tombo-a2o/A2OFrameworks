@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIButton.h"
+#import <UIKit/UIButton.h>
 
 @interface UIRoundedRectButton : UIButton
 @end

@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIImage.h"
+#import <UIKit/UIImage.h>
 
 @class NSImage, UIImageRep;
 

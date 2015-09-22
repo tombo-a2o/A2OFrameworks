@@ -11,7 +11,7 @@
 // - Setting item width is not supported
 // - Setting item content offset is not supported
 
-#import "UIControl.h"
+#import <UIKit/UIControl.h>
 
 @class UIImage;
 

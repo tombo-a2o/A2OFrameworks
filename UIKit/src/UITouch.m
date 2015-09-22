@@ -28,7 +28,7 @@
  */
 
 #import "UITouch+UIPrivate.h"
-#import "UIWindow.h"
+#import <UIKit/UIWindow.h>
 #import "UIView+UIPrivate.h"
 
 @implementation UITouch {

@@ -27,8 +27,8 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UITabBarController.h"
-#import "UITabBar.h"
+#import <UIKit/UITabBarController.h>
+#import <UIKit/UITabBar.h>
 
 @implementation UITabBarController
 

@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIApplication.h"
+#import <UIKit/UIApplication.h>
 #import <AppKit/NSApplication.h>
 
 extern NSString *const UIApplicationNetworkActivityIndicatorChangedNotification;

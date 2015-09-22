@@ -27,8 +27,8 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIEvent.h"
-#import "UITouch.h"
+#import <UIKit/UIEvent.h>
+#import <UIKit/UITouch.h>
 
 @implementation UIEvent
 

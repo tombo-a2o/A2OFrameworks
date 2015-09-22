@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIDevice.h"
+#import <UIKit/UIDevice.h>
 #import <IOKit/IOKitLib.h>
 #import <SystemConfiguration/SystemConfiguration.h>
 

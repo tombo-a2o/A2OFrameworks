@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIPinchGestureRecognizer.h"
+#import <UIKit/UIPinchGestureRecognizer.h>
 #import "UIGestureRecognizerSubclass.h"
 #import "UITouchEvent.h"
 

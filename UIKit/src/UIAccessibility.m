@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIAccessibility.h"
+#import <UIKit/UIAccessibility.h>
 
 UIAccessibilityTraits UIAccessibilityTraitNone = 0;
 UIAccessibilityTraits UIAccessibilityTraitButton = 1;

@@ -27,8 +27,8 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIView.h"
-#import "UIStringDrawing.h"
+#import <UIKit/UIView.h>
+#import <UIKit/UIStringDrawing.h>
 
 @class UIFont, UIColor;
 

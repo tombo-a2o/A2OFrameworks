@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIProgressView.h"
+#import <UIKit/UIProgressView.h>
 
 @implementation UIProgressView
 

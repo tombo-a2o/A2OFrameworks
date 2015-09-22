@@ -27,15 +27,15 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIViewAdapter.h"
+#import <UIKit/UIViewAdapter.h>
 #import "UINSClipView.h"
-#import "UIWindow.h"
+#import <UIKit/UIWindow.h>
 #import "UIKitView.h"
 #import "UIScrollView+UIPrivate.h"
 #import "UIScreen+UIPrivate.h"
 #import "UIScreenAppKitIntegration.h"
 #import "UIView+UIPrivate.h"
-#import "UIApplication.h"
+#import <UIKit/UIApplication.h>
 #import <AppKit/NSView.h>
 #import <AppKit/NSWindow.h>
 #import <QuartzCore/CALayer.h>

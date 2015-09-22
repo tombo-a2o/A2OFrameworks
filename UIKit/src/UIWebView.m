@@ -27,8 +27,8 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIWebView.h"
-#import "UIViewAdapter.h"
+#import <UIKit/UIWebView.h>
+#import <UIKit/UIViewAdapter.h>
 #import <WebKit/WebKit.h>
 
 @implementation UIWebView {

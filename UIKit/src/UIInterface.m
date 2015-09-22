@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIInterface.h"
+#import <UIKit/UIInterface.h>
 #import <AppKit/NSFont.h>
 
 

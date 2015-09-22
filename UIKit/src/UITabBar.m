@@ -33,8 +33,8 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UITabBar.h"
-#import "UIImageView.h"
+#import <UIKit/UITabBar.h>
+#import <UIKit/UIImageView.h>
 #import "UIImage+UIPrivate.h"
 #import <QuartzCore/QuartzCore.h>
 

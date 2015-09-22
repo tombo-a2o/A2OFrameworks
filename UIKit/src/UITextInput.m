@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UITextInput.h"
+#import <UIKit/UITextInput.h>
 
 @implementation UITextPosition
 @end

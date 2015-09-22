@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIViewController.h"
+#import <UIKit/UIViewController.h>
 
 @interface UIViewController (AppKitIntegration)
 // the purpose of this is to more easily support menu actions so the responder chain isn't

@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIView.h"
+#import <UIKit/UIView.h>
 
 typedef NS_OPTIONS(NSUInteger, UIControlEvents) {
     UIControlEventTouchDown           = 1 <<  0,

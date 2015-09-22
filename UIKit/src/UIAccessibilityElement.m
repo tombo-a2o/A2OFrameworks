@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIAccessibilityElement.h"
+#import <UIKit/UIAccessibilityElement.h>
 
 @implementation UIAccessibilityElement
 

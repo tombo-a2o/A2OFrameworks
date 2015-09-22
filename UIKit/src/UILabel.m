@@ -27,10 +27,10 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UILabel.h"
-#import "UIColor.h"
-#import "UIFont.h"
-#import "UIGraphics.h"
+#import <UIKit/UILabel.h>
+#import <UIKit/UIColor.h>
+#import <UIKit/UIFont.h>
+#import <UIKit/UIGraphics.h>
 #import <AppKit/NSApplication.h>
 
 @implementation UILabel

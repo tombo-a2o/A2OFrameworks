@@ -6,13 +6,13 @@
 //  Copyright 2011 Sam Soffes. All rights reserved.
 //
 
-#import "UISegmentedControl.h"
-#import "UITouch.h"
-#import "UIColor.h"
-#import "UIStringDrawing.h"
-#import "UIGraphics.h"
-#import "UIImage.h"
-#import "UIFont.h"
+#import <UIKit/UISegmentedControl.h>
+#import <UIKit/UITouch.h>
+#import <UIKit/UIColor.h>
+#import <UIKit/UIStringDrawing.h>
+#import <UIKit/UIGraphics.h>
+#import <UIKit/UIImage.h>
+#import <UIKit/UIFont.h>
 
 static NSString *kSSSegmentedControlEnabledKey = @"enabled";
 

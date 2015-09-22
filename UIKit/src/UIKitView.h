@@ -27,10 +27,10 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import <Cocoa/Cocoa.h>
-#import "UIApplicationDelegate.h"
-#import "UIScreen.h"
-#import "UIWindow.h"
+#import <AppKit/AppKit.h>
+#import <UIKit/UIApplicationDelegate.h>
+#import <UIKit/UIScreen.h>
+#import <UIKit/UIWindow.h>
 
 @interface UIKitView : NSView
 

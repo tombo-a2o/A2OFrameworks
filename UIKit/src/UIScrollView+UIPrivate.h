@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIScrollView.h"
+#import <UIKit/UIScrollView.h>
 
 @interface UIScrollView (UIPrivate)
 - (void)_quickFlashScrollIndicators;

@@ -27,11 +27,11 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UITextField.h"
+#import <UIKit/UITextField.h>
 #import "UITextLayer.h"
-#import "UIColor.h"
-#import "UIFont.h"
-#import "UIImage.h"
+#import <UIKit/UIColor.h>
+#import <UIKit/UIFont.h>
+#import <UIKit/UIImage.h>
 #import <AppKit/NSCursor.h>
 
 NSString *const UITextFieldTextDidBeginEditingNotification = @"UITextFieldTextDidBeginEditingNotification";

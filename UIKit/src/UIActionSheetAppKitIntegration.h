@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIActionSheet.h"
+#import <UIKit/UIActionSheet.h>
 
 @interface UIActionSheet (AppKitIntegration)
 - (void)addSeparator;

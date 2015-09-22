@@ -29,10 +29,10 @@
 
 #import "UITableViewCell+UIPrivate.h"
 #import "UITableViewCellSeparator.h"
-#import "UIColor.h"
-#import "UILabel.h"
-#import "UIImageView.h"
-#import "UIFont.h"
+#import <UIKit/UIColor.h>
+#import <UIKit/UILabel.h>
+#import <UIKit/UIImageView.h>
+#import <UIKit/UIFont.h>
 
 extern CGFloat _UITableViewDefaultRowHeight;
 

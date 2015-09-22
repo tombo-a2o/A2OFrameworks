@@ -27,10 +27,10 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UISplitViewController.h"
-#import "UIView.h"
-#import "UITouch.h"
-#import "UIColor.h"
+#import <UIKit/UISplitViewController.h>
+#import <UIKit/UIView.h>
+#import <UIKit/UITouch.h>
+#import <UIKit/UIColor.h>
 #import "UIResponderAppKitIntegration.h"
 #import <AppKit/NSCursor.h>
 

@@ -33,7 +33,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UISlider.h"
+#import <UIKit/UISlider.h>
 
 
 @implementation UISlider

@@ -27,12 +27,12 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIMenuController.h"
+#import <UIKit/UIMenuController.h>
 #import "UIApplicationAppKitIntegration.h"
 #import "UIWindow+UIPrivate.h"
 #import "UIScreenAppKitIntegration.h"
 #import "UIKitView.h"
-#import "UIMenuItem.h"
+#import <UIKit/UIMenuItem.h>
 #import <AppKit/NSMenu.h>
 #import <AppKit/NSMenuItem.h>
 #import <AppKit/NSApplication.h>

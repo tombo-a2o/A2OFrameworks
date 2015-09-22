@@ -27,10 +27,10 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIResponder.h"
-#import "UIApplication.h"
-#import "UISearchDisplayController.h"
-#import "UITabBarItem.h"
+#import <UIKit/UIResponder.h>
+#import <UIKit/UIApplication.h>
+#import <UIKit/UISearchDisplayController.h>
+#import <UIKit/UITabBarItem.h>
 
 @class UITabBarController;
 

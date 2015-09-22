@@ -27,9 +27,9 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIResponder.h"
-#import "UIGeometry.h"
-#import "UIAppearance.h"
+#import <UIKit/UIResponder.h>
+#import <UIKit/UIGeometry.h>
+#import <UIKit/UIAppearance.h>
 
 typedef NS_OPTIONS(NSUInteger, UIViewAutoresizing) {
     UIViewAutoresizingNone                 = 0,

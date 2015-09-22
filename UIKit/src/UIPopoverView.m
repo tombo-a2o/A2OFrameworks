@@ -28,7 +28,7 @@
  */
 
 #import "UIPopoverView.h"
-#import "UIImageView.h"
+#import <UIKit/UIImageView.h>
 #import "UIImage+UIPrivate.h"
 #import <QuartzCore/QuartzCore.h>
 

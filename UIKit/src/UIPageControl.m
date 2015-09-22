@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIPageControl.h"
+#import <UIKit/UIPageControl.h>
 
 @implementation UIPageControl
 

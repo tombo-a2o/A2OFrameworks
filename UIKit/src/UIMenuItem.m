@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIMenuItem.h"
+#import <UIKit/UIMenuItem.h>
 
 @implementation UIMenuItem
 

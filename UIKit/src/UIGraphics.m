@@ -27,9 +27,9 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIGraphics.h"
-#import "UIImage.h"
-#import "UIScreen.h"
+#import <UIKit/UIGraphics.h>
+#import <UIKit/UIImage.h>
+#import <UIKit/UIScreen.h>
 #import <AppKit/AppKit.h>
 
 static NSMutableArray *contextStack = nil;

@@ -28,6 +28,7 @@
  */
 
 #import <Foundation/Foundation.h>
+#import <CoreText/CoreText.h>
 
 @interface UIFont : NSObject {
 @package

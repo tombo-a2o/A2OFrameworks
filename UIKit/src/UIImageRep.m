@@ -28,7 +28,7 @@
  */
 
 #import "UIImageRep.h"
-#import "UIGraphics.h"
+#import <UIKit/UIGraphics.h>
 
 static CGImageSourceRef CreateCGImageSourceWithFile(NSString *imagePath)
 {

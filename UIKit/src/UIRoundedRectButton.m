@@ -29,7 +29,7 @@
 
 #import "UIRoundedRectButton.h"
 #import "UIImage+UIPrivate.h"
-#import "UIColor.h"
+#import <UIKit/UIColor.h>
 
 @implementation UIRoundedRectButton
 

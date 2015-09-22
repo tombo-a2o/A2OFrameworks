@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIAcceleration.h"
+#import <UIKit/UIAcceleration.h>
 
 @implementation UIAcceleration
 @end

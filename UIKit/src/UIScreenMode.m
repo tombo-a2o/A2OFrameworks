@@ -27,8 +27,8 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIScreenMode.h"
-#import "UIGeometry.h"
+#import <UIKit/UIScreenMode.h>
+#import <UIKit/UIGeometry.h>
 #import <AppKit/AppKit.h>
 
 @implementation UIScreenMode

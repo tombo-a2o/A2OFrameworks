@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIColor.h"
+#import <UIKit/UIColor.h>
 
 @class UIColorRep;
 

@@ -29,16 +29,16 @@
 
 #import "UIViewControllerAppKitIntegration.h"
 #import "UIView+UIPrivate.h"
-#import "UIScreen.h"
-#import "UIWindow.h"
-#import "UIScreen.h"
-#import "UINavigationItem.h"
-#import "UIBarButtonItem.h"
-#import "UINavigationController.h"
-#import "UISplitViewController.h"
-#import "UIToolbar.h"
-#import "UIScreen.h"
-#import "UITabBarController.h"
+#import <UIKit/UIScreen.h>
+#import <UIKit/UIWindow.h>
+#import <UIKit/UIScreen.h>
+#import <UIKit/UINavigationItem.h>
+#import <UIKit/UIBarButtonItem.h>
+#import <UIKit/UINavigationController.h>
+#import <UIKit/UISplitViewController.h>
+#import <UIKit/UIToolbar.h>
+#import <UIKit/UIScreen.h>
+#import <UIKit/UITabBarController.h>
 
 typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
     _UIViewControllerParentageTransitionNone = 0,

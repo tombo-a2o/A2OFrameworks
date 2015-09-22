@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIGestureRecognizer.h"
+#import <UIKit/UIGestureRecognizer.h>
 
 // OSX's native swipe gesture doesn't seem to support the idea of varying numbers of touches involved in
 // the gesture, so this will recognize for any OSX swipe regardless of touch count!

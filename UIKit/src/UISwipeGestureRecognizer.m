@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UISwipeGestureRecognizer.h"
+#import <UIKit/UISwipeGestureRecognizer.h>
 #import "UIGestureRecognizerSubclass.h"
 #import "UITouchEvent.h"
 

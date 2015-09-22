@@ -28,13 +28,13 @@
  */
 
 #import "UIKitView.h"
-#import "UIApplication.h"
+#import <UIKit/UIApplication.h>
 #import "UIScreen+UIPrivate.h"
 #import "UIScreenAppKitIntegration.h"
 #import "UIWindow+UIPrivate.h"
-#import "UIImage.h"
-#import "UIImageView.h"
-#import "UIColor.h"
+#import <UIKit/UIImage.h>
+#import <UIKit/UIImageView.h>
+#import <UIKit/UIColor.h>
 #import "UITouchEvent.h"
 #import "UITouch+UIPrivate.h"
 #import "UIKey.h"

@@ -31,11 +31,11 @@
 #import "UIView+UIPrivate.h"
 #import "UIScreen+UIPrivate.h"
 #import "UIScreenAppKitIntegration.h"
-#import "UIApplication.h"
+#import <UIKit/UIApplication.h>
 #import "UITouch+UIPrivate.h"
-#import "UIScreenMode.h"
+#import <UIKit/UIScreenMode.h>
 #import "UIResponderAppKitIntegration.h"
-#import "UIViewController.h"
+#import <UIKit/UIViewController.h>
 #import "UIGestureRecognizer+UIPrivate.h"
 #import "UITouchEvent.h"
 #import "UIKitView.h"

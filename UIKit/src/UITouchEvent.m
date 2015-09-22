@@ -28,7 +28,7 @@
  */
 
 #import "UITouchEvent.h"
-#import "UITouch.h"
+#import <UIKit/UITouch.h>
 #import "UIGestureRecognizer+UIPrivate.h"
 
 @implementation UITouchEvent

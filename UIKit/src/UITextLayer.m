@@ -28,10 +28,10 @@
  */
 
 #import "UITextLayer.h"
-#import "UIScrollView.h"
+#import <UIKit/UIScrollView.h>
 #import "UICustomNSTextView.h"
 #import "UICustomNSClipView.h"
-#import "UIWindow.h"
+#import <UIKit/UIWindow.h>
 #import "UIKitView.h"
 #import "AppKitIntegration.h"
 #import "UIView+UIPrivate.h"
