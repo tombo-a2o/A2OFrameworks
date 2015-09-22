@@ -17,12 +17,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <AppKit/NSGradient.h>
 #import <AppKit/NSGraphicsContext.h>
 
-@interface NSToolbarItem(private)
+@interface NSToolbarItem(Private)
 -(void)drawInRect:(NSRect)bounds highlighted:(BOOL)highlighted;
 -(NSSize)_labelSize;
 @end
 
-@interface NSToolbar (private)
+@interface NSToolbar (Private)
 - (void)didSelectToolbarItem:(NSString*)identifier;
 @end
 

@@ -18,7 +18,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <AppKit/NSEvent_CoreGraphics.h>
 #import <AppKit/NSColor.h>
 #import <CoreGraphics/CGWindow.h>
-#import <ApplicationServices/ApplicationServices.h>
+#import <CoreGraphics/CoreGraphics.h>
 #import <AppKit/NSGraphics.h>
 #import <AppKit/NSMenu.h>
 #import <AppKit/NSMenuItem.h>
@@ -54,7 +54,7 @@ NSString * const NSWindowWillAnimateNotification=@"NSWindowWillAnimateNotificati
 NSString * const NSWindowAnimatingNotification=@"NSWindowAnimatingNotification";
 NSString * const NSWindowDidAnimateNotification=@"NSWindowDidAnimateNotification";
 
-@interface CGWindow(private)
+@interface CGWindow(Private)
 - (void)dirtyRect:(CGRect)rect;
 @end
 
@@ -71,7 +71,7 @@ NSString * const NSWindowDidAnimateNotification=@"NSWindowDidAnimateNotification
 
 @end
 
-@interface NSApplication(private)
+@interface NSApplication(Private)
 -(void)_setMainWindow:(NSWindow *)window;
 -(void)_setKeyWindow:(NSWindow *)window;
 @end

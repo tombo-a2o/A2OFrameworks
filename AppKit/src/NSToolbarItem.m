@@ -33,7 +33,7 @@ extern NSSize _NSToolbarSizeSmall;
 extern NSSize _NSToolbarIconSizeRegular;
 extern NSSize _NSToolbarIconSizeSmall;
 
-@interface NSToolbar(private)
+@interface NSToolbar(Private)
 -(NSView *)_view;
 -(void)itemSizeDidChange;
 -(NSDictionary *)_labelAttributes;

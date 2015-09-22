@@ -32,6 +32,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <objc/message.h>
 #import <pthread.h>
 
+#define pthread_mutex_init(a,b)
+#define pthread_mutex_lock(a)
+#define pthread_mutex_unlock(a)
+
 NSString * const NSModalPanelRunLoopMode=@"NSModalPanelRunLoopMode";
 NSString * const NSEventTrackingRunLoopMode=@"NSEventTrackingRunLoopMode";
 
@@ -59,11 +63,11 @@ NSString * const NSApplicationDidChangeScreenParametersNotification=@"NSApplicat
 -(void)_updateRecentDocumentsMenu; 
 @end 
 
-@interface NSMenu(private)
+@interface NSMenu(Private)
 -(NSMenu *)_menuWithName:(NSString *)name;
 @end
 
-@interface NSDockTile(private)
+@interface NSDockTile(Private)
 -initWithOwner:owner;
 @end
 
@@ -898,7 +902,7 @@ id NSApp=nil;
 
 -(void)endModalSession:(NSModalSession)session {
     if(session!=[_modalStack lastObject])   
-        [NSException raise:NSInvalidArgumentException format:@"-[%@ %s] modal session %@ is not the current one %@",isa,sel_getName(_cmd),session,[_modalStack lastObject]];
+        [NSException raise:NSInvalidArgumentException format:@"-[%@ %s] modal session %@ is not the current one %@",[self class],sel_getName(_cmd),session,[_modalStack lastObject]];
     
     for(NSEvent *requeue in [session unprocessedEvents]){
         [self postEvent:requeue atStart:YES];
@@ -1326,16 +1330,16 @@ standardAboutPanel] retain];
 int NSApplicationMain(int argc, const char *argv[]) {
    NSAutoreleasePool *pool=[NSAutoreleasePool new];
    NSBundle *bundle=[NSBundle mainBundle];
-   Class     class=[bundle principalClass];
+   Class     clazz=[bundle principalClass];
    NSString *nibFile=[[bundle infoDictionary] objectForKey:@"NSMainNibFile"];
 
    [NSClassFromString(@"Win32RunningCopyPipe") performSelector:@selector(startRunningCopyPipe)];
 
-   if(class==Nil) {
-      class=[NSApplication class];
+   if(clazz==Nil) {
+      clazz=[NSApplication class];
    }
 
-   [class sharedApplication];
+   [clazz sharedApplication];
 
    nibFile=[nibFile stringByDeletingPathExtension];
 

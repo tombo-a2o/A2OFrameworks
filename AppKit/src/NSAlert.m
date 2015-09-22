@@ -366,7 +366,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
    frame.origin.y=panelSize.height-TOP_MARGIN-messageSize.height-messageInformativeGap-informativeSize.height;
    frame.size=informativeSize;
    textField=[[[NSTextField alloc] initWithFrame:frame] autorelease];
-   [textField setStringValue:[[[NSAttributedString alloc] initWithString:_informativeText attributes:informativeAttributes] autorelease]];
+   [textField setStringValue:[[[[NSAttributedString alloc] initWithString:_informativeText attributes:informativeAttributes] string] autorelease]];
    [textField setEditable:NO];
    [textField setSelectable:YES];
    [textField setBordered:NO];

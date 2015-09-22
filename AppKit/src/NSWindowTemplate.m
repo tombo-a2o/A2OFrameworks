@@ -12,7 +12,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <AppKit/NSMainMenuView.h>
 #import <AppKit/NSWindow-Private.h>
 
-@interface NSWindow(private)
+@interface NSWindow(Private)
 +(BOOL)hasMainMenuForStyleMask:(NSUInteger)styleMask;
 @end
 

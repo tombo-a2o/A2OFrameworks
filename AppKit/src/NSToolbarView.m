@@ -32,7 +32,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 -(NSArray *)itemIdentifiers;
 @end
 
-@interface NSToolbarItem(private)
+@interface NSToolbarItem(Private)
 -(NSSize)constrainedSize;
 -(void)_setItemViewFrame:(NSRect)rect;
 -(CGFloat)_expandWidth:(CGFloat)try;

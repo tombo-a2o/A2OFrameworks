@@ -19,7 +19,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <AppKit/NSPasteboard.h>
 #import <Foundation/NSKeyedArchiver.h>
 
-@interface NSColor(private)
+@interface NSColor(Private)
 -(NSString *)catalogName;
 -(NSString *)colorName;
 @end

@@ -31,7 +31,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
  * Selection Indexes reference into the arrangedObjects array.
  */
 
-@interface NSObjectController(private)
+@interface NSObjectController(Private)
 -(id)_defaultNewObject;
 -(void)_selectionWillChange;
 -(void)_selectionDidChange;
@@ -43,7 +43,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 - (id)_contentArray;
 @end
 
-@interface NSArray (private)
+@interface NSArray (Private)
 -(NSUInteger)_insertObject:(id)obj inArraySortedByDescriptors:(id)desc;
 @end
 

@@ -1,4 +1,4 @@
-#import <Foundation/NSMutableArray.h>
+#import <Foundation/NSArray.h>
 
 @class NSMutableIndexSet;
 

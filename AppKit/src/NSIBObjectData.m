@@ -33,19 +33,19 @@
 #import <AppKit/NSNib.h>
 #import <AppKit/NSMenu.h>
 
-@interface NSKeyedUnarchiver(private)
+@interface NSKeyedUnarchiver(Private)
 -(void)replaceObject:object withObject:replacement;
 @end
 
-@interface NSNib(private)
+@interface NSNib(Private)
 -(NSDictionary *)externalNameTable;
 @end
 
-@interface NSMenu(private)
+@interface NSMenu(Private)
 -(NSString *)_name;
 @end
 
-@interface NSIBObjectData(private)
+@interface NSIBObjectData(Private)
 -(void)replaceObject:(id)oldObject withObject:(id)newObject;
 @end
 

@@ -33,7 +33,7 @@ NSString * const NSToolbarChangeAppearanceNotification = @"__NSToolbarChangeAppe
 -(void)_toolbarSizeDidChangeFromOldHeight:(CGFloat)oldHeight;
 @end
 
-@interface NSToolbarItem(private)
+@interface NSToolbarItem(Private)
 -(void)_setToolbar:(NSToolbar *)toolbar;
 @end
 

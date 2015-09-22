@@ -11,6 +11,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 CGContextRef NSCurrentGraphicsPort();
 NSMutableArray *NSCurrentFocusStack();
 
-@interface NSGraphicsContext (private)
+@interface NSGraphicsContext (Private)
 - (NSDictionary *)deviceDescription;
 @end

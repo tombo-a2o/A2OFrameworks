@@ -15,7 +15,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import "NSKeyValueBinding/NSKVOBinder.h"
 #import <AppKit/NSRaise.h>
 
-@interface NSTableView(private)
+@interface NSTableView(Private)
 -(void)_establishBindingsWithDestinationIfUnbound:(id)dest;
 @end
 

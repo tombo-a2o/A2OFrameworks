@@ -14,7 +14,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <OpenGL/OpenGL.h>
 #import <Foundation/NSThread-Private.h>
 
-@interface NSOpenGLContext(private)
+@interface NSOpenGLContext(Private)
 -(void)_clearCurrentContext;
 @end
 

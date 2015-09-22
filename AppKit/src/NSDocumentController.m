@@ -16,7 +16,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <AppKit/NSWindowController.h>
 #import <AppKit/NSRaise.h>
 
-@interface NSDocument(private)
+@interface NSDocument(Private)
 -(void)_setUntitledNumber:(int)number;
 @end
 
@@ -24,7 +24,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 -(void)_updateRecentDocumentsMenu;
 @end
 
-@interface NSMenu(private)
+@interface NSMenu(Private)
 -(NSMenu *)_menuWithName:(NSString *)name;
 @end
 
