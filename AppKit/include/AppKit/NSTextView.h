@@ -236,3 +236,33 @@ APPKIT_EXPORT NSString *const NSOldSelectedCharacterRange;
           replacementString:(NSString *)replacementString;
 
 @end
+
+@class NSSharingServicePicker;
+@class NSTextAttachment;
+@protocol NSTextAttachmentCell;
+
+@protocol NSTextViewDelegate
+- (NSUndoManager *)undoManagerForTextView:(NSTextView *)aTextView;
+- (NSString *)textView:(NSTextView *)textView willDisplayToolTip:(NSString *)tooltip forCharacterAtIndex:(NSUInteger)characterIndex;
+- (NSURL *)textView:(NSTextView *)textView URLForContentsOfTextAttachment:(NSTextAttachment *)textAttachment atIndex:(NSUInteger)charIndex;
+- (NSRange)textView:(NSTextView *)aTextView willChangeSelectionFromCharacterRange:(NSRange)oldSelectedCharRange toCharacterRange:(NSRange)newSelectedCharRange;
+- (NSArray *)textView:(NSTextView *)aTextView willChangeSelectionFromCharacterRanges:(NSArray*)oldSelectedCharRanges toCharacterRanges:(NSArray *)newSelectedCharRanges;
+- (void)textViewDidChangeSelection:(NSNotification *)aNotification;
+- (NSArray *)textView:(NSTextView *)aTextView writablePasteboardTypesForCell:(id<NSTextAttachmentCell>)cell atIndex:(NSUInteger)charIndex;
+- (BOOL)textView:(NSTextView *)aTextView writeCell:(id<NSTextAttachmentCell>)cell atIndex:(NSUInteger)charIndex toPasteboard:(NSPasteboard *)pboard type:(NSString *)type;
+- (BOOL)textView:(NSTextView *)aTextView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString;
+- (BOOL)textView:(NSTextView *)textView shouldChangeTextInRanges:(NSArray *)affectedRanges replacementStrings:(NSArray *)replacementStrings;
+- (NSDictionary *)textView:(NSTextView *)textView shouldChangeTypingAttributes:(NSDictionary *)oldTypingAttributes toAttributes:(NSDictionary *)newTypingAttributes;
+- (void)textViewDidChangeTypingAttributes:(NSNotification *)aNotification;
+- (void)textView:(NSTextView *)aTextView clickedOnCell:(id<NSTextAttachmentCell>)cell inRect:(NSRect)cellFrame atIndex:(NSUInteger)charIndex;
+- (void)textView:(NSTextView *)aTextView doubleClickedOnCell:(id<NSTextAttachmentCell>)cell inRect:(NSRect)cellFrame atIndex:(NSUInteger)charIndex;
+- (BOOL)textView:(NSTextView *)aTextView clickedOnLink:(id)link atIndex:(NSUInteger)charIndex;
+- (NSInteger)textView:(NSTextView *)textView shouldSetSpellingState:(NSInteger)value range:(NSRange)affectedCharRange;
+- (NSDictionary *)textView:(NSTextView *)view willCheckTextInRange:(NSRange)range options:(NSDictionary *)options types:(NSTextCheckingTypes *)checkingTypes;
+- (NSArray *)textView:(NSTextView *)view didCheckTextInRange:(NSRange)range types:(NSTextCheckingTypes)checkingTypes options:(NSDictionary *)options results:(NSArray *)results orthography:(NSOrthography *)orthography wordCount:(NSInteger)wordCount;
+- (void)textView:(NSTextView *)aTextView draggedCell:(id<NSTextAttachmentCell>)cell inRect:(NSRect)aRect event:(NSEvent *)theEvent atIndex:(NSUInteger)charIndex;
+- (NSArray *)textView:(NSTextView *)textView completions:(NSArray *)words forPartialWordRange:(NSRange)charRange indexOfSelectedItem:(NSInteger *)index;
+- (NSSharingServicePicker *)textView:(NSTextView *)textView willShowSharingServicePicker:(NSSharingServicePicker *)servicePicker forItems:(NSArray *)items;
+- (BOOL)textView:(NSTextView *)aTextView doCommandBySelector:(SEL)aSelector;
+- (NSMenu *)textView:(NSTextView *)view menu:(NSMenu *)menu forEvent:(NSEvent *)event atIndex:(NSUInteger)charIndex;
+@end

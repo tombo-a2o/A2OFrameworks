@@ -99,6 +99,7 @@ APPKIT_EXPORT NSString *const NSWindowDidUpdateNotification;
 APPKIT_EXPORT NSString *const NSWindowWillCloseNotification;
 APPKIT_EXPORT NSString *const NSWindowWillStartLiveResizeNotification;
 APPKIT_EXPORT NSString *const NSWindowDidEndLiveResizeNotification;
+APPKIT_EXPORT NSString *const NSWindowDidChangeScreenNotification;
 
 @interface NSWindow : NSResponder {
     NSRect _frame;
@@ -491,6 +492,8 @@ APPKIT_EXPORT NSString *const NSWindowDidEndLiveResizeNotification;
 
 - (void)toggleToolbarShown:sender;
 - (void)runToolbarCustomizationPalette:sender;
+
+@property(readonly) CGFloat backingScaleFactor;
 
 @end
 

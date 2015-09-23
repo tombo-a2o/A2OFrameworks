@@ -8,8 +8,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #import <Foundation/NSObject.h>
 #import <Foundation/NSGeometry.h>
+#import <CoreGraphics/CoreGraphics.h>
 
-@class NSArray, NSData, NSPasteboard, NSURL;
+@class NSArray, NSData, NSPasteboard, NSURL, NSGraphicsContext;
 
 @interface NSImageRep : NSObject <NSCopying> {
     NSSize _size;
@@ -44,6 +45,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 + imageRepWithContentsOfFile:(NSString *)path;
 + imageRepWithContentsOfURL:(NSURL *)url;
 + imageRepWithPasteboard:(NSPasteboard *)pasteboard;
+
+- (CGImageRef)CGImageForProposedRect:(NSRect *)proposedDestRect context:(NSGraphicsContext *)context hints:(NSDictionary *)hints;
 
 - (NSSize)size;
 - (int)pixelsWide;

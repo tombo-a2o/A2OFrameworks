@@ -12,6 +12,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 @class NSImage;
 @class NSPasteboard;
+@class NSColorSpace;
 
 @interface NSColor : NSObject <NSCopying, NSCoding>
 
@@ -91,6 +92,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 + (NSColor *)colorWithPatternImage:(NSImage *)image;
 
++ (NSColor *)colorWithColorSpace:(NSColorSpace *)space components:(const CGFloat *)components count:(NSInteger)numberOfComponents;
+
 - (NSString *)colorSpaceName;
 
 - (NSInteger)numberOfComponents;
@@ -120,6 +123,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 - (NSColor *)colorWithAlphaComponent:(CGFloat)alpha;
 
+- (NSColor *)colorUsingColorSpace:(NSColorSpace *)colorSpace;
 - (NSColor *)colorUsingColorSpaceName:(NSString *)colorSpace;
 - (NSColor *)colorUsingColorSpaceName:(NSString *)colorSpace device:(NSDictionary *)device;
 
@@ -132,5 +136,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 - (void)drawSwatchInRect:(NSRect)rect;
 
 - (void)writeToPasteboard:(NSPasteboard *)pasteboard;
+
+@property(readonly, strong) NSColorSpace *colorSpace;
 
 @end

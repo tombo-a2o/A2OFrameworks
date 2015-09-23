@@ -9,6 +9,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKitExport.h>
+#import <CoreGraphics/CGEvent.h>
 
 @class NSWindow, NSGraphicsContext, NSTrackingArea;
 
@@ -202,6 +203,14 @@ enum {
 - (NSInteger)trackingNumber;
 - (NSTrackingArea *)trackingArea;
 - (void *)userData;
+
+@property(getter=isARepeat, readonly) BOOL ARepeat;
+@property(readonly, strong) NSGraphicsContext *context;
+@property(readonly) NSInteger eventNumber;
+@property(readonly) float rotation;
+@property(readonly) CGFloat magnification;
+@property(readonly) float pressure;
+@property(readonly) CGEventRef CGEvent;
 
 @end
 

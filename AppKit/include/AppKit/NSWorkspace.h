@@ -12,8 +12,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 @class NSImage, NSView;
 
 APPKIT_EXPORT NSString *const NSWorkspaceWillPowerOffNotification;
-
 APPKIT_EXPORT NSString *const NSWorkspaceRecycleOperation;
+APPKIT_EXPORT NSString *const NSWorkspaceScreensDidSleepNotification;
+APPKIT_EXPORT NSString *const NSWorkspaceScreensDidWakeNotification;
+APPKIT_EXPORT NSString *const NSWorkspaceWillSleepNotification;
+APPKIT_EXPORT NSString *const NSWorkspaceDidWakeNotification;
 
 @interface NSWorkspace : NSObject {
     NSNotificationCenter *_notificationCenter;
@@ -74,6 +77,7 @@ APPKIT_EXPORT NSString *const NSWorkspaceRecycleOperation;
 
 - (int)extendPowerOffBy:(int)milliseconds;
 
+- (NSURL *)URLForApplicationToOpenURL:(NSURL *)url;
 @end
 
 @interface NSWorkspace (CocotronAdditions)

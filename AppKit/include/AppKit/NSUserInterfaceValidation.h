@@ -4,3 +4,7 @@
 - (int)tag;
 - (SEL)action;
 @end
+
+@protocol NSUserInterfaceValidations
+- (BOOL)validateUserInterfaceItem:(id<NSValidatedUserInterfaceItem>)anItem;
+@end

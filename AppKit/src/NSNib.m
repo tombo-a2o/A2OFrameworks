@@ -15,7 +15,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <AppKit/NSApplication.h>
 #import <AppKit/NSTableCornerView.h>
 #import "NSIBObjectData.h"
-#import "NSNibHelpConnector.h"
+#import <AppKit/NSNibHelpConnector.h>
 #import "NSCustomObject.h"
 
 NSString * const NSNibOwner=@"NSOwner";
