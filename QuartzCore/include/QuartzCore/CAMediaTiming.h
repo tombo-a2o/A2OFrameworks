@@ -20,3 +20,9 @@
 @property CFTimeInterval timeOffset;
 
 @end
+
+extern NSString * const kCAFillModeRemoved;
+extern NSString * const kCAFillModeForwards;
+extern NSString * const kCAFillModeBackwards;
+extern NSString * const kCAFillModeBoth;
+extern NSString * const kCAFillModeFrozen;

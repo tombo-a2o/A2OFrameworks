@@ -2,6 +2,8 @@
 #import <QuartzCore/CABase.h>
 #import <QuartzCore/CAMediaTiming.h>
 #import <QuartzCore/CAAction.h>
+#import <Foundation/NSArray.h>
+#import <CoreGraphics/CoreGraphics.h>
 
 @class CAMediaTimingFunction;
 
@@ -44,7 +46,52 @@ CA_EXPORT NSString *const kCATransitionFromBottom;
 - (void)animationDidStop:(CAAnimation *)animation finished:(BOOL)finished;
 @end
 
-#import <QuartzCore/CAPropertyAnimation.h>
-#import <QuartzCore/CABasicAnimation.h>
+@interface CAPropertyAnimation : CAAnimation {
+    NSString *_keyPath;
+    BOOL _additive;
+    BOOL _cumulative;
+}
+
++ animationWithKeyPath:(NSString *)keyPath;
+@property(copy) NSString *keyPath;
+@property(getter=isAdditive) BOOL additive;
+@property(getter=isCumulative) BOOL cumulative;
+
+@end
+
+@interface CABasicAnimation : CAPropertyAnimation {
+    id _fromValue;
+    id _toValue;
+    id _byValue;
+}
+
+@property(retain) id fromValue;
+@property(retain) id toValue;
+@property(retain) id byValue;
+
+@end
+
+extern NSString * const kCAAnimationRotateAuto;
+extern NSString * const kCAAnimationRotateAutoReverse;
+extern NSString * const kCAAnimationLinear;
+extern NSString * const kCAAnimationDiscrete;
+extern NSString * const kCAAnimationPaced;
+extern NSString * const kCAAnimationCubic;
+extern NSString * const kCAAnimationCubicPaced;
+
+@interface CAKeyframeAnimation : CAPropertyAnimation
+@property(copy) NSArray *values;
+@property CGPathRef path;
+@property(copy) NSArray *keyTimes;
+@property(copy) NSArray *timingFunctions;
+@property(copy) NSString *calculationMode;
+@property(copy) NSString *rotationMode;
+@property(copy) NSArray  *tensionValues;
+@property(copy) NSArray *continuityValues;
+@property(copy) NSArray *biasValues;
+
+
+@end
+
 #import <QuartzCore/CATransition.h>
 #import <QuartzCore/CAAnimationGroup.h>

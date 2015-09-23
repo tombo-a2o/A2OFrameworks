@@ -1,4 +1,4 @@
-#import <QuartzCore/CABasicAnimation.h>
+#import <QuartzCore/CAAnimation.h>
 
 @implementation CABasicAnimation
 
