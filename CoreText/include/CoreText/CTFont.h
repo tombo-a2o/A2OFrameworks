@@ -15,6 +15,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 @class KTFont;
 
 typedef KTFont *CTFontRef;
+typedef const struct __CTFontCollection * CTFontCollectionRef;
 
 typedef enum {
     kCTFontSystemFontType = 2,
