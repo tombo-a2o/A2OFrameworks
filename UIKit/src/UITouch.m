@@ -190,7 +190,7 @@
             break;
     }
     
-    return [NSString stringWithFormat:@"<%@: %p; timestamp = %e; tapCount = %lu; phase = %@; view = %@; window = %@>", [self className], self, self.timestamp, (unsigned long)self.tapCount, phase, self.view, self.window];
+    return [NSString stringWithFormat:@"<%@: %p; timestamp = %e; tapCount = %lu; phase = %@; view = %@; window = %@>", [self class], self, self.timestamp, (unsigned long)self.tapCount, phase, self.view, self.window];
 }
 
 @end

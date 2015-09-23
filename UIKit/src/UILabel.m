@@ -175,10 +175,12 @@
         CGSize offset = _shadowOffset;
 
         // stupid version compatibilities..
+        /*
         if (floorf(NSAppKitVersionNumber) <= NSAppKitVersionNumber10_6) {
             offset.height *= -1;
         }
-        
+        */
+
         CGContextSetShadowWithColor(UIGraphicsGetCurrentContext(), offset, 0, _shadowColor.CGColor);
         
         // finally, draw the real label

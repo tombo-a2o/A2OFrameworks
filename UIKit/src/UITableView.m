@@ -849,7 +849,7 @@ const CGFloat _UITableViewDefaultRowHeight = 43;
 
         NSMenu *menu = [[NSMenu alloc] initWithTitle:@""];
         [menu setAutoenablesItems:NO];
-        [menu setAllowsContextMenuPlugIns:NO];
+        //[menu setAllowsContextMenuPlugIns:NO];
         [menu addItem:theItem];
         
         // calculate the mouse's current position so we can present the menu from there since that's normal OSX behavior
@@ -857,7 +857,8 @@ const CGFloat _UITableViewDefaultRowHeight = 43;
         CGPoint screenPoint = [self.window.screen convertPoint:NSPointToCGPoint(mouseLocation) fromScreen:nil];
 
         // modally present a menu with the single delete option on it, if it was selected, then do the delete, otherwise do nothing
-        const BOOL didSelectItem = [menu popUpMenuPositioningItem:nil atLocation:NSPointFromCGPoint(screenPoint) inView:self.window.screen.UIKitView];
+        const BOOL didSelectItem = NO; //[menu popUpMenuPositioningItem:nil atLocation:NSPointFromCGPoint(screenPoint) inView:self.window.screen.UIKitView];
+        NSLog(@"popUpMenuPositioningItem");
         
         UIApplicationInterruptTouchesInView(nil);
 

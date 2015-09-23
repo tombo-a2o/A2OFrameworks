@@ -28,7 +28,7 @@
  */
 
 #import <UIKit/UIAppearance.h>
-#import <UIKit/UIAppearanceProperty.h>
+#import "UIAppearanceProperty.h"
 
 @interface UIAppearanceProxy : NSObject
 - (id)initWithClass:(Class<UIAppearance>)k;

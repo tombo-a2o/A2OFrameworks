@@ -327,7 +327,7 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"<%@: %p; title = %@; view = %@>", [self className], self, self.title, self.view];
+    return [NSString stringWithFormat:@"<%@: %p; title = %@; view = %@>", [self class], self, self.title, self.view];
 }
 
 

@@ -325,7 +325,7 @@
             state = @"Failed";
             break;
     }
-    return [NSString stringWithFormat:@"<%@: %p; state = %@; view = %@>", [self className], self, state, self.view];
+    return [NSString stringWithFormat:@"<%@: %p; state = %@; view = %@>", [self class], self, state, self.view];
 }
 
 @end

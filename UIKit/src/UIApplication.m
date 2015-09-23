@@ -33,7 +33,7 @@
 #import "UIKitView.h"
 #import "UIBackgroundTask.h"
 #import "UINSApplicationDelegate.h"
-#import <Cocoa/Cocoa.h>
+#import <AppKit/AppKit.h>
 
 NSString *const UIApplicationWillChangeStatusBarOrientationNotification = @"UIApplicationWillChangeStatusBarOrientationNotification";
 NSString *const UIApplicationDidChangeStatusBarOrientationNotification = @"UIApplicationDidChangeStatusBarOrientationNotification";

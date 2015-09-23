@@ -27,6 +27,8 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#if 0
+
 #import <UIKit/UIActionSheet.h>
 #import <UIKit/UIWindow.h>
 #import "UIScreenAppKitIntegration.h"
@@ -311,3 +313,5 @@
 }
 
 @end
+
+#endif

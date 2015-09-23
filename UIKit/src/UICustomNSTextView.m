@@ -27,6 +27,8 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#if 0
+
 #import "UICustomNSTextView.h"
 #import "UIBulletGlyphGenerator.h"
 #import <AppKit/NSLayoutManager.h>
@@ -361,3 +363,5 @@ static const CGFloat LargeNumberForText = 1.0e7; // Any larger dimensions and th
 }
 
 @end
+
+#endif

@@ -30,6 +30,7 @@
 #import "UITableViewSectionLabel.h"
 #import <UIKit/UIGraphics.h>
 #import "AppKitIntegration.h"
+#import <CoreGraphics/CGGradient.h>
 
 @implementation UITableViewSectionLabel
 + (UITableViewSectionLabel *)sectionLabelWithTitle:(NSString *)title

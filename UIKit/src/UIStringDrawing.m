@@ -27,6 +27,8 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#if 0
+
 #import <UIKit/UIStringDrawing.h>
 #import <UIKit/UIFont.h>
 #import <AppKit/AppKit.h>
@@ -226,3 +228,5 @@ static CFArrayRef CreateCTLinesForString(NSString *string, CGSize constrainedToS
 }
 
 @end
+
+#endif

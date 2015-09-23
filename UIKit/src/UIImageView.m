@@ -178,7 +178,8 @@ static NSArray *CGImagesWithUIImages(NSArray *images)
     theLayer.contents = (__bridge id)bestRepresentation.CGImage;
     
     if ([theLayer respondsToSelector:@selector(setContentsScale:)]) {
-        [theLayer setContentsScale:bestRepresentation.scale];
+        //[theLayer setContentsScale:bestRepresentation.scale];
+        assert(0);
     }
 }
 

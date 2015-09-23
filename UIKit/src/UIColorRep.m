@@ -50,12 +50,16 @@ static void drawPatternImage(void *info, CGContextRef ctx)
     // appears flipped for reasons I don't fully understand unless I apply this counter-flip transform. If the UIView does
     // have a drawRect:, then the different way that the background color is set (UIView draws it directly into the
     // CGContext that Core Animation gives it before calling drawRect:), causes the pattern to appear right-side-up.
+#if 1
+    assert(0);
+#else
     if (floorf(NSAppKitVersionNumber) != NSAppKitVersionNumber10_7) {
         if (CGPointEqualToPoint(patternRect.origin, deviceRect.origin)) {
             CGContextTranslateCTM(ctx, 0, patternRect.size.height);
             CGContextScaleCTM(ctx, 1, -1);
         }
     }
+#endif
     
     [rep drawInRect:patternRect fromRect:CGRectNull];
     

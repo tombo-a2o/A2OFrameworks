@@ -503,7 +503,7 @@ NSString *const UITextFieldTextDidEndEditingNotification = @"UITextFieldTextDidE
             textAlignment = @"Right";
             break;
     }
-    return [NSString stringWithFormat:@"<%@: %p; textAlignment = %@; editing = %@; textColor = %@; font = %@; delegate = %@>", [self className], self, textAlignment, (self.editing ? @"YES" : @"NO"), self.textColor, self.font, self.delegate];
+    return [NSString stringWithFormat:@"<%@: %p; textAlignment = %@; editing = %@; textColor = %@; font = %@; delegate = %@>", [self class], self, textAlignment, (self.editing ? @"YES" : @"NO"), self.textColor, self.font, self.delegate];
 }
 
 - (id)mouseCursorForEvent:(UIEvent *)event

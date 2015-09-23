@@ -96,7 +96,7 @@
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"<%@: %p; tableView = %@>", [self className], self, self.tableView];
+    return [NSString stringWithFormat:@"<%@: %p; tableView = %@>", [self class], self, self.tableView];
 }
 
 @end

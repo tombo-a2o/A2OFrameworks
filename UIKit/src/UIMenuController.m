@@ -27,6 +27,8 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#if 0
+
 #import <UIKit/UIMenuController.h>
 #import "UIApplicationAppKitIntegration.h"
 #import "UIWindow+UIPrivate.h"
@@ -249,3 +251,5 @@ NSString *const UIMenuControllerMenuFrameDidChangeNotification = @"UIMenuControl
 
 
 @end
+
+#endif

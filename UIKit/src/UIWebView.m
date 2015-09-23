@@ -27,6 +27,8 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#if 0
+
 #import <UIKit/UIWebView.h>
 #import <UIKit/UIViewAdapter.h>
 #import <WebKit/WebKit.h>
@@ -237,3 +239,5 @@
 }
 
 @end
+
+#endif

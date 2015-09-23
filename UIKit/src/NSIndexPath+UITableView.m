@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "NSIndexPath+UITableView.h"
+#import <UIKit/NSIndexPath+UITableView.h>
 
 @implementation NSIndexPath (UITableView)
 

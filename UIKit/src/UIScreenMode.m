@@ -47,7 +47,7 @@
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"<%@: %p; size = %@>", [self className], self, NSStringFromCGSize(self.size)];
+    return [NSString stringWithFormat:@"<%@: %p; size = %@>", [self class], self, NSStringFromCGSize(self.size)];
 }
 
 @end

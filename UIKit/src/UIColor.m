@@ -248,7 +248,7 @@ static UIColor *LightTextColor = nil;
     }
     [componentsString appendString:@"}"];
 
-    return [NSString stringWithFormat:@"<%@: %p; colorSpace = %@; components = %@>", [self className], self, colorSpace, componentsString];
+    return [NSString stringWithFormat:@"<%@: %p; colorSpace = %@; components = %@>", NSStringFromClass([self class]), self, colorSpace, componentsString];
 }
 
 - (BOOL) isEqual:(id)object {

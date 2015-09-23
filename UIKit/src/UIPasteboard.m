@@ -27,6 +27,8 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#if 0
+
 #import <UIKit/UIPasteboard.h>
 #import "UIImageAppKitIntegration.h"
 #import "UIColorAppKitIntegration.h"
@@ -287,3 +289,5 @@ static NSPasteboardItem *PasteBoardItemWithDictionary(NSDictionary *item)
 }
 
 @end
+
+#endif

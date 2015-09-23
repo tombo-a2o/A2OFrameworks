@@ -26,9 +26,11 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#if 0
 
 #import <UIKit/UIFont.h>
-#import <Cocoa/Cocoa.h>
+#import <AppKit/AppKit.h>
+#import <CoreText/CoreText.h>
 
 static NSString *UIFontSystemFontName = nil;
 static NSString *UIFontBoldSystemFontName = nil;
@@ -202,3 +204,4 @@ static NSArray *_getFontCollectionNames(CTFontCollectionRef collection, CFString
 }
 
 @end
+#endif
