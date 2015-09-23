@@ -4,3 +4,4 @@ xcshareddata
 build
 system
 .DS_Store
+.*.swp
