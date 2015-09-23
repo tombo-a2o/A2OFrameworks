@@ -3,9 +3,11 @@
 #import <CoreData/NSAtomicStoreCacheNode.h>
 #import "NSManagedObjectID-Private.h"
 #import "NSManagedObject-Private.h"
-#import <Foundation/NSMutableSet.h>
-#import <Foundation/NSMutableDictionary.h>
-#import <Foundation/NSRaise.h>
+#import <Foundation/NSSet.h>
+#import <Foundation/NSDictionary.h>
+#include <assert.h>
+
+#define NSInvalidAbstractInvocation() assert(0)
 
 @implementation NSAtomicStore
 

@@ -12,10 +12,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <CoreData/NSAttributeDescription.h>
 #import <CoreData/NSRelationshipDescription.h>
 #import <CoreData/NSAtomicStoreCacheNode.h>
-#import <Foundation/NSRaise.h>
 #import "NSManagedObjectSet.h"
 #import "NSManagedObjectSetEnumerator.h"
 #import "NSManagedObjectMutableSet.h"
+#import <assert.h>
+
+#define NSUnimplementedMethod() assert(0)
 
 @implementation NSManagedObject
 

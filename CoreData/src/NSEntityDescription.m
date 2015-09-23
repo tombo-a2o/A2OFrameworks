@@ -13,12 +13,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <CoreData/NSAttributeDescription.h>
 #import <CoreData/NSRelationshipDescription.h>
 #import <CoreData/NSManagedObject.h>
-#import <Foundation/NSKeyedUnarchiver.h>
-#import <Foundation/NSRaise.h>
-#import <objc/objc-class.h>
+#import <Foundation/NSKeyedArchiver.h>
+#import <objc/runtime.h>
 #import <ctype.h>
 #import <string.h>
 #import <stdint.h>
+#import <assert.h>
+
+#define NSUnimplementedMethod() assert(0)
 
 
 @implementation NSEntityDescription

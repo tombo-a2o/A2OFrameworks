@@ -1,7 +1,6 @@
 #import <CoreData/NSManagedObjectID.h>
 #import <CoreData/NSEntityDescription.h>
 #import <CoreData/NSManagedObjectModel.h>
-#import <Foundation/NSRaise.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSURL.h>
 #import <CoreFoundation/CFUUID.h>

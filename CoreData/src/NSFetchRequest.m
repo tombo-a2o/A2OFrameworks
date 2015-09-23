@@ -9,7 +9,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <CoreData/NSManagedObject.h>
 #import <CoreData/NSManagedObjectContext.h>
 #import <CoreData/NSEntityDescription.h>
-#import <Foundation/NSRaise.h>
+
+#define NSUnimplementedMethod() assert(0)
 
 @implementation NSFetchRequest
 

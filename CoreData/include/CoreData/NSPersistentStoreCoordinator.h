@@ -8,6 +8,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <Foundation/NSObject.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSLock.h>
+#import <Foundation/NSArray.h>
 #import <CoreData/CoreDataExports.h>
 
 @class NSManagedObjectModel, NSPersistentStore, NSManagedObjectID;

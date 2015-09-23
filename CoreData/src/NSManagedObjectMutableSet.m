@@ -1,7 +1,9 @@
 #import "NSManagedObjectMutableSet.h"
 #import <CoreData/NSManagedObject.h>
 #import <CoreData/NSManagedObjectContext.h>
-#import <Foundation/NSRaise.h>
+#import <assert.h>
+
+#define NSUnimplementedMethod() assert(0);
 
 @implementation NSManagedObjectMutableSet
 

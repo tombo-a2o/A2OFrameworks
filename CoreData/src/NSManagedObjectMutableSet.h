@@ -1,4 +1,4 @@
-#import <Foundation/NSMutableSet.h>
+#import <Foundation/NSSet.h>
 
 @class NSManagedObject;
 

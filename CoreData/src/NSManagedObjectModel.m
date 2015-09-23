@@ -8,8 +8,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <CoreData/NSManagedObjectModel.h>
 #import <CoreData/NSEntityDescription.h>
 
-#import <Foundation/NSKeyedUnarchiver.h>
-#import <Foundation/NSRaise.h>
+#import <Foundation/NSKeyedArchiver.h>
+#import <assert.h>
+
+#define NSUnimplementedMethod() assert(0);
 
 @implementation NSManagedObjectModel
 

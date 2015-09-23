@@ -1,3 +1,5 @@
+#if 0
+
 #import "NSXMLPersistentStore.h"
 #import <CoreData/NSPersistentStoreCoordinator.h>
 #import <CoreData/NSEntityDescription.h>
@@ -535,3 +537,4 @@
 }
  
 @end
+#endif

@@ -1,8 +1,11 @@
 #import <CoreData/NSPersistentStore.h>
 #import <CoreData/NSPersistentStoreCoordinator.h>
-#import <Foundation/NSRaise.h>
 #import <Foundation/NSDictionary.h>
 #import <CoreFoundation/CFUUID.h>
+#import <assert.h>
+
+#define NSInvalidAbstractInvocation() assert(0)
+#define NSUnimplementedMethod() assert(0)
 
 @implementation NSPersistentStore
 
