@@ -5,10 +5,11 @@
 
 typedef struct CGGradient *CGGradientRef;
 
-enum {
+enum CGGradientDrawingOptions {
     kCGGradientDrawsBeforeStartLocation = 0x01,
     kCGGradientDrawsAfterEndLocation = 0x02
 };
+typedef enum CGGradientDrawingOptions CGGradientDrawingOptions;
 
 CGGradientRef CGGradientCreateWithColorComponents(CGColorSpaceRef colorSpace, const CGFloat components[], const CGFloat locations[], size_t count);
 CGGradientRef CGGradientCreateWithColors(CGColorSpaceRef colorSpace, CFArrayRef colors, const CGFloat locations[]);

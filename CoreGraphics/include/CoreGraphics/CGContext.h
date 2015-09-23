@@ -20,6 +20,7 @@ typedef void *CGContextRef;
 #import <CoreGraphics/CGShading.h>
 #import <CoreGraphics/CGPDFPage.h>
 #import <CoreGraphics/CGLayer.h>
+#import <CoreGraphics/CGGradient.h>
 
 typedef enum {
     kCGEncodingFontSpecific,
@@ -174,6 +175,8 @@ COREGRAPHICS_EXPORT void CGContextSetCMYKFillColor(CGContextRef context, float c
 COREGRAPHICS_EXPORT void CGContextSetCalibratedGrayFillColor(CGContextRef context, float gray, float alpha);
 COREGRAPHICS_EXPORT void CGContextSetCalibratedRGBFillColor(CGContextRef context, float red, float green, float blue, float alpha);
 
+COREGRAPHICS_EXPORT void CGContextDrawLinearGradient(CGContextRef c, CGGradientRef gradient, CGPoint startPoint, CGPoint endPoint, CGGradientDrawingOptions options);
+
 COREGRAPHICS_EXPORT void CGContextSetAlpha(CGContextRef context, float alpha);
 
 COREGRAPHICS_EXPORT void CGContextSetPatternPhase(CGContextRef context, CGSize phase);
@@ -190,6 +193,8 @@ COREGRAPHICS_EXPORT void CGContextSetFont(CGContextRef context, CGFontRef font);
 COREGRAPHICS_EXPORT void CGContextSetFontSize(CGContextRef context, float size);
 COREGRAPHICS_EXPORT void CGContextSelectFont(CGContextRef context, const char *name, float size, CGTextEncoding encoding);
 COREGRAPHICS_EXPORT void CGContextSetShouldSmoothFonts(CGContextRef context, bool yesOrNo);
+COREGRAPHICS_EXPORT void CGContextSetShouldSubpixelPositionFonts(CGContextRef c, bool yesOrNo);
+COREGRAPHICS_EXPORT void CGContextSetShouldSubpixelQuantizeFonts(CGContextRef c, bool yesOrNo);
 
 COREGRAPHICS_EXPORT void CGContextSetLineWidth(CGContextRef context, float width);
 COREGRAPHICS_EXPORT void CGContextSetLineCap(CGContextRef context, CGLineCap lineCap);

@@ -10,6 +10,7 @@ THE SOFTWARE IS PROVIDED "AS IS",WITHOUT WARRANTY OF ANY KIND,EXPRESS OR IMPLIED
 #import <Onyx2D/O2Context.h>
 #import <Onyx2D/O2MutablePath.h>
 #import "CGConversions.h"
+#import <CoreGraphics/CGGradient.h>
 
 CGContextRef CGContextRetain(CGContextRef context) {
   return O2ContextRetain(context);
@@ -472,4 +473,9 @@ void CGContextCopyBits(CGContextRef context,CGRect rect,CGPoint point,int gState
 
 CFDataRef CGContextCaptureBitmap(CGContextRef context,CGRect rect) {
    return (CFDataRef)O2ContextCaptureBitmap(context,rect);
+}
+
+void CGContextDrawLinearGradient ( CGContextRef c, CGGradientRef gradient, CGPoint startPoint, CGPoint endPoint, CGGradientDrawingOptions options ) {
+    assert(0);
+    //O2ContextDrawLinearGradient(c, gradient, startPoint, endPoint, options);
 }
