@@ -27,7 +27,14 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#if 0
+#if 1
+
+#import "UICustomNSTextView.h"
+@implementation UICustomNSTextView {
+}
+@end
+
+#else
 
 #import "UICustomNSTextView.h"
 #import "UIBulletGlyphGenerator.h"

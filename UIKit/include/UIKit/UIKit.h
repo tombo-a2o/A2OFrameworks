@@ -118,7 +118,7 @@
 #import <AppKit/NSAttributedString.h>
 #import <AppKit/NSShadow.h>
 #import <AppKit/NSText.h>
-#import <AppKit/NSLayoutConstraint.h>
+//#import <AppKit/NSLayoutConstraint.h>
 
 // SystemConfiguration-Helper
 #define kSCNetworkReachabilityFlagsIsWWAN kSCNetworkReachabilityFlagsConnectionOnDemand
