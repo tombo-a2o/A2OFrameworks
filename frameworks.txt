@@ -1,6 +1,6 @@
 AppKit
 CoreData
-CoreGraphcis
+CoreGraphics
 CoreText
 Onyx2D
 OpenGL
