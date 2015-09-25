@@ -3,3 +3,5 @@
 #import <QuartzCore/CARenderer.h>
 #import <QuartzCore/CAMediaTimingFunction.h>
 #import <QuartzCore/CATransaction.h>
+#import <QuartzCore/CADisplayLink.h>
+#import <QuartzCore/CAEAGLLayer.h>
