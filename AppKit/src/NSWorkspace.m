@@ -12,6 +12,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 NSString * const NSWorkspaceWillPowerOffNotification=@"NSWorkspaceWillPowerOffNotification";
 
 NSString * const NSWorkspaceRecycleOperation=@"NSWorkspaceRecycleOperation";
+NSString * const NSWorkspaceDidWakeNotification=@"NSWorkspaceDidWakeNotification";
+NSString * const NSWorkspaceScreensDidSleepNotification=@"NSWorkspaceScreensDidSleepNotification";
+NSString * const NSWorkspaceScreensDidWakeNotification=@"NSWorkspaceScreensDidWakeNotification";
+NSString * const NSWorkspaceWillSleepNotification=@"NSWorkspaceWillSleepNotification";
 
 @implementation NSWorkspace
 

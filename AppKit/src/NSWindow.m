@@ -53,6 +53,7 @@ NSString * const NSWindowDidEndLiveResizeNotification=@"NSWindowDidEndLiveResize
 NSString * const NSWindowWillAnimateNotification=@"NSWindowWillAnimateNotification";
 NSString * const NSWindowAnimatingNotification=@"NSWindowAnimatingNotification";
 NSString * const NSWindowDidAnimateNotification=@"NSWindowDidAnimateNotification";
+NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNotification";
 
 @interface CGWindow(Private)
 - (void)dirtyRect:(CGRect)rect;
