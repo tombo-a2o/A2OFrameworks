@@ -38,7 +38,7 @@ NSMutableDictionary *imageCache = nil;
 
 @implementation UIImage (UIPrivate)
 
-+ (void)load
++ (void)initizalize
 {
     imageCache = [[NSMutableDictionary alloc] init];
 }
