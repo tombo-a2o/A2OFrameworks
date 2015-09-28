@@ -43,6 +43,7 @@
 @property (nonatomic, assign) id<UIAlertViewDelegate> delegate;
 @property (nonatomic) NSInteger cancelButtonIndex;
 @property (nonatomic,readonly) NSInteger numberOfButtons;
+@property (nonatomic, readonly, getter=isVisible) BOOL visible;
 @end
 
 @protocol UIAlertViewDelegate <NSObject>

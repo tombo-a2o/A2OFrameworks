@@ -43,6 +43,7 @@ typedef NS_ENUM(NSInteger, UIToolbarPosition) {
 - (void)setBackgroundImage:(UIImage *)backgroundImage forToolbarPosition:(UIToolbarPosition)topOrBottom barMetrics:(UIBarMetrics)barMetrics;
 
 @property (nonatomic) UIBarStyle barStyle;
+@property (nonatomic, strong) UIColor *barTintColor;
 @property (nonatomic, strong) UIColor *tintColor;
 @property (nonatomic, copy) NSArray *items;
 @property (nonatomic,assign,getter=isTranslucent) BOOL translucent;

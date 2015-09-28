@@ -53,6 +53,7 @@
 #import <UIKit/UITableView.h>
 #import <UIKit/UITableViewCell.h>
 #import <UIKit/UIFont.h>
+#import <UIKit/UIFontDescriptor.h>
 #import <UIKit/UILabel.h>
 #import <UIKit/UIStringDrawing.h>
 #import <UIKit/UIDevice.h>
@@ -109,6 +110,13 @@
 #import <UIKit/UIDatePicker.h>
 #import <UIKit/UIAppearance.h>
 #import <UIKit/UITextInput.h>
+#import <UIKit/UICollectionView.h>
+#import <UIKit/UICollectionViewCell.h>
+#import <UIKit/UICollectionReusableView.h>
+#import <UIKit/UICollectionViewLayout.h>
+#import <UIKit/UICollectionViewFlowLayout.h>
+#import <UIKit/UIStoryboard.h>
+#import <UIKit/UILocalNotification.h>
 
 // non-standard imports
 #import <UIKit/UIScrollWheelGestureRecognizer.h>

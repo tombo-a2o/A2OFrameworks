@@ -31,6 +31,7 @@
 #import <UIKit/UIApplication.h>
 #import <UIKit/UISearchDisplayController.h>
 #import <UIKit/UITabBarItem.h>
+#import <UIKit/UIStoryboard.h>
 
 @class UITabBarController;
 
@@ -100,6 +101,8 @@ typedef NS_ENUM(NSInteger, UIModalTransitionStyle) {
 - (void)willMoveToParentViewController:(UIViewController *)parent;
 - (void)didMoveToParentViewController:(UIViewController *)parent;
 
+- (void)setNeedsStatusBarAppearanceUpdate;
+
 @property (nonatomic, readonly, copy) NSString *nibName;
 @property (nonatomic, readonly, retain) NSBundle *nibBundle;
 @property (nonatomic, retain) UIView *view;
@@ -132,4 +135,6 @@ typedef NS_ENUM(NSInteger, UIModalTransitionStyle) {
 @property (nonatomic, readonly, retain) UIViewController *modalViewController;
 
 @property (nonatomic, retain) UITabBarItem *tabBarItem;
+
+@property(nonatomic, readonly, retain) UIStoryboard *storyboard;
 @end

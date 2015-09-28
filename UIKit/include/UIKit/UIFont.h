@@ -44,6 +44,8 @@
 
 - (UIFont *)fontWithSize:(CGFloat)fontSize;
 
++ (UIFont *)preferredFontForTextStyle:(NSString *)style;
+
 @property (nonatomic, readonly, strong) NSString *fontName;
 @property (nonatomic, readonly) CGFloat ascender;
 @property (nonatomic, readonly) CGFloat descender;

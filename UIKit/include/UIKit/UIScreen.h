@@ -44,6 +44,7 @@ extern NSString *const UIScreenModeDidChangeNotification;
 @property (nonatomic, readonly) CGRect applicationFrame;
 @property (nonatomic, readonly, copy) NSArray *availableModes;      // only ever returns the currentMode
 @property (nonatomic, strong) UIScreenMode *currentMode;            // ignores any attempt to set this
+@property (nonatomic, readonly, strong) UIScreenMode *preferredMode;
 @property (nonatomic, readonly) CGFloat scale;
 @property (nonatomic) CGFloat brightness;                           // not implemented, of course
 @end

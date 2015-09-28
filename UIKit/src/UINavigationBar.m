@@ -116,7 +116,7 @@ typedef NS_ENUM(NSInteger, _UINavigationBarTransition) {
     if ((self=[super initWithFrame:frame])) {
         _navStack = [[NSMutableArray alloc] init];
         _barStyle = UIBarStyleDefault;
-        _tintColor = [UIColor colorWithRed:21/255.f green:21/255.f blue:25/255.f alpha:1];
+        //_tintColor = [UIColor colorWithRed:21/255.f green:21/255.f blue:25/255.f alpha:1];
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_navigationItemDidChange:) name:UINavigationItemDidChange object:nil];
     }
@@ -300,6 +300,7 @@ typedef NS_ENUM(NSInteger, _UINavigationBarTransition) {
     }
 }
 
+/*
 - (void)setTintColor:(UIColor *)newColor
 {
     if (newColor != _tintColor) {
@@ -307,6 +308,7 @@ typedef NS_ENUM(NSInteger, _UINavigationBarTransition) {
         [self setNeedsDisplay];
     }
 }
+*/
 
 - (void)setItems:(NSArray *)items animated:(BOOL)animated
 {

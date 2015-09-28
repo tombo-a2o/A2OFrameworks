@@ -55,6 +55,5 @@
 @property (nonatomic, assign) UIBarStyle barStyle;
 @property (nonatomic, readonly, strong) UINavigationItem *topItem;
 @property (nonatomic, readonly, strong) UINavigationItem *backItem;
-@property (nonatomic, strong) UIColor *tintColor;
 @property (nonatomic, copy) NSDictionary *titleTextAttributes;
 @end

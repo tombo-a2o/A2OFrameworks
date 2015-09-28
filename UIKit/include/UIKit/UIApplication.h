@@ -30,6 +30,7 @@
 #import <UIKit/UIResponder.h>
 #import <UIKit/UIDevice.h>
 #import <UIKit/UIApplicationDelegate.h>
+#import <UIKit/UILocalNotification.h>
 
 extern NSString *const UIApplicationWillChangeStatusBarOrientationNotification;
 extern NSString *const UIApplicationDidChangeStatusBarOrientationNotification;
@@ -52,9 +53,10 @@ extern NSString *const UIApplicationDidReceiveMemoryWarningNotification;
 extern NSString *const UITrackingRunLoopMode;
 
 typedef NS_ENUM(NSInteger, UIStatusBarStyle) {
-  UIStatusBarStyleDefault,
-  UIStatusBarStyleBlackTranslucent,
-  UIStatusBarStyleBlackOpaque
+    UIStatusBarStyleDefault,
+    UIStatusBarStyleLightContent,
+    UIStatusBarStyleBlackTranslucent,
+    UIStatusBarStyleBlackOpaque
 };
 
 typedef NS_ENUM(NSInteger, UIStatusBarAnimation) {
@@ -157,6 +159,8 @@ extern const NSTimeInterval UIMinimumKeepAliveTimeout;
 
 - (UIBackgroundTaskIdentifier)beginBackgroundTaskWithExpirationHandler:(void(^)(void))handler;
 - (void)endBackgroundTask:(UIBackgroundTaskIdentifier)identifier;
+
+- (void)scheduleLocalNotification:(UILocalNotification *)notification;
 
 @property (nonatomic, weak, readonly) UIWindow *keyWindow;
 @property (nonatomic, readonly) NSArray *windows;

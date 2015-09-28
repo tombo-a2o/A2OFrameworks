@@ -169,6 +169,7 @@ typedef NS_OPTIONS(NSUInteger, UIViewAnimationOptions) {
 @property (nonatomic, readonly) NSArray *subviews;
 @property (nonatomic) CGFloat alpha;
 @property (nonatomic, getter=isOpaque) BOOL opaque;
+@property (nonatomic, strong) UIColor *tintColor;
 @property (nonatomic) BOOL clearsContextBeforeDrawing;
 @property (nonatomic, copy) UIColor *backgroundColor;
 @property (nonatomic, readonly) CALayer *layer;

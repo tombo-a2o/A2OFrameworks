@@ -254,7 +254,7 @@ static const CGFloat kBarHeight = 28;
 {
     const CGRect bounds = self.bounds;
     
-    UIColor *color = _tintColor ?: [UIColor colorWithRed:21/255.f green:21/255.f blue:25/255.f alpha:1];
+    UIColor *color = self.tintColor ?: [UIColor colorWithRed:21/255.f green:21/255.f blue:25/255.f alpha:1];
 
     [color setFill];
     UIRectFill(bounds);

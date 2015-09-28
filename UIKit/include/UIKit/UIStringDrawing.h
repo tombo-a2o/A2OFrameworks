@@ -44,10 +44,25 @@ typedef NS_ENUM(NSInteger, UITextAlignment) {
     UITextAlignmentRight,
 };
 
+typedef NS_ENUM(NSInteger, NSTextAlignment) {
+    NSTextAlignmentLeft      = 0,
+    NSTextAlignmentCenter    = 1,
+    NSTextAlignmentRight     = 2,
+    NSTextAlignmentJustified = 3,
+    NSTextAlignmentNatural   = 4
+};
+
 typedef NS_ENUM(NSInteger, UIBaselineAdjustment) {
     UIBaselineAdjustmentAlignBaselines,
     UIBaselineAdjustmentAlignCenters,
     UIBaselineAdjustmentNone,
+};
+
+typedef NS_ENUM(NSInteger, NSStringDrawingOptions) {
+    NSStringDrawingTruncatesLastVisibleLine = 1 << 5,
+    NSStringDrawingUsesLineFragmentOrigin = 1 << 0,
+    NSStringDrawingUsesFontLeading = 1 << 1,
+    NSStringDrawingUsesDeviceMetrics = 1 << 3,
 };
 
 extern NSString *const UITextAttributeFont;
@@ -56,6 +71,12 @@ extern NSString *const UITextAttributeTextShadowColor;
 extern NSString *const UITextAttributeTextShadowOffset;
 
 @class UIFont;
+
+@interface NSStringDrawingContext : NSObject
+@property(nonatomic) CGFloat minimumScaleFactor;
+@property(readonly, nonatomic) CGFloat actualScaleFactor;
+@property(readonly, nonatomic) CGRect totalBounds;
+@end
 
 @interface NSString (UIStringDrawing)
 - (CGSize)sizeWithFont:(UIFont *)font;
@@ -72,7 +93,7 @@ extern NSString *const UITextAttributeTextShadowOffset;
 // not yet implemented
 - (CGSize)sizeWithFont:(UIFont *)font minFontSize:(CGFloat)minFontSize actualFontSize:(CGFloat *)actualFontSize forWidth:(CGFloat)width lineBreakMode:(UILineBreakMode)lineBreakMode;
 - (CGSize)drawAtPoint:(CGPoint)point forWidth:(CGFloat)width withFont:(UIFont *)font minFontSize:(CGFloat)minFontSize actualFontSize:(CGFloat *)actualFontSize lineBreakMode:(UILineBreakMode)lineBreakMode baselineAdjustment:(UIBaselineAdjustment)baselineAdjustment;
-
+- (CGRect)boundingRectWithSize:(CGSize)size options:(NSStringDrawingOptions)options attributes:(NSDictionary *)attributes context:(NSStringDrawingContext *)context;
 
 @end
 

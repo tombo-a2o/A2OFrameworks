@@ -126,6 +126,8 @@ typedef NS_ENUM(NSInteger, UITableViewRowAnimation) {
 
 - (void)setEditing:(BOOL)editing animated:(BOOL)animate;
 
+- (UITableViewCell *)dequeueReusableCellWithIdentifier:(NSString *)identifier forIndexPath:(NSIndexPath *)indexPath;
+
 @property (nonatomic, readonly) UITableViewStyle style;
 @property (nonatomic, assign) id<UITableViewDelegate> delegate;
 @property (nonatomic, assign) id<UITableViewDataSource> dataSource;
