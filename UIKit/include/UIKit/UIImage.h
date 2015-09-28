@@ -75,6 +75,11 @@ typedef NS_ENUM(NSInteger, UIImageOrientation) {
 @property (nonatomic, readonly) CGImageRef CGImage;
 @property (nonatomic, readonly) CGFloat scale;
 
++ (UIImage *)animatedImageNamed:(NSString *)name duration:(NSTimeInterval)duration;
++ (UIImage *)animatedImageWithImages:(NSArray *)images duration:(NSTimeInterval)duration;
+@property(nonatomic, readonly) NSArray *images;
+@property(nonatomic, readonly) NSTimeInterval duration;
+
 @end
 
 void UIImageWriteToSavedPhotosAlbum(UIImage *image, id completionTarget, SEL completionSelector, void *contextInfo);
