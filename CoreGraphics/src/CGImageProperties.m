@@ -16,8 +16,24 @@ const CFStringRef kCGImagePropertyPixelWidth=(CFStringRef)@"PixelWidth";
 const CFStringRef kCGImagePropertyOrientation=(CFStringRef)@"Orientation";
 
 const CFStringRef kCGImagePropertyTIFFDictionary=(CFStringRef)@"{TIFF}";
+const CFStringRef kCGImagePropertyGIFDictionary=(CFStringRef)@"{GIF}";
+const CFStringRef kCGImagePropertyJFIFDictionary=(CFStringRef)@"{JFIF}";
 const CFStringRef kCGImagePropertyExifDictionary=(CFStringRef)@"{Exif}";
+const CFStringRef kCGImagePropertyPNGDictionary=(CFStringRef)@"{PNG}";
+const CFStringRef kCGImagePropertyIPTCDictionary=(CFStringRef)@"{IPTC}";
+const CFStringRef kCGImagePropertyGPSDictionary=(CFStringRef)@"{GPS}";
+const CFStringRef kCGImagePropertyRawDictionary=(CFStringRef)@"{Raw}";
+const CFStringRef kCGImagePropertyCIFFDictionary=(CFStringRef)@"{CIFF}";
+const CFStringRef kCGImageProperty8BIMDictionary=(CFStringRef)@"{8BIM}";
+const CFStringRef kCGImagePropertyDNGDictionary=(CFStringRef)@"{DNG}";
+const CFStringRef kCGImagePropertyExifAuxDictionary=(CFStringRef)@"{ExifAux}";
 
 const CFStringRef kCGImagePropertyTIFFXResolution=(CFStringRef)@"XResolution";
 const CFStringRef kCGImagePropertyTIFFYResolution=(CFStringRef)@"YResolution";
 const CFStringRef kCGImagePropertyTIFFOrientation=(CFStringRef)@"Orientation";
+
+const CFStringRef kCGImagePropertyGIFLoopCount=(CFStringRef)@"LoopCount";
+const CFStringRef kCGImagePropertyGIFDelayTime=(CFStringRef)@"DelayTime";
+const CFStringRef kCGImagePropertyGIFImageColorMap=(CFStringRef)@"ImageColorMap";
+const CFStringRef kCGImagePropertyGIFHasGlobalColorMap=(CFStringRef)@"HasGlobalColorMap";
+const CFStringRef kCGImagePropertyGIFUnclampedDelayTime=(CFStringRef)@"UnclampedDelayTime";

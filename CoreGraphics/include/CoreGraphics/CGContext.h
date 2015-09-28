@@ -88,7 +88,17 @@ typedef enum {
     kCGBlendModePlusLighter,
 } CGBlendMode;
 
-typedef int CGTextDrawingMode;
+enum CGTextDrawingMode {
+    kCGTextFill,
+    kCGTextStroke,
+    kCGTextFillStroke,
+    kCGTextInvisible,
+    kCGTextFillClip,
+    kCGTextStrokeClip,
+    kCGTextFillStrokeClip,
+    kCGTextClip 
+};
+typedef enum CGTextDrawingMode CGTextDrawingMode;
 
 COREGRAPHICS_EXPORT CGContextRef CGContextRetain(CGContextRef context);
 COREGRAPHICS_EXPORT void CGContextRelease(CGContextRef context);
