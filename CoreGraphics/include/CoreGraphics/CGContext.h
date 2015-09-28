@@ -186,6 +186,7 @@ COREGRAPHICS_EXPORT void CGContextSetCalibratedGrayFillColor(CGContextRef contex
 COREGRAPHICS_EXPORT void CGContextSetCalibratedRGBFillColor(CGContextRef context, float red, float green, float blue, float alpha);
 
 COREGRAPHICS_EXPORT void CGContextDrawLinearGradient(CGContextRef c, CGGradientRef gradient, CGPoint startPoint, CGPoint endPoint, CGGradientDrawingOptions options);
+COREGRAPHICS_EXPORT void CGContextDrawRadialGradient (CGContextRef c, CGGradientRef gradient, CGPoint startCenter, CGFloat startRadius, CGPoint endCenter, CGFloat endRadius, CGGradientDrawingOptions options);
 
 COREGRAPHICS_EXPORT void CGContextSetAlpha(CGContextRef context, float alpha);
 
