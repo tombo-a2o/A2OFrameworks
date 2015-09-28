@@ -5,3 +5,4 @@
 #import <QuartzCore/CATransaction.h>
 #import <QuartzCore/CADisplayLink.h>
 #import <QuartzCore/CAEAGLLayer.h>
+#import <QuartzCore/CAShapeLayer.h>
