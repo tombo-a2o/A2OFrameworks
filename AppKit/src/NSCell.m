@@ -261,7 +261,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
    return _image;
 }
 
--(NSTextAlignment)alignment {
+-(NSTextAlignmentAppKit)alignment {
    return _textAlignment;
 }
 
@@ -554,7 +554,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
    [(NSControl *)[self controlView] updateCell:self];
 }
 
--(void)setAlignment:(NSTextAlignment)alignment {
+-(void)setAlignment:(NSTextAlignmentAppKit)alignment {
    _textAlignment=alignment;
 }
 

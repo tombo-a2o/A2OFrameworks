@@ -24,7 +24,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 - (NSString *)title;
 - (NSAttributedString *)attributedTitle;
 - (NSFont *)titleFont;
-- (NSTextAlignment)titleAlignment;
+- (NSTextAlignmentAppKit)titleAlignment;
 - (NSWritingDirection)titleBaseWritingDirection;
 - (NSString *)placeholderString;
 - (NSAttributedString *)placeholderAttributedString;
@@ -34,7 +34,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 - (void)setAttributedTitle:(NSAttributedString *)value;
 - (void)setTitleWithMnemonic:(NSString *)value;
 - (void)setTitleFont:(NSFont *)value;
-- (void)setTitleAlignment:(NSTextAlignment)value;
+- (void)setTitleAlignment:(NSTextAlignmentAppKit)value;
 - (void)setTitleBaseWritingDirection:(NSWritingDirection)value;
 - (void)setPlaceholderString:(NSString *)value;
 - (void)setPlaceholderAttributedString:(NSAttributedString *)value;

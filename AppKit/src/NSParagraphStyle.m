@@ -208,7 +208,7 @@ static inline id mutableCopyWithZone(NSParagraphStyle *self,NSZone *zone){
    return _tailIndent;
 }
 
--(NSTextAlignment)alignment {
+-(NSTextAlignmentAppKit)alignment {
    return _alignment;
 }
 

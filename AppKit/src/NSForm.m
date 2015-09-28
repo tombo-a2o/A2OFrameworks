@@ -95,7 +95,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
    [self setIntercellSpacing:NSMakeSize(0,value)];
 }
 
--(void)setTitleAlignment:(NSTextAlignment)value {
+-(void)setTitleAlignment:(NSTextAlignmentAppKit)value {
    NSArray *cells=[self cells];
    int      i,count=[cells count];
    
@@ -125,7 +125,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
    [self setNeedsDisplay:YES];
 }
 
--(void)setTextAlignment:(NSTextAlignment)value {
+-(void)setTextAlignment:(NSTextAlignmentAppKit)value {
    NSArray *cells=[self cells];
    int      i,count=[cells count];
    

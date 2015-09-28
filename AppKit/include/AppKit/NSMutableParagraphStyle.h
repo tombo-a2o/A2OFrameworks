@@ -26,7 +26,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 - (void)setHeadIndent:(float)indent;
 - (void)setTailIndent:(float)indent;
 
-- (void)setAlignment:(NSTextAlignment)alignment;
+- (void)setAlignment:(NSTextAlignmentAppKit)alignment;
 - (void)setLineBreakMode:(NSLineBreakMode)mode;
 
 - (void)setMinimumLineHeight:(float)height;

@@ -27,7 +27,7 @@ typedef enum {
     float _firstLineHeadIndent;
     float _headIndent;
     float _tailIndent;
-    NSTextAlignment _alignment;
+    NSTextAlignmentAppKit _alignment;
     NSLineBreakMode _lineBreakMode;
     float _minimumLineHeight;
     float _maximumLineHeight;
@@ -55,7 +55,7 @@ typedef enum {
 - (float)headIndent;
 - (float)tailIndent;
 
-- (NSTextAlignment)alignment;
+- (NSTextAlignmentAppKit)alignment;
 - (NSLineBreakMode)lineBreakMode;
 
 - (float)minimumLineHeight;

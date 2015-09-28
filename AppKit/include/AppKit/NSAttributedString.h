@@ -124,13 +124,13 @@ enum {
 
 - (void)drawAtPoint:(NSPoint)point;
 - (void)drawInRect:(NSRect)rect;
-- (void)drawWithRect:(NSRect)rect options:(NSStringDrawingOptions)options;
+- (void)drawWithRect:(NSRect)rect options:(NSStringDrawingOptionsAppKit)options;
 - (NSSize)size;
 
 #pragma mark -
 #pragma mark Getting the Bounding Rectangle of Rendered Strings
 
-- (NSRect)boundingRectWithSize:(NSSize)size options:(NSStringDrawingOptions)options;
+- (NSRect)boundingRectWithSize:(NSSize)size options:(NSStringDrawingOptionsAppKit)options;
 
 #pragma mark -
 #pragma mark Testing String Data Sources

@@ -89,7 +89,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
    return [_titleCell font];
 }
 
--(NSTextAlignment)titleAlignment {
+-(NSTextAlignmentAppKit)titleAlignment {
    return [_titleCell alignment];
 }
 
@@ -127,7 +127,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
    [_titleCell setFont:value];
 }
 
--(void)setTitleAlignment:(NSTextAlignment)value {
+-(void)setTitleAlignment:(NSTextAlignmentAppKit)value {
    [_titleCell setAlignment:value];
 }
 

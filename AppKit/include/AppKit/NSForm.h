@@ -22,11 +22,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 - (void)setEntryWidth:(float)value;
 - (void)setInterlineSpacing:(float)value;
 
-- (void)setTitleAlignment:(NSTextAlignment)value;
+- (void)setTitleAlignment:(NSTextAlignmentAppKit)value;
 - (void)setTitleFont:(NSFont *)value;
 - (void)setTitleBaseWritingDirection:(NSWritingDirection)value;
 
-- (void)setTextAlignment:(NSTextAlignment)value;
+- (void)setTextAlignment:(NSTextAlignmentAppKit)value;
 - (void)setTextFont:(NSFont *)value;
 - (void)setTextBaseWritingDirection:(NSWritingDirection)value;
 

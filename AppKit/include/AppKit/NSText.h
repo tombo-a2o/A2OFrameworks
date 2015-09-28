@@ -31,7 +31,7 @@ typedef enum {
     NSCenterTextAlignment,
     NSJustifiedTextAlignment,
     NSNaturalTextAlignment
-} NSTextAlignment;
+} NSTextAlignmentAppKit;
 
 enum {
     NSIllegalTextMovement = 0x00,
@@ -71,7 +71,7 @@ APPKIT_EXPORT NSString *const NSTextDidChangeNotification;
 - (BOOL)importsGraphics;
 
 - (NSFont *)font;
-- (NSTextAlignment)alignment;
+- (NSTextAlignmentAppKit)alignment;
 
 - (NSColor *)textColor;
 
@@ -103,7 +103,7 @@ APPKIT_EXPORT NSString *const NSTextDidChangeNotification;
 
 - (void)setFont:(NSFont *)font;
 - (void)setFont:(NSFont *)font range:(NSRange)range;
-- (void)setAlignment:(NSTextAlignment)alignment;
+- (void)setAlignment:(NSTextAlignmentAppKit)alignment;
 
 - (void)setTextColor:(NSColor *)color;
 - (void)setTextColor:(NSColor *)color range:(NSRange)range;

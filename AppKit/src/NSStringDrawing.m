@@ -26,7 +26,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
    return [[NSStringDrawer sharedStringDrawer] sizeOfString:self withAttributes:attributes inSize:NSZeroSize];
 }
 
-- (NSRect)boundingRectWithSize:(NSSize)size options:(NSStringDrawingOptions)options attributes:(NSDictionary *)attributes {
+- (NSRect)boundingRectWithSize:(NSSize)size options:(NSStringDrawingOptionsAppKit)options attributes:(NSDictionary *)attributes {
 	NSUnimplementedMethod();
 	return NSMakeRect(0,0,0,0);
 }
@@ -47,7 +47,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
    return [[NSStringDrawer sharedStringDrawer] sizeOfAttributedString:self inSize:NSZeroSize];
 }
 
--(void)drawWithRect:(NSRect)rect options:(NSStringDrawingOptions)options {
+-(void)drawWithRect:(NSRect)rect options:(NSStringDrawingOptionsAppKit)options {
    NSUnimplementedMethod();
 }
 

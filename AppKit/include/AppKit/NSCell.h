@@ -135,7 +135,7 @@ enum {
 - (id)formatter;
 - (NSFont *)font;
 - (NSImage *)image;
-- (NSTextAlignment)alignment;
+- (NSTextAlignmentAppKit)alignment;
 - (NSLineBreakMode)lineBreakMode;
 - (NSWritingDirection)baseWritingDirection;
 - (BOOL)wraps;
@@ -181,7 +181,7 @@ enum {
 - (void)setFormatter:(NSFormatter *)formatter;
 - (void)setFont:(NSFont *)font;
 - (void)setImage:(NSImage *)image;
-- (void)setAlignment:(NSTextAlignment)alignment;
+- (void)setAlignment:(NSTextAlignmentAppKit)alignment;
 - (void)setLineBreakMode:(NSLineBreakMode)value;
 - (void)setBaseWritingDirection:(NSWritingDirection)value;
 - (void)setWraps:(BOOL)wraps;

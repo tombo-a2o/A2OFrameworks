@@ -70,7 +70,7 @@ NSString * const NSTextDidChangeNotification=@"NSTextDidChangeNotification";
    return nil;
 }
 
--(NSTextAlignment)alignment {
+-(NSTextAlignmentAppKit)alignment {
    NSInvalidAbstractInvocation();
    return 0;
 }
@@ -178,7 +178,7 @@ NSString * const NSTextDidChangeNotification=@"NSTextDidChangeNotification";
    NSInvalidAbstractInvocation();
 }
 
--(void)setAlignment:(NSTextAlignment)alignment {
+-(void)setAlignment:(NSTextAlignmentAppKit)alignment {
    NSInvalidAbstractInvocation();
 }
 

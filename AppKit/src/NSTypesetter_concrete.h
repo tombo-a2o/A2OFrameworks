@@ -39,7 +39,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     float _fontAscender;
     float _fontDefaultLineHeight;
     NSPoint (*_positionOfGlyph)(NSFont *, SEL, NSGlyph, NSGlyph, BOOL *);
-    NSTextAlignment _alignment;
+    NSTextAlignmentAppKit _alignment;
     NSLineBreakMode _lineBreakMode;
     float _whitespaceAdvancement;
 

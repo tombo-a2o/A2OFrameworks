@@ -1960,7 +1960,7 @@ NSString * const NSOldSelectedCharacterRange=@"NSOldSelectedCharacterRange";
     return _font;
 }
 
--(NSTextAlignment)alignment {
+-(NSTextAlignmentAppKit)alignment {
     return _textAlignment;
 }
 
@@ -2304,7 +2304,7 @@ NSString * const NSOldSelectedCharacterRange=@"NSOldSelectedCharacterRange";
     }
 }
 
--(void)_setAlignment:(NSTextAlignment)alignment range:(NSRange)range {
+-(void)_setAlignment:(NSTextAlignmentAppKit)alignment range:(NSRange)range {
     NSMutableParagraphStyle *style=nil;
     
     if([[self textStorage] length]>0)
@@ -2325,7 +2325,7 @@ NSString * const NSOldSelectedCharacterRange=@"NSOldSelectedCharacterRange";
 	[self setTypingAttributes:attributes];
 }
 
--(void)setAlignment:(NSTextAlignment)alignment {
+-(void)setAlignment:(NSTextAlignmentAppKit)alignment {
     [self _setAlignment:alignment range:NSMakeRange(0, [[self textStorage] length])];
     _textAlignment=alignment;
 }

@@ -103,7 +103,7 @@ static NSMutableDictionary *cellClassDictionary = nil;
    return [[self cell] image];
 }
 
--(NSTextAlignment)alignment {
+-(NSTextAlignmentAppKit)alignment {
    return [_cell alignment];
 }
 
@@ -212,7 +212,7 @@ static NSMutableDictionary *cellClassDictionary = nil;
    [self setNeedsDisplay:YES];
 }
 
--(void)setAlignment:(NSTextAlignment)alignment {
+-(void)setAlignment:(NSTextAlignmentAppKit)alignment {
    [_cell setAlignment:alignment];
    [self setNeedsDisplay:YES];
 }

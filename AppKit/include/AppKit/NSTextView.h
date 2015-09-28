@@ -66,7 +66,7 @@ APPKIT_EXPORT NSString *const NSOldSelectedCharacterRange;
     BOOL _drawsBackground;
     NSFont *_font;
     NSColor *_textColor;
-    NSTextAlignment _textAlignment;
+    NSTextAlignmentAppKit _textAlignment;
 
     NSColor *_insertionPointColor;
     NSRect _insertionPointRect;

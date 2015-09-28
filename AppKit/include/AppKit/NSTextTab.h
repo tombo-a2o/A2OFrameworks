@@ -24,11 +24,11 @@ APPKIT_EXPORT NSString *NSTabColumnTerminatorsAttributeName;
     float _location;
 }
 
-- (id)initWithTextAlignment:(NSTextAlignment)alignment location:(CGFloat)location options:(NSDictionary *)options;
+- (id)initWithTextAlignment:(NSTextAlignmentAppKit)alignment location:(CGFloat)location options:(NSDictionary *)options;
 
 - initWithType:(NSTextTabType)type location:(float)location;
 
-- (NSTextAlignment)alignment;
+- (NSTextAlignmentAppKit)alignment;
 
 - (NSDictionary *)options;
 

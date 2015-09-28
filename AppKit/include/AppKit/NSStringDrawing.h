@@ -9,29 +9,29 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <Foundation/Foundation.h>
 
 enum {
-    NSStringDrawingUsesLineFragmentOrigin = 0x01,
-    NSStringDrawingUsesFontLeading = 0x02,
-    NSStringDrawingDisableScreenFontSubstitution = 0x04,
-    NSStringDrawingUsesDeviceMetrics = 0x08,
-    NSStringDrawingOneShot = 0x10,
-    NSStringDrawingTruncatesLastVisibleLine = 0x20,
+    NSStringDrawingAppKitUsesLineFragmentOrigin = 0x01,
+    NSStringDrawingAppKitUsesFontLeading = 0x02,
+    NSStringDrawingAppKitDisableScreenFontSubstitution = 0x04,
+    NSStringDrawingAppKitUsesDeviceMetrics = 0x08,
+    NSStringDrawingAppKitOneShot = 0x10,
+    NSStringDrawingAppKitTruncatesLastVisibleLine = 0x20,
 };
 
-typedef NSInteger NSStringDrawingOptions;
+typedef NSInteger NSStringDrawingOptionsAppKit;
 
 @interface NSString (NSStringDrawing)
 - (void)drawAtPoint:(NSPoint)point withAttributes:(NSDictionary *)attributes;
 - (void)drawInRect:(NSRect)rect withAttributes:(NSDictionary *)attributes;
 
 - (NSSize)sizeWithAttributes:(NSDictionary *)attributes;
-- (NSRect)boundingRectWithSize:(NSSize)size options:(NSStringDrawingOptions)options attributes:(NSDictionary *)attributes;
+- (NSRect)boundingRectWithSize:(NSSize)size options:(NSStringDrawingOptionsAppKit)options attributes:(NSDictionary *)attributes;
 
 @end
 
 @interface NSAttributedString (NSStringDrawing)
 - (void)drawAtPoint:(NSPoint)point;
 - (void)drawInRect:(NSRect)rect;
-- (void)drawWithRect:(NSRect)rect options:(NSStringDrawingOptions)options;
+- (void)drawWithRect:(NSRect)rect options:(NSStringDrawingOptionsAppKit)options;
 
 - (NSSize)size;
 
