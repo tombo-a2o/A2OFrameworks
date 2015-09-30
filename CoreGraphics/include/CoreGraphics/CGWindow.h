@@ -8,9 +8,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #import <Foundation/Foundation.h>
 #import <CoreGraphics/CGWindowLevel.h>
-#import <OpenGL/CGLTypes.h>
+//#import <OpenGL/CGLTypes.h>
 
-@class O2Context, CGEvent;
+@class O2Context, CGEvent, CGLContext;
+typedef CGLContext *CGLContextObj;
 
 typedef enum {
     CGSBackingStoreRetained = 0,

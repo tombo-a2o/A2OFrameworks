@@ -1,8 +1,10 @@
+#if 0
+
 #import <CoreGraphics/CGLPixelSurface.h>
 #import <CoreGraphics/CGWindow.h>
 #import <Onyx2D/O2Image.h>
 #import <Onyx2D/O2Surface.h>
-#import <OpenGL/glweak.h>
+//#import <OpenGL/glweak.h>
 //#import <AppKit/O2Surface_DIBSection.h>
 
 @implementation CGLPixelSurface
@@ -257,3 +259,5 @@ static inline uint32_t premultiplyPixel(uint32_t value){
 }
 
 @end
+
+#endif

@@ -1,6 +1,6 @@
 #import <Foundation/NSObject.h>
 #import <Onyx2D/O2Geometry.h>
-#import <OpenGL/OpenGL.h>
+#import <OpenGLES/ES2/gl.h>
 
 @class O2Surface, CGWindow;
 
