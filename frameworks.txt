@@ -3,5 +3,4 @@ CoreData
 CoreGraphics
 CoreText
 Onyx2D
-OpenGL
 QuartzCore

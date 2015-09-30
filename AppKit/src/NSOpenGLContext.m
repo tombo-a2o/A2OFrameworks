@@ -5,13 +5,15 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
+#if 0
+
 #import <AppKit/NSOpenGLContext.h>
 #import <AppKit/NSOpenGLPixelFormat.h>
 #import <AppKit/NSGraphicsContext.h>
 #import <AppKit/NSRaise.h>
 #import <AppKit/NSView.h>
 #import <AppKit/NSWindow-Private.h>
-#import <OpenGL/OpenGL.h>
+#import <OpenGLES/OpenGLES.h>
 //#import <Foundation/NSThread-Private.h>
 #import "NSThreadPrivate.h"
 
@@ -228,3 +230,4 @@ static inline void _clearCurrentContext(){
 }
 
 @end
+#endif

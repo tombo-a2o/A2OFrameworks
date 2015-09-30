@@ -1,4 +1,4 @@
-#import <OpenGL/gl.h>
+#import <OpenGLES/ES2/gl.h>
 
 #import <AppKit/NSOpenGLContext.h>
 #import <AppKit/NSOpenGLView.h>

@@ -1,4 +1,4 @@
-#import <OpenGL/OpenGL.h>
+#import <OpenGLES/OpenGLES.h>
 #import <Foundation/NSString.h>
 #import "X11Display.h"
 #import "X11Window.h"

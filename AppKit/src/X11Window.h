@@ -10,7 +10,7 @@
 #import <Onyx2D/O2Geometry.h>
 #import <X11/Xlib.h>
 #import <GL/glx.h>
-#import <OpenGL/OpenGL.h>
+#import <OpenGLES/OpenGLES.h>
 
 @class O2Context_cairo, X11Display, CAWindowOpenGLContext;
 

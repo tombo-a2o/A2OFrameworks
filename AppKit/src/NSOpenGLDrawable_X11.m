@@ -13,7 +13,7 @@
 
 #include <X11/X.h>
 #include <X11/Xlib.h>
-#import <OpenGL/OpenGL.h>
+#import <OpenGLES/OpenGLES.h>
 #include <GL/glx.h>
 
 CGL_EXPORT CGLError CGLCreateContext(CGLPixelFormatObj pixelFormat,Display *dpy,XVisualInfo *vis,Window window,CGLContextObj *resultp);
