@@ -3,7 +3,8 @@
 #import <QuartzCore/CAAnimation.h>
 #import <QuartzCore/CAMediaTimingFunction.h>
 //#import <CoreVideo/CoreVideo.h>
-#import <OpenGL/OpenGL.h>
+#import <OpenGLES/ES2/gl.h>
+#import <OpenGLES/ES2/glext.h>
 #import <Onyx2D/O2Surface.h>
 
 @interface CALayer(private)
@@ -211,6 +212,9 @@ void CATexImage2DCGImage(CGImageRef image){
     const uint8_t    *pixelBytes=CFDataGetBytePtr(data);
    
    
+#if 1
+   assert(0);
+#else
     GLenum glFormat=GL_BGRA;
     GLenum glType=GL_UNSIGNED_INT_8_8_8_8_REV;
    
@@ -253,6 +257,7 @@ void CATexImage2DCGImage(CGImageRef image){
     }
 
     glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA8,imageWidth,imageHeight,0,glFormat,glType,pixelBytes);
+#endif
 }
 
 
@@ -321,6 +326,9 @@ void CATexImage2DCGImage(CGImageRef image){
    vertices[11]=z;
    
 
+#if 1
+   NSAssert(0, @"need to re-implement by GLES");
+#else
    glPushMatrix();
  //  glTranslatef(width/2,height/2,0);
    glTexCoordPointer(2, GL_FLOAT, 0, textureVertices);
@@ -340,9 +348,13 @@ void CATexImage2DCGImage(CGImageRef image){
     [self _renderLayer:child z:z+1 currentTime:currentTime];
 
    glPopMatrix();
+#endif
 }
 
 -(void)render {
+#if 1
+   NSAssert(0, @"need to re-implement by GLES");
+#else
    glMatrixMode(GL_MODELVIEW);                                           
    glLoadIdentity();
 
@@ -365,6 +377,7 @@ void CATexImage2DCGImage(CGImageRef image){
    [self _renderLayer:_rootLayer z:0 currentTime:CACurrentMediaTime()];
 
    glFlush();
+#endif
 }
 
 -(void)endFrame {

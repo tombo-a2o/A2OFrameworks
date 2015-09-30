@@ -1,5 +1,5 @@
 #import <QuartzCore/CARenderer.h>
-#import <OpenGL/OpenGL.h>
+#import <OpenGLES/OpenGLES.h>
 
 @interface CAWindowOpenGLContext : NSObject {
     CGLContextObj _cglContext;

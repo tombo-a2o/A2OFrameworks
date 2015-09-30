@@ -1,5 +1,6 @@
+#if 0
 #import <QuartzCore/CAWindowOpenGLContext.h>
-#import <OpenGL/OpenGL.h>
+#import <OpenGLES/OpenGLES.h>
 #import <Onyx2D/O2Surface.h>
 
 @implementation CAWindowOpenGLContext
@@ -106,3 +107,4 @@
 }
 
 @end
+#endif
