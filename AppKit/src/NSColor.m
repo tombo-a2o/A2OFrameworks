@@ -607,6 +607,10 @@ static void releasePatternInfo(void *info){
    return nil; 
 }
 
+-(NSColor *)colorUsingColorSpace:(NSColorSpace *)colorSpace {
+    return self;
+}
+
 -(NSColor *)colorUsingColorSpaceName:(NSString *)colorSpace {
     return [self colorUsingColorSpaceName:colorSpace device:nil];
 }
