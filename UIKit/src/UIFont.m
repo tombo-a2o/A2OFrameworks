@@ -30,6 +30,19 @@
 
 #import <UIKit/UIFont.h>
 @implementation UIFont
++ (UIFont *)systemFontOfSize:(CGFloat)fontSize
+{
+    UIFont *font = [[UIFont alloc] init];
+    font->_pointSize = fontSize;
+    return font;
+}
+
++ (UIFont *)boldSystemFontOfSize:(CGFloat)fontSize
+{
+    UIFont *font = [[UIFont alloc] init];
+    font->_pointSize = fontSize;
+    return font;
+}
 @end
 
 #else
