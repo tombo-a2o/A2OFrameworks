@@ -8,6 +8,23 @@ NSString * const kCAFilterLinear=@"linear";
 NSString * const kCAFilterNearest=@"nearest";
 NSString * const kCAFilterTrilinear=@"trilinear";
 
+NSString * const kCAGravityCenter = @"center";
+NSString * const kCAGravityTopa = @"top";
+NSString * const kCAGravityBottom = @"bottom";
+NSString * const kCAGravityLeft = @"left";
+NSString * const kCAGravityRight = @"right";
+NSString * const kCAGravityTopLeft = @"topleft";
+NSString * const kCAGravityTopRight = @"topright";
+NSString * const kCAGravityBottomLeft = @"bottomleft";
+NSString * const kCAGravityBottomRight = @"bottomright";
+NSString * const kCAGravityResize = @"resize";
+NSString * const kCAGravityResizeAspect = @"resizeAspect";
+NSString * const kCAGravityResizeAspectFill = @"resizeAspectFill";
+
+NSString * const kCAOnOrderIn = @"onOrderIn";
+NSString * const kCAOnOrderOut = @"onOrderOut";
+NSString * const kCATransition = @"transition";
+
 @implementation CALayer
 
 +layer {
@@ -246,6 +263,26 @@ NSString * const kCAFilterTrilinear=@"trilinear";
    layer->_superlayer=nil;
 }
 
+- (void)insertSublayer:(CALayer *)aLayer atIndex:(unsigned int)index {
+   NSMutableArray *layers=[_sublayers mutableCopy];
+   
+   [layers insertObject:aLayer atIndex:index];
+   [self setSublayers:layers];
+   [layers release];
+}
+
+- (void)insertSublayer:(CALayer *)aLayer below:(CALayer *)sublayer {
+   NSUInteger      index=[_sublayers indexOfObjectIdenticalTo:aLayer];
+
+   [self insertSublayer:aLayer atIndex:index];
+}
+
+- (void)insertSublayer:(CALayer *)aLayer above:(CALayer *)sublayer {
+   NSUInteger      index=[_sublayers indexOfObjectIdenticalTo:aLayer];
+
+   [self insertSublayer:aLayer atIndex:index+1];
+}
+
 -(void)display {
    if([_delegate respondsToSelector:@selector(displayLayer:)])
     [_delegate displayLayer:self];
@@ -339,6 +376,30 @@ NSString * const kCAFilterTrilinear=@"trilinear";
    value=[value copy];
    [_textureId release];
    _textureId=value;
+}
+
+- (void)setNeedsLayout {
+}
+
+- (void)layoutIfNeeded {
+}
+
+- (void)layoutSublayers {
+}
+
+- (CGPoint)convertPoint:(CGPoint)aPoint fromLayer:(CALayer *)layer {
+}
+
+- (CGPoint)convertPoint:(CGPoint)aPoint toLayer:(CALayer *)layer {
+}
+
+- (CGAffineTransform)affineTransform {
+}
+
+- (void)setAffineTransform:(CGAffineTransform)m {
+}
+
+- (id)presentationLayer {
 }
 
 @end

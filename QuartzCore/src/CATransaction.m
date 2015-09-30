@@ -1,10 +1,6 @@
 #import <QuartzCore/CATransaction.h>
 #import <QuartzCore/CALayerContext.h>
-#import <Foundation/NSString.h>
-#import <Foundation/NSValue.h>
-#import <Foundation/NSArray.h>
-#import <Foundation/NSThread.h>
-#import <Foundation/NSRunLoop.h>
+#import <Foundation/Foundation.h>
 //#import <Foundation/NSThread-Private.h>
 #import "CATransactionGroup.h"
 
@@ -16,7 +12,7 @@ NSString * const kCATransactionCompletionBlock=@"kCATransactionCompletionBlock";
 @implementation CATransaction
 
 static NSMutableArray *transactionStack(){
-   NSMutableDictionary *shared=[[NSThread currentThread] sharedDictionary];
+   NSMutableDictionary *shared=[[NSThread currentThread] threadDictionary];
    id                   stack=[shared objectForKey:@"CATransactionStack"];
    
    if(stack==nil){

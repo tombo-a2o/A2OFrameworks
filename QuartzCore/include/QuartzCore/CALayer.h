@@ -69,7 +69,7 @@ CA_EXPORT NSString * const kCATransition;
 @property float opacity;
 @property BOOL opaque;
 @property(retain) id contents;
-//@property CATransform3D transform;
+@property CATransform3D transform;
 @property CATransform3D sublayerTransform;
 
 @property(copy) NSString *minificationFilter;
