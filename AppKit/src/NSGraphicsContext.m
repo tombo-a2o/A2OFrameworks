@@ -101,7 +101,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 }
 
 static NSMutableArray *_contextStack() {
-   NSMutableDictionary *shared=[[NSThread currentThread] sharedDictionary];
+   NSMutableDictionary *shared=[[NSThread currentThread] threadDictionary];
    NSMutableArray      *stack=[shared objectForKey:@"NSGraphicsContext.stack"];
 
    if(stack==nil){
@@ -113,7 +113,7 @@ static NSMutableArray *_contextStack() {
 }
 
 static NSGraphicsContext *_currentContext() {
-   NSMutableDictionary *shared=[[NSThread currentThread] sharedDictionary];
+   NSMutableDictionary *shared=[[NSThread currentThread] threadDictionary];
    id result=[shared objectForKey:@"NSGraphicsContext"];
    
    if(result==[NSNull null])
@@ -143,7 +143,7 @@ NSMutableArray *NSCurrentFocusStack() {
 }
 
 +(void)setCurrentContext:(NSGraphicsContext *)context {
-   NSMutableDictionary *shared=[[NSThread currentThread] sharedDictionary];
+   NSMutableDictionary *shared=[[NSThread currentThread] threadDictionary];
 
    if(context==nil)
     [shared setObject:[NSNull null] forKey:@"NSGraphicsContext"];
