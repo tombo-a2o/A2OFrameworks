@@ -14,6 +14,12 @@ const CFStringRef kCGImagePropertyDPIHeight=(CFStringRef)@"DPIHeight";
 const CFStringRef kCGImagePropertyPixelHeight=(CFStringRef)@"PixelHeight";
 const CFStringRef kCGImagePropertyPixelWidth=(CFStringRef)@"PixelWidth";
 const CFStringRef kCGImagePropertyOrientation=(CFStringRef)@"Orientation";
+const CFStringRef kCGImagePropertyDepth=(CFStringRef)@"Depth";
+const CFStringRef kCGImagePropertyIsFloat=(CFStringRef)@"IsFloat";
+const CFStringRef kCGImagePropertyIsIndexed=(CFStringRef)@"IsIndexed";
+const CFStringRef kCGImagePropertyHasAlpha=(CFStringRef)@"HasAlpha";
+const CFStringRef kCGImagePropertyColorModel=(CFStringRef)@"ColorModel";
+const CFStringRef kCGImagePropertyProfileName=(CFStringRef)@"ProfileName";
 
 const CFStringRef kCGImagePropertyTIFFDictionary=(CFStringRef)@"{TIFF}";
 const CFStringRef kCGImagePropertyGIFDictionary=(CFStringRef)@"{GIF}";

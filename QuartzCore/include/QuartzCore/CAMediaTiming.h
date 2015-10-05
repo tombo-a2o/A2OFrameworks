@@ -1,5 +1,6 @@
 #import <QuartzCore/CABase.h>
 #import <CoreFoundation/CoreFoundation.h>
+#import <Foundation/Foundation.h>
 
 @protocol CAMediaTiming
 

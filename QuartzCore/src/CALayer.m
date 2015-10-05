@@ -9,7 +9,7 @@ NSString * const kCAFilterNearest=@"nearest";
 NSString * const kCAFilterTrilinear=@"trilinear";
 
 NSString * const kCAGravityCenter = @"center";
-NSString * const kCAGravityTopa = @"top";
+NSString * const kCAGravityTop = @"top";
 NSString * const kCAGravityBottom = @"bottom";
 NSString * const kCAGravityLeft = @"left";
 NSString * const kCAGravityRight = @"right";
