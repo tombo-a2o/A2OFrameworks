@@ -94,3 +94,29 @@ O2Size O2SizeApplyAffineTransform(O2Size size,O2AffineTransform xform){
 
     return s;
 }
+
+O2Rect O2RectApplyAffineTransform(O2Rect rect, O2AffineTransform xform){
+    O2Rect r;
+
+    double x1 = (double)xform.a * rect.size.width;
+    double x2 = (double)xform.c * rect.size.height;
+    double y1 = (double)xform.b * rect.size.width;
+    double y2 = (double)xform.d * rect.size.height;
+    // left = min(0, x1, x2, x1+x2) = min(x1,0) + min(x2,0)
+    // bottom = min(0, y1, y2, y1+y2) = min(y1,0) + min(y2,0)
+
+#define _min(x,y) (x>y ? y : x)
+#define _min4(x1,x2) (_min(x1,0)+_min(x2,0))
+#define _abs(x) (x>=0 ? x : -x)
+
+    r.origin.x = (CGFloat)((double)xform.a * rect.origin.x + (double)xform.c * rect.origin.y + xform.tx + _min4(x1,x2));
+    r.origin.y = (CGFloat)((double)xform.b * rect.origin.x + (double)xform.d * rect.origin.y + xform.ty + _min4(y1,y2));
+    r.size.width = (CGFloat)(_abs(x1) + _abs(x2));
+    r.size.height = (CGFloat)(_abs(y1) + _abs(y2));
+
+#undef _min
+#undef _min4
+#undef _abs
+
+    return r;
+}

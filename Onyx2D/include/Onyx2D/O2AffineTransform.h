@@ -37,6 +37,7 @@ ONYX2D_EXPORT O2AffineTransform O2AffineTransformTranslate(O2AffineTransform xfo
 
 ONYX2D_EXPORT O2Point O2PointApplyAffineTransform(O2Point point, O2AffineTransform xform);
 ONYX2D_EXPORT O2Size O2SizeApplyAffineTransform(O2Size size, O2AffineTransform xform);
+ONYX2D_EXPORT O2Rect O2RectApplyAffineTransform(O2Rect rect, O2AffineTransform xform);
 
 #ifdef __cplusplus
 }

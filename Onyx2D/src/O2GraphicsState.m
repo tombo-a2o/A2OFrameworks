@@ -138,13 +138,11 @@ O2AffineTransform O2GStateUserSpaceTransform(O2GState *self) {
 }
 
 -(O2Rect)convertRectToDeviceSpace:(O2Rect)rect {
-   O2UnimplementedMethod();
-   return O2RectZero;
+   return O2RectApplyAffineTransform(rect,_deviceSpaceTransform);
 }
 
 -(O2Rect)convertRectToUserSpace:(O2Rect)rect {
-   O2UnimplementedMethod();
-   return O2RectZero;
+   return O2RectApplyAffineTransform(rect,O2AffineTransformInvert(_deviceSpaceTransform));
 }
 
 void O2GStateSetDeviceSpaceCTM(O2GState *self,O2AffineTransform transform){
