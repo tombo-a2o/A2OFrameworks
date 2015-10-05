@@ -463,7 +463,7 @@ id NSApp=nil;
 }
 
 -(void)finishLaunching {
-   NSAutoreleasePool *pool=[NSAutoreleasePool new];
+   //NSAutoreleasePool *pool=[NSAutoreleasePool new];
    BOOL               needsUntitled=YES;
 
    NS_DURING
@@ -523,7 +523,7 @@ id NSApp=nil;
     [self reportException:localException];
    NS_ENDHANDLER
 
-   [pool release];
+   //[pool release];
 }
 
 -(void)_checkForReleasedWindows {
@@ -583,6 +583,7 @@ id NSApp=nil;
     didlaunch = YES;
     pool=[NSAutoreleasePool new];
     [self finishLaunching];
+  dispatch_main();
     [pool release];
   }
    
