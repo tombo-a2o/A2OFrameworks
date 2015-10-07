@@ -45,7 +45,7 @@ enum
 };
 
 #if LIBPNG_PRESENT
-#include <libpng/include/png.h>
+#include <png.h>
 
 typedef struct png_data_t {
 	const uint8_t *data;
@@ -648,7 +648,9 @@ unsigned char *stbi_png_load_from_memory(const unsigned char *buffer, int len, i
 
 // clang-format on
 
-@implementation O2ImageSource_PNG
+@implementation O2ImageSource_PNG {
+    O2Image *_image;
+}
 
 +(BOOL)isPresentInDataProvider:(O2DataProvider *)provider {
    enum { signatureLength=8 };
@@ -687,6 +689,8 @@ unsigned char *stbi_png_load_from_memory(const unsigned char *buffer, int len, i
 }
 
 -(O2Image *)createImageAtIndex:(unsigned)index options:(NSDictionary *)options {
+    if(_image) return _image;
+
    int            width,height;
    int            comp;
    unsigned char *pixels=stbi_png_load_from_memory([_png bytes],[_png length],&width,&height,&comp,STBI_rgb_alpha);
@@ -716,15 +720,30 @@ unsigned char *stbi_png_load_from_memory(const unsigned char *buffer, int len, i
 
     O2DataProvider *provider=O2DataProviderCreateWithCFData((CFDataRef)bitmap);
    O2ColorSpaceRef colorSpace=O2ColorSpaceCreateDeviceRGB();
-   O2Image *image=[[O2Image alloc] initWithWidth:width height:height bitsPerComponent:8 bitsPerPixel:bitsPerPixel bytesPerRow:bytesPerRow
+   _image=[[O2Image alloc] initWithWidth:width height:height bitsPerComponent:8 bitsPerPixel:bitsPerPixel bytesPerRow:bytesPerRow
       colorSpace:colorSpace bitmapInfo:kO2ImageAlphaPremultipliedLast|kO2BitmapByteOrder32Big decoder:NULL provider:provider decode:NULL interpolate:NO renderingIntent:kO2RenderingIntentDefault];
       
    [colorSpace release];
    [provider release];
    [bitmap release];
    
-   return image;
+   return _image;
 }
 
+-(CFDictionaryRef)copyPropertiesAtIndex:(unsigned)index options:(CFDictionaryRef)options {
+    if(index > 0) {
+        return nil;
+    }
+    if(!_image) {
+        [self createImageAtIndex:index options:(NSDictionary*)options];
+    }
+    int width = O2ImageGetWidth(_image);
+    int height = O2ImageGetHeight(_image);
+    return (CFDictionaryRef)[NSDictionary dictionaryWithObjectsAndKeys:
+        [NSNumber numberWithInteger:width], kCGImagePropertyPixelWidth,
+        [NSNumber numberWithInteger:height], kCGImagePropertyPixelHeight,
+        [NSNumber numberWithBool:YES], kCGImagePropertyHasAlpha,
+        nil];
+}
 
 @end

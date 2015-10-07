@@ -45,6 +45,7 @@ NSString *kO2ImagePropertyTIFFOrientation=@"Orientation";
     Class cls=NSClassFromString(classes[i]);
    
     if([cls isPresentInDataProvider:provider]){
+        NSLog(@"cls = %@", classes[i]);
      [provider rewind];
      return [[cls alloc] initWithDataProvider:provider options:(NSDictionary *)options];
     }

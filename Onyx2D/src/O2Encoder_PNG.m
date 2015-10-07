@@ -17,8 +17,8 @@ void O2PNGEncoderDealloc(O2PNGEncoderRef self) {
 }
 
 #ifdef LIBPNG_PRESENT
-#include <libpng/include/png.h>
-#include <zlib-1.2.5/include/zlib.h>
+#include <png.h>
+#include <zlib.h>
 
 static void o2png_write_data(png_structp png_ptr, png_bytep data, png_size_t length)
 {
