@@ -7,3 +7,5 @@ xcuserdata
 *.xcuserstate
 *.xcsettings
 xcshareddata
+.*.swp
+*~
