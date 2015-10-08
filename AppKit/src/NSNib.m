@@ -17,7 +17,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import "NSIBObjectData.h"
 #import <AppKit/NSNibHelpConnector.h>
 #import "NSCustomObject.h"
-#import "NSNIBUnarchiver.h"
+#import "NSNibUnarchiver.h"
 
 NSString * const NSNibOwner=@"NSOwner";
 NSString * const NSNibTopLevelObjects=@"NSNibTopLevelObjects";
