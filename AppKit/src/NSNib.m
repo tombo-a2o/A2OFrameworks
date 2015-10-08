@@ -17,6 +17,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import "NSIBObjectData.h"
 #import <AppKit/NSNibHelpConnector.h>
 #import "NSCustomObject.h"
+#import "NSNIBUnarchiver.h"
 
 NSString * const NSNibOwner=@"NSOwner";
 NSString * const NSNibTopLevelObjects=@"NSNibTopLevelObjects";
@@ -111,21 +112,23 @@ NSString * const NSNibTopLevelObjects=@"NSNibTopLevelObjects";
     
    NSAutoreleasePool *pool=[NSAutoreleasePool new];
    _nameTable=[nameTable retain];
-    NSKeyedUnarchiver *unarchiver=[[[NSKeyedUnarchiver alloc] initForReadingWithData:_data] autorelease];
+    //NSKeyedUnarchiver *unarchiver=[[[NSKeyedUnarchiver alloc] initForReadingWithData:_data] autorelease];
+    NSNibUnarchiver *unarchiver=[[NSNibUnarchiver unarchiveObjectWithData:_data] autorelease];
     NSIBObjectData    *objectData;
     int                i,count;
     NSMenu            *menu;
     NSArray           *topLevelObjects;
     
-    [unarchiver setDelegate:self];
+    //[unarchiver setDelegate:self];
+    NIBDEBUG(@"unarchiver %@", unarchiver);
     
     /*
     TO DO:
      - utf8 in the multinational panel
      - misaligned objects in boxes everywhere
     */
-    [unarchiver setClass:[NSTableCornerView class] forClassName:@"_NSCornerView"];
-    [unarchiver setClass:[NSNibHelpConnector class] forClassName:@"NSIBHelpConnector"];
+    //[unarchiver setClass:[NSTableCornerView class] forClassName:@"_NSCornerView"];
+    //[unarchiver setClass:[NSNibHelpConnector class] forClassName:@"NSIBHelpConnector"];
     
     objectData=[unarchiver decodeObjectForKey:@"IB.objectdata"];
         
@@ -140,7 +143,10 @@ NSString * const NSNibTopLevelObjects=@"NSNibTopLevelObjects";
 		[NSApp setMainMenu:menu];
 	}
 	
-    topLevelObjects = [objectData topLevelObjects];
+    //topLevelObjects = [objectData topLevelObjects];
+    topLevelObjects = [unarchiver decodeObjectForKey:@"UINibTopLevelObjectsKey"];
+
+    NIBDEBUG(@"topLevelObjects %@", topLevelObjects);
 
     // Top-level objects are always retained - this echoes observed Cocoa behaviour
 	[topLevelObjects makeObjectsPerformSelector:@selector(retain)];
@@ -177,7 +183,8 @@ NSString * const NSNibTopLevelObjects=@"NSNibTopLevelObjects";
 
     [pool release];
 
-    return (objectData!=nil);
+    //return (objectData!=nil);
+    return (topLevelObjects!=nil);
 }
 
 -(BOOL)instantiateNibWithOwner:owner topLevelObjects:(NSArray **)objects {
