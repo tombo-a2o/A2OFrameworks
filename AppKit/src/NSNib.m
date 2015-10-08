@@ -21,7 +21,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 NSString * const NSNibOwner=@"NSOwner";
 NSString * const NSNibTopLevelObjects=@"NSNibTopLevelObjects";
 
+#if defined(DEBUG)
+#define NIBDEBUG(...) NSLog(__VA_ARGS__)
+#else
 #define NIBDEBUG(...)
+#endif
 
 @implementation NSNib
 
@@ -38,7 +42,7 @@ NSString * const NSNibTopLevelObjects=@"NSNibTopLevelObjects";
    if(!keyedobjects && !isDirectory)
       keyedobjects=path; // assume new-style compiled xib
    
-   if((_data=[[NSData alloc] initWithContentsOfFile:keyedobjects])==nil){
+   if((_data=[[NSData alloc] initWithContentsOfFile:path])==nil){
     [self release];
     return nil;
    }
@@ -191,6 +195,10 @@ NSString * const NSNibTopLevelObjects=@"NSNibTopLevelObjects";
    }
    
    return result;
+}
+
+- (BOOL)instantiateWithOwner:(id)owner topLevelObjects:(NSArray **)objects {
+    return [self instantiateNibWithOwner:owner topLevelObjects:objects];
 }
 
 @end
