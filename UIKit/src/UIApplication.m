@@ -33,6 +33,8 @@
 #import "UIKitView.h"
 #import "UIBackgroundTask.h"
 #import "UINSApplicationDelegate.h"
+#import <UIKit/UIStoryboard.h>
+#import <UIKit/UIViewController.h>
 #import <AppKit/AppKit.h>
 
 NSString *const UIApplicationWillChangeStatusBarOrientationNotification = @"UIApplicationWillChangeStatusBarOrientationNotification";
@@ -595,11 +597,24 @@ int UIApplicationMain(int argc, char *argv[], NSString *principalClassName, NSSt
         [app setDelegate:delegate];
 
         NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
+        NSString *mainStoryboardName = [infoDictionary objectForKey:@"UIMainStoryboardFile"];
+        if(mainStoryboardName) {
+            NSLog(@"main storyboard %@", mainStoryboardName);
+            UIStoryboard *storyboard = [UIStoryboard storyboardWithName:mainStoryboardName bundle:nil];
+            NSLog(@"storyboard %@", storyboard);
+            UIViewController *rootVC = [storyboard instantiateInitialViewController];
+            NSLog(@"rootVC %@", rootVC);
+            app.keyWindow.rootViewController = rootVC;
+            [app.keyWindow addSubview:[rootVC view]];
+        }
+
         NSString *mainNibName = [infoDictionary objectForKey:@"NSMainNibFile"];
         NSArray *topLevelObjects = nil;
-        NSNib *mainNib = [[NSNib alloc] initWithNibNamed:mainNibName bundle:[NSBundle mainBundle]];
+        if(mainNibName) {
+            NSNib *mainNib = [[NSNib alloc] initWithNibNamed:mainNibName bundle:[NSBundle mainBundle]];
+            [mainNib instantiateWithOwner:app topLevelObjects:&topLevelObjects];
+        }
 
-        [mainNib instantiateWithOwner:app topLevelObjects:&topLevelObjects];
         
         id<NSApplicationDelegate> backgroundTaskCatchingDelegate = [UINSApplicationDelegate new];
         [[NSApplication sharedApplication] setDelegate:backgroundTaskCatchingDelegate];
