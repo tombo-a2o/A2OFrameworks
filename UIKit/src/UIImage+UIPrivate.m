@@ -60,7 +60,8 @@ NSMutableDictionary *imageCache = nil;
     UIImage *image = [self _cachedImageForName:name];
 
     if (!image) {
-        NSBundle *frameworkBundle = [NSBundle bundleWithIdentifier:@"org.chameleonproject.UIKit"];
+        //NSBundle *frameworkBundle = [NSBundle bundleWithIdentifier:@"org.chameleonproject.UIKit"];
+        NSBundle *frameworkBundle = [[NSBundle alloc] initWithPath:@"/frameworks/UIKit.framework/Resources"];
         NSString *frameworkFile = [[frameworkBundle resourcePath] stringByAppendingPathComponent:name];
         image = [[self imageWithContentsOfFile:frameworkFile] stretchableImageWithLeftCapWidth:leftCapWidth topCapHeight:topCapHeight];
         [self _cacheImage:image forName:name];
