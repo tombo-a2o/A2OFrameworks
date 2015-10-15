@@ -29,5 +29,8 @@
 
 #import <AppKit/NSApplication.h>
 
-@interface UINSApplicationDelegate : NSObject <NSApplicationDelegate>
+@interface UINSApplicationDelegate : NSObject <NSApplicationDelegate> {
+    NSWindow *window;
+}
+- (void)applicationDidFinishLaunching:(NSNotification *)aNotification;
 @end

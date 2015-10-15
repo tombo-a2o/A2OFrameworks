@@ -29,6 +29,9 @@
 
 #import "UINSApplicationDelegate.h"
 #import "UIApplicationAppKitIntegration.h"
+#import <AppKit/NSWindow.h>
+#import "UIKitView.h"
+#import <CoreGraphics/CoreGraphics.h>
 
 @implementation UINSApplicationDelegate
 
@@ -40,6 +43,8 @@
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
 {
 //    [[NSAppleEventManager sharedAppleEventManager] setEventHandler:self andSelector:@selector(handleURLEvent:withReplyEvent:) forEventClass:kInternetEventClass andEventID:kAEGetURL];
+    NSApplication *app = (NSApplication *)[notification object];
+    app.mainWindow.contentView = [[UIKitView alloc] initWithFrame:CGRectMake(0,0,320,568)];
 }
 
 /*
