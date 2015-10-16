@@ -300,6 +300,10 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)displayIfNeeded {
+    if(_needsDisplay) {
+        [self display];
+    }
+    _needsDisplay = NO;
 }
 
 -(void)drawInContext:(CGContextRef)context {
@@ -379,27 +383,35 @@ NSString * const kCATransition = @"transition";
 }
 
 - (void)setNeedsLayout {
+    _needsLayout = YES;
 }
 
 - (void)layoutIfNeeded {
+    assert(0);
 }
 
 - (void)layoutSublayers {
+    assert(0);
 }
 
 - (CGPoint)convertPoint:(CGPoint)aPoint fromLayer:(CALayer *)layer {
+    assert(0);
 }
 
 - (CGPoint)convertPoint:(CGPoint)aPoint toLayer:(CALayer *)layer {
+    assert(0);
 }
 
 - (CGAffineTransform)affineTransform {
+    assert(0);
 }
 
 - (void)setAffineTransform:(CGAffineTransform)m {
+    assert(0);
 }
 
 - (id)presentationLayer {
+    assert(0);
 }
 
 @end

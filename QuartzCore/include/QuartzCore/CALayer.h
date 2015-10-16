@@ -55,6 +55,7 @@ CA_EXPORT NSString * const kCATransition;
     BOOL _needsDisplay;
     NSMutableDictionary *_animations;
     NSNumber *_textureId;
+    BOOL _needsLayout;
 }
 
 + layer;
