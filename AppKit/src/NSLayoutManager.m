@@ -18,14 +18,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <AppKit/NSWindow.h>
 #import <AppKit/NSGraphicsContextFunctions.h>
 #import <AppKit/NSRaise.h>
-
+#import <AppKit/NSRangeEntries.h>
 #import <AppKit/NSAttributedString.h>
 #import <AppKit/NSStringDrawing.h>
 #import <AppKit/NSParagraphStyle.h>
 #import <AppKit/NSColor.h>
 #import <AppKit/NSGraphics.h>
 #import <CoreGraphics/CoreGraphics.h>
-#import "../../Foundation/NSAttributedString/NSRangeEntries.h"
 #import <Foundation/NSKeyedArchiver.h>
 #import <Foundation/NSException.h>
 
