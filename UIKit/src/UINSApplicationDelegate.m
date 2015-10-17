@@ -44,7 +44,8 @@
 {
 //    [[NSAppleEventManager sharedAppleEventManager] setEventHandler:self andSelector:@selector(handleURLEvent:withReplyEvent:) forEventClass:kInternetEventClass andEventID:kAEGetURL];
     NSApplication *app = (NSApplication *)[notification object];
-    app.mainWindow.contentView = [[UIKitView alloc] initWithFrame:CGRectMake(0,0,320,568)];
+    window = [[NSWindow alloc] initWithContentRect:CGRectMake(0,0,320,568) styleMask:0 backing:NSBackingStoreBuffered defer:NO];
+    window.contentView = [[UIKitView alloc] initWithFrame:CGRectMake(0,0,320,568)];
 }
 
 /*
