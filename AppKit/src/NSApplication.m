@@ -579,19 +579,10 @@ id NSApp=nil;
 
   _isRunning=YES;
 
-  if (!didlaunch) {
-    didlaunch = YES;
-    pool=[NSAutoreleasePool new];
-    [self finishLaunching];
-  dispatch_main();
-    [pool release];
-  }
-   
-   do {
-       pool = [NSAutoreleasePool new];
-       NSEvent           *event;
-
-    event=[self nextEventMatchingMask:NSAnyEventMask untilDate:[NSDate distantFuture] inMode:NSDefaultRunLoopMode dequeue:YES];
+  NSTimer *timer = [NSTimer timerWithTimeInterval:1.0f/60 target:[NSBlockOperation blockOperationWithBlock:^{
+    NSAutoreleasePool *pool = [NSAutoreleasePool new];
+    NSEvent           *event;
+    event=nil; //[self nextEventMatchingMask:NSAnyEventMask untilDate:[NSDate distantFuture] inMode:NSDefaultRunLoopMode dequeue:YES];
 
     NS_DURING
      [self sendEvent:event];
@@ -604,7 +595,20 @@ id NSApp=nil;
     [self _checkForTerminate];
 
     [pool release];
-   }while(_isRunning);
+
+    if(!_isRunning) {
+        [timer invalidate];
+    }
+  }] selector:@selector(main) userInfo:nil repeats:YES];
+
+  if (!didlaunch) {
+    didlaunch = YES;
+    pool=[NSAutoreleasePool new];
+    [self finishLaunching];
+    [[NSRunLoop currentRunLoop] addTimer:timer forMode:NSDefaultRunLoopMode];
+    dispatch_main();
+    [pool release];
+  }
 }
 
 -(BOOL)_performKeyEquivalent:(NSEvent *)event {
