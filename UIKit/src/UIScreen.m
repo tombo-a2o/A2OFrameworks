@@ -38,6 +38,7 @@
 #import "UIView+UIPrivate.h"
 #import <AppKit/AppKit.h>
 #import <QuartzCore/QuartzCore.h>
+#import <emscripten.h>
 
 NSString *const UIScreenDidConnectNotification = @"UIScreenDidConnectNotification";
 NSString *const UIScreenDidDisconnectNotification = @"UIScreenDidDisconnectNotification";
@@ -58,6 +59,7 @@ NSMutableArray *_allScreens = nil;
     if (self == [UIScreen class]) {
         _allScreens = [[NSMutableArray alloc] init];
     }
+    emscripten_set_canvas_size(320, 568);
 }
 
 + (UIScreen *)mainScreen
