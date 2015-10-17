@@ -592,7 +592,7 @@ id NSApp=nil;
     NS_ENDHANDLER
 
     [self _checkForReleasedWindows];
-    [self _checkForTerminate];
+    //[self _checkForTerminate];
 
     [pool release];
 
