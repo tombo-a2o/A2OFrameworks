@@ -190,7 +190,11 @@ static NSLock *_cacheLock=nil;
 +(NSFont *)_uiFontOfType:(CTFontUIFontType)type size:(float)size fallbackName:(NSString *)fallbackName
 {
     NSFont *result = nil;
+#if 0
     CTFontRef ctFont=CTFontCreateUIFontForLanguage(type,size,nil);
+#else
+    CTFontRef ctFont = nil;
+#endif
     if (ctFont) {
         NSString *name=(NSString *)CTFontCopyFullName(ctFont);
         
