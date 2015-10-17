@@ -387,11 +387,9 @@ NSString * const kCATransition = @"transition";
 }
 
 - (void)layoutIfNeeded {
-    assert(0);
 }
 
 - (void)layoutSublayers {
-    assert(0);
 }
 
 - (CGPoint)convertPoint:(CGPoint)aPoint fromLayer:(CALayer *)layer {
