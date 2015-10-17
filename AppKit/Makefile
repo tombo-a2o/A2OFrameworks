@@ -10,7 +10,7 @@ CPPFLAGS		= -v -c -x objective-c++ -std=c++11 -pipe -Wmost -Wno-trigraphs -Wretu
 BUILD_DIR		= build/debug
 INSTALL_DIR		= $(EMSCRIPTEN)/system/frameworks
 
-SOURCES			= $(filter-out src/NSOpenGLDrawable_X11.m, $(wildcard src/NS*.m src/NS*.mm))
+SOURCES			= $(filter-out src/NSOpenGLDrawable_X11.m, $(wildcard src/NS*.m src/NS*.mm src/A2O*.m))
 PUBLIC_HEADERS	= $(wildcard include/AppKit/*.h)
 PRIVATE_HEADERS	= $(wildcard private_include/AppKit/*.h)
 RESOURCE_DIR	= resource
