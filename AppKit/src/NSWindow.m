@@ -1811,9 +1811,11 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
     _flushNeeded=NO;
     BOOL doFlush=YES;
 
+#if 0
     if([self isOpaque] && [_contentView isKindOfClass:[NSOpenGLView class]] && [_contentView isOpaque]){
      doFlush=NO;
      }
+#endif
 
        if(doFlush) {
            [[self platformWindow] flushBuffer];

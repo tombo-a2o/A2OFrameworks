@@ -82,7 +82,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <AppKit/NSNibOutletConnector.h>
 #import <AppKit/NSObjectController.h>
 #import <AppKit/NSOpenPanel.h>
-#import <AppKit/NSOpenGL.h>
 #import <AppKit/NSOutlineView.h>
 #import <AppKit/NSPageLayout.h>
 #import <AppKit/NSPanel.h>
