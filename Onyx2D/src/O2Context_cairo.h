@@ -8,8 +8,8 @@
 
 #import <Onyx2D/O2Context.h>
 #import <cairo.h>
-#import <X11/Xlib.h>
-#import <cairo-xlib.h>
+//#import <X11/Xlib.h>
+//#import <cairo-xlib.h>
 #import <CoreGraphics/A2OWindow.h>
 
 @interface O2Context_cairo : O2Context {

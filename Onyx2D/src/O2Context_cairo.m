@@ -312,10 +312,12 @@
 
    switch(cairo_surface_get_type(_surface)){
 
+#if 0
     case CAIRO_SURFACE_TYPE_XLIB:
   //   if(_context!=NULL)
     //  cairo_destroy(_context);
      cairo_xlib_surface_set_size(_surface, size.width, size.height);
+#endif
     // _context = cairo_create(_surface);
      return YES;
 
@@ -327,8 +329,10 @@
 -(NSSize)size {
    switch(cairo_surface_get_type(_surface))
    {
+#if 0
       case CAIRO_SURFACE_TYPE_XLIB:
          return NSMakeSize(cairo_xlib_surface_get_width(_surface), cairo_xlib_surface_get_height(_surface));
+#endif
       case CAIRO_SURFACE_TYPE_IMAGE:
          return NSMakeSize(cairo_image_surface_get_width(_surface), cairo_image_surface_get_height(_surface));
       default:
