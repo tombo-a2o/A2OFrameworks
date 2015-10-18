@@ -1,60 +1,66 @@
-#if 0
 #import <QuartzCore/CAWindowOpenGLContext.h>
-#import <OpenGLES/OpenGLES.h>
+#import <OpenGLES/EAGL.h>
+#import <OpenGLES/ES2/gl.h>
+#import <OpenGLES/ES2/glext.h>
 #import <Onyx2D/O2Surface.h>
 
 @implementation CAWindowOpenGLContext
 
--initWithCGLContext:(CGLContextObj)cglContext {
-   _cglContext=CGLRetainContext(cglContext);
+-initWithEAGLContext:(EAGLContext*)eaglContext {
+   _eaglContext = [eaglContext retain];
    return self;
 }
 
 -(void)dealloc {
-   CGLReleaseContext(_cglContext);
-   [super dealloc];
+    [_eaglContext release];
+    [super dealloc];
 }
 
 -(void)prepareViewportWidth:(int)width height:(int)height {
 // prepare
-   CGLError error;
+    if(![EAGLContext setCurrentContext:_eaglContext]) {
+        NSLog(@"EAGLContext +setCurrentContext failed in %s %d",__FILE__,__LINE__);
+    }
 
-   if((error=CGLSetCurrentContext(_cglContext))!=kCGLNoError)
-    NSLog(@"CGLSetCurrentContext failed with %d in %s %d",error,__FILE__,__LINE__);
-
+#if 1
+    assert(0);
+#else
    glEnable(GL_DEPTH_TEST);
    glShadeModel(GL_SMOOTH);
 
 // reshape
    glViewport(0,0,width,height);
-   glMatrixMode(GL_PROJECTION);                      
+   glMatrixMode(GL_PROJECTION);
    glLoadIdentity();
    glOrtho (0, width, 0, height, -1, 1);
+#endif
 }
 
 -(void)renderSurface:(O2Surface *)surface {
    size_t width=O2ImageGetWidth(surface);
    size_t height=O2ImageGetHeight(surface);
 
-
+#if 1
+   assert(0);
+#else
 // prepare
    glEnable(GL_DEPTH_TEST);
    glShadeModel(GL_SMOOTH);
 
 // reshape
    glViewport(0,0,width,height);
-   glMatrixMode(GL_PROJECTION);                      
+   glMatrixMode(GL_PROJECTION);
    glLoadIdentity();
    glOrtho (0, width, 0, height, -1, 1);
 
 
 // render
-   glMatrixMode(GL_MODELVIEW);                                           
+   glMatrixMode(GL_MODELVIEW);
    glLoadIdentity();
 
    glClearColor(0, 0, 0, 0);
    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-   
+
    glEnable( GL_TEXTURE_2D );
    glEnableClientState(GL_VERTEX_ARRAY);
    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -75,7 +81,7 @@
 
    GLfloat vertices[4*2];
    GLfloat texture[4*2];
-   
+
    vertices[0]=0;
    vertices[1]=0;
    vertices[2]=width;
@@ -84,7 +90,7 @@
    vertices[5]=height;
    vertices[6]=width;
    vertices[7]=height;
-   
+
    texture[0]=0;
    texture[1]=1;
    texture[2]=1;
@@ -102,9 +108,9 @@
  //  glRotatef(1,0,0,1);
    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
    glPopMatrix();
-   
+
    glFlush();
+#endif
 }
 
 @end
-#endif

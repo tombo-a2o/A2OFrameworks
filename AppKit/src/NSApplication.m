@@ -582,7 +582,7 @@ id NSApp=nil;
   NSTimer *timer = [NSTimer timerWithTimeInterval:1.0f/60 target:[NSBlockOperation blockOperationWithBlock:^{
     NSAutoreleasePool *pool = [NSAutoreleasePool new];
     NSEvent           *event;
-    event=nil; //[self nextEventMatchingMask:NSAnyEventMask untilDate:[NSDate distantFuture] inMode:NSDefaultRunLoopMode dequeue:YES];
+    event=[self nextEventMatchingMask:NSAnyEventMask untilDate:[NSDate distantFuture] inMode:NSDefaultRunLoopMode dequeue:YES];
 
     NS_DURING
      [self sendEvent:event];
@@ -646,11 +646,11 @@ id NSApp=nil;
 -(NSEvent *)nextEventMatchingMask:(unsigned int)mask untilDate:(NSDate *)untilDate inMode:(NSString *)mode dequeue:(BOOL)dequeue {
    NSEvent *nextEvent=nil;
    
-   do {
+  // do {
    NSAutoreleasePool *pool=[NSAutoreleasePool new];
 
    NS_DURING
-    [NSClassFromString(@"Win32RunningCopyPipe") performSelector:@selector(createRunningCopyPipe)];
+   // [NSClassFromString(@"Win32RunningCopyPipe") performSelector:@selector(createRunningCopyPipe)];
 
        // This should happen before _makeSureIsOnAScreen so we don't reposition done windows
     [self _checkForReleasedWindows];
@@ -660,7 +660,7 @@ id NSApp=nil;
     [self _checkForAppActivation];
      [self _displayAllWindowsIfNeeded];
 
-     nextEvent=[[_display nextEventMatchingMask:mask untilDate:untilDate inMode:mode dequeue:dequeue] retain];
+     nextEvent=nil; //[[_display nextEventMatchingMask:mask untilDate:untilDate inMode:mode dequeue:dequeue] retain];
 
      if([nextEvent type]==NSAppKitSystem){
       [nextEvent release];
@@ -672,7 +672,7 @@ id NSApp=nil;
    NS_ENDHANDLER
 
    [pool release];
-   }while(nextEvent==nil && [untilDate timeIntervalSinceNow]>0);
+   //}while(nextEvent==nil && [untilDate timeIntervalSinceNow]>0);
 
    if(nextEvent!=nil){
     nextEvent=[nextEvent retain];

@@ -96,17 +96,17 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 
 +(void)addKeyViewPositionsWithView:(NSView *)view toArray:(NSMutableArray *)array {
     [array addObject:[[[_NSKeyViewPosition alloc] initWithView:view] autorelease]];
-    
+
     for(NSView *child in [view subviews])
         [self addKeyViewPositionsWithView:child toArray:array];
 }
 
 +(NSArray *)sortedKeyViewPositionsWithView:(NSView *)view {
     NSMutableArray *result=[NSMutableArray array];
-    
+
     [self addKeyViewPositionsWithView:view toArray:result];
     [result sortUsingSelector:@selector(compareKeyViewPosition:)];
-    
+
     return result;
 }
 
@@ -125,7 +125,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
     // Sort by larger Y (cartesian coordinates)
     if(NSMaxY(_rect)<NSMaxY(other->_rect))
         return NSOrderedDescending;
-    else {    
+    else {
         // Then sort by smaller X
         if(NSMinX(_rect)<NSMinX(other->_rect))
             return NSOrderedAscending;
@@ -146,7 +146,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 +(BOOL)hasMainMenuForStyleMask:(NSUInteger)styleMask {
     if(styleMask&NSTitledWindowMask)
         return YES;
-    
+
     return NO;
 }
 
@@ -157,19 +157,19 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 
 +(NSRect)frameRectForContentRect:(NSRect)contentRect styleMask:(unsigned)styleMask {
    NSRect result=CGOutsetRectForNativeWindowBorder(contentRect,styleMask);
-   
+
     if([self hasMainMenuForStyleMask:styleMask])
         result.size.height+=[NSMainMenuView menuHeight];
-    
+
    return result;
 }
 
 +(NSRect)contentRectForFrameRect:(NSRect)frameRect styleMask:(unsigned)styleMask {
    NSRect result=CGInsetRectForNativeWindowBorder(frameRect,styleMask);
-   
+
     if([self hasMainMenuForStyleMask:styleMask])
         result.size.height-=[NSMainMenuView menuHeight];
-    
+
    return result;
 }
 
@@ -230,9 +230,9 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
    backgroundFrame.origin=NSMakePoint(0,0);
    backgroundFrame.size=_frame.size;
    contentViewFrame=[self contentRectForFrameRect:backgroundFrame];
-   
+
    _savedFrame = _frame;
-	
+
    _backingType=backing;
    _level=NSNormalWindowLevel;
    _minSize=NSMakeSize(0,0);
@@ -295,12 +295,12 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 
    _resizeIncrements=NSMakeSize(1,1);
    _contentResizeIncrements=NSMakeSize(1,1);
-   
+
    _autosaveFrameName=nil;
 
    _platformWindow=nil;
    _threadToContext=[[NSMutableDictionary alloc] init];
-   
+
    if(_menuView!=nil)
     [_backgroundView addSubview:_menuView];
 
@@ -369,12 +369,12 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 			_platformWindow=[[[NSDisplay currentDisplay] panelWithFrame: _frame styleMask:_styleMask backingType:_backingType] retain];
 		else
 			_platformWindow=[[[NSDisplay currentDisplay] windowWithFrame: _frame styleMask:_styleMask backingType:_backingType] retain];
-		
+
 		[_platformWindow setDelegate:self];
 		[_platformWindow setLevel:_level];
-		
+
 		[self _updatePlatformWindowTitle];
-		
+
 		[[NSDraggingManager draggingManager] registerWindow:self dragTypes:nil];
 	}
 }
@@ -394,9 +394,9 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 -(void)setStyleMask:(unsigned)mask {
    _styleMask=mask;
    [_platformWindow setStyleMask:_styleMask];
-   
+
    [self _hideMenuViewIfNeeded];
-    
+
    [_backgroundView resizeSubviewsWithOldSize:[_backgroundView frame].size];
    [_backgroundView setNeedsDisplay:YES]; // FIXME: verify this is done
 }
@@ -409,14 +409,14 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 -(NSGraphicsContext *)graphicsContext {
    NSValue           *key=[NSValue valueWithPointer:[NSThread currentThread]];
    NSGraphicsContext *result=[_threadToContext objectForKey:key];
-   
+
    if(result==nil){
     result=[NSGraphicsContext graphicsContextWithWindow:self];
     [_threadToContext setObject:result forKey:key];
    }
-   
+
    return result;
-} 
+}
 
 -(void)platformWindowDidInvalidateCGContext:(CGWindow *)window {
    [_threadToContext removeAllObjects];
@@ -425,7 +425,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 -(NSDictionary *)deviceDescription {
    NSValue *resolution=[NSValue valueWithSize:NSMakeSize(72.0,72.0)];
    NSValue *size=[NSValue valueWithSize:[self frame].size];
-   
+
    return [NSDictionary dictionaryWithObjectsAndKeys:
     resolution,NSDeviceResolution,
     NSDeviceRGBColorSpace,NSDeviceColorSpaceName,
@@ -767,7 +767,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
        if(changed){
         [self setFrame:frame display:YES];
        }
-       
+
     _makeSureIsOnAScreen=NO;
    }
 #else
@@ -820,19 +820,19 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 {
     NSRect frame = [self frame];
     NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:context, @"NSWindowAnimationContext", nil];
-    
+
     if (_animationContext == nil)
         _animationContext = [context retain];
-    
-    if (_animationContext != context) 
+
+    if (_animationContext != context)
         [NSException raise:NSInvalidArgumentException
                     format:@"-[%@ %@]: attempt to animate frame while animation still in progress",
             [self class], NSStringFromSelector(_cmd)];
-    
+
     [[NSNotificationCenter defaultCenter] postNotificationName:NSWindowWillAnimateNotification object:self userInfo:userInfo];
-    
+
     [context decrement];
-    
+
     if ([context stepCount] > 0) {
         frame.origin.x += [context stepRect].origin.x;
         frame.origin.y += [context stepRect].origin.y;
@@ -841,17 +841,17 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
     }
     else
         frame = [context targetRect];
-    
+
     [self setFrame:frame display:[context display]];
-    
+
     [[NSNotificationCenter defaultCenter] postNotificationName:NSWindowAnimatingNotification object:self userInfo:userInfo];
-    
+
     if ([context stepCount] > 0) {
         [self performSelector:_cmd withObject:context afterDelay:[context stepInterval]];
     }
     else {
         [[NSNotificationCenter defaultCenter] postNotificationName:NSWindowDidAnimateNotification object:self userInfo:userInfo];
-        
+
         [_animationContext release];
         _animationContext = nil;
 #if 0
@@ -869,26 +869,26 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 -(void)setFrame:(NSRect)newFrame display:(BOOL)display animate:(BOOL)animate  {
    BOOL didSize=NSEqualSizes(newFrame.size,_frame.size)?NO:YES;
    BOOL didMove=NSEqualPoints(newFrame.origin,_frame.origin)?NO:YES;
-   
+
    _frame=newFrame;
    _makeSureIsOnAScreen=YES;
 
    [_backgroundView setFrameSize:_frame.size];
-    
+
     [[self platformWindow] setFrame:_frame];
-    
+
    if(didSize)
     [self resetCursorRects];
-    
+
    if(didSize)
     [self postNotificationName:NSWindowDidResizeNotification];
-    
+
    if(didMove)
     [self postNotificationName:NSWindowDidMoveNotification];
 
 // If you setFrame:display:YES before rearranging views with only setFrame: calls (which do not mark the view for display)
 // Cocoa will properly redisplay the views
-// So, doing a hard display right here is not the right thing to do, delay it 
+// So, doing a hard display right here is not the right thing to do, delay it
    if(display)
     [_backgroundView setNeedsDisplay:YES];
 
@@ -1024,7 +1024,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 
    [_contentView removeFromSuperview];
    [_contentView release];
-   
+
    _contentView=view;
 
    [_backgroundView addSubview:_contentView];
@@ -1066,14 +1066,14 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
    NSView    *toolbarView=[_toolbar _view];
    NSUInteger mask=[[self contentView] autoresizingMask];
    NSRect     frame=[self frame];
-   
+
    [_toolbar layoutFrameSizeWithWidth:NSWidth([[self _backgroundView] bounds])];
    newHeight=(_toolbar==nil)?0:[_toolbar visibleHeight];
    contentHeightDelta=newHeight-oldHeight;
 
    frame.size.height+=contentHeightDelta;
    frame.origin.y-=contentHeightDelta;
-   
+
    NSPoint toolbarOrigin;
    NSRect backgroundBounds=[self _backgroundView].bounds;
    toolbarOrigin.x=backgroundBounds.origin.x;
@@ -1082,16 +1082,16 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 
    [[self contentView] setAutoresizingMask:NSViewNotSizable];
    [self setFrame:frame display:NO animate:NO];
-   
+
    [[self contentView] setAutoresizingMask:mask];
 }
 
 -(void)setToolbar:(NSToolbar *)toolbar {
    if(toolbar!=_toolbar){
     CGFloat oldHeight=0;
-   
+
     toolbar=[toolbar retain];
-   
+
     if(_toolbar!=nil){
      oldHeight=[_toolbar visibleHeight];
      [_toolbar _setWindow:nil];
@@ -1099,9 +1099,9 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
      [_toolbar release];
      [[self _backgroundView] setNeedsDisplay:YES];
     }
-   
+
     _toolbar = toolbar;
-   
+
     if(_toolbar!=nil){
      [_toolbar _setWindow:self];
      [[self _backgroundView] addSubview:[_toolbar _view]];
@@ -1123,7 +1123,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 /*
    Cocoa does not setReleasedWhenClosed:NO when setWindowController: is called.
    The NSWindowController class does setReleasedWhenClosed:NO in conjunction with setWindowController:
-   
+
    However, there is one application (AC), which calls setWindowController: standalone and does
    _something else_ which also does setReleasedWhenClosed:NO. Perhaps some byproduct of NSDOcument, NSWindowController or NSWindow.
    THis hasn't been figured out yet. So, in the meantime we do setReleasedWhenClosed:NO since all cases which do call setWindowCOntroller: also
@@ -1255,10 +1255,10 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 -(BOOL)setFrameUsingName:(NSString *)name force:(BOOL)force {
    NSString *key=[self _autosaveFrameKeyWithName:name];
    NSString *value=[[NSUserDefaults standardUserDefaults] objectForKey:key];
-   
+
    if([value length]==0)
     return NO;
-    
+
    [self setFrameFromString:value];
 
    return YES;
@@ -1293,7 +1293,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
    if([name length]>0){
     NSString *key=[self _autosaveFrameKeyWithName:name];
     NSString *value=[self stringWithSavedFrame];
-    
+
     [[NSUserDefaults standardUserDefaults] setObject:value forKey:key];
    }
 }
@@ -1301,7 +1301,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 -(void)setFrameFromString:(NSString *)value {
    NSRect rect=NSRectFromString(value);
 
-   if(!NSIsEmptyRect(rect)){   
+   if(!NSIsEmptyRect(rect)){
     [self setFrame:rect display:YES];
    }
 }
@@ -1477,12 +1477,12 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 
 -(NSRect)frameRectForContentRect:(NSRect)contentRect {
 /* hasMainMenu is an instance method so we can't just use the class method frameRectForContentRect:styleMask: */
-    
+
    NSRect result=CGOutsetRectForNativeWindowBorder(contentRect,[self styleMask]);
-    
+
    if([self hasMainMenu])
     result.size.height+=[NSMainMenuView menuHeight];
-    
+
    if([_toolbar _view]!=nil && ![[_toolbar _view] isHidden])
     result.size.height+=[[_toolbar _view] frame].size.height;
 
@@ -1491,13 +1491,13 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 
 -(NSRect)contentRectForFrameRect:(NSRect)frameRect {
    NSRect result=CGInsetRectForNativeWindowBorder(frameRect,[self styleMask]);
-       
+
    if([self hasMainMenu])
     result.size.height-=[NSMainMenuView menuHeight];
 
    if([_toolbar _view]!=nil && ![[_toolbar _view] isHidden])
     result.size.height-=[[_toolbar _view] frame].size.height;
-   
+
    return result;
 }
 
@@ -1531,7 +1531,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 -(void)addChildWindow:(NSWindow *)child ordered:(NSWindowOrderingMode)ordered {
    if(_childWindows==nil)
     _childWindows=[NSMutableArray new];
-    
+
    [_childWindows addObject:child];
    [child setParentWindow:self];
    [child makeKeyAndOrderFront:nil];
@@ -1572,7 +1572,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 
 -(BOOL)makeFirstResponder:(NSResponder *)responder {
 
-   if(_firstResponder==responder || 
+   if(_firstResponder==responder ||
       ([responder isKindOfClass:[NSControl class]] && _firstResponder==[(NSControl *)responder currentEditor]))
     return YES;
 
@@ -1585,18 +1585,18 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
     return YES;
 
    _firstResponder=self;
-   
+
    return NO;
 }
 
 -(void)makeKeyWindow {
     [[self platformWindow] makeKey];
-    
+
     if(!_hasBeenOnScreen){
         _hasBeenOnScreen=YES;
-        
+
         // Ref. http://www.cocoadev.com/index.pl?KeyViewLoopGuidelines
-        
+
         // If there is an initial first responder there is a manual key view loop and we don't calculate one
         if([self initialFirstResponder]!=nil)
             [self makeFirstResponder:[self initialFirstResponder]];
@@ -1616,25 +1616,25 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 }
 
 -(void)becomeKeyWindow {
-	
-	// The platform should always be told to become key when we want to 
+
+	// The platform should always be told to become key when we want to
 	// become key
 	[self makeKeyWindow];
-	
+
    if([self isKeyWindow]) // if we don't return early we may resign ourself
     return;
 
 // Become key window before the previous key window resigns so that the new key window is valid
 // before NSWindowDidResignKeyNotification is sent.
    NSWindow *keyWindow=[NSApp keyWindow];
-   
+
    [NSApp _setKeyWindow:self];
-      
+
    [keyWindow resignKeyWindow];
 
    if(_firstResponder!=self && [_firstResponder respondsToSelector:_cmd])
     [_firstResponder performSelector:_cmd];
- 
+
    [self postNotificationName:NSWindowDidBecomeKeyNotification];
 }
 
@@ -1650,12 +1650,12 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
     return;
 
    NSWindow *mainWindow=[NSApp mainWindow];
-   
+
    [[self platformWindow] makeMain];
    [NSApp _setMainWindow:self];
-   
+
    [mainWindow resignMainWindow];
-   
+
    [self postNotificationName:NSWindowDidBecomeMainNotification];
 }
 
@@ -1685,7 +1685,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 
 -(void)selectKeyViewFollowingView:(NSView *)view {
    NSView *next=[view nextValidKeyView];
-      
+
    [self makeFirstResponder:next];
 }
 
@@ -1698,13 +1698,13 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 -(void)recalculateKeyViewLoopIfNeeded {
     if(YES){
       //  _needsKeyViewLoop=NO;
-        
+
         NSArray *sorted=[_NSKeyViewPosition sortedKeyViewPositionsWithView:_contentView];
         NSUInteger i,count=[sorted count];
-        
+
         for(i=0;i<count;i++){
             _NSKeyViewPosition *position=[sorted objectAtIndex:i];
-            
+
             if(i+1<count){
                 [[position view] setNextKeyView:[[sorted objectAtIndex:i+1] view]];
             }
@@ -1738,22 +1738,22 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
    NSTextView *newFieldEditor = nil;
    if([_delegate respondsToSelector:@selector(windowWillReturnFieldEditor:toObject:)])
       newFieldEditor = [_delegate windowWillReturnFieldEditor:self toObject:object];
-   
+
    if(create && newFieldEditor == nil && _sharedFieldEditor == nil)
       newFieldEditor = _sharedFieldEditor = [[NSTextView alloc] init];
-   
+
    if (newFieldEditor)
-      _currentFieldEditor = newFieldEditor;   
+      _currentFieldEditor = newFieldEditor;
    else
       _currentFieldEditor = _sharedFieldEditor;
-   
+
    if (_currentFieldEditor) {
       [_currentFieldEditor setHorizontallyResizable:NO];
       [_currentFieldEditor setVerticallyResizable:NO];
       [_currentFieldEditor setFieldEditor:YES];
       [_currentFieldEditor setAutoresizingMask:NSViewWidthSizable|NSViewHeightSizable];
    }
-   
+
    return _currentFieldEditor;
 }
 
@@ -1783,12 +1783,14 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 }
 
 -(void)setViewsNeedDisplay:(BOOL)flag {
+#if 0
    if(flag && !_viewsNeedDisplay){
     // NSApplication does a _displayAllWindowsIfNeeded before every event, but there are some things which wont generate
-    // an event such as performOnMainThread, so we do the callout here too. There is probably a better way to do this	   
+    // an event such as performOnMainThread, so we do the callout here too. There is probably a better way to do this
 	   [[NSRunLoop currentRunLoop] cancelPerformSelector:@selector(_displayAllWindowsIfNeeded) target:NSApp argument:nil]; // Be sure we don't accumulate unneeded perform operations
 	   [[NSRunLoop currentRunLoop] performSelector:@selector(_displayAllWindowsIfNeeded) target:NSApp argument:nil order:0 modes:[NSArray arrayWithObjects:NSDefaultRunLoopMode, NSModalPanelRunLoopMode, NSEventTrackingRunLoopMode, nil]];
    }
+#endif
 	_viewsNeedDisplay=flag;
 }
 
@@ -1812,7 +1814,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
     if([self isOpaque] && [_contentView isKindOfClass:[NSOpenGLView class]] && [_contentView isOpaque]){
      doFlush=NO;
      }
-    
+
        if(doFlush) {
            [[self platformWindow] flushBuffer];
        }
@@ -1839,7 +1841,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 	}
 
 	[NSGraphicsContext setQuartzDebugMode: NO];
-	   
+
     [self disableFlushWindow];
     [_backgroundView displayIfNeeded];
     [self enableFlushWindow];
@@ -1963,7 +1965,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
     NSMutableArray *collectedAreas=[[NSMutableArray alloc] init];
     [[self _backgroundView] _collectTrackingAreasForWindowInto:collectedAreas];
     _trackingAreas=collectedAreas;
-    
+
     count=[_trackingAreas count];
     while(--count>=0){
      NSTrackingArea *area=[_trackingAreas objectAtIndex:count];
@@ -1983,11 +1985,11 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
    }
 }
 
--(void)close {   
+-(void)close {
 /*
   I am not sure if orderOut comes before the notification or not.
   If we order out after the notification, Windows sends the window a bunch of messages from the HIDE, and we
-  end up potentially drawing, updating a window when it is not supposed to be, especially if the delegate has 
+  end up potentially drawing, updating a window when it is not supposed to be, especially if the delegate has
   already released objects that will be messaged during a draw/update.
 
   We either orderOut: before the notification, or have an _isClosed flag which causes
@@ -1999,7 +2001,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
        [_drawers makeObjectsPerformSelector:@selector(parentWindowDidClose:) withObject:self];
 
    [self postNotificationName:NSWindowWillCloseNotification];
-    
+
    if(_releaseWhenClosed)
     [self autorelease];
 }
@@ -2036,13 +2038,13 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
    may be the right place to do this, maybe not, further investigation is
    required
  */
- 
+
      [self displayIfNeeded];
      // this is here since it would seem that doing this any earlier will not work.
      if(![self isKindOfClass:[NSPanel class]] && ![self isExcludedFromWindowsMenu]) {
          [NSApp changeWindowsItem:self title:_title filename:NO];
      }
-     
+
      break;
 
     case NSWindowBelow:
@@ -2062,7 +2064,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
      }
      break;
 
-    case NSWindowOut:   
+    case NSWindowOut:
      _isVisible=NO;
      [[self platformWindow] hideWindow];
      if (![self isKindOfClass:[NSPanel class]]) {
@@ -2113,7 +2115,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 }
 
 -(void)sendEvent:(NSEvent *)event {
-    
+
     // Some events can cause our window to be destroyed
     // So make sure self lives at least through this current run loop...
     [[self retain] autorelease];
@@ -2130,7 +2132,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
                 case NSLeftMouseDown:
                     [[[self toolbar] _view] mouseDown:event];
                     break;
-                    
+
                 case NSLeftMouseUp:
                     [[[self toolbar] _view] mouseUp:event];
                     break;
@@ -2138,7 +2140,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
                 case NSLeftMouseDragged:
                     [[[self toolbar] _view] mouseDragged:event];
                     break;
-                                        
+
                 default:
                     break;
             }
@@ -2157,13 +2159,13 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 
     case NSLeftMouseDown:{
         NSView *view=[_backgroundView hitTest:[event locationInWindow]];
-        
+
         if([view acceptsFirstResponder]){
             if([view needsPanelToBecomeKey]) {
                 [self makeFirstResponder:view];
             }
         }
-        
+
         // Event goes to view, not first responder
         [view mouseDown:event];
         _mouseDownLocationInWindow=[event locationInWindow];
@@ -2195,7 +2197,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
      }
      break;
 
-    case NSLeftMouseDragged:    
+    case NSLeftMouseDragged:
      [[_backgroundView hitTest:_mouseDownLocationInWindow] mouseDragged:event];
      break;
 
@@ -2234,7 +2236,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
     case NSAppKitDefined:
      // Nothing special to do
      break;
-           
+
     default:
      shouldValidateToolbarItems = NO;
      NSUnimplementedMethod();
@@ -2251,15 +2253,15 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
    [NSApp postEvent:event atStart:atStart];
 }
 
--(BOOL)tryToPerform:(SEL)selector with:object {   
+-(BOOL)tryToPerform:(SEL)selector with:object {
    if([super tryToPerform:selector with:object])
     return YES;
-   
+
    if([_delegate respondsToSelector:selector]){
     [_delegate performSelector:selector withObject:object];
     return YES;
    }
-   
+
    return NO;
 }
 
@@ -2267,19 +2269,19 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
    BOOL    reposition = NO;
    NSSize  screenSize = [[self screen] frame].size;
    NSRect  frame = [self frame];
-   
+
    if (frame.origin.x < 0.0 || screenSize.width  <= frame.origin.x + frame.size.width)
    {
       frame.origin.x = 2.0;
       reposition = YES;
    }
-   
+
    if (frame.origin.y < 0.0 || screenSize.height <= frame.origin.y + frame.size.height)
    {
       frame.origin.y = 2.0;
       reposition = YES;
    }
-   
+
    if (topLeftPoint.x != 0.0 && topLeftPoint.x + frame.size.width + 20.0 < screenSize.width)
    {
       topLeftPoint.x += 18.0;
@@ -2288,7 +2290,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
    }
    else
       topLeftPoint.x = frame.origin.x;
-   
+
    if (topLeftPoint.y != 0.0 && topLeftPoint.y - frame.size.height - 23.0 >= 0.0)
    {
       topLeftPoint.y -= 21.0;
@@ -2297,7 +2299,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
    }
    else
       topLeftPoint.y = frame.origin.y + frame.size.height;
-   
+
    if (reposition)
       [self setFrame:frame display:YES];
 
@@ -2364,7 +2366,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
    [self orderWindow:NSWindowOut relativeTo:0];
 }
 
--(void)performClose:sender 
+-(void)performClose:sender
 {
   if([_delegate respondsToSelector:@selector(windowShouldClose:)])
     {
@@ -2376,12 +2378,12 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
       if (![self windowShouldClose:self])
         return;
     }
-  
+
   NSDocument * document = [_windowController document];
   if (document)
     {
-      [document shouldCloseWindowController:_windowController 
-                                   delegate:self 
+      [document shouldCloseWindowController:_windowController
+                                   delegate:self
                         shouldCloseSelector:@selector(_document:shouldClose:contextInfo:)
                                 contextInfo:NULL];
     }
@@ -2414,11 +2416,11 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 	[self zoom: sender];
 }
 
-- (NSRect) zoomedFrame; 
+- (NSRect) zoomedFrame;
 {
 	NSScreen *screen = [self screen];
 	NSRect zoomedFrame = [screen visibleFrame];
-	
+
 	if (_delegate && [_delegate respondsToSelector: @selector(windowWillUseStandardFrame:defaultFrame:)]) {
 		zoomedFrame = [_delegate windowWillUseStandardFrame: self defaultFrame: zoomedFrame];
 	} else if ([self respondsToSelector: @selector( windowWillUseStandardFrame:defaultFrame: )]) {
@@ -2432,7 +2434,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 -(void)zoom:sender {
 	NSRect zoomedFrame = [self zoomedFrame];
 	if (NSEqualRects( _frame, zoomedFrame )) zoomedFrame = _savedFrame;
-	
+
 	// Make sure we obey our minimums
 	NSSize minSize = [self minSize];
 	if (NSWidth(zoomedFrame) < minSize.width) {
@@ -2441,14 +2443,14 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 	if (NSHeight(zoomedFrame) < minSize.height) {
 		zoomedFrame.size.height = minSize.height;
 	}
-	
+
 	BOOL shouldZoom = YES;
 	if (_delegate && [_delegate respondsToSelector: @selector( windowShouldZoom:toFrame: )]) {
 		shouldZoom = [_delegate windowShouldZoom: self toFrame: zoomedFrame];
 	} else if ([self respondsToSelector: @selector( windowShouldZoom:toFrame: )]) {
 		shouldZoom = [self windowShouldZoom: self toFrame: zoomedFrame];
 	}
-	
+
 	if (shouldZoom) {
 		_savedFrame = [self frame];
 		[self setFrame: zoomedFrame display: YES];
@@ -2471,7 +2473,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
    [_backgroundView print:sender];
 }
 
--(void)toggleToolbarShown:sender {    
+-(void)toggleToolbarShown:sender {
     [_toolbar setVisible:![_toolbar isVisible]];
     [sender setTitle:[NSString stringWithFormat:@"%@ Toolbar", [_toolbar isVisible] ? @"Hide" : @"Show"]];
 }
@@ -2556,7 +2558,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
     newSize=[_menuView frame].size;
     if([_menuView isHidden])
      newSize.height=0;
-   
+
     backSize.height+=(newSize.height-oldSize.height);
     [_backgroundView setAutoresizesSubviews:NO];
     [_backgroundView setFrameSize:backSize];
@@ -2567,7 +2569,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
     // no display because setMenu: is called before awakeFromNib
     [self setFrame:frame display:NO];
     // do we even need this?
-    [_backgroundView setNeedsDisplay:YES]; 
+    [_backgroundView setNeedsDisplay:YES];
 }
 
 -(void)_hideMenuViewIfNeeded {
@@ -2587,7 +2589,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 -(void)setMenu:(NSMenu *)menu {
    if(_menuView!=nil){
     NSSize  oldSize=[_menuView frame].size;
-    
+
     [_menuView setMenu:menu];
 
     [self _resizeWithOldMenuViewSize:oldSize];
@@ -2650,13 +2652,13 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
    origin.y=frame.origin.y+(frame.size.height-sheetFrame.size.height);
    origin.x=frame.origin.x+floor((frame.size.width-sheetFrame.size.width)/2);
 
-   
+
    if ([self toolbar] != nil) {
        if (_menuView != nil)
            origin.y -= [_menuView frame].size.height;
-       
+
        origin.y -= [[[self toolbar] _view] frame].size.height;
-       
+
        // Depending on the final border types used on the toolbar and the sheets, the sheet placement
        // sometimes looks better with a little "adjustment"....
        origin.y++;
@@ -2684,10 +2686,10 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
    _sheetContext=[sheetContext retain];
 
    [(NSThemeFrame *)[sheet _backgroundView] setWindowBorderType:NSWindowSheetBorderType];
-   
+
    [self _setSheetOrigin];
-   sheetFrame = [sheet frame];   
-   
+   sheetFrame = [sheet frame];
+
    sheet->_isVisible=YES;
    [sheet display];
    [[sheet platformWindow] sheetOrderFrontFromFrame:NSMakeRect(sheetFrame.origin.x,NSMaxY(sheetFrame),sheetFrame.size.width,0) aboveWindow:[self platformWindow]];
@@ -2711,7 +2713,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 
     sheet->_isVisible=NO;
     [[sheet platformWindow] sheetOrderOutToFrame:NSMakeRect(sheetFrame.origin.x,NSMaxY(sheetFrame),sheetFrame.size.width,0)];
-    
+
     [_sheetContext release];
     _sheetContext=nil;
 }
@@ -2723,7 +2725,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 
 -(void)platformWindowActivated:(CGWindow *)window displayIfNeeded:(BOOL)displayIfNeeded {
    [NSApp _windowWillBecomeActive:self];
-   
+
    [self _setSheetOriginAndFront];
    [_childWindows makeObjectsPerformSelector:@selector(_parentWindowDidActivate:) withObject:self];
    [_drawers makeObjectsPerformSelector:@selector(parentWindowDidActivate:) withObject:self];
@@ -2739,13 +2741,13 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
     [self displayIfNeeded];
 
    [NSApp _windowDidBecomeActive:self];
-   
+
    [NSApp updateWindows];
 }
 
 -(void)platformWindowDeactivated:(CGWindow *)window checkForAppDeactivation:(BOOL)checkForAppDeactivation {
    [NSApp _windowWillBecomeDeactive:self];
-   
+
    [_childWindows makeObjectsPerformSelector:@selector(_parentWindowDidDeactivate:) withObject:self];
    [_drawers makeObjectsPerformSelector:@selector(parentWindowDidDeactivate:) withObject:self];
 
@@ -2758,7 +2760,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
     [NSApp performSelector:@selector(_checkForAppActivation)];
 
    [NSApp _windowDidBecomeDeactive:self];
-   
+
    [NSApp updateWindows];
 }
 
@@ -2773,12 +2775,12 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 
 -(void)platformWindowMiniaturized:(CGWindow *)window {
     _isActive=NO;
-    
+
    [self _updatePlatformWindowTitle];
    if(_sheetContext!=nil){
     [[_sheetContext sheet] orderWindow:NSWindowOut relativeTo:0];
    }
-   
+
    [self postNotificationName:NSWindowDidMiniaturizeNotification];
 
    if([self isKeyWindow])
@@ -2809,7 +2811,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
     // We don't want the miniaturized frame.
    if(![self isMiniaturized])
     _frame=frame;
-   
+
    _makeSureIsOnAScreen=YES;
 
    [self _setSheetOriginAndFront];
@@ -2841,7 +2843,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
    if(_resizeIncrements.width!=1 || _resizeIncrements.height!=1){
     NSSize vertical=size;
     NSSize horizontal=size;
-    
+
     vertical.width=vertical.height*(_resizeIncrements.width/_resizeIncrements.height);
     horizontal.height=horizontal.width*(_resizeIncrements.height/_resizeIncrements.width);
     if(vertical.width*vertical.height>horizontal.width*horizontal.height)
@@ -2849,7 +2851,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
     else
      size=horizontal;
    }
-   
+
 
    if([_delegate respondsToSelector:@selector(windowWillResize:toSize:)])
     size=[_delegate windowWillResize:self toSize:size];
@@ -2904,7 +2906,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
    NSMutableArray *entered=[NSMutableArray array];
    NSMutableArray *moved=[NSMutableArray array];
    NSMutableArray *update=[NSMutableArray array];
-   
+
    BOOL        cursorIsSet=NO;
    BOOL        raiseToolTipWindow=NO;
    NSUInteger  i,count;
@@ -2923,10 +2925,10 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 
 	   if([area _isToolTip]==YES){
 		   NSToolTipWindow *toolTipWindow=[NSToolTipWindow sharedToolTipWindow];
-		   
+
 		   if([self isKeyWindow]==NO || [self _sheetContext]!=nil)
 			   mouseIsInside=NO;
-		   
+
 		   if(mouseWasInside==YES && mouseIsInside==NO && [toolTipWindow _trackingArea]==area){
 			   [NSObject cancelPreviousPerformRequestsWithTarget:toolTipWindow selector:@selector(orderFront:) object:nil];
 			   [toolTipWindow orderOut:nil];
@@ -2936,20 +2938,20 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 			   [NSObject cancelPreviousPerformRequestsWithTarget:toolTipWindow selector:@selector(orderFront:) object:nil];
 			   [toolTipWindow orderOut:nil];
 			   NSString *tooltip = nil;
-			   
+
 			   if([owner respondsToSelector:@selector(view:stringForToolTip:point:userData:)]==YES) {
 				   NSPoint pt =[[area _view] convertPoint:mousePoint fromView:nil];
 				   tooltip = [owner view:[area _view] stringForToolTip:area point:pt userData:[area userInfo]];
 			   } else {
 				   tooltip = [owner description];
 			   }
-               
+
                if (tooltip) {
                    [toolTipWindow setToolTip:tooltip];
-                   
+
                    // This gives us some protection when ToolTip areas overlap:
                    [toolTipWindow _setTrackingArea:area];
-                   
+
                    raiseToolTipWindow=YES;
                }
 		   }
@@ -2973,11 +2975,11 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
       // This does not do hit testing, it just checks if it's inside the visible rect,
       // child views will cause the test to fail if they aren't tracking anything
       NSPoint check=[[area _view] convertPoint:mousePoint fromView:nil];
-      
+
       if(!NSMouseInRect(check,[[area _view] visibleRect],[[area _view] isFlipped]))
        mouseIsInside=NO;
      }
-     
+
 //FIXME:
      if(options&NSTrackingEnabledDuringMouseDrag){
       // NSLog(@"NSTrackingEnabledDuringMouseDrag handling unimplemented.");
@@ -3008,14 +3010,14 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 
 // Exited events need to be sent before entered events
 // The order of the other two is not specific at this time
-   
+
    for(NSTrackingArea *check in exited){
     id owner=[check owner];
-    
+
        if([check options]&NSTrackingCursorUpdate){
            [[NSCursor arrowCursor] set];
        }
-       
+
     if([owner respondsToSelector:@selector(mouseExited:)]){
       NSEvent *event=[NSEvent enterExitEventWithType:NSMouseExited
                                             location:mousePoint
@@ -3029,10 +3031,10 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
       [owner mouseExited:event];
      }
    }
-   
+
    for(NSTrackingArea *check in entered){
     id owner=[check owner];
-    
+
     if([owner respondsToSelector:@selector(mouseEntered:)]){
       NSEvent *event=[NSEvent enterExitEventWithType:NSMouseEntered
                                             location:mousePoint
@@ -3046,10 +3048,10 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
       [owner mouseEntered:event];
      }
    }
-   
+
    for(NSTrackingArea *check in moved){
     id owner=[check owner];
-    
+
     if([owner respondsToSelector:@selector(mouseMoved:)]){
       NSEvent *event=[NSEvent mouseEventWithType:NSMouseMoved
                                         location:mousePoint
@@ -3063,10 +3065,10 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
       [owner mouseMoved:event];
      }
    }
-   
+
    for(NSTrackingArea *check in update){
     id owner=[check owner];
-    
+
     if([owner respondsToSelector:@selector(cursorUpdate:)]){
       NSEvent *event=[NSEvent enterExitEventWithType:NSCursorUpdate
                                             location:mousePoint
@@ -3080,7 +3082,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
       [owner cursorUpdate:event];
      }
    }
-   
+
    if(raiseToolTipWindow==YES){
     NSTimeInterval delay=((NSTimeInterval)[[NSUserDefaults standardUserDefaults] integerForKey:@"NSInitialToolTipDelay"])/1000.;
 
@@ -3088,12 +3090,12 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
      delay=2.;
     [[NSToolTipWindow sharedToolTipWindow] performSelector:@selector(orderFront:) withObject:nil afterDelay:delay];
    }
-   
+
    if(!cursorIsSet){
     NSPoint check=[_contentView convertPoint:mousePoint fromView:nil];
-    
+
     // we set the cursor to the current cursor if it is inside the content area, this will need to be changed
-    // if we're drawing out own window frame 
+    // if we're drawing out own window frame
     if(NSMouseInRect(check,[_contentView bounds],[_contentView isFlipped])){
      if([NSCursor currentCursor]==nil)
          [[NSCursor arrowCursor] set];
@@ -3102,14 +3104,14 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
      cursorIsSet=YES;
     }
    }
-   
+
    return cursorIsSet;
 }
 
--(NSUndoManager *)undoManager {    
+-(NSUndoManager *)undoManager {
     if ([_delegate respondsToSelector:@selector(windowWillReturnUndoManager:)])
         return [_delegate windowWillReturnUndoManager:self];
-    
+
     // If this window is associated with a document, return the document's undo manager.
     // Apple's documentation says this is the delegate's responsibility, but that's not how it works in real life.
     if (_undoManager == nil) {
@@ -3138,14 +3140,14 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
         return [[self undoManager] canUndo];
     if ([item action] == @selector(redo:))
         return [[self undoManager] canRedo];
-    
+
     return YES;
 }
 
 -(void)_attachDrawer:(NSDrawer *)drawer {
     if (_drawers == nil)
         _drawers = [[NSMutableArray alloc] init];
-    
+
     [_drawers addObject:drawer];
 }
 
@@ -3162,4 +3164,3 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
     [[self platformWindow] dirtyRect:rect];
 }
 @end
-

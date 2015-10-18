@@ -1,11 +1,11 @@
 #import <QuartzCore/CARenderer.h>
-#import <OpenGLES/OpenGLES.h>
+#import <OpenGLES/EAGL.h>
 
 @interface CAWindowOpenGLContext : NSObject {
-    CGLContextObj _cglContext;
+    EAGLContext *_eaglContext;
 }
 
-- initWithCGLContext:(CGLContextObj)cglContext;
+- initWithEAGLContext:(EAGLContext*)eaglContext;
 
 - (void)prepareViewportWidth:(int)width height:(int)height;
 
