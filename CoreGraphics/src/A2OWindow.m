@@ -1,4 +1,5 @@
 #import <CoreGraphics/A2OWindow.h>
+#import <OpenGLES/ES2/gl.h>
 
 CGRect CGInsetRectForNativeWindowBorder(CGRect frame, unsigned styleMask) {
     return frame;
@@ -103,10 +104,7 @@ CGRect CGOutsetRectForNativeWindowBorder(CGRect frame, unsigned styleMask) {
    [_caContext prepareViewportWidth:width height:height];
    [_caContext renderSurface:surface];
 
-#if 1
-    assert(0);
-#else
-   glFlush();
+#if 0
    glXSwapBuffers(_display,_window);
 #endif
 }
