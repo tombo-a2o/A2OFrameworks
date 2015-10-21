@@ -517,12 +517,15 @@ id NSApp=nil;
        [controller newDocument: self];
    }
 
-   puts("FIXME: #7");
+   puts("FIXME: #7 start");
    NS_DURING
+    puts("FIXME: #7 postNotificationName pre call");
     [[NSNotificationCenter defaultCenter] postNotificationName:NSApplicationDidFinishLaunchingNotification object:self];
+    puts("FIXME: #7 postNotificationName after call");
    NS_HANDLER
     [self reportException:localException];
    NS_ENDHANDLER
+   puts("FIXME: #7 end");
 
    //[pool release];
 }
@@ -583,7 +586,9 @@ id NSApp=nil;
    if (!didlaunch) {
       didlaunch = YES;
       pool=[NSAutoreleasePool new];
+      puts("FIXME: #7 pre finishLaunching");
       [self finishLaunching];
+      puts("FIXME: #7 after finishLaunching");
 
       NSTimer *timer = [NSTimer timerWithTimeInterval:1.0f/60 target:[NSBlockOperation blockOperationWithBlock:^{
          NSAutoreleasePool *pool = [NSAutoreleasePool new];
