@@ -6,7 +6,7 @@
 @class CALayer, O2Surface;
 
 @interface CARenderer : NSObject {
-    void *_cglContext;
+    void *_eaglContext;
     CGRect _bounds;
     CALayer *_rootLayer;
 }
@@ -14,9 +14,9 @@
 @property(assign) CGRect bounds;
 @property(retain) CALayer *layer;
 
-+ (CARenderer *)rendererWithCGLContext:(void *)cglContext options:(NSDictionary *)options;
++ (CARenderer *)rendererWithEAGLContext:(void *)eaglContext options:(NSDictionary *)options;
 
-//- (void)beginFrameAtTime:(CFTimeInterval)currentTime timeStamp:(CVTimeStamp *)timeStamp;
+- (void)beginFrameAtTime:(CFTimeInterval)currentTime timeStamp:(/*CVTimeStamp*/void *)timeStamp;
 
 - (void)render;
 

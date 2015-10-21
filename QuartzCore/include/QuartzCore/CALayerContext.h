@@ -1,18 +1,19 @@
 #import <Foundation/NSObject.h>
-#import <OpenGLES/OpenGLES.h>
+#import <OpenGLES/EAGL.h>
+#import <OpenGLES/ES2/gl.h>
 #import <CoreGraphics/CGGeometry.h>
 
 @class CARenderer, CALayer, CGLPixelSurface, NSTimer, NSMutableArray, NSNumber;
-@class CGLPixelFormat, CGLContext;
-typedef CGLContext *CGLContextObj;
-typedef CGLPixelFormat *CGLPixelFormatObj;
+//@class CGLPixelFormat, ESGLContext;
+//typedef CGLPixelFormat *CGLPixelFormatObj;
 
 @interface CALayerContext : NSObject {
     CGRect _frame;
-    CGLPixelFormatObj _pixelFormat;
-    CGLContextObj _glContext;
+//    CGLPixelFormatObj _pixelFormat;
+    EAGLContext *_glContext;
     CALayer *_layer;
     CARenderer *_renderer;
+    GLuint _framebuffer;
 
     NSMutableArray *_deleteTextureIds;
 

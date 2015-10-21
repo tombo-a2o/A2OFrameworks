@@ -64,10 +64,7 @@ O2ColorSpaceRef O2ColorSpaceCreateDeviceGray(void) {
 }
 
 O2ColorSpaceRef O2ColorSpaceCreateDeviceRGB(void) {
-   O2ColorSpaceRef self=[O2ColorSpace allocWithZone:NULL];
-   self->_type=kO2ColorSpaceModelRGB;
-   self->_isPlatformRGB=NO;
-   return self;
+    return [[O2ColorSpace alloc] initWithDeviceRGB];
 }
 
 O2ColorSpaceRef O2ColorSpaceCreateDeviceCMYK(void) {
@@ -92,22 +89,22 @@ BOOL O2ColorSpaceIsPlatformRGB(O2ColorSpaceRef self) {
 
 size_t O2ColorSpaceGetNumberOfComponents(O2ColorSpaceRef self) {
    switch(self->_type){
-   
+
     case kO2ColorSpaceModelMonochrome:
      return 1;
-     
-    case kO2ColorSpaceModelRGB: 
+
+    case kO2ColorSpaceModelRGB:
      return 3;
-     
+
     case kO2ColorSpaceModelCMYK:
      return 4;
-     
+
     case kO2ColorSpaceModelIndexed:
      return 1;
-     
+
     case kO2ColorSpaceModelDeviceN:
      return ((O2ColorSpace_DeviceN *)self)->_numberOfComponents;
-     
+
     default:
      return 0;
    }
@@ -133,7 +130,7 @@ O2ColorSpaceModel O2ColorSpaceGetModel(O2ColorSpaceRef self) {
 
 -initWithColorSpace:(O2ColorSpaceRef)baseColorSpace hival:(unsigned)hival bytes:(const unsigned char *)bytes  {
    int i,max=O2ColorSpaceGetNumberOfComponents(baseColorSpace)*(hival+1);
-  
+
    _type=kO2ColorSpaceModelIndexed;
    _base=[baseColorSpace retain];
    _hival=hival;
@@ -153,17 +150,17 @@ O2ColorSpaceModel O2ColorSpaceGetModel(O2ColorSpaceRef self) {
    O2ColorSpace_indexed *other=(O2ColorSpace_indexed *)otherX;
    if(self->_type!=other->_type)
     return NO;
-    
+
    if(![self->_base isEqualToColorSpace:other->_base])
     return NO;
    if(self->_hival!=other->_hival)
     return NO;
-    
+
    int i,max=O2ColorSpaceGetNumberOfComponents(self->_base)*(self->_hival+1);
    for(i=0;i<max;i++)
     if(self->_bytes[i]!=other->_bytes[i])
      return NO;
-     
+
    return YES;
 }
 
@@ -186,19 +183,19 @@ O2ColorSpaceModel O2ColorSpaceGetModel(O2ColorSpaceRef self) {
 
 -initWithComponentNames:(const char **)names alternateSpace:(O2ColorSpaceRef)altSpace tintTransform:(O2FunctionRef)tintTransform {
    int i;
-   
+
    for(i=0;names[i]!=NULL;i++)
     _numberOfComponents++;
-    
+
    _names=(char**)malloc(sizeof(char *)*_numberOfComponents);
-   
+
    for(i=0;i<_numberOfComponents;i++){
     size_t length=strlen(names[i]);
     _names[i]=(char*)malloc(length+1);
-    
+
     strcpy(_names[i],names[i]);
    }
-    
+
    _type=kO2ColorSpaceModelDeviceN;
    _alternateSpace=O2ColorSpaceRetain(altSpace);
    _tintTransform=O2FunctionRetain(tintTransform);
@@ -207,11 +204,11 @@ O2ColorSpaceModel O2ColorSpaceGetModel(O2ColorSpaceRef self) {
 
 -(void)dealloc {
    int i;
-   
+
    for(i=0;i<_numberOfComponents;i++)
     free(_names[i]);
    free(_names);
-   
+
    O2ColorSpaceRelease(_alternateSpace);
    O2FunctionRelease(_tintTransform);
    [super dealloc];

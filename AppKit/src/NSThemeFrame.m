@@ -36,30 +36,31 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 }
 
 -(void)drawRect:(NSRect)rect {
+    DEBUGLOG(@"NSThemeFrame drawRect");
    NSRect bounds=[self bounds];
    float cheatSheet = 0;
 
    [[[self window] backgroundColor] setFill];
    NSRectFill(bounds);
-   
+
     switch(_borderType){
         case NSNoBorder:
             break;
-            
+
         case NSWindowToolTipBorderType:
             [[NSColor blackColor] setStroke];
             NSFrameRect(bounds);
             bounds = NSInsetRect(bounds, 1, 1);
             cheatSheet = 1;
             break;
-                
+
         case NSWindowSheetBorderType:
             NSDrawButton(bounds,bounds);
             bounds = NSInsetRect(bounds, 2, 2);
             cheatSheet = 2;
             break;
    }
-    
+
    if([[self window] isSheet])
     bounds.size.height += cheatSheet;
 
@@ -71,7 +72,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
    NSView *menuView=nil;
    NSToolbarView *toolbarView=nil;
    NSView *contentView=nil;
-   
+
 // tile the subviews, when/if we add titlebars and such do it here
    for(NSView *view in _subviews){
     if([view isKindOfClass:[NSMenuView class]])
@@ -81,13 +82,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     else
      contentView=view;
    }
-   
+
    // subtracts menu height but not toolbar height
    NSRect contentFrame=[[[self window] class] contentRectForFrameRect:[self bounds] styleMask:[[self window] styleMask]];
 
    // If the class thinks there is a menu but the instance does not want an instance
    // we need to add the menu height back to the content view as contentRectForFrameRect subtracts it
-   
+
    if([[[self window] class] hasMainMenuForStyleMask:[[self window] styleMask]]) {
         if(![[self window] hasMainMenu])
             contentFrame.size.height+=[NSMainMenuView menuHeight];
@@ -100,14 +101,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
    menuFrame.origin.x=contentFrame.origin.x;
    menuFrame.size.width=contentFrame.size.width;
    [menuView setFrame:menuFrame];
-   
+
    toolbarFrame.origin.y=NSMaxY(contentFrame)-toolbarFrame.size.height;
    toolbarFrame.origin.x=contentFrame.origin.x;
    toolbarFrame.size.width=contentFrame.size.width;
-   
+
    [toolbarView setFrame:toolbarFrame];
    [toolbarView layoutViews];
-   
+
    contentFrame.size.height-=toolbarFrame.size.height;
    [contentView setFrame:contentFrame];
 }
@@ -115,20 +116,20 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 -(void)mouseDown:(NSEvent *)event {
    if(![[self window] isMovableByWindowBackground])
     return;
-   
+
    NSPoint origin=[[self window] frame].origin;
    NSPoint firstLocation=[[self window] convertBaseToScreen:[event locationInWindow]];
    do {
     event=[[self window] nextEventMatchingMask:NSLeftMouseUpMask|NSLeftMouseDraggedMask];
-    
+
     NSPoint delta=[[self window] convertBaseToScreen:[event locationInWindow]];
-    
+
     delta.x-=firstLocation.x;
     delta.y-=firstLocation.y;
-    
+
     [[self window] setFrameOrigin:NSMakePoint(origin.x+delta.x,origin.y+delta.y)];
-    
-   }while([event type]!=NSLeftMouseUp);   
+
+   }while([event type]!=NSLeftMouseUp);
 }
 
 @end

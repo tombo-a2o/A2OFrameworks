@@ -4,6 +4,8 @@
 #import <QuartzCore/CATransaction.h>
 #import <Foundation/NSDictionary.h>
 
+#import <Onyx2D/O2BitmapContext.h>
+
 NSString * const kCAFilterLinear=@"linear";
 NSString * const kCAFilterNearest=@"nearest";
 NSString * const kCAFilterTrilinear=@"trilinear";
@@ -28,247 +30,249 @@ NSString * const kCATransition = @"transition";
 @implementation CALayer
 
 +layer {
-   return [[[self alloc] init] autorelease];
+    return [[[self alloc] init] autorelease];
 }
 
 
 -(CALayerContext *)_context {
-   return _context;
+    return _context;
 }
 
 -(void)_setContext:(CALayerContext *)context {
-   if(_context!=context){
-    [_context deleteTextureId:_textureId];
-    [_textureId release];
-    _textureId=nil;
-   }
-   
-   _context=context;
-   [_sublayers makeObjectsPerformSelector:@selector(_setContext:) withObject:context];
+    if(_context!=context){
+        [_context deleteTextureId:_textureId];
+        [_textureId release];
+        _textureId=nil;
+    }
+
+    _context=context;
+    [_sublayers makeObjectsPerformSelector:@selector(_setContext:) withObject:context];
 }
 
 -(CALayer *)superlayer {
-   return _superlayer;
+    return _superlayer;
 }
 
 -(NSArray *)sublayers {
-   return _sublayers;
+    return _sublayers;
 }
 
 -(void)setSublayers:(NSArray *)sublayers {
-   sublayers=[sublayers copy];
-   [_sublayers release];
-   _sublayers=sublayers;
-   [_sublayers makeObjectsPerformSelector:@selector(_setSuperLayer:) withObject:self];
-   [_sublayers makeObjectsPerformSelector:@selector(_setContext:) withObject:_context];
+    sublayers=[sublayers copy];
+    [_sublayers release];
+    _sublayers=sublayers;
+    [_sublayers makeObjectsPerformSelector:@selector(_setSuperLayer:) withObject:self];
+    [_sublayers makeObjectsPerformSelector:@selector(_setContext:) withObject:_context];
 }
 
 -(id)delegate {
-   return _delegate;
+    return _delegate;
 }
 
 -(void)setDelegate:value {
-   _delegate=value;
+    _delegate=value;
 }
 
 -(CGPoint)anchorPoint {
-   return _anchorPoint;
+    return _anchorPoint;
 }
 
 -(void)setAnchorPoint:(CGPoint)value {
-   _anchorPoint=value;
+    _anchorPoint=value;
 }
 
 -(CGPoint)position {
-   return _position;
+    return _position;
 }
 
 -(void)setPosition:(CGPoint)value {
    CAAnimation *animation=[self animationForKey:@"position"];
-      
+
    if(animation==nil && ![CATransaction disableActions]){
-    id action=[self actionForKey:@"position"];
-    
-    if(action!=nil)
-     [self addAnimation:action forKey:@"position"];
+       id action=[self actionForKey:@"position"];
+
+       if(action!=nil)
+           [self addAnimation:action forKey:@"position"];
    }
-   
+
    _position=value;
 }
 
 -(CGRect)bounds {
-   return _bounds;
+    return _bounds;
 }
 
 -(void)setBounds:(CGRect)value {
    CAAnimation *animation=[self animationForKey:@"bounds"];
-   
-   if(animation==nil && ![CATransaction disableActions]){
-    id action=[self actionForKey:@"bounds"];
 
-    if(action!=nil)
-     [self addAnimation:action forKey:@"bounds"];
+   if(animation==nil && ![CATransaction disableActions]){
+       id action=[self actionForKey:@"bounds"];
+
+       if(action!=nil)
+           [self addAnimation:action forKey:@"bounds"];
    }
-   
+
    _bounds=value;
 }
 
 -(CGRect)frame {
-   CGRect result;
-   
-   result.size=_bounds.size;
-   result.origin.x=_position.x-result.size.width*_anchorPoint.x;
-   result.origin.y=_position.y-result.size.height*_anchorPoint.y;
-   
-   return result;
+    CGRect result;
+
+    result.size=_bounds.size;
+    result.origin.x=_position.x-result.size.width*_anchorPoint.x;
+    result.origin.y=_position.y-result.size.height*_anchorPoint.y;
+
+    return result;
 }
 
 -(void)setFrame:(CGRect)value {
 
-   CGPoint position;
-   
-   position.x=value.origin.x+value.size.width*_anchorPoint.x;
-   position.y=value.origin.y+value.size.height*_anchorPoint.y;
-   
-   [self setPosition:position];
-   
-   CGRect bounds=_bounds;
+    CGPoint position;
 
-   bounds.size=value.size;
-      
-   [self setBounds:bounds];
+    position.x=value.origin.x+value.size.width*_anchorPoint.x;
+    position.y=value.origin.y+value.size.height*_anchorPoint.y;
+
+    [self setPosition:position];
+
+    CGRect bounds=_bounds;
+
+    bounds.size=value.size;
+
+    [self setBounds:bounds];
 }
 
 -(float)opacity {
-   return _opacity;
+    return _opacity;
 }
 
 -(void)setOpacity:(float)value {
    CAAnimation *animation=[self animationForKey:@"opacity"];
-   
-   if(animation==nil && ![CATransaction disableActions]){
-    id action=[self actionForKey:@"opacity"];
 
-    if(action!=nil)
-     [self addAnimation:action forKey:@"opacity"];
+   if(animation==nil && ![CATransaction disableActions]){
+       id action=[self actionForKey:@"opacity"];
+
+       if(action!=nil)
+           [self addAnimation:action forKey:@"opacity"];
    }
 
    _opacity=value;
 }
 
 -(BOOL)opaque {
-   return _opaque;
+    return _opaque;
 }
 
 -(void)setOpaque:(BOOL)value {
-   _opaque=value;
+    _opaque=value;
 }
 
 -(id)contents {
-   return _contents;
+    return _contents;
 }
 
 -(void)setContents:(id)value {
-   value=[value retain];
-   [_contents release];
-   _contents=value;
+    value=[value retain];
+    [_contents release];
+    _contents=value;
 }
 
 -(CATransform3D)transform {
-   return _transform;
+    return _transform;
 }
 
 -(void)setTransform:(CATransform3D)value {
-   _transform=value;
+    _transform=value;
 }
 
 -(CATransform3D)sublayerTransform {
-   return _sublayerTransform;
+    return _sublayerTransform;
 }
 
 -(void)setSublayerTransform:(CATransform3D)value {
-   _sublayerTransform=value;
+    _sublayerTransform=value;
 }
 
 -(NSString *)minificationFilter {
-   return _minificationFilter;
+    return _minificationFilter;
 }
 
 -(void)setMinificationFilter:(NSString *)value {
-   value=[value copy];
-   [_minificationFilter release];
-   _minificationFilter=value;
+    value=[value copy];
+    [_minificationFilter release];
+    _minificationFilter=value;
 }
 
 -(NSString *)magnificationFilter {
-   return _magnificationFilter;
+    return _magnificationFilter;
 }
 
 -(void)setMagnificationFilter:(NSString *)value {
-   value=[value copy];
-   [_magnificationFilter release];
-   _magnificationFilter=value;
+    value=[value copy];
+    [_magnificationFilter release];
+    _magnificationFilter=value;
 }
 
 -init {
-   _superlayer=nil;
-   _sublayers=[NSArray new];
-   _delegate=nil;
-   _anchorPoint=CGPointMake(0.5,0.5);
-   _position=CGPointZero;
-   _bounds=CGRectZero;
-   _opacity=1.0;
-   _opaque=YES;
-   _contents=nil;
-   _transform=CATransform3DIdentity;
-   _sublayerTransform=CATransform3DIdentity;
-   _minificationFilter=kCAFilterLinear;
-   _magnificationFilter=kCAFilterLinear;
-   _animations=[[NSMutableDictionary alloc] init];
-   return self;
+    NSLog(@"CALayer init %x %@", self, [self class]);
+    _superlayer=nil;
+    _sublayers=[NSArray new];
+    _delegate=nil;
+    _anchorPoint=CGPointMake(0.5,0.5);
+    _position=CGPointZero;
+    _bounds=CGRectZero;
+    _opacity=1.0;
+    _opaque=YES;
+    _contents=nil;
+    _transform=CATransform3DIdentity;
+    _sublayerTransform=CATransform3DIdentity;
+    _minificationFilter=kCAFilterLinear;
+    _magnificationFilter=kCAFilterLinear;
+    _animations=[[NSMutableDictionary alloc] init];
+    return self;
 }
 
 -(void)dealloc {
-   [_sublayers release];
-   [_animations release];
-   [_minificationFilter release];
-   [_magnificationFilter release];
-   [super dealloc];
+    [_sublayers release];
+    [_animations release];
+    [_minificationFilter release];
+    [_magnificationFilter release];
+    [super dealloc];
 }
 
 -(void)_setSuperLayer:(CALayer *)parent {
-   _superlayer=parent;
+    _superlayer=parent;
 }
 
 -(void)_removeSublayer:(CALayer *)child {
-   NSMutableArray *layers=[_sublayers mutableCopy];
-   [layers removeObjectIdenticalTo:child];
-   [self setSublayers:layers];
-   [layers release];
+    NSMutableArray *layers=[_sublayers mutableCopy];
+    [layers removeObjectIdenticalTo:child];
+    [self setSublayers:layers];
+    [layers release];
 }
 
 -(void)addSublayer:(CALayer *)layer {
-   [self setSublayers:[_sublayers arrayByAddingObject:layer]];
+    NSLog(@"CALayer addSubLayer %@, %@", self, layer);
+    [self setSublayers:[_sublayers arrayByAddingObject:layer]];
 }
 
 -(void)replaceSublayer:(CALayer *)layer with:(CALayer *)other {
-   NSMutableArray *layers=[_sublayers mutableCopy];
-   NSUInteger      index=[_sublayers indexOfObjectIdenticalTo:layer];
-   
-   [layers replaceObjectAtIndex:index withObject:other];
-   
-   [self setSublayers:layers];
-   [layers release];
-   
-   layer->_superlayer=nil;
+    NSMutableArray *layers=[_sublayers mutableCopy];
+    NSUInteger      index=[_sublayers indexOfObjectIdenticalTo:layer];
+
+    [layers replaceObjectAtIndex:index withObject:other];
+
+    [self setSublayers:layers];
+    [layers release];
+
+    layer->_superlayer=nil;
 }
 
 - (void)insertSublayer:(CALayer *)aLayer atIndex:(unsigned int)index {
-   NSMutableArray *layers=[_sublayers mutableCopy];
-   
-   [layers insertObject:aLayer atIndex:index];
-   [self setSublayers:layers];
-   [layers release];
+    NSMutableArray *layers=[_sublayers mutableCopy];
+
+    [layers insertObject:aLayer atIndex:index];
+    [self setSublayers:layers];
+    [layers release];
 }
 
 - (void)insertSublayer:(CALayer *)aLayer below:(CALayer *)sublayer {
@@ -284,19 +288,27 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)display {
-   if([_delegate respondsToSelector:@selector(displayLayer:)])
-    [_delegate displayLayer:self];
-   else {
-#if 0
-
-
-#warning create bitmap context
-
-    [self drawInContext:context];
-    _contents=image;
-    [self setContents:image];
-#endif
-}
+    NSLog(@"CALayer display called");
+    if([_delegate respondsToSelector:@selector(displayLayer:)]) {
+        [_delegate displayLayer:self];
+    } else {
+        NSLog(@"width=%d, height=%d",_bounds.size.width, _bounds.size.height);
+        CGContextRef context = CGBitmapContextCreate(
+                NULL,
+                _bounds.size.width,
+                _bounds.size.height,
+                8,
+                0,
+                CGColorSpaceCreateDeviceRGB(),
+                kCGBitmapByteOrderDefault|kO2ImageAlphaLast);
+        assert(context);
+        O2BitmapContextRef c = (O2BitmapContextRef)context;
+        NSLog(@"colorSpace before %x", O2ImageGetColorSpace(c.surface));
+        [self drawInContext:context];
+        NSLog(@"colorSpace after  %x", O2ImageGetColorSpace(c.surface));
+        CGImageRef image = CGBitmapContextCreateImage(context);
+        [self setContents:image];
+    }
 }
 
 -(void)displayIfNeeded {
@@ -307,42 +319,42 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)drawInContext:(CGContextRef)context {
-   if([_delegate respondsToSelector:@selector(drawLayer:inContext:)])
-    [_delegate drawLayer:self inContext:context];
+    if([_delegate respondsToSelector:@selector(drawLayer:inContext:)])
+        [_delegate drawLayer:self inContext:context];
 }
 
 -(BOOL)needsDisplay {
-   return _needsDisplay;
+    return _needsDisplay;
 }
 
 -(void)removeFromSuperlayer {
-   [_superlayer _removeSublayer:self];
-   _superlayer=nil;
-   [self _setContext:nil];
+    [_superlayer _removeSublayer:self];
+    _superlayer=nil;
+    [self _setContext:nil];
 }
 
 -(void)setNeedsDisplay {
-   _needsDisplay=YES;
+    _needsDisplay=YES;
 }
 
 -(void)setNeedsDisplayInRect:(CGRect)rect {
-   _needsDisplay=YES;
+    _needsDisplay=YES;
 }
 
 -(void)addAnimation:(CAAnimation *)animation forKey:(NSString *)key {
-   if(_context==nil)
-    return;
-    
-   [_animations setObject:animation forKey:key];
-   [_context startTimerIfNeeded];
+    if(_context==nil)
+        return;
+
+    [_animations setObject:animation forKey:key];
+    [_context startTimerIfNeeded];
 }
 
 -(CAAnimation *)animationForKey:(NSString *)key {
-   return [_animations objectForKey:key];
+    return [_animations objectForKey:key];
 }
 
 -(void)removeAllAnimations {
-   [_animations removeAllObjects];
+    [_animations removeAllObjects];
 }
 
 -(void)removeAnimationForKey:(NSString *)key {
@@ -350,36 +362,36 @@ NSString * const kCATransition = @"transition";
 }
 
 -(NSArray *)animationKeys {
-   return [_animations allKeys];
+    return [_animations allKeys];
 }
 
 -valueForKey:(NSString *)key {
-// FIXME: KVC appears broken for structs
+    // FIXME: KVC appears broken for structs
 
-   if([key isEqualToString:@"bounds"])
-    return [NSValue valueWithRect:_bounds];
-   if([key isEqualToString:@"frame"])
-    return [NSValue valueWithRect:[self frame]];
-    
-   return [super valueForKey:key];
+    if([key isEqualToString:@"bounds"])
+        return [NSValue valueWithRect:_bounds];
+    if([key isEqualToString:@"frame"])
+        return [NSValue valueWithRect:[self frame]];
+
+    return [super valueForKey:key];
 }
 
 -(id <CAAction>)actionForKey:(NSString *)key {
    CABasicAnimation *basic=[CABasicAnimation animationWithKeyPath:key];
-   
+
    [basic setFromValue:[self valueForKey:key]];
-   
+
    return basic;
 }
 
 -(NSNumber *)_textureId {
-   return _textureId;
+    return _textureId;
 }
 
 -(void)_setTextureId:(NSNumber *)value {
-   value=[value copy];
-   [_textureId release];
-   _textureId=value;
+    value=[value copy];
+    [_textureId release];
+    _textureId=value;
 }
 
 - (void)setNeedsLayout {
@@ -412,4 +424,7 @@ NSString * const kCATransition = @"transition";
     assert(0);
 }
 
+-(NSString*)description {
+    return [NSString stringWithFormat:@"<%@: %p; sublayers = %@>", [self class], self, self.sublayers];
+}
 @end

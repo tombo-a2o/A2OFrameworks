@@ -50,7 +50,7 @@ NSString * const NSViewFocusDidChangeNotification=@"NSViewFocusDidChangeNotifica
 static BOOL NSViewLayersEnabled=NO;
 
 +(void)initialize {
-   NSViewLayersEnabled=[[NSUserDefaults standardUserDefaults] boolForKey:@"NSViewLayersEnabled"];
+   NSViewLayersEnabled=YES; //[[NSUserDefaults standardUserDefaults] boolForKey:@"NSViewLayersEnabled"];
 }
 
 +(NSView *)focusView {
@@ -1463,6 +1463,7 @@ static inline void buildTransformsIfNeeded(NSView *self) {
 }
 
 -(void)_addLayerToSuperlayer {
+    DEBUGLOG(@"NSView _addLayerToSuperlayer");
     [[_superview layer] addSublayer:_layer];
     [self _createLayerContextIfNeeded];
 }
@@ -1489,17 +1490,18 @@ static inline void buildTransformsIfNeeded(NSView *self) {
 }
 
 -(void)_createLayersInTreeIfNeeded {
-   if(!NSViewLayersEnabled)
-    return;
+    if(!NSViewLayersEnabled)
+        return;
 
-   if(_layer==nil){
-    _layer=[[self makeBackingLayer] retain];
-    configureLayerGeometry(self);
-   }
+    if(_layer==nil){
+        _layer=[[self makeBackingLayer] retain];
+        assert(_layer);
+        configureLayerGeometry(self);
+    }
 
-   [self _addLayerToSuperlayer];
+    [self _addLayerToSuperlayer];
 
-   [_subviews makeObjectsPerformSelector:_cmd];
+    [_subviews makeObjectsPerformSelector:_cmd];
 }
 
 -(void)setWantsLayer:(BOOL)value {

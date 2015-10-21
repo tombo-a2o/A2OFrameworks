@@ -130,4 +130,9 @@ CGRect CGOutsetRectForNativeWindowBorder(CGRect frame, unsigned styleMask) {
     return _frame;
 //   return [self transformFrame:_frame];
 }
+
+-(void)makeKey {
+#warning TODO
+}
+
 @end
