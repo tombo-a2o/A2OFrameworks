@@ -30,3 +30,9 @@
 #ifdef __OBJC__
     #import <Foundation/Foundation.h>
 #endif
+
+#ifdef DEBUG
+#define DEBUGLOG(...) NSLog(__VA_ARGS__)
+#else
+#define DEBUGLOG(...)
+#endif

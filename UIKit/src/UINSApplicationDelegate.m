@@ -32,6 +32,9 @@
 #import <AppKit/NSWindow.h>
 #import "UIKitView.h"
 #import <CoreGraphics/CoreGraphics.h>
+#import <UIKit/UIStoryboard.h>
+#import <UIKit/UIViewController.h>
+#import <UIKit/UIApplicationDelegate.h>
 
 @implementation UINSApplicationDelegate
 
@@ -40,13 +43,37 @@
     return [[UIApplication sharedApplication] terminateApplicationBeforeDate:[NSDate dateWithTimeIntervalSinceNow:30]];
 }
 
+- (void)applicationWillFinishLaunching:(NSNotification *)notification
+{
+    NSApplication *app = (NSApplication *)[notification object];
+    _window = [[NSWindow alloc] initWithContentRect:CGRectMake(0,0,320,568) styleMask:0 backing:NSBackingStoreBuffered defer:NO];
+    [_window orderFront:nil];
+    UIKitView *uiKitView = [[UIKitView alloc] initWithFrame:CGRectMake(0,0,320,568)];
+    _window.contentView = uiKitView;
+
+    NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
+    NSString *mainStoryboardName = [infoDictionary objectForKey:@"UIMainStoryboardFile"];
+    if(mainStoryboardName) {
+        NSLog(@"main storyboard %@", mainStoryboardName);
+        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:mainStoryboardName bundle:nil];
+        NSLog(@"storyboard %@", storyboard);
+        UIViewController *rootVC = [storyboard instantiateInitialViewController];
+        NSLog(@"rootVC %@", rootVC);
+        UIWindow *uiWindow = [uiKitView UIWindow];
+        assert(uiWindow);
+
+        UIApplication *uiApp = [UIApplication sharedApplication];
+        id<UIApplicationDelegate> delegate = uiApp.delegate;
+        if([delegate respondsToSelector:@selector(setWindow:)]) {
+            [delegate performSelector:@selector(setWindow:) withObject:uiWindow];
+        }
+        uiWindow.rootViewController = rootVC;
+    }
+}
+
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
 {
 //    [[NSAppleEventManager sharedAppleEventManager] setEventHandler:self andSelector:@selector(handleURLEvent:withReplyEvent:) forEventClass:kInternetEventClass andEventID:kAEGetURL];
-    NSApplication *app = (NSApplication *)[notification object];
-    window = [[NSWindow alloc] initWithContentRect:CGRectMake(0,0,320,568) styleMask:0 backing:NSBackingStoreBuffered defer:NO];
-    [window orderFront:nil];
-    window.contentView = [[UIKitView alloc] initWithFrame:CGRectMake(0,0,320,568)];
 }
 
 /*
@@ -54,7 +81,7 @@
 {
     NSURL* url = [NSURL URLWithString:[[event paramDescriptorForKeyword:keyDirectObject] stringValue]];
     UIApplication *app = [UIApplication sharedApplication];
-    
+
     [app.delegate application:app openURL:url sourceApplication:nil annotation:nil];
 }
 */

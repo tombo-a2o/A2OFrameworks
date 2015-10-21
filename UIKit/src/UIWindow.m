@@ -77,9 +77,10 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
     if ((self=[super initWithFrame:theFrame])) {
         _undoManager = [[NSUndoManager alloc] init];
         [self _makeHidden];	// do this first because before the screen is set, it will prevent any visibility notifications from being sent.
+        assert([UIScreen mainScreen]);
         self.screen = [UIScreen mainScreen];
         self.opaque = NO;
-        
+
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_NSWindowDidBecomeKeyNotification:) name:NSWindowDidBecomeKeyNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_NSWindowDidResignKeyNotification:) name:NSWindowDidResignKeyNotification object:nil];
     }
@@ -90,14 +91,14 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [self _makeHidden];	// I don't really like this here, but the real UIKit seems to do something like this on window destruction as it sends a notification and we also need to remove it from the app's list of windows
-    
+
     // since UIView's dealloc is called after this one, it's hard ot say what might happen in there due to all of the subview removal stuff
     // so it's safer to make sure these things are nil now rather than potential garbage. I don't like how much work UIView's -dealloc is doing
     // but at the moment I don't see a good way around it...
     _screen = nil;
     _undoManager = nil;
     _rootViewController = nil;
-    
+
 }
 
 - (UIResponder *)_firstResponder
@@ -139,7 +140,7 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
 {
     if (rootViewController != _rootViewController) {
         [self.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
-        
+
         const BOOL was = [UIView areAnimationsEnabled];
         [UIView setAnimationsEnabled:NO];
         _rootViewController = rootViewController;
@@ -160,7 +161,7 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
 {
     if (theScreen != _screen) {
         [[NSNotificationCenter defaultCenter] removeObserver:self name:UIScreenModeDidChangeNotification object:_screen];
-        
+
         const BOOL wasHidden = self.hidden;
         [self _makeHidden];
 
@@ -194,7 +195,7 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
         // Convert to screen coordinates
         toConvert.x += self.frame.origin.x;
         toConvert.y += self.frame.origin.y;
-        
+
         if (toWindow) {
             // Now convert the screen coords into the other screen's coordinate space
             toConvert = [self.screen convertPoint:toConvert toScreen:toWindow.screen];
@@ -203,7 +204,7 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
             toConvert.x -= toWindow.frame.origin.x;
             toConvert.y -= toWindow.frame.origin.y;
         }
-        
+
         return toConvert;
     }
 }
@@ -217,11 +218,11 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
             // Convert to screen coordinates
             toConvert.x += fromWindow.frame.origin.x;
             toConvert.y += fromWindow.frame.origin.y;
-            
+
             // Change to this screen.
             toConvert = [self.screen convertPoint:toConvert fromScreen:fromWindow.screen];
         }
-        
+
         // Convert to window coordinates
         toConvert.x -= self.frame.origin.x;
         toConvert.y -= self.frame.origin.y;
@@ -250,11 +251,11 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
         if ([self.screen.keyWindow isKeyWindow]) {
             [self.screen.keyWindow resignKeyWindow];
         }
-        
+
         // now we set the screen's key window to ourself - note that this doesn't really make it the key
         // window yet from an external point of view...
         [self.screen _setKeyWindow:self];
-        
+
         // if it turns out we're now the key window, it means this window is ultimately within a UIKitView
         // that's the current AppKit key window, too, so we make it so. if we are NOT the key window, we
         // need to try to tell AppKit to make the UIKitView we're on the key window. If that works out,
@@ -272,7 +273,7 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
 - (BOOL)isKeyWindow
 {
     // only return YES if we have a screen and our screen's UIKitView is on the AppKit key window
-    
+
     if (self.screen.keyWindow == self) {
         return [[self.screen.UIKitView window] isKeyWindow];
     }
@@ -293,7 +294,7 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
     if ([[self _firstResponder] respondsToSelector:@selector(resignKeyWindow)]) {
         [(id)[self _firstResponder] resignKeyWindow];
     }
-    
+
     [[NSNotificationCenter defaultCenter] postNotificationName:UIWindowDidResignKeyNotification object:self];
 }
 
@@ -315,7 +316,7 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
 - (void)_NSWindowDidResignKeyNotification:(NSNotification *)note
 {
     NSWindow *nativeWindow = [note object];
-    
+
     // if the resigned key window is the same window that hosts our underlying screen, then we need to resign
     // this UIWindow, too. note that it does NOT actually unset the keyWindow property for the UIScreen!
     // this is because if the user clicks back in the screen's window, we need a way to reconnect this UIWindow
@@ -331,7 +332,7 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
 {
     if (!self.hidden) {
         [super setHidden:YES];
-        
+
         if (self.screen) {
             [self.screen _removeWindow:self];
             [[NSNotificationCenter defaultCenter] postNotificationName:UIWindowDidBecomeHiddenNotification object:self];
@@ -389,12 +390,12 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
     // to properly support mulitouch. I still don't really like how all this works - especially with the
     // gesture recognizers, but I've been struggling to come up with a better way for far too long and just
     // have to deal with what I've got now.
-    
+
     // if there's no touch for this window, return immediately
     if (event.touch.window != self) {
         return;
     }
-    
+
     // normally there'd be no need to retain the view here, but this works around a strange problem I ran into.
     // what can happen is, now that UIView's -removeFromSuperview will remove the view from the active touch
     // instead of just cancel the touch (which is how I had implemented it previously - which was wrong), the
@@ -426,33 +427,33 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
     // anything else is done.
     for (UIGestureRecognizer *gesture in event.touch.gestureRecognizers) {
         [gesture _continueTrackingWithEvent:event];
-        
+
         const BOOL recognized = (gesture.state == UIGestureRecognizerStateRecognized || gesture.state == UIGestureRecognizerStateBegan);
         const BOOL possible = (gesture.state == UIGestureRecognizerStatePossible);
-        
+
         gestureRecognized |= recognized;
         possibleGestures |= possible;
-        
+
         if (recognized || possible) {
             delaysTouchesBegan |= gesture.delaysTouchesBegan;
-            
+
             // special case for scroll views so that -delaysContentTouches works somewhat as expected
             // likely this is pretty wrong, but it should work well enough for most normal cases, I suspect.
             if ([gesture.view isKindOfClass:[UIScrollView class]]) {
                 UIScrollView *scrollView = (UIScrollView *)gesture.view;
-                
+
                 if ([gesture isEqual:scrollView.panGestureRecognizer] || [gesture isEqual:scrollView.scrollWheelGestureRecognizer]) {
                     delaysTouchesBegan |= scrollView.delaysContentTouches;
                 }
             }
         }
-        
+
         if (recognized) {
             delaysTouchesEnded |= gesture.delaysTouchesEnded;
             cancelsTouches |= gesture.cancelsTouchesInView;
         }
     }
-    
+
     if (event.isDiscreteGesture) {
         // this should prevent delivery of the "touches" down the responder chain in roughly the same way a normal non-
         // discrete gesture would based on the settings of the in-play gesture recognizers.
@@ -487,19 +488,19 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
             const NSTimeInterval currentTimestamp = event.touch.timestamp;
             const UITouchPhase currentPhase = event.touch.phase;
             const CGPoint currentLocation = event.touch.locationOnScreen;
-            
+
             event.touch.timestamp = event.touch.beganPhaseTimestamp;
             event.touch.locationOnScreen = event.touch.beganPhaseLocationOnScreen;
             event.touch.phase = UITouchPhaseBegan;
-            
+
             [view touchesBegan:event.allTouches withEvent:event];
             event.touch.wasDeliveredToView = YES;
-            
+
             event.touch.phase = currentPhase;
             event.touch.locationOnScreen = currentLocation;
             event.touch.timestamp = currentTimestamp;
         }
-        
+
         if (event.touch.phase != UITouchPhaseBegan && event.touch.wasDeliveredToView && !event.touch.wasCancelledInView) {
             if (event.touch.phase == UITouchPhaseCancelled) {
                 [view touchesCancelled:event.allTouches withEvent:event];
@@ -511,12 +512,12 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
                 // cancelled. (technically cancelled touches are, I think, meant to be a last resort..
                 // the sort of thing that happens when a phone call comes in or a modal window comes up)
                 const UITouchPhase currentPhase = event.touch.phase;
-                
+
                 event.touch.phase = UITouchPhaseCancelled;
-                
+
                 [view touchesCancelled:event.allTouches withEvent:event];
                 event.touch.wasCancelledInView = YES;
-                
+
                 event.touch.phase = currentPhase;
             } else if (event.touch.phase == UITouchPhaseMoved) {
                 [view touchesMoved:event.allTouches withEvent:event];
@@ -525,9 +526,9 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
             }
         }
     }
-    
+
     NSCursor *newCursor = [view mouseCursorForEvent:event] ?: [NSCursor arrowCursor];
-    
+
     if ([NSCursor currentCursor] != newCursor) {
         [newCursor set];
     }

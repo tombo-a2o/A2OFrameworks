@@ -82,6 +82,8 @@ static BOOL _animationsEnabled = YES;
 - (id)initWithFrame:(CGRect)theFrame
 {
     if ((self=[super init])) {
+        DEBUGLOG(@"UIView initWithFrame %x %@ %@", self, theFrame, [self class]);
+
         _implementsDrawRect = [[self class] _instanceImplementsDrawRect];
         _clearsContextBeforeDrawing = YES;
         _autoresizesSubviews = YES;
@@ -152,28 +154,28 @@ static BOOL _animationsEnabled = YES;
             [subviews addObject:potentialView];
         }
     }
-    
+
     return subviews;
 }
 
 - (void)_willMoveFromWindow:(UIWindow *)fromWindow toWindow:(UIWindow *)toWindow
 {
     if (fromWindow != toWindow) {
-        
+
         // need to manage the responder chain. apparently UIKit (at least by version 4.2) seems to make sure that if a view was first responder
         // and it or it's parent views are disconnected from their window, the first responder gets reset to nil. Honestly, I don't think this
         // was always true - but it's certainly a much better and less-crashy design. Hopefully this check here replicates the behavior properly.
         if ([self isFirstResponder]) {
             [self resignFirstResponder];
         }
-        
+
         [self _UIAppearanceSetNeedsUpdate];
         [self willMoveToWindow:toWindow];
 
         for (UIView *subview in self.subviews) {
             [subview _willMoveFromWindow:fromWindow toWindow:toWindow];
         }
-        
+
         [[self _viewController] beginAppearanceTransition:(toWindow != nil) animated:NO];
     }
 }
@@ -185,7 +187,7 @@ static BOOL _animationsEnabled = YES;
     } else {
         [self setNeedsDisplay];
     }
-    
+
     for (UIView *subview in self.subviews) {
         [subview _didMoveToScreen];
     }
@@ -199,7 +201,7 @@ static BOOL _animationsEnabled = YES;
         for (UIView *subview in self.subviews) {
             [subview _didMoveFromWindow:fromWindow toWindow:toWindow];
         }
-        
+
         UIViewController *controller = [self _viewController];
 
         if (controller) {
@@ -208,7 +210,7 @@ static BOOL _animationsEnabled = YES;
 
                 [[self class] _setAnimationCompletionBlock:^(BOOL finished) {
                     [controller endAppearanceTransition];
-                    
+
                     if (completionBlock) {
                         completionBlock(finished);
                     }
@@ -227,12 +229,13 @@ static BOOL _animationsEnabled = YES;
 
 - (void)addSubview:(UIView *)subview
 {
+    DEBUGLOG(@"UIView addSubview %@ %@", self, subview);
     NSAssert((!subview || [subview isKindOfClass:[UIView class]]), @"the subview must be a UIView");
 
     if (subview && subview.superview != self) {
         UIWindow *oldWindow = subview.window;
         UIWindow *newWindow = self.window;
-        
+
         [subview _willMoveFromWindow:oldWindow toWindow:newWindow];
         [subview willMoveToSuperview:self];
 
@@ -240,7 +243,7 @@ static BOOL _animationsEnabled = YES;
             [subview.layer removeFromSuperlayer];
             [subview.superview->_subviews removeObject:subview];
         }
-        
+
         [subview willChangeValueForKey:@"superview"];
         [_subviews addObject:subview];
         subview->_superview = self;
@@ -250,10 +253,10 @@ static BOOL _animationsEnabled = YES;
         if (oldWindow.screen != newWindow.screen) {
             [subview _didMoveToScreen];
         }
-        
+
         [subview _didMoveFromWindow:oldWindow toWindow:newWindow];
         [subview didMoveToSuperview];
-        
+
         [[NSNotificationCenter defaultCenter] postNotificationName:UIViewDidMoveToSuperviewNotification object:subview];
 
         [self didAddSubview:subview];
@@ -313,7 +316,7 @@ static BOOL _animationsEnabled = YES;
         [_superview willRemoveSubview:self];
         [self _willMoveFromWindow:oldWindow toWindow:nil];
         [self willMoveToSuperview:nil];
-        
+
         [self willChangeValueForKey:@"superview"];
         [_layer removeFromSuperlayer];
         [_superview->_subviews removeObject:self];
@@ -358,7 +361,7 @@ static BOOL _animationsEnabled = YES;
     // NOTE: this is a lot more complex than it needs to be - I just noticed the docs say this method requires fromView and self to
     // belong to the same UIWindow! arg! leaving this for now because, well, it's neat.. but also I'm too tired to really ponder
     // all the implications of a change to something so "low level".
-    
+
     if (fromView) {
         // If the screens are the same, then we know they share a common parent CALayer, so we can convert directly with the layer's
         // conversion method. If not, though, we need to do something a bit more complicated.
@@ -367,7 +370,7 @@ static BOOL _animationsEnabled = YES;
         } else {
             // Convert coordinate to fromView's window base coordinates.
             toConvert = [fromView.layer convertPoint:toConvert toLayer:fromView.window.layer];
-            
+
             // Now convert from fromView's window to our own window.
             toConvert = [fromView.window convertPoint:toConvert toWindow:self.window];
         }
@@ -382,22 +385,22 @@ static BOOL _animationsEnabled = YES;
     // NOTE: this is a lot more complex than it needs to be - I just noticed the docs say this method requires toView and self to
     // belong to the same UIWindow! arg! leaving this for now because, well, it's neat.. but also I'm too tired to really ponder
     // all the implications of a change to something so "low level".
-    
+
     // See note in convertPoint:fromView: for some explaination about why this is done... :/
     if (toView && (self.window.screen == toView.window.screen)) {
         return [self.layer convertPoint:toConvert toLayer:toView.layer];
     } else {
         // Convert to our window's coordinate space.
         toConvert = [self.layer convertPoint:toConvert toLayer:self.window.layer];
-        
+
         if (toView) {
             // Convert from one window's coordinate space to another.
             toConvert = [self.window convertPoint:toConvert toWindow:toView.window];
-            
+
             // Convert from toView's window down to toView's coordinate space.
             toConvert = [toView.window.layer convertPoint:toConvert toLayer:toView.layer];
         }
-        
+
         return toConvert;
     }
 }
@@ -431,7 +434,7 @@ static BOOL _animationsEnabled = YES;
 - (UIView *)viewWithTag:(NSInteger)tagToFind
 {
     UIView *foundView = nil;
-    
+
     if (self.tag == tagToFind) {
         foundView = self;
     } else {
@@ -441,7 +444,7 @@ static BOOL _animationsEnabled = YES;
                 break;
         }
     }
-    
+
     return foundView;
 }
 
@@ -480,7 +483,7 @@ static BOOL _animationsEnabled = YES;
     // specified in the UIView's subview. This nicely prevents a ton of useless memory usage and likley improves performance a lot on iPhone.
     // It took great pains to discover this trick and I think I'm doing this right. By having this method empty here, it means that it overrides
     // the layer's normal display method and instead does nothing which results in the layer not making a backing store and wasting memory.
-    
+
     // Here's how CALayer appears to work:
     // 1- something call's the layer's -display method.
     // 2- arrive in CALayer's display: method.
@@ -489,17 +492,17 @@ static BOOL _animationsEnabled = YES;
     // 3- arrive in CALayer's drawInContext: method.
     // 3a-  if delegate implements drawLayer:inContext:, call that and pass it the context.
     // 3b-  otherwise, does nothing
-    
+
     // So, what this all means is that to avoid causing the CALayer to create a context and use up memory, our delegate has to lie to CALayer
     // about if it implements displayLayer: or not. If we say it does, we short circuit the layer's buffer creation process (since it assumes
     // we are going to be setting it's contents property ourselves). So, that's what we do in the override of respondsToSelector: below.
-    
+
     // backgroundColor is influenced by all this as well. If drawRect: is defined, we draw it directly in the context so that blending is all
     // pretty and stuff. If it isn't, though, we still want to support it. What the real UIKit does is it sets the layer's backgroundColor
     // iff drawRect: isn't specified. Otherwise it manages it itself. Again, this is for performance reasons. Rather than having to store a
     // whole bitmap the size of view just to hold the backgroundColor, this allows a lot of views to simply act as containers and not waste
     // a bunch of unnecessary memory in those cases - but you can still use background colors because CALayer manages that effeciently.
-    
+
     // note that the last time I checked this, the layer's background color was being set immediately on call to -setBackgroundColor:
     // when there was no -drawRect: implementation, but I needed to change this to work around issues with pattern image colors in HiDPI.
     _layer.backgroundColor = [self.backgroundColor _bestRepresentationForProposedScale:self.window.screen.scale].CGColor;
@@ -524,7 +527,7 @@ static BOOL _animationsEnabled = YES;
 
     UIGraphicsPushContext(ctx);
     CGContextSaveGState(ctx);
-    
+
     if (_clearsContextBeforeDrawing) {
         CGContextClearRect(ctx, bounds);
     }
@@ -553,7 +556,7 @@ static BOOL _animationsEnabled = YES;
      the app depending on how things are done. Typical UIKit code is going to be lots of layers and thus text will mostly look bad
      with straight ports but at this point I really can't come up with a much better solution so it'll have to do.
      */
-    
+
     /*
      UPDATE AGAIN: So, subpixel with light text against a dark background looks kinda crap and we can't seem to figure out how
      to make it not-crap right now. After messing with some fonts and things, we're currently turning subpixel off again instead.
@@ -569,9 +572,9 @@ static BOOL _animationsEnabled = YES;
 
     CGContextSetShouldSmoothFonts(ctx, NO);
 
-    CGContextSetShouldSubpixelPositionFonts(ctx, YES);
-    CGContextSetShouldSubpixelQuantizeFonts(ctx, YES);
-    
+    // CGContextSetShouldSubpixelPositionFonts(ctx, YES);
+    // CGContextSetShouldSubpixelQuantizeFonts(ctx, YES);
+
     [[UIColor blackColor] set];
     [self drawRect:bounds];
 
@@ -593,11 +596,11 @@ static BOOL _animationsEnabled = YES;
     if (_autoresizingMask != UIViewAutoresizingNone) {
         CGRect frame = self.frame;
         const CGSize delta = CGSizeMake(newSize.width-oldSize.width, newSize.height-oldSize.height);
-        
+
 #define hasAutoresizingFor(x) ((_autoresizingMask & (x)) == (x))
-        
+
         /*
-         
+
          top + bottom + height      => y = floor(y + (y / HEIGHT * delta)); height = floor(height + (height / HEIGHT * delta))
          top + height               => t = y + height; y = floor(y + (y / t * delta); height = floor(height + (height / t * delta);
          bottom + height            => height = floor(height + (height / (HEIGHT - y) * delta))
@@ -789,7 +792,7 @@ static BOOL _animationsEnabled = YES;
     if (scale <= 0 && _implementsDrawRect) {
         scale = [UIScreen mainScreen].scale;
     }
-    
+
     if (scale > 0 && scale != self.contentScaleFactor) {
         if ([_layer respondsToSelector:@selector(setContentsScale:)]) {
             [_layer setContentsScale:scale];
@@ -857,7 +860,7 @@ static BOOL _animationsEnabled = YES;
             }
         }
     }
-    
+
     return YES;
 }
 
@@ -899,7 +902,7 @@ static BOOL _animationsEnabled = YES;
             case UIViewContentModeRedraw:
                 _layer.needsDisplayOnBoundsChange = YES;
                 break;
-                
+
             case UIViewContentModeCenter:
                 _layer.contentsGravity = kCAGravityCenter;
                 _layer.needsDisplayOnBoundsChange = NO;
@@ -973,7 +976,7 @@ static BOOL _animationsEnabled = YES;
 
     for (UIGestureRecognizer *gesture in newRecognizers) {
         [self addGestureRecognizer:gesture];
-    }	
+    }
 }
 
 - (NSArray *)gestureRecognizers
@@ -1018,9 +1021,9 @@ static BOOL _animationsEnabled = YES;
     [self setAnimationDuration:duration];
     [self setAnimationDelay:delay];
     [self _setAnimationCompletionBlock:completion];
-    
+
     animations();
-    
+
     [self commitAnimations];
 }
 
@@ -1044,11 +1047,11 @@ static BOOL _animationsEnabled = YES;
     [self setAnimationDuration:duration];
     [self _setAnimationCompletionBlock:completion];
     [self _setAnimationTransitionView:view];
-    
+
     if (animations) {
         animations();
     }
-    
+
     [self commitAnimations];
 }
 
@@ -1131,24 +1134,24 @@ static BOOL _animationsEnabled = YES;
 + (void)setAnimationTransition:(UIViewAnimationTransition)transition forView:(UIView *)view cache:(BOOL)cache
 {
     [self _setAnimationTransitionView:view];
-    
+
     switch (transition) {
         case UIViewAnimationTransitionNone:
             [[_animationGroups lastObject] setTransition:UIViewAnimationGroupTransitionNone];
             break;
-            
+
         case UIViewAnimationTransitionFlipFromLeft:
             [[_animationGroups lastObject] setTransition:UIViewAnimationGroupTransitionFlipFromLeft];
             break;
-            
+
         case UIViewAnimationTransitionFlipFromRight:
             [[_animationGroups lastObject] setTransition:UIViewAnimationGroupTransitionFlipFromRight];
             break;
-            
+
         case UIViewAnimationTransitionCurlUp:
             [[_animationGroups lastObject] setTransition:UIViewAnimationGroupTransitionCurlUp];
             break;
-            
+
         case UIViewAnimationTransitionCurlDown:
             [[_animationGroups lastObject] setTransition:UIViewAnimationGroupTransitionCurlDown];
             break;

@@ -84,10 +84,10 @@ NSMutableArray *_allScreens = nil;
         _layer = [CALayer layer];
         _layer.delegate = self;		// required to get the magic of the UIViewLayoutManager...
         _layer.layoutManager = [UIViewLayoutManager layoutManager];
-        
+
         _windows = [[NSMutableArray alloc] init];
         _brightness = 1;
-        
+
         _grabber = [[UIImageView alloc] initWithImage:[UIImage _windowResizeGrabberImage]];
         _grabber.layer.zPosition = 10000;
         [_layer addSublayer:_grabber.layer];
@@ -109,15 +109,11 @@ NSMutableArray *_allScreens = nil;
 
 - (CGFloat)scale
 {
-#if 1
-    return 2.0;
-#else
     if ([[_UIKitView window] respondsToSelector:@selector(backingScaleFactor)]) {
         return [[_UIKitView window] backingScaleFactor];
     } else {
         return 1;
     }
-#endif
 }
 
 - (BOOL)_hasResizeIndicator
@@ -193,7 +189,7 @@ NSMutableArray *_allScreens = nil;
     if (_UIKitView != theView) {
         [[NSNotificationCenter defaultCenter] removeObserver:self name:NSViewFrameDidChangeNotification object:_UIKitView];
         [[NSNotificationCenter defaultCenter] removeObserver:self name:NSWindowDidChangeScreenNotification object:nil];
-        
+
         if ((_UIKitView = theView)) {
             [_allScreens addObject:[NSValue valueWithNonretainedObject:self]];
             self.currentMode = [UIScreenMode screenModeWithNSView:_UIKitView];

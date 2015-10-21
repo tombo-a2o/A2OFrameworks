@@ -73,7 +73,7 @@ static NSArray *CGImagesWithUIImages(NSArray *images)
     if (theImage) {
         frame.size = theImage.size;
     }
-        
+
     if ((self = [self initWithFrame:frame])) {
         self.image = theImage;
     }
@@ -135,18 +135,18 @@ static NSArray *CGImagesWithUIImages(NSArray *images)
 - (void)displayLayer:(CALayer *)theLayer
 {
     [super displayLayer:theLayer];
-    
+
     UIImage *displayImage = (_highlighted && _highlightedImage)? _highlightedImage : _image;
     const CGFloat scale = self.window.screen.scale;
     const CGRect bounds = self.bounds;
-    
+
     if (displayImage && self._hasResizableImage && bounds.size.width > 0 && bounds.size.height > 0) {
         UIGraphicsBeginImageContextWithOptions(bounds.size, NO, scale);
         [displayImage drawInRect:bounds];
         displayImage = UIGraphicsGetImageFromCurrentImageContext();
         UIGraphicsEndImageContext();
     }
-    
+
     // adjust the image if required.
     // this will likely only ever be used UIButton, but it seemed a good place for it.
     // I wonder how the real UIKit does this...
@@ -156,10 +156,10 @@ static NSArray *CGImagesWithUIImages(NSArray *images)
         imageBounds.size = displayImage.size;
 
         UIGraphicsBeginImageContextWithOptions(imageBounds.size, NO, scale);
-        
+
         CGBlendMode blendMode = kCGBlendModeNormal;
         CGFloat alpha = 1;
-        
+
         if (_drawMode == _UIImageViewDrawModeDisabled) {
             alpha = 0.5;
         } else if (_drawMode == _UIImageViewDrawModeHighlighted) {
@@ -167,7 +167,7 @@ static NSArray *CGImagesWithUIImages(NSArray *images)
             UIRectFill(imageBounds);
             blendMode = kCGBlendModeDestinationAtop;
         }
-        
+
         [displayImage drawInRect:imageBounds blendMode:blendMode alpha:alpha];
         displayImage = UIGraphicsGetImageFromCurrentImageContext();
 
@@ -176,10 +176,9 @@ static NSArray *CGImagesWithUIImages(NSArray *images)
 
     UIImageRep *bestRepresentation = [displayImage _bestRepresentationForProposedScale:scale];
     theLayer.contents = (__bridge id)bestRepresentation.CGImage;
-    
+
     if ([theLayer respondsToSelector:@selector(setContentsScale:)]) {
-        //[theLayer setContentsScale:bestRepresentation.scale];
-        assert(0);
+        [theLayer setContentsScale:bestRepresentation.scale];
     }
 }
 

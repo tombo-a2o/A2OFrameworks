@@ -33,8 +33,6 @@
 #import "UIKitView.h"
 #import "UIBackgroundTask.h"
 #import "UINSApplicationDelegate.h"
-#import <UIKit/UIStoryboard.h>
-#import <UIKit/UIViewController.h>
 #import <AppKit/AppKit.h>
 
 NSString *const UIApplicationWillChangeStatusBarOrientationNotification = @"UIApplicationWillChangeStatusBarOrientationNotification";
@@ -75,7 +73,7 @@ static UIApplication *_theApplication = nil;
     if (!_theApplication) {
         _theApplication = [[self alloc] init];
     }
-    
+
     return _theApplication;
 }
 
@@ -85,7 +83,7 @@ static UIApplication *_theApplication = nil;
         _backgroundTasks = [[NSMutableArray alloc] init];
         _applicationState = UIApplicationStateActive;
         _applicationSupportsShakeToEdit = YES;		// yeah... not *really* true, but UIKit defaults to YES :)
-        
+
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_applicationWillFinishLaunching:) name:NSApplicationWillFinishLaunchingNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_applicationDidFinishLaunching:) name:NSApplicationDidFinishLaunchingNotification object:nil];
 
@@ -93,7 +91,7 @@ static UIApplication *_theApplication = nil;
 
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_applicationWillResignActive:) name:NSApplicationWillResignActiveNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_applicationDidBecomeActive:) name:NSApplicationDidBecomeActiveNotification object:nil];
-        
+
         [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(_applicationWillResignActive:) name:NSWorkspaceScreensDidSleepNotification object:nil];
         [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(_applicationDidBecomeActive:) name:NSWorkspaceScreensDidWakeNotification object:nil];
 
@@ -233,13 +231,13 @@ static UIApplication *_theApplication = nil;
 {
     if (self.applicationState != UIApplicationStateBackground) {
         _applicationState = UIApplicationStateBackground;
-        
+
         if ([_delegate respondsToSelector:@selector(applicationDidEnterBackground:)]) {
             [_delegate applicationDidEnterBackground:self];
         }
-        
+
         [[NSNotificationCenter defaultCenter] postNotificationName:UIApplicationDidEnterBackgroundNotification object:self];
-        
+
         return YES;
     } else {
         return NO;
@@ -252,9 +250,9 @@ static UIApplication *_theApplication = nil;
         if ([_delegate respondsToSelector:@selector(applicationWillEnterForeground:)]) {
             [_delegate applicationWillEnterForeground:self];
         }
-        
+
         [[NSNotificationCenter defaultCenter] postNotificationName:UIApplicationWillEnterForegroundNotification object:self];
-        
+
         _applicationState = UIApplicationStateInactive;
     }
 }
@@ -271,12 +269,12 @@ static UIApplication *_theApplication = nil;
     // might hang around for a lot longer than is necessary since we might not have anything to run in the default
     // mode for awhile or something which would keep this method from returning.
     [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:date];
-    
+
     // otherwise check if we've timed out and if we are, break
     if ([[NSDate date] timeIntervalSinceReferenceDate] >= [_backgroundTasksExpirationDate timeIntervalSinceReferenceDate]) {
         return NO;
     }
-    
+
     return YES;
 }
 
@@ -288,7 +286,7 @@ static UIApplication *_theApplication = nil;
             task.expirationHandler();
         }
     }
-    
+
     // remove any lingering tasks so we're back to being empty
     [_backgroundTasks removeAllObjects];
 }
@@ -301,9 +299,9 @@ static UIApplication *_theApplication = nil;
 - (NSApplicationTerminateReply)terminateApplicationBeforeDate:(NSDate *)timeoutDate
 {
     [self _enterBackground];
-    
+
     _backgroundTasksExpirationDate = timeoutDate;
-    
+
     // we will briefly block here for a short time and run the runloop in an attempt to let the background tasks finish up before
     // actually prompting the user with an annoying alert. users are much more used to an app hanging for a brief moment while
     // quitting than they are with an alert appearing/disappearing suddenly that they might have had trouble reading and processing
@@ -320,16 +318,16 @@ static UIApplication *_theApplication = nil;
     // and tell our app we can terminate immediately now.
     if ([_backgroundTasks count] == 0) {
         [self _cancelBackgroundTasks];
-    
+
         // and reset our timer since we're done
         _backgroundTasksExpirationDate = nil;
-        
+
         // and return
         return NSTerminateNow;
     }
-    
+
     // otherwise... we have to do a deferred thing so we can show an alert while we wait for background tasks to finish...
-    
+
     void (^taskFinisher)(void) = ^{
         NSAlert *alert = [[NSAlert alloc] init];
         [alert setAlertStyle:NSInformationalAlertStyle];
@@ -344,18 +342,18 @@ static UIApplication *_theApplication = nil;
         NSDate *minimumDisplayTime = [NSDate dateWithTimeIntervalSinceNow:2.33];
 
         NSModalSession session = [NSApp beginModalSessionForWindow:alert.window];
-        
+
         // run the runloop and wait for tasks to finish
         while ([NSApp runModalSession:session] == NSRunContinuesResponse) {
             if (![self _runRunLoopForBackgroundTasksBeforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]]) {
                 break;
             }
         }
-        
+
         // when we exit the runloop loop, then we're done with the tasks. either they are all finished or the time has run out
         // so we need to clean things up here as if we're all finished. if there's any remaining tasks, run their expiration handlers
         [self _cancelBackgroundTasks];
-        
+
         // and reset our timer since we're done
         _backgroundTasksExpirationDate = nil;
 
@@ -371,11 +369,11 @@ static UIApplication *_theApplication = nil;
 
 
         [NSApp endModalSession:session];
-        
+
         // tell the real NSApp we're all done here
         [NSApp replyToApplicationShouldTerminate:YES];
     };
-    
+
     // I need to delay this but run it on the main thread and also be able to run it in the panel run loop mode
     // because we're probably in that run loop mode due to how -applicationShouldTerminate: does things. I don't
     // know if I could do this same thing with a couple of simple GCD calls, but whatever, this works too. :)
@@ -383,7 +381,7 @@ static UIApplication *_theApplication = nil;
                            withObject:[taskFinisher copy]
                         waitUntilDone:NO
                                 modes:[NSArray arrayWithObjects:NSModalPanelRunLoopMode, NSRunLoopCommonModes, nil]];
-    
+
     return NSTerminateLater;
 }
 
@@ -404,7 +402,7 @@ static UIApplication *_theApplication = nil;
                 break;
             }
         }
-        
+
         [self _cancelBackgroundTasks];
 
         // and reset our timer since we're done
@@ -420,11 +418,11 @@ static UIApplication *_theApplication = nil;
 - (NSArray *)windows
 {
     NSMutableArray *windows = [NSMutableArray new];
-    
+
     for (UIScreen *screen in [UIScreen screens]) {
         [windows addObjectsFromArray:screen.windows];
     }
-    
+
     return [windows sortedArrayUsingDescriptors:@[[[NSSortDescriptor alloc] initWithKey:@"windowLevel" ascending:YES]]];
 }
 
@@ -435,7 +433,7 @@ static UIApplication *_theApplication = nil;
             return window;
         }
     }
-    
+
     return nil;
 }
 
@@ -447,19 +445,19 @@ static UIApplication *_theApplication = nil;
         // happy to function without ever having any UIResponder having had a becomeFirstResponder sent to it. This method seems to work by starting
         // with sender and traveling down the responder chain from there if target==nil. The first object that responds to the given action is sent
         // the message. (or no one is)
-        
+
         // My confusion comes from the fact that motion events and keyboard events are supposed to start with the first responder - but what is that
         // if none was ever set? Apparently the answer is, if none were set, the message doesn't get delivered. If you expicitly set a UIResponder
         // using becomeFirstResponder, then it will receive keyboard/motion events but it does not receive any other messages from other views that
         // happen to end up calling this method with a nil target. So that's a seperate mechanism and I think it's confused a bit in the docs.
-        
+
         // It seems that the reality of message delivery to "first responder" is that it depends a bit on the source. If the source is an external
         // event like motion or keyboard, then there has to have been an explicitly set first responder (by way of becomeFirstResponder) in order for
         // those events to even get delivered at all. If there is no responder defined, the action is simply never sent and thus never received.
         // This is entirely independent of what "first responder" means in the context of a UIControl. Instead, for a UIControl, the first responder
         // is the first UIResponder (including the UIControl itself) that responds to the action. It starts with the UIControl (sender) and not with
         // whatever UIResponder may have been set with becomeFirstResponder.
-        
+
         id responder = sender;
         while (responder) {
             if ([responder respondsToSelector:action]) {
@@ -472,14 +470,14 @@ static UIApplication *_theApplication = nil;
             }
         }
     }
-    
+
     if (target) {
         typedef void(*EventActionMethod)(id, SEL, id, UIEvent *);
         EventActionMethod method = (EventActionMethod)[target methodForSelector:action];
         method(target, action, sender, event);
         return YES;
     }
-    
+
     return NO;
 }
 
@@ -505,11 +503,11 @@ static UIApplication *_theApplication = nil;
 - (void)_applicationWillFinishLaunching:(NSNotification *)note
 {
     NSDictionary *options = nil;
-    
+
     if ([_delegate respondsToSelector:@selector(application:willFinishLaunchingOnDesktopWithOptions:)]) {
         [_delegate application:self willFinishLaunchingOnDesktopWithOptions:options];
     }
-    
+
     if ([_delegate respondsToSelector:@selector(application:willFinishLaunchingWithOptions:)]) {
         [_delegate application:self willFinishLaunchingWithOptions:options];
     }
@@ -528,7 +526,7 @@ static UIApplication *_theApplication = nil;
     } else if ([_delegate respondsToSelector:@selector(applicationDidFinishLaunching:)]) {
         [_delegate applicationDidFinishLaunching:self];
     }
-    
+
     [[NSNotificationCenter defaultCenter] postNotificationName:UIApplicationDidFinishLaunchingNotification object:self];
 }
 
@@ -537,11 +535,11 @@ static UIApplication *_theApplication = nil;
     if ([_delegate respondsToSelector:@selector(applicationWillTerminateOnDesktop:)]) {
         [_delegate applicationWillTerminateOnDesktop:self];
     }
-    
+
     if ([_delegate respondsToSelector:@selector(applicationWillTerminate:)]) {
         [_delegate applicationWillTerminate:self];
     }
-    
+
     [[NSNotificationCenter defaultCenter] postNotificationName:UIApplicationWillTerminateNotification object:self];
 }
 
@@ -551,9 +549,9 @@ static UIApplication *_theApplication = nil;
         if ([_delegate respondsToSelector:@selector(applicationWillResignActive:)]) {
             [_delegate applicationWillResignActive:self];
         }
-        
+
         [[NSNotificationCenter defaultCenter] postNotificationName:UIApplicationWillResignActiveNotification object:self];
-        
+
         _applicationState = UIApplicationStateInactive;
     }
 }
@@ -566,7 +564,7 @@ static UIApplication *_theApplication = nil;
         if ([_delegate respondsToSelector:@selector(applicationDidBecomeActive:)]) {
             [_delegate applicationDidBecomeActive:self];
         }
-        
+
         [[NSNotificationCenter defaultCenter] postNotificationName:UIApplicationDidBecomeActiveNotification object:self];
     }
 }
@@ -596,39 +594,28 @@ int UIApplicationMain(int argc, char *argv[], NSString *principalClassName, NSSt
 
         [app setDelegate:delegate];
 
-        NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
-        NSString *mainStoryboardName = [infoDictionary objectForKey:@"UIMainStoryboardFile"];
-        if(mainStoryboardName) {
-            NSLog(@"main storyboard %@", mainStoryboardName);
-            UIStoryboard *storyboard = [UIStoryboard storyboardWithName:mainStoryboardName bundle:nil];
-            NSLog(@"storyboard %@", storyboard);
-            UIViewController *rootVC = [storyboard instantiateInitialViewController];
-            NSLog(@"rootVC %@", rootVC);
-            app.keyWindow.rootViewController = rootVC;
-            [app.keyWindow addSubview:[rootVC view]];
-        }
-
+#if 0
         NSString *mainNibName = [infoDictionary objectForKey:@"NSMainNibFile"];
         NSArray *topLevelObjects = nil;
         if(mainNibName) {
             NSNib *mainNib = [[NSNib alloc] initWithNibNamed:mainNibName bundle:[NSBundle mainBundle]];
             [mainNib instantiateWithOwner:app topLevelObjects:&topLevelObjects];
         }
+#endif
 
-        
         id<NSApplicationDelegate> backgroundTaskCatchingDelegate = [UINSApplicationDelegate new];
         [[NSApplication sharedApplication] setDelegate:backgroundTaskCatchingDelegate];
         [[NSApplication sharedApplication] run];
-        
+
         // the only purpose of this is to confuse ARC. I'm not sure how else to do it.
         // without this here, ARC thinks it can dealloc some stuff before we're really done
         // with it, and since we're never really going to be done with this stuff, it has to
         // be kept around as long as the app runs, but since the app never actually gets here
         // it will never be executed but this prevents ARC from preemptively releasing things.
         // meh.
-        [@[app, delegate, topLevelObjects, backgroundTaskCatchingDelegate] count];
+        [@[app, delegate, backgroundTaskCatchingDelegate] count];
     }
-    
+
     // this never happens
     return 0;
 }

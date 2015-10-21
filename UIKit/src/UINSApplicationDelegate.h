@@ -30,7 +30,8 @@
 #import <AppKit/NSApplication.h>
 
 @interface UINSApplicationDelegate : NSObject <NSApplicationDelegate> {
-    NSWindow *window;
+    NSWindow *_window;
 }
+- (void)applicationWillFinishLaunching:(NSNotification *)aNotification;
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification;
 @end
