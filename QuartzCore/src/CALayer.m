@@ -299,8 +299,7 @@ NSString * const kCATransition = @"transition";
                 kO2BitmapByteOrder32Big|kO2ImageAlphaLast);
         assert(context);
         [self drawInContext:context];
-        CGImageRef image = CGBitmapContextCreateImage(context);
-        [self setContents:image];
+        [self setContents:context];
     }
 }
 

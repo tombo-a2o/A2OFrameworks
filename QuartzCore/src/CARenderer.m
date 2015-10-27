@@ -6,6 +6,7 @@
 #import <OpenGLES/ES2/gl.h>
 #import <OpenGLES/ES2/glext.h>
 #import <Onyx2D/O2Surface.h>
+#import <CoreGraphics/CGBitmapContext.h>
 #import "CAUtil.h"
 
 @interface CALayer(private)
@@ -259,6 +260,18 @@ static GLint interpolationFromName(NSString *name){
         return GL_LINEAR;
 }
 
+void CATexImage2DCGBitmapContext(CGContextRef context) {
+    size_t            imageWidth=CGBitmapContextGetWidth(context);
+    size_t            imageHeight=CGBitmapContextGetHeight(context);
+    CGBitmapInfo      bitmapInfo=CGBitmapContextGetBitmapInfo(context);
+    const uint8_t    *pixelBytes=CGBitmapContextGetData(context);
+
+#warning TODO check bitmap info
+    GLenum glFormat = GL_RGBA;
+    GLenum glType = GL_UNSIGNED_BYTE;
+    glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,imageWidth,imageHeight,0,glFormat,glType,pixelBytes);
+}
+
 void CATexImage2DCGImage(CGImageRef image){
     size_t            imageWidth=CGImageGetWidth(image);
     size_t            imageHeight=CGImageGetHeight(image);
@@ -267,38 +280,6 @@ void CATexImage2DCGImage(CGImageRef image){
     CGDataProviderRef provider=CGImageGetDataProvider(image);
     CFDataRef         data=CGDataProviderCopyData(provider);
     const uint8_t    *pixelBytes=CFDataGetBytePtr(data);
-
-/*
-    if(imageWidth==100 && imageHeight==100) {
-        for(int j = 0; j < imageHeight; j++) {
-            for(int i = 0; i < imageWidth; i++) {
-                printf("%x",pixelBytes[(i+j*imageWidth)*4]);
-            }
-            puts("");
-        }
-        puts("");
-        for(int j = 0; j < imageHeight; j++) {
-            for(int i = 0; i < imageWidth; i++) {
-                printf("%x",pixelBytes[(i+j*imageWidth)*4+1]);
-            }
-            puts("");
-        }
-        puts("");
-        for(int j = 0; j < imageHeight; j++) {
-            for(int i = 0; i < imageWidth; i++) {
-                printf("%x",pixelBytes[(i+j*imageWidth)*4+2]);
-            }
-            puts("");
-        }
-        puts("");
-        for(int j = 0; j < imageHeight; j++) {
-            for(int i = 0; i < imageWidth; i++) {
-                printf("%x",pixelBytes[(i+j*imageWidth)*4+3]);
-            }
-            puts("");
-        }
-    }
-*/
 
     GLenum glFormat=GL_BGRA;
     GLenum glType=GL_UNSIGNED_INT;
@@ -393,7 +374,11 @@ static void generateGLColorFromCGColor(CGColorRef cgColor, GLfloat components[4]
                 [layer _setTextureId:[NSNumber numberWithUnsignedInteger:texture]];
             }
             glBindTexture(GL_TEXTURE_2D, texture);
-            CATexImage2DCGImage(image);
+            if([image isKindOfClass: NSClassFromString(@"O2BitmapContext")]) {
+                CATexImage2DCGBitmapContext(image);
+            } else if([image isKindOfClass: NSClassFromString(@"O2Image")]){
+                CATexImage2DCGImage(image);
+            }
 
             // Force linear interpolation due to WebGL npot texture limitation
 
@@ -456,8 +441,6 @@ static void generateGLColorFromCGColor(CGColorRef cgColor, GLfloat components[4]
     glUniform1i(_unifHasTexure, glIsTexture(texture));
     GLfloat color[4];
     generateGLColorFromCGColor(layer.backgroundColor, color);
-    // color[0] = z/4.0;
-    // color[3] = 1;
     glUniform4fv(_unifBgColor, 1, color);
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -491,7 +474,6 @@ static void generateGLColorFromCGColor(CGColorRef cgColor, GLfloat components[4]
 -(void)render {
 #if 1
     glClearColor(0.0, 0.0, 0.0, 1.0);
-//    glClearColor(0.0, 1.0, 1.0, 1.0); // should be (0,0,0,1)
     glClear(GL_COLOR_BUFFER_BIT);
 
     glEnable (GL_BLEND);
