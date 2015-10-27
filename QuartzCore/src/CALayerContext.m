@@ -143,7 +143,7 @@
     GLint width=_frame.size.width;
     GLint height=_frame.size.height;
 
-    glViewport(0,0,width,height);
+    glViewport(0, 0, width, height);
 
 #warning TODO
 #if 0
@@ -162,19 +162,19 @@
 #endif
 
     GLsizei i=0;
-    GLuint  deleteIds[[_deleteTextureIds count]];
-
+    GLuint deleteIds[[_deleteTextureIds count]];
     for(NSNumber *number in _deleteTextureIds)
         deleteIds[i++]=[number unsignedIntValue];
 
     if(i > 0) {
-        glDeleteTextures(i,deleteIds);
+        glDeleteTextures(i, deleteIds);
     }
 
     [_deleteTextureIds removeAllObjects];
 
     [self assignTextureIdsToLayerTree:layer];
 
+    _renderer.bounds = CGRectMake(0, 0, width, height);
     [_renderer render];
 }
 

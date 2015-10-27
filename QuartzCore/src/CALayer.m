@@ -213,7 +213,6 @@ NSString * const kCATransition = @"transition";
 }
 
 -init {
-    NSLog(@"CALayer init %x %@", self, [self class]);
     _superlayer=nil;
     _sublayers=[NSArray new];
     _delegate=nil;
@@ -251,7 +250,6 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)addSublayer:(CALayer *)layer {
-    NSLog(@"CALayer addSubLayer %@, %@", self, layer);
     [self setSublayers:[_sublayers arrayByAddingObject:layer]];
 }
 
@@ -288,11 +286,9 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)display {
-    NSLog(@"CALayer display called");
     if([_delegate respondsToSelector:@selector(displayLayer:)]) {
         [_delegate displayLayer:self];
     } else {
-        NSLog(@"width=%d, height=%d",_bounds.size.width, _bounds.size.height);
         CGContextRef context = CGBitmapContextCreate(
                 NULL,
                 _bounds.size.width,
@@ -302,10 +298,7 @@ NSString * const kCATransition = @"transition";
                 CGColorSpaceCreateDeviceRGB(),
                 kCGBitmapByteOrderDefault|kO2ImageAlphaLast);
         assert(context);
-        O2BitmapContextRef c = (O2BitmapContextRef)context;
-        NSLog(@"colorSpace before %x", O2ImageGetColorSpace(c.surface));
         [self drawInContext:context];
-        NSLog(@"colorSpace after  %x", O2ImageGetColorSpace(c.surface));
         CGImageRef image = CGBitmapContextCreateImage(context);
         [self setContents:image];
     }
@@ -425,6 +418,6 @@ NSString * const kCATransition = @"transition";
 }
 
 -(NSString*)description {
-    return [NSString stringWithFormat:@"<%@: %p; sublayers = %@>", [self class], self, self.sublayers];
+    return [NSString stringWithFormat:@"<%@: %p>", [self class], self];
 }
 @end

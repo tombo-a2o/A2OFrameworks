@@ -3,6 +3,7 @@
 #import <OpenGLES/ES2/gl.h>
 #import <OpenGLES/ES2/glext.h>
 #import <Onyx2D/O2Surface.h>
+#import "CAUtil.h"
 
 @implementation CAWindowOpenGLContext {
     GLuint vertexShader;
@@ -18,25 +19,6 @@
 -(void)dealloc {
     [_eaglContext release];
     [super dealloc];
-}
-
--(GLuint)loadShader:(const char*)source withType:(GLenum)type {
-    GLuint shader = glCreateShader(type);
-    if(shader) {
-        glShaderSource(shader, 1, &source, NULL);
-        glCompileShader(shader);
-        GLint stat = 0;
-        glGetShaderiv(shader, GL_COMPILE_STATUS, &stat);
-        if(!stat) {
-            char message[256];
-            GLsizei length;
-            glGetShaderInfoLog(shader, sizeof(message), &length, message);
-            NSLog(@"Cound not compile shader %d %s %s", type, source, message);
-            glDeleteShader(shader);
-            shader = 0;
-        }
-    }
-    return shader;
 }
 
 const char *vertexShaderSource =
@@ -55,27 +37,6 @@ const char *fragmentShaderSource =
     "   gl_FragColor = texture2D(texture, texcoordVarying);\n"
     "}\n";
 
--(void)linkProgram {
-    program = glCreateProgram();
-    glAttachShader(program, vertexShader);
-    glAttachShader(program, fragmentShader);
-
-    glBindAttribLocation(program, 0, "position");
-    glBindAttribLocation(program, 1, "texcoord" );
-
-    glLinkProgram(program);
-    GLint stat = 0;
-    glGetProgramiv(program, GL_LINK_STATUS, &stat);
-    if (stat != GL_TRUE) {
-        char message[256];
-        GLsizei length = 0;
-		glGetProgramInfoLog(program, sizeof(message), &length, message);
-		NSLog(@"Could not link program %s", message);
-		glDeleteProgram(program);
-		program = 0;
-    }
-}
-
 -(void)prepareViewportWidth:(int)width height:(int)height {
 // prepare
 
@@ -85,13 +46,13 @@ const char *fragmentShaderSource =
 
     glViewport(0, 0, width, height);
 
-    vertexShader = [self loadShader:vertexShaderSource withType:GL_VERTEX_SHADER];
-    fragmentShader = [self loadShader:fragmentShaderSource withType:GL_FRAGMENT_SHADER];
+    vertexShader = loadShader(vertexShaderSource, GL_VERTEX_SHADER);
+    fragmentShader = loadShader(fragmentShaderSource, GL_FRAGMENT_SHADER);
 
     assert(vertexShader);
     assert(fragmentShader);
 
-    [self linkProgram];
+    program = linkProgram(vertexShader, fragmentShader);
 
     assert(program);
 }
@@ -113,6 +74,8 @@ const float texcoords[] = {
 
 
 -(void)renderSurface:(O2Surface *)surface {
+    return;
+    
     size_t width=O2ImageGetWidth(surface);
     size_t height=O2ImageGetHeight(surface);
 

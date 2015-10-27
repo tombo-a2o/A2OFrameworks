@@ -6,14 +6,24 @@
 #import <OpenGLES/ES2/gl.h>
 #import <OpenGLES/ES2/glext.h>
 #import <Onyx2D/O2Surface.h>
+#import "CAUtil.h"
 
 @interface CALayer(private)
 -(void)_setContext:(CALayerContext *)context;
 -(void)_setTextureId:(NSNumber *)value;
 -(NSNumber *)_textureId;
+-(CGFloat)textureSize;
 @end
 
-@implementation CARenderer
+@implementation CARenderer {
+    GLuint _program;
+    GLint _attrPosition;
+    GLint _attrTexCoord;
+    GLint _unifTransform;
+    GLint _unifOpacity;
+    GLint _unifHasTexure;
+    GLint _unifBgColor;
+}
 
 -(CGRect)bounds {
    return _bounds;
@@ -25,12 +35,58 @@
 
 @synthesize layer=_rootLayer;
 
+static const char *vertexShaderSource =
+    "precision mediump float;\n"
+    "attribute vec3 position;\n"
+    "attribute vec2 texcoord;\n"
+    "uniform mat3 transform;\n"
+    "varying vec2 texcoordVarying;\n"
+    "void main() { \n"
+    "   gl_Position = vec4((transform * vec3(position.xy, 1.0)).xy, position.z, 1.0);\n"
+    "   texcoordVarying = texcoord;\n"
+    "}\n";
+static const char *fragmentShaderSource =
+    "precision mediump float;\n"
+    "varying vec2 texcoordVarying;\n"
+    "uniform sampler2D texture;\n"
+    "uniform float opacity;\n"
+    "uniform bool hasTexture;\n"
+    "uniform vec4 bgColor;\n"
+    "void main() {\n"
+    "    if(hasTexture) {\n"
+    "        vec4 texColor = texture2D(texture, texcoordVarying);\n"
+    "        gl_FragColor = texColor * opacity;\n"
+//    "        gl_FragColor = bgColor * opacity;\n"
+//    "        gl_FragColor = mix(bgColor, texColor, texColor.a) * opacity;\n"
+    "    } else {\n"
+    "        gl_FragColor = bgColor * opacity;\n"
+    "    }\n"
+    "}\n";
+
+
 -initWithEAGLContext:(void *)eaglContext options:(NSDictionary *)options {
    _eaglContext=eaglContext;
    _bounds=CGRectZero;
    _rootLayer=nil;
+
+   _program = loadAndLinkShader(vertexShaderSource, fragmentShaderSource);
+   _attrPosition = glGetAttribLocation(_program, "position");
+   _attrTexCoord = glGetAttribLocation(_program, "texcoord");
+   _unifTransform = glGetUniformLocation(_program, "transform");
+   _unifOpacity = glGetUniformLocation(_program, "opacity");
+   _unifHasTexure = glGetUniformLocation(_program, "hasTexture");
+   _unifBgColor = glGetUniformLocation(_program, "bgColor");
+   assert(_attrPosition >= 0);
+   assert(_attrTexCoord >= 0);
+   assert(_unifTransform >= 0);
+   assert(_unifOpacity >= 0);
+   assert(_unifHasTexure >= 0);
+   assert(_unifBgColor >= 0);
+
    return self;
 }
+
+#warning TODO dealloc
 
 +(CARenderer *)rendererWithEAGLContext:(void *)eaglContext options:(NSDictionary *)options {
    return [[[self alloc] initWithEAGLContext:eaglContext options:options] autorelease];
@@ -126,10 +182,13 @@ static float interpolateFloatInLayerKey(CALayer *layer,NSString *key,CFTimeInter
 static CGPoint interpolatePointInLayerKey(CALayer *layer,NSString *key,CFTimeInterval currentTime){
     CAAnimation *animation=[layer animationForKey:key];
 
-    if(animation==nil)
+    if(animation==nil) {
+        // NSLog(@"no animation %@ %@", layer, key);
         return [[layer valueForKey:key] pointValue];
+    }
 
     if([animation isKindOfClass:[CABasicAnimation class]]){
+        // NSLog(@"animation exists %@ %@", layer, key);
         CABasicAnimation *basic=(CABasicAnimation *)animation;
 
         id fromValue=[basic fromValue];
@@ -209,6 +268,37 @@ void CATexImage2DCGImage(CGImageRef image){
     CFDataRef         data=CGDataProviderCopyData(provider);
     const uint8_t    *pixelBytes=CFDataGetBytePtr(data);
 
+/*
+    if(imageWidth==100 && imageHeight==100) {
+        for(int j = 0; j < imageHeight; j++) {
+            for(int i = 0; i < imageWidth; i++) {
+                printf("%x",pixelBytes[(i+j*imageWidth)*4]);
+            }
+            puts("");
+        }
+        puts("");
+        for(int j = 0; j < imageHeight; j++) {
+            for(int i = 0; i < imageWidth; i++) {
+                printf("%x",pixelBytes[(i+j*imageWidth)*4+1]);
+            }
+            puts("");
+        }
+        puts("");
+        for(int j = 0; j < imageHeight; j++) {
+            for(int i = 0; i < imageWidth; i++) {
+                printf("%x",pixelBytes[(i+j*imageWidth)*4+2]);
+            }
+            puts("");
+        }
+        puts("");
+        for(int j = 0; j < imageHeight; j++) {
+            for(int i = 0; i < imageWidth; i++) {
+                printf("%x",pixelBytes[(i+j*imageWidth)*4+3]);
+            }
+            puts("");
+        }
+    }
+*/
 
     GLenum glFormat=GL_BGRA;
     GLenum glType=GL_UNSIGNED_INT;
@@ -236,6 +326,10 @@ void CATexImage2DCGImage(CGImageRef image){
             break;
 
         case kCGImageAlphaLast:
+            if(byteOrder==kO2BitmapByteOrder32Big){
+                glFormat=GL_RGBA;
+                glType=GL_UNSIGNED_BYTE;
+            }
             break;
 
         case kCGImageAlphaFirst:
@@ -250,12 +344,30 @@ void CATexImage2DCGImage(CGImageRef image){
         case kCGImageAlphaOnly:
             break;
     }
+    glFormat = GL_RGBA;
+    glType = GL_UNSIGNED_BYTE;
 
     glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,imageWidth,imageHeight,0,glFormat,glType,pixelBytes);
 }
 
+static void generateGLColorFromCGColor(CGColorRef cgColor, GLfloat components[4]) {
+    if(cgColor) {
+        const CGFloat *cgComponets = CGColorGetComponents(cgColor);
+        components[0] = cgComponets[0];
+        components[1] = cgComponets[1];
+        components[2] = cgComponets[2];
+        components[3] = CGColorGetNumberOfComponents(cgColor) == 4 ? cgComponets[3] : 1.0;
+    } else {
+        components[0] = 0.0;
+        components[1] = 0.0;
+        components[2] = 0.0;
+        components[3] = 0.0;
+    }
+}
 
--(void)_renderLayer:(CALayer *)layer z:(float)z currentTime:(CFTimeInterval)currentTime {
+-(void)_renderLayer:(CALayer *)layer z:(float)z currentTime:(CFTimeInterval)currentTime transform:(CGAffineTransform)transform {
+    NSLog(@"CARenderer: renderLayer %@ b:%@ f:%@ %f", layer, NSStringFromRect(layer.bounds), NSStringFromRect(layer.frame), z);
+
     NSNumber *textureId=[layer _textureId];
     GLuint    texture=[textureId unsignedIntValue];
     GLboolean loadPixelData=GL_FALSE;
@@ -267,64 +379,92 @@ void CATexImage2DCGImage(CGImageRef image){
     } else {
         if(glIsTexture(texture)==GL_FALSE) {
             loadPixelData=GL_TRUE;
+        } else {
+            glBindTexture(GL_TEXTURE_2D, texture);
         }
-        glBindTexture(GL_TEXTURE_2D,texture);
     }
 
     if(loadPixelData){
-        CGImageRef image=layer.contents;
+        CGImageRef image = layer.contents;
 
-        CATexImage2DCGImage(image);
+        if(image) {
+            if(!texture) {
+                glGenTextures(1, &texture);
+                [layer _setTextureId:[NSNumber numberWithUnsignedInteger:texture]];
+            }
+            glBindTexture(GL_TEXTURE_2D, texture);
+            CATexImage2DCGImage(image);
 
-        GLint minFilter=interpolationFromName(layer.minificationFilter);
-        GLint magFilter=interpolationFromName(layer.magnificationFilter);
+            // Force linear interpolation due to WebGL npot texture limitation
 
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,minFilter);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,magFilter);
+            // GLint minFilter=interpolationFromName(layer.minificationFilter);
+            // GLint magFilter=interpolationFromName(layer.magnificationFilter);
+            // glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,minFilter);
+            // glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,magFilter);
 
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+            glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
+        } else {
+            glBindTexture(GL_TEXTURE_2D, 0);
+        }
     }
 
     CGPoint anchorPoint=interpolatePointInLayerKey(layer,@"anchorPoint",currentTime);
     CGPoint position=interpolatePointInLayerKey(layer,@"position",currentTime);
+    // fprintf(stderr, "pos %f %f\n", position.x, position.y);
     CGRect  bounds=interpolateRectInLayerKey(layer,@"bounds",currentTime);
     float   opacity=interpolateFloatInLayerKey(layer,@"opacity",currentTime);
 
-    GLfloat textureVertices[4*2];
-    GLfloat vertices[4*3];
+    CGFloat w = bounds.size.width;
+    CGFloat h = bounds.size.height;
+    // NSLog(@"bounds %f %f", w, h);
+    // NSLog(@"opacity %f", opacity);
 
-    textureVertices[0]=0;
-    textureVertices[1]=1;
-    textureVertices[2]=1;
-    textureVertices[3]=1;
-    textureVertices[4]=0;
-    textureVertices[5]=0;
-    textureVertices[6]=1;
-    textureVertices[7]=0;
+    GLfloat textureVertices[4*2] = {
+        0.0, 1.0,
+        1.0, 1.0,
+        0.0, 0.0,
+        1.0, 0.0
+    };
+    GLfloat vertices[4*3] = {
+        0, 0, -z/65536,
+        w, 0, -z/65536,
+        0, h, -z/65536,
+        w, h, -z/65536,
+    };
 
-    vertices[0]=0;
-    vertices[1]=0;
-    vertices[2]=z;
+    CGAffineTransform local = CGAffineTransformMakeTranslation(position.x-(bounds.size.width*anchorPoint.x),position.y-(bounds.size.height*anchorPoint.y));
+    CGAffineTransform t  = CGAffineTransformConcat(local, transform);
+    // fprintf(stderr, "transform(original) %f %f %f %f %f %f\n", transform.a, transform.b, transform.tx, transform.c, transform.d, transform.ty);
+    // fprintf(stderr, "transform(local) %f %f %f %f %f %f\n", local.a, local.b, local.tx, local.c, local.d, local.ty);
+    // fprintf(stderr, "transform(total) %f %f %f %f %f %f\n", t.a, t.b, t.tx, t.c, t.d, t.ty);
+    GLfloat transformArray[9] = {t.a, t.b, 0.0, t.c, t.d, 0.0, t.tx, t.ty, 1.0};
 
-    vertices[3]=bounds.size.width;
-    vertices[4]=0;
-    vertices[5]=z;
+    glUseProgram(_program);
 
-    vertices[6]=0;
-    vertices[7]=bounds.size.height;
-    vertices[8]=z;
+    glEnableVertexAttribArray(_attrPosition);
+    glEnableVertexAttribArray(_attrTexCoord);
 
-    vertices[9]=bounds.size.width;
-    vertices[10]=bounds.size.height;
-    vertices[11]=z;
+    glVertexAttribPointer(_attrPosition, 3, GL_FLOAT, GL_FALSE, 0, vertices);
+    glVertexAttribPointer(_attrTexCoord, 2, GL_FLOAT, GL_FALSE, 0, textureVertices);
 
-    NSLog(@"CARenderer _renderLayer: need to implement by GLES");
+    glUniformMatrix3fv(_unifTransform, 1, GL_FALSE, transformArray);
+    glUniform1f(_unifOpacity, opacity);
+    glUniform1i(_unifHasTexure, glIsTexture(texture));
+    GLfloat color[4];
+    generateGLColorFromCGColor(layer.backgroundColor, color);
+    color[0] = z/4.0;
+    color[3] = 1;
+    glUniform4fv(_unifBgColor, 1, color);
 
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-
-    for(CALayer *child in layer.sublayers)
-        [self _renderLayer:child z:z+1 currentTime:currentTime];
+    for(CALayer *child in layer.sublayers) {
+        [self _renderLayer:child z:z+1 currentTime:currentTime transform:t];
+    }
 #if 0
    glPushMatrix();
  //  glTranslatef(width/2,height/2,0);
@@ -350,7 +490,17 @@ void CATexImage2DCGImage(CGImageRef image){
 
 -(void)render {
 #if 1
-    [self _renderLayer:_rootLayer z:0 currentTime:CACurrentMediaTime()];
+    glClearColor(0.0, 1.0, 1.0, 1.0); // should be (0,0,0,1)
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glEnable (GL_BLEND);
+    glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
+
+    // fprintf(stderr, "bounds %f %f\n",_bounds.size.width, _bounds.size.height);
+    CGAffineTransform projection = CGAffineTransformMake(2.0/_bounds.size.width, 0, 0, 2.0/_bounds.size.height, -1.0, -1.0);
+    [self _renderLayer:_rootLayer z:0 currentTime:CACurrentMediaTime() transform:projection];
+
+    glFlush();
 #else
    glMatrixMode(GL_MODELVIEW);
    glLoadIdentity();
