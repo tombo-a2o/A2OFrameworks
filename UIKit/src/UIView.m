@@ -524,7 +524,7 @@ static BOOL _animationsEnabled = YES;
     // We only get here if the UIView subclass implements drawRect:. To do this without a drawRect: is a huge waste of memory.
     // See the discussion in drawLayer: above.
 
-    const CGRect bounds = CGContextGetClipBoundingBox(ctx);
+    const CGRect bounds = _layer.bounds;//CGContextGetClipBoundingBox(ctx);
 
     UIGraphicsPushContext(ctx);
     CGContextSaveGState(ctx);

@@ -40,7 +40,7 @@ void UIGraphicsPushContext(CGContextRef ctx)
     if (!contextStack) {
         contextStack = [[NSMutableArray alloc] initWithCapacity:1];
     }
-    
+
     if ([NSGraphicsContext currentContext]) {
         [contextStack addObject:[NSGraphicsContext currentContext]];
     }
@@ -63,7 +63,8 @@ CGContextRef UIGraphicsGetCurrentContext()
 
 CGFloat _UIGraphicsGetContextScaleFactor(CGContextRef ctx)
 {
-    const CGRect rect = CGContextGetClipBoundingBox(ctx);
+//    const CGRect rect = CGContextGetClipBoundingBox(ctx);
+    const CGRect rect = CGRectMake(0,0,100,100);
     const CGRect deviceRect = CGContextConvertRectToDeviceSpace(ctx, rect);
     const CGFloat scale = deviceRect.size.height / rect.size.height;
     return scale;
@@ -77,12 +78,12 @@ void UIGraphicsBeginImageContextWithOptions(CGSize size, BOOL opaque, CGFloat sc
 
     const size_t width = size.width * scale;
     const size_t height = size.height * scale;
-    
+
     if (width > 0 && height > 0) {
         if (!imageContextStack) {
             imageContextStack = [[NSMutableArray alloc] initWithCapacity:1];
         }
-        
+
         [imageContextStack addObject:[NSNumber numberWithFloat:scale]];
 
         CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
