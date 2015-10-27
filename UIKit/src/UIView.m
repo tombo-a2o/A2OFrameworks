@@ -40,6 +40,7 @@
 #import "UIColor+UIPrivate.h"
 #import "UIColorRep.h"
 #import <QuartzCore/CALayer.h>
+#import <QuartzCore/CATransaction.h>
 
 NSString *const UIViewFrameDidChangeNotification = @"UIViewFrameDidChangeNotification";
 NSString *const UIViewBoundsDidChangeNotification = @"UIViewBoundsDidChangeNotification";
@@ -684,9 +685,14 @@ static BOOL _animationsEnabled = YES;
 - (void)setFrame:(CGRect)newFrame
 {
     if (!CGRectEqualToRect(newFrame,_layer.frame)) {
+        [CATransaction begin];
+        [CATransaction setDisableActions:YES];
+
         CGRect oldBounds = _layer.bounds;
         _layer.frame = newFrame;
         [self _boundsDidChangeFrom:oldBounds to:_layer.bounds];
+        [CATransaction commit];
+
         [[NSNotificationCenter defaultCenter] postNotificationName:UIViewFrameDidChangeNotification object:self];
     }
 }
@@ -699,9 +705,14 @@ static BOOL _animationsEnabled = YES;
 - (void)setBounds:(CGRect)newBounds
 {
     if (!CGRectEqualToRect(newBounds,_layer.bounds)) {
+        [CATransaction begin];
+        [CATransaction setDisableActions:YES];
+
         CGRect oldBounds = _layer.bounds;
         _layer.bounds = newBounds;
         [self _boundsDidChangeFrom:oldBounds to:newBounds];
+        [CATransaction commit];
+
         [[NSNotificationCenter defaultCenter] postNotificationName:UIViewBoundsDidChangeNotification object:self];
     }
 }
@@ -714,7 +725,12 @@ static BOOL _animationsEnabled = YES;
 - (void)setCenter:(CGPoint)newCenter
 {
     if (!CGPointEqualToPoint(newCenter,_layer.position)) {
+        [CATransaction begin];
+        [CATransaction setDisableActions:YES];
+
         _layer.position = newCenter;
+
+        [CATransaction commit];
     }
 }
 
@@ -726,7 +742,12 @@ static BOOL _animationsEnabled = YES;
 - (void)setTransform:(CGAffineTransform)transform
 {
     if (!CGAffineTransformEqualToTransform(transform,_layer.affineTransform)) {
+        [CATransaction begin];
+        [CATransaction setDisableActions:YES];
+
         _layer.affineTransform = transform;
+
+        [CATransaction commit];
     }
 }
 

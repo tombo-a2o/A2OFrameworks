@@ -41,6 +41,7 @@
 #import "UINSResponderShim.h"
 #import "UIViewControllerAppKitIntegration.h"
 #import <QuartzCore/CALayer.h>
+#import <QuartzCore/CATransaction.h>
 
 /*
  An older design of Chameleon had the singlular multi-touch event living in UIApplication because that made sense at the time.
@@ -89,7 +90,11 @@
 - (void)configureScreenLayer
 {
     DEBUGLOG(@"NSKitView configureScreenLayer");
+
     [self setWantsLayer:YES];
+
+    [CATransaction begin];
+    [CATransaction setDisableActions:YES];
 
     CALayer *screenLayer = [_UIScreen _layer];
     CALayer *myLayer = [self layer];
@@ -99,8 +104,11 @@
     DEBUGLOG(@"screenLayer %@", screenLayer);
 
     [myLayer addSublayer:screenLayer];
+
     screenLayer.frame = myLayer.bounds;
     screenLayer.autoresizingMask = kCALayerWidthSizable | kCALayerHeightSizable;
+
+    [CATransaction commit];
 }
 
 - (UIWindow *)UIWindow
