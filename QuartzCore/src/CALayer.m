@@ -296,7 +296,7 @@ NSString * const kCATransition = @"transition";
                 8,
                 0,
                 CGColorSpaceCreateDeviceRGB(),
-                kCGBitmapByteOrderDefault|kO2ImageAlphaLast);
+                kO2BitmapByteOrder32Big|kO2ImageAlphaLast);
         assert(context);
         [self drawInContext:context];
         CGImageRef image = CGBitmapContextCreateImage(context);
