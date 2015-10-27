@@ -456,8 +456,8 @@ static void generateGLColorFromCGColor(CGColorRef cgColor, GLfloat components[4]
     glUniform1i(_unifHasTexure, glIsTexture(texture));
     GLfloat color[4];
     generateGLColorFromCGColor(layer.backgroundColor, color);
-    color[0] = z/4.0;
-    color[3] = 1;
+    // color[0] = z/4.0;
+    // color[3] = 1;
     glUniform4fv(_unifBgColor, 1, color);
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -490,7 +490,8 @@ static void generateGLColorFromCGColor(CGColorRef cgColor, GLfloat components[4]
 
 -(void)render {
 #if 1
-    glClearColor(0.0, 1.0, 1.0, 1.0); // should be (0,0,0,1)
+    glClearColor(0.0, 0.0, 0.0, 1.0);
+//    glClearColor(0.0, 1.0, 1.0, 1.0); // should be (0,0,0,1)
     glClear(GL_COLOR_BUFFER_BIT);
 
     glEnable (GL_BLEND);
