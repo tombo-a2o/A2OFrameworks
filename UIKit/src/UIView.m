@@ -865,6 +865,12 @@ static BOOL _animationsEnabled = YES;
     [UIView setAnimationsEnabled:wereEnabled];
 }
 
+- (void)layoutSublayersOfLayer:(CALayer*)layer {
+    if(layer == _layer) {
+        [self _layoutSubviews];
+    }
+}
+
 - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event
 {
     return CGRectContainsPoint(self.bounds, point);
