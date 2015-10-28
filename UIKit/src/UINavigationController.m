@@ -31,6 +31,7 @@
 #import <UIKit/UITabBarController.h>
 #import <UIKit/UINavigationBar.h>
 #import <UIKit/UIToolbar.h>
+#import <UIKit/UIScreen.h>
 
 @interface UIViewController (UIPrivate)
 - (void)_removeFromParentViewController;
@@ -64,7 +65,7 @@
 
 - (void)loadView
 {
-    self.view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 480)];
+    self.view = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
     self.view.clipsToBounds = YES;
 
     CGRect navbarRect;
