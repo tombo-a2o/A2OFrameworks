@@ -53,7 +53,7 @@ extern BOOL UIViewAnimationOptionIsSet(UIViewAnimationOptions options, UIViewAni
 
 @property (nonatomic, copy) NSString *name;
 @property (nonatomic, assign) void *context;
-@property (nonatomic, copy) void (^completionBlock)(BOOL finished);
+@property (nonatomic, assign) void (^completionBlock)(BOOL finished);
 @property (nonatomic, assign) BOOL allowUserInteraction;
 @property (nonatomic, assign) BOOL beginsFromCurrentState;
 @property (nonatomic, assign) UIViewAnimationCurve curve;
