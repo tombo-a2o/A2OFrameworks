@@ -112,6 +112,12 @@ NSString * const kCATransition = @"transition";
            [self addAnimation:action forKey:@"bounds"];
    }
 
+   if(_bounds.size.width != value.size.width || _bounds.size.height != value.size.height) {
+       [self setNeedsLayout];
+       [self.superlayer setNeedsLayout];
+       [self setNeedsDisplay];
+   }
+
    _bounds=value;
 }
 
@@ -227,6 +233,8 @@ NSString * const kCATransition = @"transition";
     _minificationFilter=kCAFilterLinear;
     _magnificationFilter=kCAFilterLinear;
     _animations=[[NSMutableDictionary alloc] init];
+    _needsDisplay = YES;
+    _needsLayout = YES;
     return self;
 }
 
@@ -250,10 +258,16 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)addSublayer:(CALayer *)layer {
+    [self setNeedsLayout];
+    [layer setNeedsLayout];
+
     [self setSublayers:[_sublayers arrayByAddingObject:layer]];
 }
 
 -(void)replaceSublayer:(CALayer *)layer with:(CALayer *)other {
+    [self setNeedsLayout];
+    [layer setNeedsLayout];
+
     NSMutableArray *layers=[_sublayers mutableCopy];
     NSUInteger      index=[_sublayers indexOfObjectIdenticalTo:layer];
 
@@ -266,6 +280,9 @@ NSString * const kCATransition = @"transition";
 }
 
 - (void)insertSublayer:(CALayer *)aLayer atIndex:(unsigned int)index {
+    [self setNeedsLayout];
+    [aLayer setNeedsLayout];
+
     NSMutableArray *layers=[_sublayers mutableCopy];
 
     [layers insertObject:aLayer atIndex:index];
@@ -386,14 +403,50 @@ NSString * const kCATransition = @"transition";
     _textureId=value;
 }
 
+- (BOOL)needsLayout {
+    return _needsLayout;
+}
+
 - (void)setNeedsLayout {
     _needsLayout = YES;
 }
 
+// Layout logic is derived from WinObjC
+- (NSArray*)_listNeededLayoutLayers {
+    NSMutableArray *result = [[NSMutableArray alloc] init];
+    if(_needsLayout) [result addObject:self];
+    for(CALayer *layer in _sublayers) {
+        [result addObjectsFromArray:[layer _listNeededLayoutLayers]];
+    }
+    return result;
+}
+
+- (void) _doLayout {
+    NSArray *layouts;
+    do {
+        layouts = [self _listNeededLayoutLayers];
+        for(CALayer *layout in layouts) {
+            layout->_needsLayout = NO;
+            [layout layoutSublayers];
+        }
+    } while([layouts count] > 0);
+}
+
 - (void)layoutIfNeeded {
+    CALayer *current = self;
+    while(current) {
+        if(!current.superlayer || !current.superlayer.needsLayout) {
+            [current _doLayout];
+            return;
+        }
+        current = current.superlayer;
+    }
 }
 
 - (void)layoutSublayers {
+    if ([_delegate respondsToSelector:@selector(layoutSublayersOfLayer:)]) {
+        [_delegate performSelector:@selector(layoutSublayersOfLayer:) withObject:self];
+    }
 }
 
 - (CGPoint)convertPoint:(CGPoint)aPoint fromLayer:(CALayer *)layer {
