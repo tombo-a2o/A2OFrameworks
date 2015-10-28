@@ -143,6 +143,8 @@
     GLint width=_frame.size.width;
     GLint height=_frame.size.height;
 
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
     glViewport(0, 0, width, height);
 
 #warning TODO
