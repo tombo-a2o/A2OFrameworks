@@ -51,7 +51,7 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
     UINavigationItem *_navigationItem;
     NSMutableArray *_childViewControllers;
     __unsafe_unretained UIViewController *_parentViewController;
-    
+
     NSUInteger _appearanceTransitionStack;
     BOOL _appearanceTransitionIsAnimated;
     BOOL _viewIsAppearing;
@@ -134,7 +134,7 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
 
 - (void)loadView
 {
-    self.view = [[UIView alloc] initWithFrame:CGRectMake(0,0,320,480)];
+    self.view = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 }
 
 - (void)viewDidLoad
@@ -266,16 +266,16 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
     // navigationController, too, which is supposed to return the nearest nav controller down the chain and it doesn't right now.
 
     if (_modalViewController) {
-        
+
         // if the modalViewController being dismissed has a modalViewController of its own, then we need to go dismiss that, too.
         // otherwise things can be left hanging around.
         if (_modalViewController.modalViewController) {
             [_modalViewController dismissModalViewControllerAnimated:animated];
         }
-        
+
         self.view.hidden = NO;
         [self viewWillAppear:animated];
-        
+
         [_modalViewController.view removeFromSuperview];
         [_modalViewController _setParentViewController:nil];
         _modalViewController = nil;
@@ -340,10 +340,10 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
     // Docs don't say anything about being required to call super for -willMoveToParentViewController: and people
     // on StackOverflow seem to tell each other they can override the method without calling super. Based on that,
     // I have no freakin' idea how this method here is meant to know when to return YES...
-    
+
     // I'm inclined to think that the docs are just unclear and that -willMoveToParentViewController: and
     // -didMoveToParentViewController: must have to do *something* for this to work without ambiguity.
-    
+
     // Now that I think about it some more, I suspect that it is far better to assume the docs imply you must call
     // super when you override a method *unless* it says not to. If that assumption is sound, then in that case it
     // suggests that when overriding -willMoveToParentViewController: and -didMoveToParentViewController: you are
@@ -354,7 +354,7 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
     // In all likely hood, all that would happen if you didn't call super from a -will/didMoveToParentViewController:
     // override is that -isMovingFromParentViewController and -isMovingToParentViewController would return the
     // wrong answer, and if you never use them, you'll never even notice that bug!
-    
+
     return (_appearanceTransitionStack > 0) && (_parentageTransition == _UIViewControllerParentageTransitionFromParent);
 }
 
@@ -396,11 +396,11 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
 {
     NSAssert(childController != nil, @"cannot add nil child view controller");
     NSAssert(childController.parentViewController == nil, @"thou shalt have no other parent before me");
-    
+
     if (!_childViewControllers) {
         _childViewControllers = [NSMutableArray arrayWithCapacity:1];
     }
-    
+
     [childController willMoveToParentViewController:self];
     [_childViewControllers addObject:childController];
     childController->_parentViewController = self;
@@ -410,11 +410,11 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
 {
     if (_parentViewController) {
         [_parentViewController->_childViewControllers removeObject:self];
-        
+
         if ([_parentViewController->_childViewControllers count] == 0) {
             _parentViewController->_childViewControllers = nil;
         }
-        
+
         _parentViewController = nil;
     }
 }
@@ -441,7 +441,7 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
 {
     NSAssert(fromViewController.parentViewController == toViewController.parentViewController && fromViewController.parentViewController != nil, @"child controllers must share common parent");
     const BOOL animated = (duration > 0);
-    
+
     [fromViewController beginAppearanceTransition:NO animated:animated];
     [toViewController beginAppearanceTransition:YES animated:animated];
 
@@ -452,7 +452,7 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
                         if (animations) {
                             animations();
                         }
-                        
+
                         [self.view addSubview:toViewController.view];
                     }
                     completion:^(BOOL finished) {
@@ -473,7 +473,7 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
         _appearanceTransitionStack = 1;
         _appearanceTransitionIsAnimated = animated;
         _viewIsAppearing = isAppearing;
-        
+
         if ([self shouldAutomaticallyForwardAppearanceMethods]) {
             for (UIViewController *child in self.childViewControllers) {
                 if ([child isViewLoaded] && [child.view isDescendantOfView:self.view]) {
@@ -497,7 +497,7 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
 {
     if (_appearanceTransitionStack > 0) {
         _appearanceTransitionStack--;
-        
+
         if (_appearanceTransitionStack == 0) {
             if ([self shouldAutomaticallyForwardAppearanceMethods]) {
                 for (UIViewController *child in self.childViewControllers) {
