@@ -1,4 +1,5 @@
 AppKit
+CommonCrypto
 CoreData
 CoreGraphics
 CoreText
