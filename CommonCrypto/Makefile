@@ -9,9 +9,9 @@ CPPFLAGS		= -v -c -x objective-c++ -std=c++11 -pipe -Wmost -Wno-trigraphs -Wretu
 BUILD_DIR		= build/debug
 INSTALL_DIR		= $(EMSCRIPTEN)/system/frameworks
 
-SOURCES			= $(filter-out dllmain.m, $(wildcard *.m))
-PUBLIC_HEADERS	= $(wildcard *.h)
+SOURCES			= $(wildcard src/*.m)
+PUBLIC_HEADERS	= $(wildcard include/CommonCrypto/*.h)
 PRIVATE_HEADERS	=
-RESOURCE_DIR	=
+RESOURCE_DIR	= resource
 
 $(eval $(call framework_build, CommonCrypto, $(BUILD_DIR), $(INSTALL_DIR), $(SOURCES), $(PUBLIC_HEADERS), $(PRIVATE_HEADERS), $(RESOURCE_DIR)))
