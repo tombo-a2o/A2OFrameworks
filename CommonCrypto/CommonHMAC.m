@@ -1,5 +1,5 @@
 #import <CommonCrypto/CommonHMAC.h>
-#import <Foundation/NSRaise.h>
+//#import <Foundation/NSRaise.h>
 #import <string.h>
 #import <openssl/hmac.h>
 

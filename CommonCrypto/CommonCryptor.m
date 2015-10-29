@@ -1,5 +1,5 @@
 #import <CommonCrypto/CommonCryptor.h>
-#import <Foundation/NSRaise.h>
+//#import <Foundation/NSRaise.h>
 #import <openssl/evp.h>
 
 struct CCCryptor {
