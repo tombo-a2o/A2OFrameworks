@@ -8,4 +8,4 @@ enum {
 };
 typedef uint32_t CTFontManagerScope;
 
-bool CTFontManagerRegisterFontsForURL(CFURLRef fontURL, CTFontManagerScope scope, CFErrorRef *error);
+extern bool CTFontManagerRegisterFontsForURL(CFURLRef fontURL, CTFontManagerScope scope, CFErrorRef *error);
