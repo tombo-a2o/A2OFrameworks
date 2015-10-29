@@ -43,6 +43,13 @@
     font->_pointSize = fontSize;
     return font;
 }
+
++ (UIFont *)fontWithName:(NSString *)fontName size:(CGFloat)fontSize
+{
+    UIFont *font = [[UIFont alloc] init];
+    font->_pointSize = fontSize;
+    return font;
+}
 @end
 
 #else

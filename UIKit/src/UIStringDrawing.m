@@ -27,8 +27,6 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#if 0
-
 #import <UIKit/UIStringDrawing.h>
 #import <UIKit/UIFont.h>
 #import <AppKit/AppKit.h>
@@ -39,6 +37,8 @@ NSString *const UITextAttributeTextColor = @"UITextAttributeTextColor";
 NSString *const UITextAttributeTextShadowColor = @"UITextAttributeTextShadowColor";
 NSString *const UITextAttributeTextShadowOffset = @"UITextAttributeTextShadowOffset";
 
+#if 0
+
 static CFArrayRef CreateCTLinesForString(NSString *string, CGSize constrainedToSize, UIFont *font, UILineBreakMode lineBreakMode, CGSize *renderSize)
 {
     CFMutableArrayRef lines = CFArrayCreateMutable(NULL, 0, &kCFTypeArrayCallBacks);
@@ -48,32 +48,32 @@ static CFArrayRef CreateCTLinesForString(NSString *string, CGSize constrainedToS
         CFMutableDictionaryRef attributes = CFDictionaryCreateMutable(NULL, 2, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
         CFDictionarySetValue(attributes, kCTFontAttributeName,font->_font);
         CFDictionarySetValue(attributes, kCTForegroundColorFromContextAttributeName, kCFBooleanTrue);
-        
+
         CFAttributedStringRef attributedString = CFAttributedStringCreate(NULL, (__bridge CFStringRef)string, attributes);
-        
+
         CTTypesetterRef typesetter = CTTypesetterCreateWithAttributedString(attributedString);
-        
+
         const CFIndex stringLength = CFAttributedStringGetLength(attributedString);
         const CGFloat lineHeight = font.lineHeight;
         const CGFloat capHeight = font.capHeight;
-        
+
         CFIndex start = 0;
         BOOL isLastLine = NO;
-        
+
         while (start < stringLength && !isLastLine) {
             drawSize.height += lineHeight;
             isLastLine = (drawSize.height+capHeight >= constrainedToSize.height);
-            
+
             CFIndex usedCharacters = 0;
             CTLineRef line = NULL;
-            
+
             if (isLastLine && (lineBreakMode != UILineBreakModeWordWrap && lineBreakMode != UILineBreakModeCharacterWrap)) {
                 if (lineBreakMode == UILineBreakModeClip) {
                     usedCharacters = CTTypesetterSuggestClusterBreak(typesetter, start, constrainedToSize.width);
                     line = CTTypesetterCreateLine(typesetter, CFRangeMake(start, usedCharacters));
                 } else {
                     CTLineTruncationType truncType;
-                    
+
                     if (lineBreakMode == UILineBreakModeHeadTruncation) {
                         truncType = kCTLineTruncationStart;
                     } else if (lineBreakMode == UILineBreakModeTailTruncation) {
@@ -81,7 +81,7 @@ static CFArrayRef CreateCTLinesForString(NSString *string, CGSize constrainedToS
                     } else {
                         truncType = kCTLineTruncationMiddle;
                     }
-                    
+
                     usedCharacters = stringLength - start;
                     CFAttributedStringRef ellipsisString = CFAttributedStringCreate(NULL, CFSTR("…"), attributes);
                     CTLineRef ellipsisLine = CTLineCreateWithAttributedString(ellipsisString);
@@ -99,28 +99,29 @@ static CFArrayRef CreateCTLinesForString(NSString *string, CGSize constrainedToS
                 }
                 line = CTTypesetterCreateLine(typesetter, CFRangeMake(start, usedCharacters));
             }
-            
+
             if (line) {
                 drawSize.width = MAX(drawSize.width, ceilf(CTLineGetTypographicBounds(line,NULL,NULL,NULL)));
-                
+
                 CFArrayAppendValue(lines, line);
                 CFRelease(line);
             }
-            
+
             start += usedCharacters;
         }
-        
+
         CFRelease(typesetter);
         CFRelease(attributedString);
         CFRelease(attributes);
     }
-    
+
     if (renderSize) {
         *renderSize = drawSize;
     }
-    
+
     return lines;
 }
+#endif
 
 @implementation NSString (UIStringDrawing)
 
@@ -142,10 +143,13 @@ static CFArrayRef CreateCTLinesForString(NSString *string, CGSize constrainedToS
 - (CGSize)sizeWithFont:(UIFont *)font constrainedToSize:(CGSize)size lineBreakMode:(UILineBreakMode)lineBreakMode
 {
     CGSize resultingSize = CGSizeZero;
-    
+
+    NSLog(@"%s not implemented", __FUNCTION__);
+#if 0
     CFArrayRef lines = CreateCTLinesForString(self, size, font, lineBreakMode, &resultingSize);
     if (lines) CFRelease(lines);
-    
+#endif
+
     return resultingSize;
 }
 
@@ -174,10 +178,12 @@ static CFArrayRef CreateCTLinesForString(NSString *string, CGSize constrainedToS
 {
     return [self drawAtPoint:point forWidth:width withFont:font fontSize:[font pointSize] lineBreakMode:lineBreakMode baselineAdjustment:UIBaselineAdjustmentNone];
 }
- 
+
 - (CGSize)drawInRect:(CGRect)rect withFont:(UIFont *)font lineBreakMode:(UILineBreakMode)lineBreakMode alignment:(UITextAlignment)alignment
 {
+    NSLog(@"%s not implemented", __FUNCTION__);
     CGSize actualSize = CGSizeZero;
+#if 0
     CFArrayRef lines = CreateCTLinesForString(self,rect.size,font,lineBreakMode,&actualSize);
 
     if (lines) {
@@ -189,7 +195,7 @@ static CFArrayRef CreateCTLinesForString(NSString *string, CGSize constrainedToS
         CGContextSaveGState(ctx);
         CGContextTranslateCTM(ctx, rect.origin.x, rect.origin.y+font.ascender);
         CGContextSetTextMatrix(ctx, CGAffineTransformMakeScale(1,-1));
-        
+
         for (CFIndex lineNumber=0; lineNumber<numberOfLines; lineNumber++) {
             CTLineRef line = CFArrayGetValueAtIndex(lines, lineNumber);
             float flush;
@@ -199,7 +205,7 @@ static CFArrayRef CreateCTLinesForString(NSString *string, CGSize constrainedToS
                 case UITextAlignmentLeft:
                 default:					flush = 0;		break;
             }
-            
+
             CGFloat penOffset = CTLineGetPenOffsetForFlush(line, flush, rect.size.width);
             CGContextSetTextPosition(ctx, penOffset, textOffset);
             CTLineDraw(line, ctx);
@@ -213,7 +219,7 @@ static CFArrayRef CreateCTLinesForString(NSString *string, CGSize constrainedToS
 
     // the real UIKit appears to do this.. so shall we.
     actualSize.height = MIN(actualSize.height, rect.size.height);
-
+#endif
     return actualSize;
 }
 
@@ -228,5 +234,3 @@ static CFArrayRef CreateCTLinesForString(NSString *string, CGSize constrainedToS
 }
 
 @end
-
-#endif
