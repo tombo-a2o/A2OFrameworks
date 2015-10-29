@@ -52,7 +52,7 @@ static UIDevice *theDevice;
 - (id)init
 {
     if ((self=[super init])) {
-        _userInterfaceIdiom = UIUserInterfaceIdiomDesktop;
+        _userInterfaceIdiom = UIUserInterfaceIdiomPhone;
     }
     return self;
 }
