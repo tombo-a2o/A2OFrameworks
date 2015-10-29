@@ -45,6 +45,14 @@
     }
 }
 
++ (id)screenModeIphone5
+{
+    UIScreenMode *mode = [[self alloc] init];
+    mode->_size = CGSizeMake(640, 1136);
+    mode->_pixelAspectRatio = 2.0;
+    return mode;
+}
+
 - (NSString *)description
 {
     return [NSString stringWithFormat:@"<%@: %p; size = %@>", [self class], self, NSStringFromCGSize(self.size)];

@@ -47,8 +47,7 @@ NSString *const UIScreenModeDidChangeNotification = @"UIScreenModeDidChangeNotif
 NSMutableArray *_allScreens = nil;
 
 @interface UIScreenMode(Private)
-@property (readwrite,nonatomic) CGFloat pixelAspectRatio;
-@property (readwrite,nonatomic) CGSize size;
++ (id)screenModeIphone5;
 @end
 
 @implementation UIScreen {
@@ -97,9 +96,7 @@ NSMutableArray *_allScreens = nil;
         _grabber.layer.zPosition = 10000;
         [_layer addSublayer:_grabber.layer];
 
-        _preferredMode = [[UIScreenMode alloc] init];
-        _preferredMode.pixelAspectRatio = 2.0;
-        _preferredMode.size = CGSizeMake(640, 1136);
+        _preferredMode = [UIScreenMode screenModeIphone5];
     }
     return self;
 }
