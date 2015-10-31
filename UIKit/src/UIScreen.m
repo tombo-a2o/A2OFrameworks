@@ -39,6 +39,7 @@
 #import <AppKit/AppKit.h>
 #import <QuartzCore/QuartzCore.h>
 #import <emscripten.h>
+#import <emscripten/html5.h>
 
 NSString *const UIScreenDidConnectNotification = @"UIScreenDidConnectNotification";
 NSString *const UIScreenDidDisconnectNotification = @"UIScreenDidDisconnectNotification";
@@ -63,7 +64,10 @@ NSMutableArray *_allScreens = nil;
     if (self == [UIScreen class]) {
         _allScreens = [[NSMutableArray alloc] init];
     }
-    emscripten_set_canvas_size(320, 568);
+    int w = 320;
+    int h = 568;
+    emscripten_set_canvas_size(w * emscripten_get_device_pixel_ratio(), h * emscripten_get_device_pixel_ratio());
+    emscripten_set_element_css_size(NULL, w, h);
 }
 
 + (UIScreen *)mainScreen
@@ -115,11 +119,15 @@ NSMutableArray *_allScreens = nil;
 
 - (CGFloat)scale
 {
+#if 1
+    return emscripten_get_device_pixel_ratio();
+#else
     if ([[_UIKitView window] respondsToSelector:@selector(backingScaleFactor)]) {
         return [[_UIKitView window] backingScaleFactor];
     } else {
         return 1;
     }
+#endif
 }
 
 - (BOOL)_hasResizeIndicator
