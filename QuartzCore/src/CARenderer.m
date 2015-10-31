@@ -354,7 +354,7 @@ static void generateGLColorFromCGColor(CGColorRef cgColor, GLfloat components[4]
         glBindTexture(GL_TEXTURE_2D, texture);
     }
 
-    NSLog(@"texture %d", texture);
+    //NSLog(@"texture %d", texture);
 
     if(loadPixelData){
         CGImageRef image = layer.contents;

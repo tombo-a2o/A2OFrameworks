@@ -402,7 +402,7 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)_setTextureId:(GLuint)value {
-    NSLog(@"%s %d -> %d", __FUNCTION__, _textureId, value);
+    //NSLog(@"%s %d -> %d", __FUNCTION__, _textureId, value);
     if(_textureId) {
         glDeleteTextures(1, &_textureId);
     }
