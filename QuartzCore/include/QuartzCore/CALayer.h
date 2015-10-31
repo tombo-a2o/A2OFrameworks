@@ -54,7 +54,6 @@ CA_EXPORT NSString * const kCATransition;
     NSString *_magnificationFilter;
     BOOL _needsDisplay;
     NSMutableDictionary *_animations;
-    NSNumber *_textureId;
     BOOL _needsLayout;
 }
 

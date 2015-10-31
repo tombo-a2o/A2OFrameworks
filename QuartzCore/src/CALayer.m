@@ -5,6 +5,7 @@
 #import <Foundation/NSDictionary.h>
 
 #import <Onyx2D/O2BitmapContext.h>
+#import <OpenGLES/ES2/gl.h>
 
 NSString * const kCAFilterLinear=@"linear";
 NSString * const kCAFilterNearest=@"nearest";
@@ -27,7 +28,10 @@ NSString * const kCAOnOrderIn = @"onOrderIn";
 NSString * const kCAOnOrderOut = @"onOrderOut";
 NSString * const kCATransition = @"transition";
 
-@implementation CALayer
+@implementation CALayer {
+    GLuint _textureId;
+    BOOL _flipTexture;
+}
 
 +layer {
     return [[[self alloc] init] autorelease];
@@ -39,12 +43,6 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)_setContext:(CALayerContext *)context {
-    if(_context!=context){
-        [_context deleteTextureId:_textureId];
-        [_textureId release];
-        _textureId=nil;
-    }
-
     _context=context;
     [_sublayers makeObjectsPerformSelector:@selector(_setContext:) withObject:context];
 }
@@ -235,6 +233,8 @@ NSString * const kCATransition = @"transition";
     _animations=[[NSMutableDictionary alloc] init];
     _needsDisplay = YES;
     _needsLayout = YES;
+    _textureId = 0;
+    _flipTexture = NO;
     return self;
 }
 
@@ -305,8 +305,9 @@ NSString * const kCATransition = @"transition";
 -(void)display {
     if([_delegate respondsToSelector:@selector(displayLayer:)]) {
         [_delegate displayLayer:self];
+        _flipTexture = NO;
     } else {
-#warning dealloc or reuse context
+#warning TODO reuse context
         CGContextRef context = CGBitmapContextCreate(
                 NULL,
                 _bounds.size.width,
@@ -316,16 +317,16 @@ NSString * const kCATransition = @"transition";
                 CGColorSpaceCreateDeviceRGB(),
                 kO2BitmapByteOrder32Big|kO2ImageAlphaLast);
         assert(context);
-        CGAffineTransform flipVertical = CGAffineTransformMake(1, 0, 0, -1, 0, _bounds.size.height);
-        CGContextConcatCTM(context, flipVertical);
         [self drawInContext:context];
         [self setContents:context];
+        _flipTexture = YES;
     }
 }
 
 -(void)displayIfNeeded {
     if(_needsDisplay) {
         [self display];
+        [self _setTextureId:0];
     }
     _needsDisplay = NO;
 }
@@ -342,7 +343,7 @@ NSString * const kCATransition = @"transition";
 -(void)removeFromSuperlayer {
     [_superlayer _removeSublayer:self];
     _superlayer=nil;
-    [self _setContext:nil];
+    //[self _setContext:nil];
 }
 
 -(void)setNeedsDisplay {
@@ -396,14 +397,16 @@ NSString * const kCATransition = @"transition";
    return basic;
 }
 
--(NSNumber *)_textureId {
+-(GLuint)_textureId {
     return _textureId;
 }
 
--(void)_setTextureId:(NSNumber *)value {
-    value=[value copy];
-    [_textureId release];
-    _textureId=value;
+-(void)_setTextureId:(GLuint)value {
+    NSLog(@"%s %d -> %d", __FUNCTION__, _textureId, value);
+    if(_textureId) {
+        glDeleteTextures(1, &_textureId);
+    }
+    _textureId = value;
 }
 
 - (BOOL)needsLayout {
@@ -474,5 +477,9 @@ NSString * const kCATransition = @"transition";
 
 -(NSString*)description {
     return [NSString stringWithFormat:@"<%@: %p>", [self class], self];
+}
+
+-(BOOL)_flipTexture {
+    return _flipTexture;
 }
 @end

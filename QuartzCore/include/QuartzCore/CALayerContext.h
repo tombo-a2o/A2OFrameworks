@@ -15,8 +15,6 @@
     CARenderer *_renderer;
     GLuint _framebuffer;
 
-    NSMutableArray *_deleteTextureIds;
-
     NSTimer *_timer;
 }
 
@@ -30,7 +28,5 @@
 - (void)render;
 
 - (void)startTimerIfNeeded;
-
-- (void)deleteTextureId:(NSNumber *)textureId;
 
 @end

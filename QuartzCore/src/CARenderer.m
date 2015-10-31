@@ -1,5 +1,6 @@
 #import <QuartzCore/CARenderer.h>
 #import <QuartzCore/CALayer.h>
+#import <QuartzCore/CALayer+Private.h>
 #import <QuartzCore/CAAnimation.h>
 #import <QuartzCore/CAMediaTimingFunction.h>
 //#import <CoreVideo/CoreVideo.h>
@@ -8,13 +9,6 @@
 #import <Onyx2D/O2Surface.h>
 #import <CoreGraphics/CGBitmapContext.h>
 #import "CAUtil.h"
-
-@interface CALayer(private)
--(void)_setContext:(CALayerContext *)context;
--(void)_setTextureId:(NSNumber *)value;
--(NSNumber *)_textureId;
--(CGFloat)textureSize;
-@end
 
 @implementation CARenderer {
     GLuint _program;
@@ -349,21 +343,18 @@ static void generateGLColorFromCGColor(CGColorRef cgColor, GLfloat components[4]
 -(void)_renderLayer:(CALayer *)layer z:(float)z currentTime:(CFTimeInterval)currentTime transform:(CGAffineTransform)transform {
     NSLog(@"CARenderer: renderLayer %@ b:%@ f:%@ %f", layer, NSStringFromRect(layer.bounds), NSStringFromRect(layer.frame), z);
 
-    NSNumber *textureId=[layer _textureId];
-    GLuint    texture=[textureId unsignedIntValue];
-    GLboolean loadPixelData=GL_FALSE;
-
     [layer displayIfNeeded];
 
-    if(texture==0) {
+    GLuint texture = [layer _textureId];
+    GLboolean loadPixelData = GL_FALSE;
+
+    if(texture==0 || glIsTexture(texture)==GL_FALSE) {
         loadPixelData=GL_TRUE;
     } else {
-        if(glIsTexture(texture)==GL_FALSE) {
-            loadPixelData=GL_TRUE;
-        } else {
-            glBindTexture(GL_TEXTURE_2D, texture);
-        }
+        glBindTexture(GL_TEXTURE_2D, texture);
     }
+
+    NSLog(@"texture %d", texture);
 
     if(loadPixelData){
         CGImageRef image = layer.contents;
@@ -371,7 +362,7 @@ static void generateGLColorFromCGColor(CGColorRef cgColor, GLfloat components[4]
         if(image) {
             if(!texture) {
                 glGenTextures(1, &texture);
-                [layer _setTextureId:[NSNumber numberWithUnsignedInteger:texture]];
+                [layer _setTextureId:texture];
             }
             glBindTexture(GL_TEXTURE_2D, texture);
             if([image isKindOfClass: NSClassFromString(@"O2BitmapContext")]) {
@@ -414,6 +405,12 @@ static void generateGLColorFromCGColor(CGColorRef cgColor, GLfloat components[4]
         0.0, 1.0,
         1.0, 1.0
     };
+    GLfloat textureVerticesFlip[4*2] = {
+        0.0, 1.0,
+        1.0, 1.0,
+        0.0, 0.0,
+        1.0, 0.0
+    };
     GLfloat vertices[4*3] = {
         0, 0, -z/65536,
         w, 0, -z/65536,
@@ -434,7 +431,7 @@ static void generateGLColorFromCGColor(CGColorRef cgColor, GLfloat components[4]
     glEnableVertexAttribArray(_attrTexCoord);
 
     glVertexAttribPointer(_attrPosition, 3, GL_FLOAT, GL_FALSE, 0, vertices);
-    glVertexAttribPointer(_attrTexCoord, 2, GL_FLOAT, GL_FALSE, 0, textureVertices);
+    glVertexAttribPointer(_attrTexCoord, 2, GL_FLOAT, GL_FALSE, 0, [layer _flipTexture] ? textureVerticesFlip : textureVertices);
 
     glUniformMatrix3fv(_unifTransform, 1, GL_FALSE, transformArray);
     glUniform1f(_unifOpacity, opacity);
@@ -448,35 +445,15 @@ static void generateGLColorFromCGColor(CGColorRef cgColor, GLfloat components[4]
     for(CALayer *child in layer.sublayers) {
         [self _renderLayer:child z:z+1 currentTime:currentTime transform:t];
     }
-#if 0
-   glPushMatrix();
- //  glTranslatef(width/2,height/2,0);
-   glTexCoordPointer(2, GL_FLOAT, 0, textureVertices);
-   glVertexPointer(3, GL_FLOAT, 0, vertices);
-
-
-   glTranslatef(position.x-(bounds.size.width*anchorPoint.x),position.y-(bounds.size.height*anchorPoint.y),0);
-  // glTranslatef(position.x,position.y,0);
-  // glScalef(bounds.size.width,bounds.size.height,1);
-
- //  glRotatef(1,0,0,1);
-   glColor4f(opacity,opacity,opacity,opacity);
-
-   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-   for(CALayer *child in layer.sublayers)
-    [self _renderLayer:child z:z+1 currentTime:currentTime];
-
-   glPopMatrix();
-#endif
 }
 
 -(void)render {
-#if 1
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glEnable (GL_BLEND);
+    glEnable(GL_DEPTH_TEST);
+
+    glEnable(GL_BLEND);
     glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
 
     // fprintf(stderr, "bounds %f %f\n",_bounds.size.width, _bounds.size.height);
@@ -484,30 +461,6 @@ static void generateGLColorFromCGColor(CGColorRef cgColor, GLfloat components[4]
     [self _renderLayer:_rootLayer z:0 currentTime:CACurrentMediaTime() transform:projection];
 
     glFlush();
-#else
-   glMatrixMode(GL_MODELVIEW);
-   glLoadIdentity();
-
-   glClearColor(0, 0, 0, 1);
-   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-
-   glEnable(GL_DEPTH_TEST);
-   glDepthFunc(GL_LEQUAL);
-
-   glEnable( GL_TEXTURE_2D );
-   glEnableClientState(GL_VERTEX_ARRAY);
-   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-   glEnable (GL_BLEND);
-   glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
-
-   glAlphaFunc ( GL_GREATER, 0 ) ;
-   glEnable ( GL_ALPHA_TEST ) ;
-
-   [self _renderLayer:_rootLayer z:0 currentTime:CACurrentMediaTime()];
-
-   glFlush();
-#endif
 }
 
 -(void)endFrame {
