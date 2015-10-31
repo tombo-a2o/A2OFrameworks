@@ -306,6 +306,7 @@ NSString * const kCATransition = @"transition";
     if([_delegate respondsToSelector:@selector(displayLayer:)]) {
         [_delegate displayLayer:self];
     } else {
+#warning dealloc or reuse context
         CGContextRef context = CGBitmapContextCreate(
                 NULL,
                 _bounds.size.width,
@@ -315,6 +316,8 @@ NSString * const kCATransition = @"transition";
                 CGColorSpaceCreateDeviceRGB(),
                 kO2BitmapByteOrder32Big|kO2ImageAlphaLast);
         assert(context);
+        CGAffineTransform flipVertical = CGAffineTransformMake(1, 0, 0, -1, 0, _bounds.size.height);
+        CGContextConcatCTM(context, flipVertical);
         [self drawInContext:context];
         [self setContents:context];
     }

@@ -409,10 +409,10 @@ static void generateGLColorFromCGColor(CGColorRef cgColor, GLfloat components[4]
     // NSLog(@"opacity %f", opacity);
 
     GLfloat textureVertices[4*2] = {
-        0.0, 1.0,
-        1.0, 1.0,
         0.0, 0.0,
-        1.0, 0.0
+        1.0, 0.0,
+        0.0, 1.0,
+        1.0, 1.0
     };
     GLfloat vertices[4*3] = {
         0, 0, -z/65536,
@@ -480,7 +480,7 @@ static void generateGLColorFromCGColor(CGColorRef cgColor, GLfloat components[4]
     glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
 
     // fprintf(stderr, "bounds %f %f\n",_bounds.size.width, _bounds.size.height);
-    CGAffineTransform projection = CGAffineTransformMake(2.0/_bounds.size.width, 0, 0, 2.0/_bounds.size.height, -1.0, -1.0);
+    CGAffineTransform projection = CGAffineTransformMake(2.0/_bounds.size.width, 0, 0, -2.0/_bounds.size.height, -1.0, 1.0);
     [self _renderLayer:_rootLayer z:0 currentTime:CACurrentMediaTime() transform:projection];
 
     glFlush();
