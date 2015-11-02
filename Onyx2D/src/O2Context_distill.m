@@ -1,3 +1,5 @@
+#if 0
+
 #import <Onyx2D/O2Context_distill.h>
 #import <Onyx2D/O2GraphicsState.h>
 #import <Onyx2D/O2Encoding.h>
@@ -14,22 +16,22 @@ static void O2ContextDistillShowText(O2ContextRef self,const char *text,unsigned
    O2PDFCharWidths *widths=[gState pdfCharWidths];
    O2Glyph          glyphs[length];
    uint16_t         unicode[length];
-      
+
    O2EncodingGetGlyphsForBytes(encoding,glyphs,(const uint8_t *)text,length);
    O2EncodingGetUnicodeForBytes(encoding,unicode,(const uint8_t *)text,length);
-   
+
    O2Size advances[length];
    int    i;
-    
+
    if(widths!=nil)
     O2PDFCharWidthsGetAdvances(widths,advances,(const uint8_t *)text,length);
    else
     O2ContextGetDefaultAdvances(self,glyphs,advances,length);
-    
+
    for(i=0;i<length;i++){
     advances[i].width+=gState->_characterSpacing;
    }
-       
+
 
 // FIXME: Trm includes the device transform which in this case is identity, producing the right result, however the matrix
 // used here should not use the device transform, just the CTM because we want the results officially in default user space, not device
@@ -37,21 +39,21 @@ static void O2ContextDistillShowText(O2ContextRef self,const char *text,unsigned
    O2Rect  glyphRects[length];
    O2Font *font=O2GStateFont(gState);
    O2Float descent=((CGFloat)O2FontGetDescent(font)/(CGFloat)O2FontGetUnitsPerEm(font))*O2GStatePointSize(gState);
-   
+
    descent=O2SizeApplyAffineTransform(O2SizeMake(0,descent),Trm).height;
-   
+
    for(i=0;i<length;i++){
     O2Size advance=O2SizeApplyAffineTransform(advances[i],Trm);
-    
+
     glyphRects[i].origin=point;
     glyphRects[i].origin.y+=descent;
     glyphRects[i].size.width=advance.width;
     glyphRects[i].size.height=fontSize.height;
-    
+
     point.x+=advance.width;
     point.y+=advance.height;
    }
-   
+
    O2ContextConcatAdvancesToTextMatrix(self,advances,length);
 
    [((O2Context_distill *)self)->_delegate distiller:(O2Context_distill *)self unicode:unicode rects:glyphRects count:length];
@@ -87,3 +89,4 @@ static void O2ContextDistillShowText(O2ContextRef self,const char *text,unsigned
 }
 
 @end
+#endif

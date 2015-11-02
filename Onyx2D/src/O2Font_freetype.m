@@ -9,7 +9,7 @@ FT_Library freeTypeLibrary;
 +(void)initialize {
   if(self==[O2Font_freetype class]){
    int error = FT_Init_FreeType(&freeTypeLibrary);
-  
+
    if ( error ) {
      NSLog(@"error initializing FreeType %d",error);
    }
@@ -22,30 +22,30 @@ FT_Library freeTypeLibrary;
     return nil;
 
    _platformType=O2FontPlatformTypeFreeType;
-   
+
    const void *bytes=[provider bytes];
    size_t      length=[provider length];
 
    int error=FT_New_Memory_Face(freeTypeLibrary,bytes,length,0,&_face);
-   
+
    if(error!=0){
     NSLog(@"FT_New_Memory_Face=%d",error);
     [self dealloc];
     return nil;
    }
-   
+
    int i,numberOfCharMaps=_face->num_charmaps;
    bool hasUnicode=FALSE;
    bool hasMacRoman=FALSE;
-   
+
    for(i=0;i<numberOfCharMaps;i++){
-    
+
     if(_face->charmaps[i]->encoding==FT_ENCODING_UNICODE)
      hasUnicode=TRUE;
     if(_face->charmaps[i]->encoding==FT_ENCODING_APPLE_ROMAN)
      hasMacRoman=TRUE;
    }
-   
+
    if(hasUnicode){
     _ftEncoding=FT_ENCODING_UNICODE;
    }
@@ -56,13 +56,13 @@ FT_Library freeTypeLibrary;
     NSLog(@"encoding=%c %c %c %c",_face->charmaps[i]->encoding>>24,_face->charmaps[i]->encoding>>16,_face->charmaps[i]->encoding>>8,_face->charmaps[i]->encoding);
     _ftEncoding=_face->charmaps[0]->encoding;
    }
-   
+
    if(FT_Select_Charmap(_face,_ftEncoding)!=0)
     NSLog(@"FT_Select_Charmap(%d) failed",_ftEncoding);
-   
+
    if(!(_face->face_flags&FT_FACE_FLAG_SCALABLE))
     NSLog(@"FreeType font face is not scalable");
-    
+
    _unitsPerEm=(float)_face->units_per_EM;
    _ascent=_face->ascender;
    _descent=_face->descender;
@@ -101,7 +101,7 @@ FT_Face O2FontFreeTypeFace(O2Font_freetype *self) {
 
    for(glyph=0;glyph<_numberOfGlyphs;glyph++){
     FT_Load_Glyph(_face, glyph, FT_LOAD_DEFAULT);
-    
+
     _advances[glyph]=_face->glyph->advance.x/(float)(2<<5);
    }
 }
@@ -112,7 +112,7 @@ FT_Face O2FontFreeTypeFace(O2Font_freetype *self) {
 
 -(void)getGlyphsForCodePoints:(uint16_t *)codes:(O2Glyph *)glyphs:(int)length {
    int i;
-   
+
    for(i=0;i<length;i++)
     glyphs[i]=FT_Get_Char_Index(_face,codes[i]);
 }
@@ -120,7 +120,7 @@ FT_Face O2FontFreeTypeFace(O2Font_freetype *self) {
 -(O2Encoding *)unicode_createEncodingForTextEncoding:(O2TextEncoding)encoding {
    unichar unicode[256];
    O2Glyph glyphs[256];
-   
+
    switch(encoding){
     case kO2EncodingFontSpecific:
     case kO2EncodingMacRoman:
@@ -130,7 +130,7 @@ FT_Face O2FontFreeTypeFace(O2Font_freetype *self) {
       _macRomanEncoding=[[O2Encoding alloc] initWithGlyphs:glyphs unicode:unicode];
      }
      return [_macRomanEncoding retain];
-     
+
     case kO2EncodingMacExpert:
      if(_macExpertEncoding==nil){
       O2EncodingGetMacExpertUnicode(unicode);
@@ -146,7 +146,7 @@ FT_Face O2FontFreeTypeFace(O2Font_freetype *self) {
       _winAnsiEncoding=[[O2Encoding alloc] initWithGlyphs:glyphs unicode:unicode];
      }
      return [_winAnsiEncoding retain];
-    
+
     default:
      return nil;
    }
@@ -160,28 +160,28 @@ FT_Face O2FontFreeTypeFace(O2Font_freetype *self) {
 
    if(_macRomanEncoding==nil){
     int i;
-   
+
     if(encoding!=kO2EncodingMacRoman && encoding!=kO2EncodingFontSpecific){
      NSLog(@"font encoding is MacRoman, requesting encoding %d failed",encoding);
     }
-   
+
     for(i=0;i<256;i++)
      codes[i]=i;
-    
+
     [self getGlyphsForCodePoints:codes:glyphs:256];
-    
+
     O2EncodingGetMacExpertUnicode(unicode);
 
     _macRomanEncoding=[[O2Encoding alloc] initWithGlyphs:glyphs unicode:unicode];
    }
-   
+
    return [_macRomanEncoding retain];
 }
 
 -(O2Encoding *)createEncodingForTextEncoding:(O2TextEncoding)encoding {
    if(_ftEncoding==FT_ENCODING_APPLE_ROMAN)
     return [self MacRoman_createEncodingForTextEncoding:encoding];
-    
+
    return [self unicode_createEncodingForTextEncoding:encoding];
 }
 

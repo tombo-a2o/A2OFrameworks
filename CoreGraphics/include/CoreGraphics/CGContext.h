@@ -22,6 +22,8 @@ typedef void *CGContextRef;
 #import <CoreGraphics/CGLayer.h>
 #import <CoreGraphics/CGGradient.h>
 
+#import <Foundation/NSString.h>
+
 typedef enum {
     kCGEncodingFontSpecific,
     kCGEncodingMacRoman,
@@ -96,7 +98,7 @@ enum CGTextDrawingMode {
     kCGTextFillClip,
     kCGTextStrokeClip,
     kCGTextFillStrokeClip,
-    kCGTextClip 
+    kCGTextClip
 };
 typedef enum CGTextDrawingMode CGTextDrawingMode;
 
@@ -249,6 +251,8 @@ COREGRAPHICS_EXPORT void CGContextShowGlyphsWithAdvances(CGContextRef context, c
 
 COREGRAPHICS_EXPORT void CGContextShowText(CGContextRef context, const char *text, unsigned count);
 COREGRAPHICS_EXPORT void CGContextShowTextAtPoint(CGContextRef context, float x, float y, const char *text, unsigned count);
+COREGRAPHICS_EXPORT void CGContextShowUnicodeText(CGContextRef context, const unichar *text, unsigned count);
+COREGRAPHICS_EXPORT void CGContextShowUnicodeTextAtPoint(CGContextRef context, float x, float y, const unichar *text, unsigned count);
 
 COREGRAPHICS_EXPORT void CGContextDrawShading(CGContextRef context, CGShadingRef shading);
 COREGRAPHICS_EXPORT void CGContextDrawImage(CGContextRef context, CGRect rect, CGImageRef image);

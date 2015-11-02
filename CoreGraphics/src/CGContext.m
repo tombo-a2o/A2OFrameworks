@@ -343,7 +343,7 @@ void CGContextSetFlatness(CGContextRef context,float flatness) {
 
 void CGContextSetInterpolationQuality(CGContextRef context,CGInterpolationQuality quality) {
    O2ContextSetInterpolationQuality(context,quality);
-} 
+}
 
 void CGContextSetShadowWithColor(CGContextRef context,CGSize offset,float blur,CGColorRef color) {
    O2ContextSetShadowWithColor(context,offset,blur,color);
@@ -425,9 +425,17 @@ void CGContextShowTextAtPoint(CGContextRef context,float x,float y,const char *t
    O2ContextShowTextAtPoint(context,x,y,text,count);
 }
 
+void CGContextUnicodeShowText(CGContextRef context,const unichar *text,unsigned count) {
+   O2ContextShowUnicodeText(context,text,count);
+}
+
+void CGContextShowUnicodeTextAtPoint(CGContextRef context,float x,float y,const unichar *text,unsigned count) {
+   O2ContextShowUnicodeTextAtPoint(context,x,y,text,count);
+}
+
 void CGContextDrawShading(CGContextRef context,CGShadingRef shading) {
    O2ContextDrawShading(context,shading);
-}  
+}
 
 void CGContextDrawImage(CGContextRef context,CGRect rect,CGImageRef image) {
    O2ContextDrawImage(context,rect,image);

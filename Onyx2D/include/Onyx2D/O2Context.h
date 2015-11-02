@@ -109,7 +109,7 @@ typedef enum {
 #import <Onyx2D/O2Shading.h>
 #import <Onyx2D/O2PDFPage.h>
 
-typedef void (*O2ContextShowTextFunction)(O2ContextRef, const char *, unsigned);
+typedef void (*O2ContextShowTextFunction)(O2ContextRef, const unichar *, unsigned);
 typedef void (*O2ContextShowGlyphsFunction)(O2ContextRef, SEL, const O2Glyph *, const O2Size *, unsigned);
 
 @interface O2Context : NSObject {
@@ -332,6 +332,8 @@ void O2ContextShowGlyphsWithAdvances(O2ContextRef self, const O2Glyph *glyphs, c
 
 void O2ContextShowText(O2ContextRef self, const char *text, unsigned count);
 void O2ContextShowTextAtPoint(O2ContextRef self, O2Float x, O2Float y, const char *text, unsigned count);
+void O2ContextShowUnicodeText(O2ContextRef self, const unichar *text, unsigned count);
+void O2ContextShowUnicodeTextAtPoint(O2ContextRef self, O2Float x, O2Float y, const unichar *text, unsigned count);
 
 void O2ContextDrawShading(O2ContextRef self, O2ShadingRef shading);
 void O2ContextDrawImage(O2ContextRef self, O2Rect rect, O2ImageRef image);

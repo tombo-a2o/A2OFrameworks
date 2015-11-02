@@ -66,7 +66,7 @@ size_t    CGFontGetNumberOfGlyphs(CGFontRef self) {
 }
 
 bool      CGFontGetGlyphAdvances(CGFontRef self,const CGGlyph *glyphs,size_t count,int *advances) {
-   return O2FontGetGlyphAdvances(self,glyphs,count,advances);
+    return O2FontGetGlyphAdvances(self, glyphs, count, advances);
 }
 
 CGGlyph   CGFontGetGlyphWithGlyphName(CGFontRef self,CFStringRef name) {
@@ -79,4 +79,8 @@ CFStringRef CGFontCopyGlyphNameForGlyph(CGFontRef self,CGGlyph glyph) {
 
 CFDataRef CGFontCopyTableForTag(CGFontRef self,uint32_t tag) {
    return (CFDataRef)O2FontCopyTableForTag(self,tag);
+}
+
+CGFloat CGFontGetTextWidth(CGFontRef self, const unichar *codes, size_t count, CGFloat fontSize) {
+    return O2FontGetTextWidth(self, codes, count, fontSize);
 }

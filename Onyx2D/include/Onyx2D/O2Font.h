@@ -65,6 +65,9 @@ typedef enum {
 + (NSArray *)preferredFontNames;
 + (void)setPreferredFontNames:(NSArray *)fontNames;
 
++ (void)registerFont:(NSString*)path withName:(NSString*)name;
++ (NSString*)searchFontFileName:(NSString*)name;
+
 - initWithFontName:(NSString *)name;
 - initWithDataProvider:(O2DataProviderRef)provider;
 
@@ -80,6 +83,7 @@ typedef enum {
 - (void)fetchAdvances;
 
 - (O2Encoding *)createEncodingForTextEncoding:(O2TextEncoding)encoding;
+- (CGFloat)getTextWidth:(const unichar *)codes count:(size_t)count fontSize:(CGFloat)fontSize;
 
 O2FontRef O2FontCreateWithFontName(NSString *name);
 O2FontRef O2FontCreateWithDataProvider(O2DataProviderRef provider);
@@ -109,5 +113,7 @@ NSString *O2FontCopyGlyphNameForGlyph(O2FontRef self, O2Glyph glyph);
 NSData *O2FontCopyTableForTag(O2FontRef self, uint32_t tag);
 
 uint16_t O2FontUnicodeForGlyphName(CFStringRef name);
+
+CGFloat O2FontGetTextWidth(O2FontRef self, const unichar *codes, size_t count, CGFloat fontSize);
 
 @end
