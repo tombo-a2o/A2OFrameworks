@@ -45,8 +45,9 @@
 
     GLint width=_frame.size.width;
     GLint height=_frame.size.height;
+    CGFloat contentsScale = layer.contentsScale;
 
-    glViewport(0, 0, width * emscripten_get_device_pixel_ratio(), height * emscripten_get_device_pixel_ratio());
+    glViewport(0, 0, width * contentsScale, height * contentsScale);
 
     _renderer.bounds = CGRectMake(0, 0, width, height);
     [_renderer render];
