@@ -47,6 +47,16 @@ NSString *const UIScreenModeDidChangeNotification = @"UIScreenModeDidChangeNotif
 
 NSMutableArray *_allScreens = nil;
 
+#if 1
+static inline CGFloat get_device_pixel_ratio(void) {
+    return 2.0;
+}
+#else
+static inline CGFloat get_device_pixel_ratio(void) {
+    return emscripten_get_device_pixel_ratio();
+}
+#endif
+
 @interface UIScreenMode(Private)
 + (id)screenModeIphone5;
 @end
@@ -66,7 +76,7 @@ NSMutableArray *_allScreens = nil;
     }
     int w = 320;
     int h = 568;
-    emscripten_set_canvas_size(w * emscripten_get_device_pixel_ratio(), h * emscripten_get_device_pixel_ratio());
+    emscripten_set_canvas_size(w * get_device_pixel_ratio(), h * get_device_pixel_ratio());
     emscripten_set_element_css_size(NULL, w, h);
 }
 
@@ -119,15 +129,7 @@ NSMutableArray *_allScreens = nil;
 
 - (CGFloat)scale
 {
-#if 1
-    return emscripten_get_device_pixel_ratio();
-#else
-    if ([[_UIKitView window] respondsToSelector:@selector(backingScaleFactor)]) {
-        return [[_UIKitView window] backingScaleFactor];
-    } else {
-        return 1;
-    }
-#endif
+    return get_device_pixel_ratio();
 }
 
 - (BOOL)_hasResizeIndicator
