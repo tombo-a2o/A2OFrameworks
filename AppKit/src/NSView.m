@@ -283,6 +283,8 @@ static inline void configureLayerGeometry(NSView *self){
     [layer setPosition:self->_frame.origin];
 
    [layer setBounds:self->_bounds];
+
+   [layer setContentsScale:2.0]; // ugly, but AppKit will be removed from a2o
    [CATransaction commit];
 }
 
