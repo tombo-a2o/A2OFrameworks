@@ -38,6 +38,5 @@
 @class NSFont;
 
 @interface UIFont (UIPrivate)
-+ (UIFont *)fontWithNSFont:(NSFont *)aFont;
-- (NSFont *)NSFont;
+- (CGFontRef)CGFont;
 @end

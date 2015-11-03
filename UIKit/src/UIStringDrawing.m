@@ -31,6 +31,7 @@
 #import <UIKit/UIFont.h>
 #import <AppKit/AppKit.h>
 #import <UIKit/UIGraphics.h>
+#import "UIFont+UIPrivate.h"
 
 NSString *const UITextAttributeFont = @"UITextAttributeFont";
 NSString *const UITextAttributeTextColor = @"UITextAttributeTextColor";
@@ -142,13 +143,17 @@ static CFArrayRef CreateCTLinesForString(NSString *string, CGSize constrainedToS
 
 - (CGSize)sizeWithFont:(UIFont *)font constrainedToSize:(CGSize)size lineBreakMode:(UILineBreakMode)lineBreakMode
 {
+#warning TODO constrained size and line break
     CGSize resultingSize = CGSizeZero;
+    CGFontRef cgFont = [font CGFont];
 
-    NSLog(@"%s not implemented", __FUNCTION__);
-#if 0
-    CFArrayRef lines = CreateCTLinesForString(self, size, font, lineBreakMode, &resultingSize);
-    if (lines) CFRelease(lines);
-#endif
+    size_t len = [self length];
+    unichar *text = malloc(len * sizeof(unichar));
+    [self getCharacters:text range:NSMakeRange(0, len)];
+    resultingSize.width = CGFontGetTextWidth(cgFont, text, len, font.pointSize);
+    resultingSize.height = font.lineHeight;
+    //NSLog(@"resultingSize %f %f", resultingSize.width, resultingSize.height);
+    free(text);
 
     return resultingSize;
 }
@@ -181,8 +186,23 @@ static CFArrayRef CreateCTLinesForString(NSString *string, CGSize constrainedToS
 
 - (CGSize)drawInRect:(CGRect)rect withFont:(UIFont *)font lineBreakMode:(UILineBreakMode)lineBreakMode alignment:(UITextAlignment)alignment
 {
-    NSLog(@"%s not implemented", __FUNCTION__);
+#warning TODO line break and alignment
     CGSize actualSize = CGSizeZero;
+    CGContextRef ctx = UIGraphicsGetCurrentContext();
+
+    CGContextSaveGState(ctx);
+    CGContextTranslateCTM(ctx, rect.origin.x, rect.origin.y +  [font pointSize]/*font.ascender*/);
+    CGContextSetTextMatrix(ctx, CGAffineTransformMakeScale(1,-1));
+
+    CGContextSetFont(ctx, [font CGFont]);
+    CGContextSetFontSize(ctx, [font pointSize]);
+    size_t len = [self length];
+    unichar *text = malloc(len * sizeof(unichar));
+    [self getCharacters:text range:NSMakeRange(0, len)];
+    CGContextShowUnicodeTextAtPoint(ctx, 0, 0, text, len);
+    free(text);
+
+    CGContextRestoreGState(ctx);
 #if 0
     CFArrayRef lines = CreateCTLinesForString(self,rect.size,font,lineBreakMode,&actualSize);
 

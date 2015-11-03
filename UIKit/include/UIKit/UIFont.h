@@ -32,7 +32,8 @@
 
 @interface UIFont : NSObject {
 @package
-    CTFontRef _font;
+    CGFontRef _cgFont;
+    CGFloat _pointSize;
 }
 
 + (UIFont *)fontWithName:(NSString *)fontName size:(CGFloat)fontSize;
