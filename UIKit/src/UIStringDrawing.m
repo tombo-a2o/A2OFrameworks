@@ -147,6 +147,7 @@ static CFArrayRef CreateCTLinesForString(NSString *string, CGSize constrainedToS
     CGSize resultingSize = CGSizeZero;
     CGFontRef cgFont = [font CGFont];
 
+#warning TODO consider tranform(scale)
     size_t len = [self length];
     unichar *text = malloc(len * sizeof(unichar));
     [self getCharacters:text range:NSMakeRange(0, len)];
@@ -191,7 +192,7 @@ static CFArrayRef CreateCTLinesForString(NSString *string, CGSize constrainedToS
     CGContextRef ctx = UIGraphicsGetCurrentContext();
 
     CGContextSaveGState(ctx);
-    CGContextTranslateCTM(ctx, rect.origin.x, rect.origin.y +  [font pointSize]/*font.ascender*/);
+    CGContextTranslateCTM(ctx, rect.origin.x, rect.origin.y +  font.ascender);
     CGContextSetTextMatrix(ctx, CGAffineTransformMakeScale(1,-1));
 
     CGContextSetFont(ctx, [font CGFont]);
