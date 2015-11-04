@@ -95,7 +95,7 @@ static void startAnimationsInLayer(CALayer *layer,CFTimeInterval currentTime){
 
         if([check beginTime]==0.0)
             [check setBeginTime:currentTime];
-        if(currentTime>[check beginTime]+[check duration]){
+        if(currentTime>[check beginTime]+[check duration]*[check repeatCount]){
             [layer removeAnimationForKey:key];
         }
     }
@@ -137,6 +137,7 @@ static float mediaTimingScale(CAAnimation *animation,CFTimeInterval currentTime)
     CFTimeInterval duration=[animation duration];
     CFTimeInterval delta=currentTime-begin;
     double         zeroToOne=delta/duration;
+    zeroToOne -= (int)zeroToOne;
     CAMediaTimingFunction *function=[animation timingFunction];
 
     if(function==nil)
@@ -208,37 +209,66 @@ static CGPoint interpolatePointInLayerKey(CALayer *layer,NSString *key,CFTimeInt
 }
 
 static CGRect interpolateRectInLayerKey(CALayer *layer,NSString *key,CFTimeInterval currentTime){
+	CAAnimation *animation=[layer animationForKey:key];
+
+	if(animation==nil){
+		return [[layer valueForKey:key] rectValue];
+	}
+
+	if([animation isKindOfClass:[CABasicAnimation class]]){
+		CABasicAnimation *basic=(CABasicAnimation *)animation;
+
+		id fromValue=[basic fromValue];
+		id toValue=[basic toValue];
+
+		if(toValue==nil)
+			toValue=[layer valueForKey:key];
+
+		CGRect fromRect=[fromValue rectValue];
+		CGRect toRect=[toValue rectValue];
+
+		double timingScale=mediaTimingScale(animation,currentTime);
+
+		CGRect        resultRect;
+
+		resultRect.origin.x=fromRect.origin.x+(toRect.origin.x-fromRect.origin.x)*timingScale;
+		resultRect.origin.y=fromRect.origin.y+(toRect.origin.y-fromRect.origin.y)*timingScale;
+		resultRect.size.width=fromRect.size.width+(toRect.size.width-fromRect.size.width)*timingScale;
+		resultRect.size.height=fromRect.size.height+(toRect.size.height-fromRect.size.height)*timingScale;
+
+		return resultRect;
+	}
+
+	return CGRectMake(0,0,0,0);
+}
+
+static CGImageRef interpolateImageInLayerKey(CALayer *layer,NSString *key,CFTimeInterval currentTime){
     CAAnimation *animation=[layer animationForKey:key];
 
     if(animation==nil){
-        return [[layer valueForKey:key] rectValue];
+        return [layer valueForKey:key];
     }
 
-    if([animation isKindOfClass:[CABasicAnimation class]]){
-        CABasicAnimation *basic=(CABasicAnimation *)animation;
+    if([animation isKindOfClass:[CAKeyframeAnimation class]]){
+        CAKeyframeAnimation *basic=(CAKeyframeAnimation *)animation;
+        NSMutableArray* images = basic.values;
 
-        id fromValue=[basic fromValue];
-        id toValue=[basic toValue];
+        int fromValue=0;
+        int toValue=[images count];
 
-        if(toValue==nil)
-            toValue=[layer valueForKey:key];
+		float fromFloat=0;
+		float toFloat=(float)toValue;
 
-        CGRect fromRect=[fromValue rectValue];
-        CGRect toRect=[toValue rectValue];
+		float        resultFloat;
+		double timingScale=mediaTimingScale(animation,currentTime);
 
-        double timingScale=mediaTimingScale(animation,currentTime);
+		resultFloat=fromFloat+(toFloat-fromFloat)*timingScale;
+        int resultInt = resultFloat;
 
-        CGRect        resultRect;
-
-        resultRect.origin.x=fromRect.origin.x+(toRect.origin.x-fromRect.origin.x)*timingScale;
-        resultRect.origin.y=fromRect.origin.y+(toRect.origin.y-fromRect.origin.y)*timingScale;
-        resultRect.size.width=fromRect.size.width+(toRect.size.width-fromRect.size.width)*timingScale;
-        resultRect.size.height=fromRect.size.height+(toRect.size.height-fromRect.size.height)*timingScale;
-
-        return resultRect;
+		return [images objectAtIndex: resultInt];
     }
 
-    return CGRectMake(0,0,0,0);
+    return nil;
 }
 
 static GLint interpolationFromName(NSString *name){
@@ -355,9 +385,10 @@ static void generateGLColorFromCGColor(CGColorRef cgColor, GLfloat components[4]
     }
 
     //NSLog(@"texture %d", texture);
+    CGImageRef image = interpolateImageInLayerKey(layer,@"contents",currentTime);
 
-    if(loadPixelData){
-        CGImageRef image = layer.contents;
+    if(loadPixelData || [layer _imageRef] != image){
+        [layer _setImageRef: image];
 
         if(image) {
             if(!texture) {
