@@ -263,7 +263,10 @@ NSString * const kCATransition = @"transition";
     [self setNeedsLayout];
     [layer setNeedsLayout];
 
-    [self setSublayers:[_sublayers arrayByAddingObject:layer]];
+    NSMutableArray *layers=[_sublayers mutableCopy];
+    [layers removeObject:layer];
+
+    [self setSublayers:[layers arrayByAddingObject:layer]];
 }
 
 -(void)replaceSublayer:(CALayer *)layer with:(CALayer *)other {
@@ -285,7 +288,12 @@ NSString * const kCATransition = @"transition";
     [self setNeedsLayout];
     [aLayer setNeedsLayout];
 
-    NSMutableArray *layers=[_sublayers mutableCopy];
+    NSMutableArray *layers = [_sublayers mutableCopy];
+    NSUInteger current =[layers indexOfObjectIdenticalTo:aLayer];
+    if(current != NSNotFound) {
+        if(current < index) index--;
+        [layers removeObjectAtIndex:current];
+    }
 
     [layers insertObject:aLayer atIndex:index];
     [self setSublayers:layers];
