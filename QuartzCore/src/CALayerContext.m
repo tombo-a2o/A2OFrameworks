@@ -39,6 +39,8 @@
 -(void)renderLayer:(CALayer *)layer {
     [EAGLContext setCurrentContext:_glContext];
 
+    GLint framebuffer;
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &framebuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     GLint width=_frame.size.width;
@@ -49,6 +51,8 @@
 
     _renderer.bounds = CGRectMake(0, 0, width, height);
     [_renderer render];
+
+    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 }
 
 -(void)render {
