@@ -584,29 +584,31 @@ id NSApp=nil;
       pool=[NSAutoreleasePool new];
       [self finishLaunching];
 
-      NSTimer *timer = [NSTimer timerWithTimeInterval:1.0f/60 target:[NSBlockOperation blockOperationWithBlock:^{
-         NSAutoreleasePool *pool = [NSAutoreleasePool new];
-         NSEvent           *event;
-         event=[self nextEventMatchingMask:NSAnyEventMask untilDate:[NSDate distantFuture] inMode:NSDefaultRunLoopMode dequeue:YES];
+      dispatch_source_t source = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 2<<10, dispatch_get_current_queue());
+      dispatch_source_set_timer(source, 0, 0, 0);
+      dispatch_source_set_event_handler(source, ^{
+          NSAutoreleasePool *pool = [NSAutoreleasePool new];
+          NSEvent           *event;
+          event=[self nextEventMatchingMask:NSAnyEventMask untilDate:[NSDate distantFuture] inMode:NSDefaultRunLoopMode dequeue:YES];
 
-        NS_DURING
-         [self sendEvent:event];
+         NS_DURING
+          [self sendEvent:event];
 
-        NS_HANDLER
-         [self reportException:localException];
-        NS_ENDHANDLER
+         NS_HANDLER
+          [self reportException:localException];
+         NS_ENDHANDLER
 
-         [self _checkForReleasedWindows];
-         // [self _checkForTerminate];
+          [self _checkForReleasedWindows];
+          // [self _checkForTerminate];
 
-         [pool release];
+          [pool release];
 
-         if (!_isRunning) {
-            [timer invalidate];
-         }
-      }] selector:@selector(main) userInfo:nil repeats:YES];
+          if (!_isRunning) {
+              dispatch_source_cancel(source);
+          }
+      });
+      dispatch_resume(source);
 
-      [[NSRunLoop currentRunLoop] addTimer:timer forMode:NSDefaultRunLoopMode];
       dispatch_main();
       [pool release];
    }
