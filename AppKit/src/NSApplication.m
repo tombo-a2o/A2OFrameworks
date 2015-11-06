@@ -31,6 +31,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <AppKit/NSSpellChecker.h>
 #import <objc/message.h>
 #import <pthread.h>
+#import <emscripten.h>
+#import <emscripten/html5.h>
 
 #define pthread_mutex_init(a,b)
 #define pthread_mutex_lock(a)
@@ -77,251 +79,251 @@ id NSApp=nil;
 
 +(NSApplication *)sharedApplication {
 
-   if(NSApp==nil){
-      [[self alloc] init]; // NSApp must be nil inside init
-   }
+    if(NSApp==nil){
+        [[self alloc] init]; // NSApp must be nil inside init
+    }
 
-   return NSApp;
+    return NSApp;
 }
 
 +(void)detachDrawingThread:(SEL)selector toTarget:target withObject:object {
-   NSUnimplementedMethod();
+    NSUnimplementedMethod();
 }
 
 -(void)_showSplashImage {
-   NSImage *image=[NSImage imageNamed:@"splash"];
+    NSImage *image=[NSImage imageNamed:@"splash"];
 
-   if(image!=nil){
-    NSSize    imageSize=[image size];
-    NSWindow *splash=[[NSWindow alloc] initWithContentRect:NSMakeRect(0,0,imageSize.width,imageSize.height) styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO];
-    [splash setLevel:NSFloatingWindowLevel];
+    if(image!=nil){
+        NSSize    imageSize=[image size];
+        NSWindow *splash=[[NSWindow alloc] initWithContentRect:NSMakeRect(0,0,imageSize.width,imageSize.height) styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO];
+        [splash setLevel:NSFloatingWindowLevel];
 
-    NSImageView *view=[[NSImageView alloc] initWithFrame:NSMakeRect(0,0,imageSize.width,imageSize.height)];
+        NSImageView *view=[[NSImageView alloc] initWithFrame:NSMakeRect(0,0,imageSize.width,imageSize.height)];
 
-    [view setImage:image];
-    [splash setContentView:view];
-    [view release];
-    [splash setReleasedWhenClosed:YES];
-    [splash center];
-    [splash orderFront:nil];
-    [splash display];
-   }
+        [view setImage:image];
+        [splash setContentView:view];
+        [view release];
+        [splash setReleasedWhenClosed:YES];
+        [splash center];
+        [splash orderFront:nil];
+        [splash display];
+    }
 }
 
 -(void)_closeSplashImage {
-   int i;
+    int i;
 
-   for(i=0;i<[_windows count];i++){
-    NSWindow *check=[_windows objectAtIndex:i];
-    NSView   *contentView=[check contentView];
+    for(i=0;i<[_windows count];i++){
+        NSWindow *check=[_windows objectAtIndex:i];
+        NSView   *contentView=[check contentView];
 
-    if([contentView isKindOfClass:[NSImageView class]])
+        if([contentView isKindOfClass:[NSImageView class]])
      if([[[(NSImageView *)contentView image] name] isEqual:@"splash"]){
-      [check close];
-      return;
+         [check close];
+         return;
      }
-   }
+    }
 }
 
 -init {
-   if(NSApp)
-      NSAssert(!NSApp, @"NSApplication is a singleton");
-   NSApp=self;
-   _display=[[NSDisplay currentDisplay] retain];
+    if(NSApp)
+        NSAssert(!NSApp, @"NSApplication is a singleton");
+    NSApp=self;
+    _display=[[NSDisplay currentDisplay] retain];
 
-   _windows=[NSMutableArray new];
-   _mainMenu=nil;
+    _windows=[NSMutableArray new];
+    _mainMenu=nil;
 
-   _dockTile=[[NSDockTile alloc] initWithOwner:self];
-   _modalStack=[NSMutableArray new];
+    _dockTile=[[NSDockTile alloc] initWithOwner:self];
+    _modalStack=[NSMutableArray new];
 
-   _lock=NSZoneMalloc(NULL,sizeof(pthread_mutex_t));
+    _lock=NSZoneMalloc(NULL,sizeof(pthread_mutex_t));
 
-   pthread_mutex_init(_lock,NULL);
+    pthread_mutex_init(_lock,NULL);
 
-   [self _showSplashImage];
+    [self _showSplashImage];
 
-   return NSApp;
+    return NSApp;
 }
 
 -(NSGraphicsContext *)context {
-   NSUnimplementedMethod();
-   return nil;
+    NSUnimplementedMethod();
+    return nil;
 }
 
 -delegate {
-   return _delegate;
+    return _delegate;
 }
 
 -(NSArray *)windows {
-   return _windows;
+    return _windows;
 }
 
 -(NSWindow *)windowWithWindowNumber:(NSInteger)number {
-   int i,count=[_windows count];
+    int i,count=[_windows count];
 
-   for(i=0;i<count;i++){
-    NSWindow *check=[_windows objectAtIndex:i];
+    for(i=0;i<count;i++){
+        NSWindow *check=[_windows objectAtIndex:i];
 
-    if([check windowNumber]==number)
-     return check;
-   }
+        if([check windowNumber]==number)
+            return check;
+    }
 
-   return nil;
+    return nil;
 }
 
 -(NSMenu *)mainMenu {
-   return _mainMenu;
+    return _mainMenu;
 }
 
 -(NSMenu *)menu {
-  return [self mainMenu];
+    return [self mainMenu];
 }
 
 -(NSMenu *)windowsMenu {
-   if(_windowsMenu==nil) {
-    _windowsMenu=[[NSApp mainMenu] _menuWithName:@"_NSWindowsMenu"];
-    if (_windowsMenu && ![[[_windowsMenu itemArray] lastObject] isSeparatorItem])
-     [_windowsMenu addItem:[NSMenuItem separatorItem]];
-   }
+    if(_windowsMenu==nil) {
+        _windowsMenu=[[NSApp mainMenu] _menuWithName:@"_NSWindowsMenu"];
+        if (_windowsMenu && ![[[_windowsMenu itemArray] lastObject] isSeparatorItem])
+            [_windowsMenu addItem:[NSMenuItem separatorItem]];
+    }
 
-   return _windowsMenu;
+    return _windowsMenu;
 }
 
 -(NSWindow *)mainWindow {
-   return _mainWindow;
+    return _mainWindow;
 }
 
 -(void)_setMainWindow:(NSWindow *)window {
-   _mainWindow=window;
+    _mainWindow=window;
 }
 
 -(NSWindow *)keyWindow {
-   return _keyWindow;
+    return _keyWindow;
 }
 
 -(void)_setKeyWindow:(NSWindow *)window {
-   _keyWindow=window;
+    _keyWindow=window;
 }
 
 -(NSImage *)applicationIconImage {
-   return _applicationIconImage;
+    return _applicationIconImage;
 }
 
 -(BOOL)isActiveExcludingWindow:(NSWindow *)exclude {
-   int count=[_windows count];
+    int count=[_windows count];
 
-   while(--count>=0){
-    NSWindow *check=[_windows objectAtIndex:count];
+    while(--count>=0){
+        NSWindow *check=[_windows objectAtIndex:count];
 
-    if(check==exclude)
-     continue;
+        if(check==exclude)
+            continue;
 
-    if([check _isActive])
-     return YES;
-   }
+        if([check _isActive])
+            return YES;
+    }
 
-   return NO;
+    return NO;
 }
 
 -(BOOL)isActive {
-   return [self isActiveExcludingWindow:nil];
+    return [self isActiveExcludingWindow:nil];
 }
 
 -(BOOL)isHidden {
-	return _isHidden;
+    return _isHidden;
 }
 
 -(BOOL)isRunning {
-   return _isRunning;
+    return _isRunning;
 }
 
 -(NSWindow *)makeWindowsPerform:(SEL)selector inOrder:(BOOL)inOrder {
-   NSUnimplementedMethod();
-   return nil;
+    NSUnimplementedMethod();
+    return nil;
 }
 
 -(void)miniaturizeAll:sender {
-   int count=[_windows count];
+    int count=[_windows count];
 
-   while(--count>=0)
-    [[_windows objectAtIndex:count] miniaturize:sender];
+    while(--count>=0)
+        [[_windows objectAtIndex:count] miniaturize:sender];
 }
 
 -(NSArray *)orderedDocuments {
-   NSMutableArray *result=[NSMutableArray array];
-   NSArray        *orderedWindows=[self orderedWindows];
+    NSMutableArray *result=[NSMutableArray array];
+    NSArray        *orderedWindows=[self orderedWindows];
 
-   for(NSWindow *checkWindow in orderedWindows){
-    NSDocument *checkDocument=[[checkWindow windowController] document];
+    for(NSWindow *checkWindow in orderedWindows){
+        NSDocument *checkDocument=[[checkWindow windowController] document];
 
-    if(checkDocument!=nil)
-     [result addObject:checkDocument];
-   }
+        if(checkDocument!=nil)
+            [result addObject:checkDocument];
+    }
 
-   return result;
+    return result;
 }
 
 -(NSArray *)orderedWindows {
-  extern NSArray *CGSOrderedWindowNumbers();
+    extern NSArray *CGSOrderedWindowNumbers();
 
-  NSMutableArray *result=[NSMutableArray array];
-  NSArray *numbers=CGSOrderedWindowNumbers();
+    NSMutableArray *result=[NSMutableArray array];
+    NSArray *numbers=CGSOrderedWindowNumbers();
 
-  for(NSNumber *number in numbers){
-   NSWindow *window=[self windowWithWindowNumber:[number integerValue]];
+    for(NSNumber *number in numbers){
+        NSWindow *window=[self windowWithWindowNumber:[number integerValue]];
 
-   if(window!=nil && ![window isKindOfClass:[NSPanel class]])
-    [result addObject:window];
-  }
+        if(window!=nil && ![window isKindOfClass:[NSPanel class]])
+                               [result addObject:window];
+    }
 
-  return result;
+    return result;
 }
 
 -(void)preventWindowOrdering {
-   NSUnimplementedMethod();
+    NSUnimplementedMethod();
 }
 
 -(void)unregisterDelegate {
     if([_delegate respondsToSelector:@selector(applicationWillFinishLaunching:)]){
         [[NSNotificationCenter defaultCenter] removeObserver:_delegate
-                                                     name:NSApplicationWillFinishLaunchingNotification object:self];
+                                                        name:NSApplicationWillFinishLaunchingNotification object:self];
     }
     if([_delegate respondsToSelector:@selector(applicationDidFinishLaunching:)]){
         [[NSNotificationCenter defaultCenter] removeObserver:_delegate
-                                                     name:NSApplicationDidFinishLaunchingNotification object:self];
+                                                        name:NSApplicationDidFinishLaunchingNotification object:self];
     }
     if([_delegate respondsToSelector:@selector(applicationDidBecomeActive:)]){
         [[NSNotificationCenter defaultCenter] removeObserver:_delegate
-                                                     name: NSApplicationDidBecomeActiveNotification object:self];
+                                                        name: NSApplicationDidBecomeActiveNotification object:self];
     }
     if([_delegate respondsToSelector:@selector(applicationWillTerminate:)]){
         [[NSNotificationCenter defaultCenter] removeObserver:_delegate
-                                                     name: NSApplicationWillTerminateNotification object:self];
+                                                        name: NSApplicationWillTerminateNotification object:self];
     }
 }
 
 -(void)registerDelegate {
     if([_delegate respondsToSelector:@selector(applicationWillFinishLaunching:)]){
      [[NSNotificationCenter defaultCenter] addObserver:_delegate
-       selector:@selector(applicationWillFinishLaunching:)
-        name:NSApplicationWillFinishLaunchingNotification object:self];
+                                              selector:@selector(applicationWillFinishLaunching:)
+                                                  name:NSApplicationWillFinishLaunchingNotification object:self];
     }
     if([_delegate respondsToSelector:@selector(applicationDidFinishLaunching:)]){
      [[NSNotificationCenter defaultCenter] addObserver:_delegate
-       selector:@selector(applicationDidFinishLaunching:)
-        name:NSApplicationDidFinishLaunchingNotification object:self];
+                                              selector:@selector(applicationDidFinishLaunching:)
+                                                  name:NSApplicationDidFinishLaunchingNotification object:self];
     }
     if([_delegate respondsToSelector:@selector(applicationDidBecomeActive:)]){
      [[NSNotificationCenter defaultCenter] addObserver:_delegate
-       selector:@selector(applicationDidBecomeActive:)
-        name: NSApplicationDidBecomeActiveNotification object:self];
+                                              selector:@selector(applicationDidBecomeActive:)
+                                                  name: NSApplicationDidBecomeActiveNotification object:self];
     }
-   if([_delegate respondsToSelector:@selector(applicationWillTerminate:)]){
+    if([_delegate respondsToSelector:@selector(applicationWillTerminate:)]){
       [[NSNotificationCenter defaultCenter] addObserver:_delegate
                                                selector:@selector(applicationWillTerminate:)
                                                    name: NSApplicationWillTerminateNotification object:self];
-   }
+    }
 
 }
 
@@ -334,17 +336,17 @@ id NSApp=nil;
 }
 
 -(void)setMainMenu:(NSMenu *)menu {
-   int i,count=[_windows count];
+    int i,count=[_windows count];
 
-   [_mainMenu autorelease];
-   _mainMenu=[menu retain];
+    [_mainMenu autorelease];
+    _mainMenu=[menu retain];
 
-   for(i=0;i<count;i++){
-    NSWindow *window=[_windows objectAtIndex:i];
+    for(i=0;i<count;i++){
+        NSWindow *window=[_windows objectAtIndex:i];
 
-    if(![window isKindOfClass:[NSPanel class]])
-     [window setMenu:_mainMenu];
-   }
+        if(![window isKindOfClass:[NSPanel class]])
+                  [window setMenu:_mainMenu];
+    }
 }
 
 -(void)setMenu:(NSMenu *)menu {
@@ -352,16 +354,16 @@ id NSApp=nil;
 }
 
 -(void)setApplicationIconImage:(NSImage *)image {
-   image=[image retain];
-   [_applicationIconImage release];
-   _applicationIconImage=image;
+    image=[image retain];
+    [_applicationIconImage release];
+    _applicationIconImage=image;
 
-	[image setName: @"NSApplicationIcon"];
+    [image setName: @"NSApplicationIcon"];
 }
 
 -(void)setWindowsMenu:(NSMenu *)menu {
-   [_windowsMenu autorelease];
-   _windowsMenu=[menu retain];
+    [_windowsMenu autorelease];
+    _windowsMenu=[menu retain];
 }
 
 
@@ -382,24 +384,24 @@ id NSApp=nil;
 
 -(void)changeWindowsItem:(NSWindow *)window title:(NSString *)title filename:(BOOL)isFilename {
 
- 	if ([title length] == 0) {
-    // Windows with no name aren't in the Windows menu
-		[self removeWindowsItem:window];
-	} else {
-		int itemIndex = [[self windowsMenu] indexOfItemWithTarget:window andAction:@selector(makeKeyAndOrderFront:)];
+    if ([title length] == 0) {
+        // Windows with no name aren't in the Windows menu
+        [self removeWindowsItem:window];
+    } else {
+        int itemIndex = [[self windowsMenu] indexOfItemWithTarget:window andAction:@selector(makeKeyAndOrderFront:)];
 
-		if (itemIndex != -1) {
-			NSMenuItem *item = [[self windowsMenu] itemAtIndex:itemIndex];
+        if (itemIndex != -1) {
+            NSMenuItem *item = [[self windowsMenu] itemAtIndex:itemIndex];
 
-			if (isFilename)
-				title = [NSString stringWithFormat:@"%@  --  %@",[title lastPathComponent], [title stringByDeletingLastPathComponent]];
+            if (isFilename)
+                title = [NSString stringWithFormat:@"%@  --  %@",[title lastPathComponent], [title stringByDeletingLastPathComponent]];
 
-			[item setTitle:title];
-			[[self windowsMenu] itemChanged:item];
-		}
-		else
-			[self addWindowsItem:window title:title filename:isFilename];
-	}
+            [item setTitle:title];
+            [[self windowsMenu] itemChanged:item];
+        }
+        else
+            [self addWindowsItem:window title:title filename:isFilename];
+    }
 }
 
 -(void)removeWindowsItem:(NSWindow *)window {
@@ -410,7 +412,7 @@ id NSApp=nil;
 
         if ([[[[self windowsMenu] itemArray] lastObject] isSeparatorItem]){
             [[self windowsMenu] removeItem:[[[self windowsMenu] itemArray] lastObject]];
-          }
+        }
     }
 }
 
@@ -418,205 +420,204 @@ id NSApp=nil;
 #if 0
     NSUnimplementedMethod();
 #else
-   NSMenu *menu=[self windowsMenu];
-   int     itemIndex=[[self windowsMenu] indexOfItemWithTarget:window andAction:@selector(makeKeyAndOrderFront:)];
+    NSMenu *menu=[self windowsMenu];
+    int     itemIndex=[[self windowsMenu] indexOfItemWithTarget:window andAction:@selector(makeKeyAndOrderFront:)];
 
-   if(itemIndex!=-1){
-    NSMenuItem *item=[menu itemAtIndex:itemIndex];
+    if(itemIndex!=-1){
+        NSMenuItem *item=[menu itemAtIndex:itemIndex];
 
-   }
+    }
 #endif
 }
 
 -(BOOL)openFiles
 {
-   BOOL opened = NO;
-   if(_delegate) {
-      id nsOpen = [[NSUserDefaults standardUserDefaults] objectForKey:@"NSOpen"];
-      NSArray *openFiles = nil;
-      if ([nsOpen isKindOfClass:[NSString class]] && [nsOpen length]) {
+    BOOL opened = NO;
+    if(_delegate) {
+        id nsOpen = [[NSUserDefaults standardUserDefaults] objectForKey:@"NSOpen"];
+        NSArray *openFiles = nil;
+        if ([nsOpen isKindOfClass:[NSString class]] && [nsOpen length]) {
          openFiles = [NSArray arrayWithObject:nsOpen];
-      } else if ([nsOpen isKindOfClass:[NSArray class]]) {
-         openFiles = nsOpen;
-      }
-      if ([openFiles count] > 0) {
-         if ([openFiles count] == 1 && [_delegate respondsToSelector: @selector(application:openFile:)]) {
+        } else if ([nsOpen isKindOfClass:[NSArray class]]) {
+            openFiles = nsOpen;
+        }
+        if ([openFiles count] > 0) {
+            if ([openFiles count] == 1 && [_delegate respondsToSelector: @selector(application:openFile:)]) {
 
-            if([_delegate application: self openFile: [openFiles lastObject]]) {
-               opened = YES;
-            }
-         } else {
-            if ([_delegate respondsToSelector: @selector(application:openFiles:)]) {
-               [_delegate application: self openFiles: openFiles];
-               opened = YES;
+                if([_delegate application: self openFile: [openFiles lastObject]]) {
+                    opened = YES;
+                }
+            } else {
+                if ([_delegate respondsToSelector: @selector(application:openFiles:)]) {
+                           [_delegate application: self openFiles: openFiles];
+                           opened = YES;
 
-            } else if ([_delegate respondsToSelector: @selector(application:openFile:)]) {
-               for (NSString *aFile in openFiles) {
-                  opened |= [_delegate application: self openFile: aFile];
-               }
+                } else if ([_delegate respondsToSelector: @selector(application:openFile:)]) {
+                    for (NSString *aFile in openFiles) {
+                        opened |= [_delegate application: self openFile: aFile];
+                    }
+                }
             }
-         }
-      }
-      [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"NSOpen"];
-   }
-   return opened;
+        }
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"NSOpen"];
+    }
+    return opened;
 }
 
 -(void)finishLaunching {
-   //NSAutoreleasePool *pool=[NSAutoreleasePool new];
-   BOOL               needsUntitled=YES;
+    //NSAutoreleasePool *pool=[NSAutoreleasePool new];
+    BOOL               needsUntitled=YES;
 
-   NS_DURING
-    [[NSNotificationCenter defaultCenter] postNotificationName: NSApplicationWillFinishLaunchingNotification object:self];
-   NS_HANDLER
-    [self reportException:localException];
-   NS_ENDHANDLER
+    NS_DURING
+        [[NSNotificationCenter defaultCenter] postNotificationName: NSApplicationWillFinishLaunchingNotification object:self];
+    NS_HANDLER
+        [self reportException:localException];
+    NS_ENDHANDLER
 
-	// Load the application icon if we have one
-	NSString* iconName = [[[NSBundle mainBundle]
-						   infoDictionary]
-						  objectForKey:@"CFBundleIconFile"];
-	if (iconName) {
-		iconName = [iconName stringByAppendingPathExtension: @"icns"];
-		NSImage* image = [NSImage imageNamed: iconName];
-		[self setApplicationIconImage: image];
-	}
+    // Load the application icon if we have one
+    NSString* iconName = [[[NSBundle mainBundle]
+    infoDictionary]
+    objectForKey:@"CFBundleIconFile"];
+    if (iconName) {
+        iconName = [iconName stringByAppendingPathExtension: @"icns"];
+        NSImage* image = [NSImage imageNamed: iconName];
+        [self setApplicationIconImage: image];
+    }
 
-// Give us a first event
-   [NSTimer scheduledTimerWithTimeInterval:0.1 target:nil
-     selector:NULL userInfo:nil repeats:NO];
+    // Give us a first event
+    [NSTimer scheduledTimerWithTimeInterval:0.1 target:nil
+                                   selector:NULL userInfo:nil repeats:NO];
 
-   [self _closeSplashImage];
+    [self _closeSplashImage];
 
-   NSDocumentController *controller = nil;
-   id types=[[[NSBundle mainBundle]
-		 infoDictionary]
-		objectForKey:@"CFBundleDocumentTypes"];
-   if([types count] > 0)
-       controller = [NSDocumentController sharedDocumentController];
+    NSDocumentController *controller = nil;
+    id types=[[[NSBundle mainBundle]
+    infoDictionary]
+    objectForKey:@"CFBundleDocumentTypes"];
+    if([types count] > 0)
+        controller = [NSDocumentController sharedDocumentController];
 
-   if ([self openFiles]) {
-      needsUntitled = NO;
-   }
+    if ([self openFiles]) {
+        needsUntitled = NO;
+    }
 
-   if(needsUntitled && _delegate &&
-      [_delegate respondsToSelector: @selector(applicationShouldOpenUntitledFile:)]) {
-       needsUntitled = [_delegate applicationShouldOpenUntitledFile: self];
-   }
+    if(needsUntitled && _delegate && [_delegate respondsToSelector: @selector(applicationShouldOpenUntitledFile:)]) {
+        needsUntitled = [_delegate applicationShouldOpenUntitledFile: self];
+    }
 
-   if(needsUntitled && _delegate && [_delegate respondsToSelector: @selector(applicationOpenUntitledFile:)]) {
-     needsUntitled = ![_delegate applicationOpenUntitledFile: self];
-   }
+    if(needsUntitled && _delegate && [_delegate respondsToSelector: @selector(applicationOpenUntitledFile:)]) {
+        needsUntitled = ![_delegate applicationOpenUntitledFile: self];
+    }
 
-   if(needsUntitled && controller && ![controller documentClassForType:[controller defaultType]]) {
-       needsUntitled = NO;
-   }
+    if(needsUntitled && controller && ![controller documentClassForType:[controller defaultType]]) {
+        needsUntitled = NO;
+    }
 
-   if(needsUntitled && controller) {
-       [controller _updateRecentDocumentsMenu];
-       [controller newDocument: self];
-   }
+    if(needsUntitled && controller) {
+        [controller _updateRecentDocumentsMenu];
+        [controller newDocument: self];
+    }
 
-   NS_DURING
-    [[NSNotificationCenter defaultCenter] postNotificationName:NSApplicationDidFinishLaunchingNotification object:self];
-   NS_HANDLER
-    [self reportException:localException];
-   NS_ENDHANDLER
+    NS_DURING
+        [[NSNotificationCenter defaultCenter] postNotificationName:NSApplicationDidFinishLaunchingNotification object:self];
+    NS_HANDLER
+        [self reportException:localException];
+    NS_ENDHANDLER
 
-   //[pool release];
+    //[pool release];
 }
 
 -(void)_checkForReleasedWindows {
-   int  count=[_windows count];
+    int  count=[_windows count];
 
-   while(--count>=0){
-    NSWindow *check=[_windows objectAtIndex:count];
+    while(--count>=0){
+        NSWindow *check=[_windows objectAtIndex:count];
 
-    if([check retainCount]==1){
+        if([check retainCount]==1){
 
-        // Use the setters here - give a chance to the observer to notice something happened
-        if(check==_keyWindow) {
-            [self _setKeyWindow:nil];
+            // Use the setters here - give a chance to the observer to notice something happened
+            if(check==_keyWindow) {
+                [self _setKeyWindow:nil];
+            }
+
+            if(check==_mainWindow) {
+                [self _setMainWindow:nil];
+            }
+
+            [_windows removeObjectAtIndex:count];
         }
-
-        if(check==_mainWindow) {
-            [self _setMainWindow:nil];
-        }
-
-     [_windows removeObjectAtIndex:count];
-   }
-}
+    }
 }
 
 -(void)_checkForTerminate {
-   int  count=[_windows count];
+    int  count=[_windows count];
 
-   while(--count>=0){
-    NSWindow *check=[_windows objectAtIndex:count];
+    while(--count>=0){
+        NSWindow *check=[_windows objectAtIndex:count];
 
-    if(![check isKindOfClass:[NSPanel class]] && [check isVisible]){
-     return;
+        if(![check isKindOfClass:[NSPanel class]] && [check isVisible]){
+            return;
+        }
     }
-   }
 
-   [self terminate:self];
+    [self terminate:self];
 }
 
 -(void)_checkForAppActivation {
 #if 1
-   if([self isActive])
-    [_windows makeObjectsPerformSelector:@selector(_showForActivation)];
-   else {
-    [_windows makeObjectsPerformSelector:@selector(_hideForDeactivation)];
-   }
+    if([self isActive])
+        [_windows makeObjectsPerformSelector:@selector(_showForActivation)];
+    else {
+        [_windows makeObjectsPerformSelector:@selector(_hideForDeactivation)];
+    }
 #endif
 }
 
 -(void)run {
 
-   static BOOL didlaunch = NO;
-   NSAutoreleasePool *pool;
+    static BOOL didlaunch = NO;
+    NSAutoreleasePool *pool;
 
-   _isRunning=YES;
+    _isRunning=YES;
 
-   if (!didlaunch) {
-      didlaunch = YES;
-      pool=[NSAutoreleasePool new];
-      [self finishLaunching];
+    if (!didlaunch) {
+        didlaunch = YES;
+        pool=[NSAutoreleasePool new];
+        [self finishLaunching];
 
-      dispatch_source_t source = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 2<<10, dispatch_get_current_queue());
-      dispatch_source_set_timer(source, 0, 0, 0);
-      dispatch_source_set_event_handler(source, ^{
-          NSAutoreleasePool *pool = [NSAutoreleasePool new];
-          NSEvent           *event;
-          event=[self nextEventMatchingMask:NSAnyEventMask untilDate:[NSDate distantFuture] inMode:NSDefaultRunLoopMode dequeue:YES];
+        dispatch_source_t source = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 2<<10, dispatch_get_current_queue());
+        dispatch_source_set_timer(source, 0, 0, 0);
+        dispatch_source_set_event_handler(source, ^{
+            NSAutoreleasePool *pool = [NSAutoreleasePool new];
+            NSEvent           *event;
+            event=[self nextEventMatchingMask:NSAnyEventMask untilDate:[NSDate distantFuture] inMode:NSDefaultRunLoopMode dequeue:YES];
 
-         NS_DURING
-          [self sendEvent:event];
+            NS_DURING
+                [self sendEvent:event];
 
-         NS_HANDLER
-          [self reportException:localException];
-         NS_ENDHANDLER
+            NS_HANDLER
+                [self reportException:localException];
+            NS_ENDHANDLER
 
-          [self _checkForReleasedWindows];
-          // [self _checkForTerminate];
+            [self _checkForReleasedWindows];
+            // [self _checkForTerminate];
 
-          [pool release];
+            [pool release];
 
-          if (!_isRunning) {
-              dispatch_source_cancel(source);
-          }
-      });
-      dispatch_resume(source);
+            if (!_isRunning) {
+                dispatch_source_cancel(source);
+            }
+        });
+        dispatch_resume(source);
 
-      dispatch_main();
-      [pool release];
-   }
+        dispatch_main();
+        [pool release];
+    }
 }
 
 -(BOOL)_performKeyEquivalent:(NSEvent *)event {
     if (event.charactersIgnoringModifiers.length > 0) {
-    /* order is important here, views may want to handle the event before menu*/
+        /* order is important here, views may want to handle the event before menu*/
 
         if([[self keyWindow] performKeyEquivalent:event])
             return YES;
@@ -625,228 +626,228 @@ id NSApp=nil;
         if([[self mainMenu] performKeyEquivalent:event])
             return YES;
     }
-// documentation says to send it to all windows
-   return NO;
+    // documentation says to send it to all windows
+    return NO;
 }
 
 -(void)sendEvent:(NSEvent *)event {
-   if([event type]==NSKeyDown){
-    unsigned modifierFlags=[event modifierFlags];
+    if([event type]==NSKeyDown){
+        unsigned modifierFlags=[event modifierFlags];
 
-    if(modifierFlags&(NSCommandKeyMask|NSAlternateKeyMask))
-     if([self _performKeyEquivalent:event])
-      return;
-   }
+        if(modifierFlags&(NSCommandKeyMask|NSAlternateKeyMask))
+            if([self _performKeyEquivalent:event])
+                return;
+    }
 
-   [[event window] sendEvent:event];
+    [[event window] sendEvent:event];
 }
 
 // This method is used by NSWindow
 -(void)_displayAllWindowsIfNeeded {
-   [[NSApp windows] makeObjectsPerformSelector:@selector(displayIfNeeded)];
+    [[NSApp windows] makeObjectsPerformSelector:@selector(displayIfNeeded)];
 }
 
 -(NSEvent *)nextEventMatchingMask:(unsigned int)mask untilDate:(NSDate *)untilDate inMode:(NSString *)mode dequeue:(BOOL)dequeue {
-   NSEvent *nextEvent=nil;
+    NSEvent *nextEvent=nil;
 
-   if ([untilDate timeIntervalSinceNow] <= 0) {
-      return nil;
-   }
+    if ([untilDate timeIntervalSinceNow] <= 0) {
+        return nil;
+    }
 
-  // do {
-   NSAutoreleasePool *pool=[NSAutoreleasePool new];
+    // do {
+    NSAutoreleasePool *pool=[NSAutoreleasePool new];
 
-   NS_DURING
-   // [NSClassFromString(@"Win32RunningCopyPipe") performSelector:@selector(createRunningCopyPipe)];
+    NS_DURING
+        // [NSClassFromString(@"Win32RunningCopyPipe") performSelector:@selector(createRunningCopyPipe)];
 
-       // This should happen before _makeSureIsOnAScreen so we don't reposition done windows
-    [self _checkForReleasedWindows];
+        // This should happen before _makeSureIsOnAScreen so we don't reposition done windows
+        [self _checkForReleasedWindows];
 
     [[NSApp windows] makeObjectsPerformSelector:@selector(_makeSureIsOnAScreen)];
 
     [self _checkForAppActivation];
-     [self _displayAllWindowsIfNeeded];
+    [self _displayAllWindowsIfNeeded];
 
-     nextEvent = nil;//[[_display nextEventMatchingMask:mask untilDate:untilDate inMode:mode dequeue:dequeue] retain];
+    nextEvent = nil;//[[_display nextEventMatchingMask:mask untilDate:untilDate inMode:mode dequeue:dequeue] retain];
 
-     if([nextEvent type]==NSAppKitSystem){
-      [nextEvent release];
-      nextEvent=nil;
-     }
+    if([nextEvent type]==NSAppKitSystem){
+        [nextEvent release];
+        nextEvent=nil;
+    }
 
-   NS_HANDLER
-    [self reportException:localException];
-   NS_ENDHANDLER
+    NS_HANDLER
+        [self reportException:localException];
+    NS_ENDHANDLER
 
-   [pool release];
-   //}while(nextEvent==nil && [untilDate timeIntervalSinceNow]>0);
+        [pool release];
+    //}while(nextEvent==nil && [untilDate timeIntervalSinceNow]>0);
 
-   if(nextEvent!=nil){
-    nextEvent=[nextEvent retain];
+    if(nextEvent!=nil){
+        nextEvent=[nextEvent retain];
 
-    pthread_mutex_lock(_lock);
-     [_currentEvent release];
-     _currentEvent=nextEvent;
-    pthread_mutex_unlock(_lock);
-   }
+        pthread_mutex_lock(_lock);
+        [_currentEvent release];
+        _currentEvent=nextEvent;
+        pthread_mutex_unlock(_lock);
+    }
 
-   return [nextEvent autorelease];
+    return [nextEvent autorelease];
 }
 
 -(NSEvent *)currentEvent {
-   /* Apps do use currentEvent from secondary threads and it doesn't crash on OS X, so we need to be safe here too. */
-   NSEvent *result;
+    /* Apps do use currentEvent from secondary threads and it doesn't crash on OS X, so we need to be safe here too. */
+    NSEvent *result;
 
     pthread_mutex_lock(_lock);
-     result=[_currentEvent retain];
+    result=[_currentEvent retain];
     pthread_mutex_unlock(_lock);
 
-   return [result autorelease];
+    return [result autorelease];
 }
 
 -(void)discardEventsMatchingMask:(unsigned)mask beforeEvent:(NSEvent *)event {
-   [_display discardEventsMatchingMask:mask beforeEvent:event];
+    [_display discardEventsMatchingMask:mask beforeEvent:event];
 }
 
 -(void)postEvent:(NSEvent *)event atStart:(BOOL)atStart {
-   [_display postEvent:event atStart:atStart];
+    [_display postEvent:event atStart:atStart];
 }
 
 -_searchForAction:(SEL)action responder:target {
-  // Search a responder chain
+    // Search a responder chain
 
-   while (target != nil) {
+    while (target != nil) {
 
-    if ([target respondsToSelector:action])
-     return target;
+        if ([target respondsToSelector:action])
+            return target;
 
-    if([target respondsToSelector:@selector(nextResponder)])
-     target = [target nextResponder];
-    else
-     break;
-   }
+        if([target respondsToSelector:@selector(nextResponder)])
+            target = [target nextResponder];
+        else
+            break;
+    }
 
-   return nil;
+    return nil;
 }
 
 -_searchForAction:(SEL)action window:(NSWindow *)window {
- // Search a windows responder chain and window
- // The window check is done seperately from the responder chain
- // in case the responder chain is broken
+    // Search a windows responder chain and window
+    // The window check is done seperately from the responder chain
+    // in case the responder chain is broken
 
-// FIXME: should a windows delegate and windowController be checked if a window is found in a responder chain too ?
-// Document based facts:
-//  An NSWindow's next responder should be the window controller
-//  An NSWindow's delegate should be the document
-// - This probably means the windowController check is duplicative, but need to make the next responder is window controller
+    // FIXME: should a windows delegate and windowController be checked if a window is found in a responder chain too ?
+    // Document based facts:
+    //  An NSWindow's next responder should be the window controller
+    //  An NSWindow's delegate should be the document
+    // - This probably means the windowController check is duplicative, but need to make the next responder is window controller
 
-   id check=[self _searchForAction:action responder:[window firstResponder]];
+    id check=[self _searchForAction:action responder:[window firstResponder]];
 
-   if(check!=nil)
-    return check;
+    if(check!=nil)
+        return check;
 
-   if ([[window delegate] respondsToSelector:action])
-    return [window delegate];
+    if ([[window delegate] respondsToSelector:action])
+        return [window delegate];
 
-   if ([[window windowController] respondsToSelector:action])
-    return [window windowController];
+    if ([[window windowController] respondsToSelector:action])
+        return [window windowController];
 
-   return nil;
+    return nil;
 }
 
 -targetForAction:(SEL)action {
-  return [self targetForAction:action to:nil from:nil];
+    return [self targetForAction:action to:nil from:nil];
 }
 
 -targetForAction:(SEL)action to:target from:sender {
-  if (target == nil)
+    if (target == nil)
     {
-      target = [self _searchForAction:action window:[self keyWindow]];
-      if (target)
-        return target;
-
-      if ([self mainWindow] != [self keyWindow])
-        {
-          target = [self _searchForAction:action window:[self mainWindow]];
-          if (target)
+        target = [self _searchForAction:action window:[self keyWindow]];
+        if (target)
             return target;
+
+        if ([self mainWindow] != [self keyWindow])
+        {
+            target = [self _searchForAction:action window:[self mainWindow]];
+            if (target)
+                return target;
         }
     }
-  else
+    else
     {
-      target = [self _searchForAction:action responder:target];
-      if (target)
-        return target;
+        target = [self _searchForAction:action responder:target];
+        if (target)
+            return target;
     }
 
-  NSDocumentController *documentController = [NSDocumentController sharedDocumentController];
-  if ([[documentController currentDocument] respondsToSelector:action])
-    return [documentController currentDocument];
+    NSDocumentController *documentController = [NSDocumentController sharedDocumentController];
+    if ([[documentController currentDocument] respondsToSelector:action])
+        return [documentController currentDocument];
 
-  if([self respondsToSelector:action])
-    return self;
+    if([self respondsToSelector:action])
+        return self;
 
-  if([[self delegate] respondsToSelector:action])
-    return [self delegate];
+    if([[self delegate] respondsToSelector:action])
+        return [self delegate];
 
-  if([documentController respondsToSelector:action])
-    return documentController;
+    if([documentController respondsToSelector:action])
+        return documentController;
 
-  return nil;
+    return nil;
 }
 
 -(BOOL)sendAction:(SEL)action to:target from:sender {
-  if([target respondsToSelector:action])
+    if([target respondsToSelector:action])
     {
-      [target performSelector:action withObject:sender];
-      return YES;
+        [target performSelector:action withObject:sender];
+        return YES;
     }
 
-  target=[self targetForAction:action to:target from:sender];
-  if (target != nil)
+    target=[self targetForAction:action to:target from:sender];
+    if (target != nil)
     {
-      [target performSelector:action withObject:sender];
-      return YES;
+        [target performSelector:action withObject:sender];
+        return YES;
     }
 
-  return NO;
+    return NO;
 }
 
 -(BOOL)tryToPerform:(SEL)selector with:object {
-  if ([self respondsToSelector:selector])
+    if ([self respondsToSelector:selector])
     {
-      [self performSelector:selector withObject:object];
-      return YES;
+        [self performSelector:selector withObject:object];
+        return YES;
     }
 
-  if ([[self delegate] respondsToSelector:selector])
+    if ([[self delegate] respondsToSelector:selector])
     {
-      [[self delegate] performSelector:selector withObject:object];
-      return YES;
+        [[self delegate] performSelector:selector withObject:object];
+        return YES;
     }
 
-  return NO;
+    return NO;
 }
 
 -(void)setWindowsNeedUpdate:(BOOL)value {
-   _windowsNeedUpdate=value;
-   NSUnimplementedMethod();
+    _windowsNeedUpdate=value;
+    NSUnimplementedMethod();
 }
 
 -(void)updateWindows {
-   [_windows makeObjectsPerformSelector:@selector(update)];
+    [_windows makeObjectsPerformSelector:@selector(update)];
 }
 
 -(void)activateIgnoringOtherApps:(BOOL)flag {
-   NSUnimplementedMethod();
+    NSUnimplementedMethod();
 }
 
 -(void)deactivate {
-   NSUnimplementedMethod();
+    NSUnimplementedMethod();
 }
 
 -(NSWindow *)modalWindow {
-   return [[_modalStack lastObject] modalWindow];
+    return [[_modalStack lastObject] modalWindow];
 }
 
 -(NSModalSession)beginModalSessionForWindow:(NSWindow *)window {
@@ -856,7 +857,7 @@ id NSApp=nil;
 
    [window _hideMenuViewIfNeeded];
    if(![window isVisible]){
-    [window center];
+       [window center];
    }
    [window makeKeyAndOrderFront:self];
 
@@ -894,14 +895,13 @@ id NSApp=nil;
 
                 switch([event type]){
 
-                    case NSLeftMouseUp:
-                    case NSRightMouseUp:
-                        [session addUnprocessedEvent: event];
-                        break;
-
-                    default:
-                        // don't save
-                        break;
+                case NSLeftMouseUp:
+                case NSRightMouseUp:
+                    [session addUnprocessedEvent: event];
+                    break;
+                default:
+                    // don't save
+                    break;
                 }
             }
         }
@@ -926,43 +926,43 @@ id NSApp=nil;
 
 -(void)stopModalWithCode:(int)code {
     // This should silently ignore any attempt to end a session when there is none.
-   [[_modalStack lastObject] stopModalWithCode:code];
+    [[_modalStack lastObject] stopModalWithCode:code];
 }
 
 -(void)_mainThreadRunModalForWindow:(NSMutableDictionary *)values {
-   NSWindow *window=[values objectForKey:@"NSWindow"];
+    NSWindow *window=[values objectForKey:@"NSWindow"];
 
-   NSModalSession session=[self beginModalSessionForWindow:window];
-   int result;
+    NSModalSession session=[self beginModalSessionForWindow:window];
+    int result;
 
-   while((result=[NSApp runModalSession:session])==NSRunContinuesResponse){
-    [[NSRunLoop currentRunLoop] runMode:NSModalPanelRunLoopMode beforeDate:[NSDate distantFuture]];
-   }
+    while((result=[NSApp runModalSession:session])==NSRunContinuesResponse){
+     [[NSRunLoop currentRunLoop] runMode:NSModalPanelRunLoopMode beforeDate:[NSDate distantFuture]];
+    }
 
-   [self endModalSession:session];
+    [self endModalSession:session];
 
-   [values setObject:[NSNumber numberWithInteger:result] forKey:@"result"];
+    [values setObject:[NSNumber numberWithInteger:result] forKey:@"result"];
 }
 
 -(int)runModalForWindow:(NSWindow *)window {
-   NSMutableDictionary *values=[NSMutableDictionary dictionary];
+    NSMutableDictionary *values=[NSMutableDictionary dictionary];
 
-   [values setObject:window forKey:@"NSWindow"];
+    [values setObject:window forKey:@"NSWindow"];
 
-   [self performSelectorOnMainThread:@selector(_mainThreadRunModalForWindow:) withObject:values waitUntilDone:YES modes:[NSArray arrayWithObjects:NSDefaultRunLoopMode,NSModalPanelRunLoopMode,nil]];
+    [self performSelectorOnMainThread:@selector(_mainThreadRunModalForWindow:) withObject:values waitUntilDone:YES modes:[NSArray arrayWithObjects:NSDefaultRunLoopMode,NSModalPanelRunLoopMode,nil]];
 
-   NSNumber *result=[values objectForKey:@"result"];
+    NSNumber *result=[values objectForKey:@"result"];
 
-   return [result integerValue];
+    return [result integerValue];
 }
 
 
 -(void)stopModal {
-   [self stopModalWithCode:NSRunStoppedResponse];
+    [self stopModalWithCode:NSRunStoppedResponse];
 }
 
 -(void)abortModal {
-   [self stopModalWithCode:NSRunAbortedResponse];
+    [self stopModalWithCode:NSRunAbortedResponse];
 }
 
 // cancel modal windows
@@ -974,7 +974,7 @@ id NSApp=nil;
 -(void)beginSheet:(NSWindow *)sheet modalForWindow:(NSWindow *)window modalDelegate:modalDelegate didEndSelector:(SEL)didEndSelector contextInfo:(void *)contextInfo {
     NSSheetContext *context=[NSSheetContext sheetContextWithSheet:sheet modalDelegate:modalDelegate didEndSelector:didEndSelector contextInfo:contextInfo frame:[sheet frame]];
 
-	if ([[NSUserDefaults standardUserDefaults] boolForKey: @"NSRunAllSheetsAsModalPanel"]) {
+    if ([[NSUserDefaults standardUserDefaults] boolForKey: @"NSRunAllSheetsAsModalPanel"]) {
         // Center the sheet on the window
         NSPoint windowCenter = NSMakePoint(NSMidX([window frame]), NSMidY([window frame]));
         NSPoint sheetCenter = NSMakePoint(NSMidX([sheet frame]), NSMidY([sheet frame]));
@@ -983,82 +983,82 @@ id NSApp=nil;
         origin.y += windowCenter.y - sheetCenter.y;
         [sheet setFrameOrigin:origin];
 
-		[sheet _setSheetContext: context];
-		[sheet setLevel: NSModalPanelWindowLevel];
-		NSModalSession session = [self beginModalSessionForWindow: sheet];
-		[context setModalSession: session];
-		while([NSApp runModalSession:session] == NSRunContinuesResponse){
-			[[NSRunLoop currentRunLoop] runMode:NSModalPanelRunLoopMode beforeDate:[NSDate distantFuture]];
-		}
-		[self endModalSession:session];
-	} else {
-		[window _attachSheetContextOrderFrontAndAnimate:context];
-	}
+        [sheet _setSheetContext: context];
+        [sheet setLevel: NSModalPanelWindowLevel];
+        NSModalSession session = [self beginModalSessionForWindow: sheet];
+        [context setModalSession: session];
+        while([NSApp runModalSession:session] == NSRunContinuesResponse){
+            [[NSRunLoop currentRunLoop] runMode:NSModalPanelRunLoopMode beforeDate:[NSDate distantFuture]];
+        }
+        [self endModalSession:session];
+    } else {
+        [window _attachSheetContextOrderFrontAndAnimate:context];
+    }
 }
 
 -(void)endSheet:(NSWindow *)sheet returnCode:(int)returnCode {
 
-	if ([[NSUserDefaults standardUserDefaults] boolForKey: @"NSRunAllSheetsAsModalPanel"]) {
-		NSSheetContext* context = [sheet _sheetContext];
-		NSModalSession session = [context modalSession];
-		[session stopModalWithCode: NSRunStoppedResponse];
-		IMP function=[[context modalDelegate] methodForSelector:[context didEndSelector]];
+    if ([[NSUserDefaults standardUserDefaults] boolForKey: @"NSRunAllSheetsAsModalPanel"]) {
+        NSSheetContext* context = [sheet _sheetContext];
+        NSModalSession session = [context modalSession];
+        [session stopModalWithCode: NSRunStoppedResponse];
+        IMP function=[[context modalDelegate] methodForSelector:[context didEndSelector]];
 
-		if(function!=NULL) {
-			function([context modalDelegate],[context didEndSelector],sheet,returnCode,[context contextInfo]);
-		}
-		[sheet _setSheetContext: nil];
+        if(function!=NULL) {
+            function([context modalDelegate],[context didEndSelector],sheet,returnCode,[context contextInfo]);
+        }
+        [sheet _setSheetContext: nil];
 
-	} else {
+    } else {
 
-   int count=[_windows count];
+        int count=[_windows count];
 
-   while(--count>=0){
-    NSWindow       *check=[_windows objectAtIndex:count];
-    NSSheetContext *context=[check _sheetContext];
-    IMP             function;
+        while(--count>=0){
+            NSWindow       *check=[_windows objectAtIndex:count];
+            NSSheetContext *context=[check _sheetContext];
+            IMP             function;
 
-    if([context sheet]==sheet){
-     [[context retain] autorelease];
+            if([context sheet]==sheet){
+                [[context retain] autorelease];
 
-     [check _detachSheetContextAnimateAndOrderOut];
+                [check _detachSheetContextAnimateAndOrderOut];
 
-     function=[[context modalDelegate] methodForSelector:[context didEndSelector]];
+                function=[[context modalDelegate] methodForSelector:[context didEndSelector]];
 
-     if(function!=NULL)
-      function([context modalDelegate],[context didEndSelector],sheet,returnCode,[context contextInfo]);
+                if(function!=NULL)
+                    function([context modalDelegate],[context didEndSelector],sheet,returnCode,[context contextInfo]);
 
-     return;
+                return;
+            }
+        }
     }
-   }
-	}
 }
 
 -(void)endSheet:(NSWindow *)sheet {
-   [self endSheet:sheet returnCode:0];
+    [self endSheet:sheet returnCode:0];
 }
 
 -(void)reportException:(NSException *)exception {
-   NSLog(@"NSApplication got exception: %@",exception);
+    NSLog(@"NSApplication got exception: %@",exception);
 }
 
 -(void)_attentionTimer:(NSTimer *)timer {
-   [_windows makeObjectsPerformSelector:@selector(_flashWindow)];
+    [_windows makeObjectsPerformSelector:@selector(_flashWindow)];
 }
 
 -(int)requestUserAttention:(NSRequestUserAttentionType)attentionType {
-   [_attentionTimer invalidate];
-   _attentionTimer=[NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(_attentionTimer:) userInfo:nil repeats:YES];
+    [_attentionTimer invalidate];
+    _attentionTimer=[NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(_attentionTimer:) userInfo:nil repeats:YES];
 
-   return 0;
+    return 0;
 }
 
 -(void)cancelUserAttentionRequest:(int)requestNumber {
-   NSUnimplementedMethod();
+    NSUnimplementedMethod();
 }
 
 -(void)runPageLayout:sender {
-   [[NSPageLayout pageLayout] runModal];
+    [[NSPageLayout pageLayout] runModal];
 }
 
 -(void)orderFrontColorPanel:(id)sender {
@@ -1066,95 +1066,94 @@ id NSApp=nil;
 }
 
 -(void)orderFrontCharacterPalette:sender {
-   NSUnimplementedMethod();
+    NSUnimplementedMethod();
 }
 
 -(void)hide:sender {//deactivates the application and hides all windows
-	if (!_isHidden)
-	{
-		[[NSNotificationCenter defaultCenter]postNotificationName:NSApplicationWillHideNotification object:self];
-		[_windows makeObjectsPerformSelector:@selector(_forcedHideForDeactivation)];//do no use orderOut here ist causes the application to quit if no window is visible
-		[[NSNotificationCenter defaultCenter]postNotificationName:NSApplicationDidHideNotification object:self];
-	}
-	_isHidden=YES;
+    if (!_isHidden)
+    {
+        [[NSNotificationCenter defaultCenter]postNotificationName:NSApplicationWillHideNotification object:self];
+        [_windows makeObjectsPerformSelector:@selector(_forcedHideForDeactivation)];//do no use orderOut here ist causes the application to quit if no window is visible
+        [[NSNotificationCenter defaultCenter]postNotificationName:NSApplicationDidHideNotification object:self];
+    }
+    _isHidden=YES;
 
 }
 
 -(void)hideOtherApplications:sender {
-   NSUnimplementedMethod();
+    NSUnimplementedMethod();
 }
 
 -(void)unhide:sender
 {
 
-	if (_isHidden)
-	{
-		[[NSNotificationCenter defaultCenter]postNotificationName:NSApplicationWillUnhideNotification object:self];
-		[_windows makeObjectsPerformSelector:@selector(_showForActivation)];//only shows previously hidden windows
-		[[NSNotificationCenter defaultCenter]postNotificationName:NSApplicationDidUnhideNotification object:self];
-	}
-	_isHidden=NO;
-	//[self activateIgnoringOtherApps:NO]
+    if (_isHidden)
+    {
+        [[NSNotificationCenter defaultCenter]postNotificationName:NSApplicationWillUnhideNotification object:self];
+        [_windows makeObjectsPerformSelector:@selector(_showForActivation)];//only shows previously hidden windows
+        [[NSNotificationCenter defaultCenter]postNotificationName:NSApplicationDidUnhideNotification object:self];
+    }
+    _isHidden=NO;
+    //[self activateIgnoringOtherApps:NO]
 
 }
 
 -(void)unhideAllApplications:sender {
-   NSUnimplementedMethod();
+    NSUnimplementedMethod();
 }
 
 -(void)unhideWithoutActivation {
-	if (_isHidden)
-	{
-
-		[[NSNotificationCenter defaultCenter]postNotificationName:NSApplicationWillUnhideNotification object:self];
-		[_windows makeObjectsPerformSelector:@selector(_showForActivation)];//only shows previously hidden windows
-		[[NSNotificationCenter defaultCenter]postNotificationName:NSApplicationDidUnhideNotification object:self];
-	}
-	_isHidden=NO;
+    if (_isHidden)
+    {
+        [[NSNotificationCenter defaultCenter]postNotificationName:NSApplicationWillUnhideNotification object:self];
+        [_windows makeObjectsPerformSelector:@selector(_showForActivation)];//only shows previously hidden windows
+        [[NSNotificationCenter defaultCenter]postNotificationName:NSApplicationDidUnhideNotification object:self];
+    }
+    _isHidden=NO;
 }
 
 -(void)stop:sender {
-   if([_modalStack lastObject]!=nil){
-    [self stopModal];
-    return;
-   }
+    if([_modalStack lastObject]!=nil){
+        [self stopModal];
+        return;
+    }
 
-   _isRunning=NO;
+    _isRunning=NO;
 }
 
 -(void)terminate:sender
 {
-  [[NSDocumentController sharedDocumentController] closeAllDocumentsWithDelegate:self
-                                                             didCloseAllSelector:@selector(_documentController:didCloseAll:contextInfo:)
-                                                                     contextInfo:NULL];
+    [[NSDocumentController sharedDocumentController] closeAllDocumentsWithDelegate:self
+                                                               didCloseAllSelector:@selector(_documentController:didCloseAll:contextInfo:)
+                                                                       contextInfo:NULL];
 }
 
 -(void)_documentController:(NSDocumentController *)docController didCloseAll:(BOOL)didCloseAll contextInfo:(void *)info
 {
-  // callback method for terminate:
-  if (didCloseAll)
+    // callback method for terminate:
+    if (didCloseAll)
     {
-      if ([_delegate respondsToSelector:@selector(applicationShouldTerminate:)])
-        [self replyToApplicationShouldTerminate: [_delegate applicationShouldTerminate:self] == NSTerminateNow];
-      else
-        [self replyToApplicationShouldTerminate:YES];
+        if ([_delegate respondsToSelector:@selector(applicationShouldTerminate:)])
+            [self replyToApplicationShouldTerminate: [_delegate applicationShouldTerminate:self] == NSTerminateNow];
+        else
+            [self replyToApplicationShouldTerminate:YES];
     }
 }
 
 -(void)replyToApplicationShouldTerminate:(BOOL)terminate
 {
-  if (terminate == YES)
+    if (terminate == YES)
     {
-      [[NSNotificationCenter defaultCenter] postNotificationName:NSApplicationWillTerminateNotification object:self];
+        [[NSNotificationCenter defaultCenter] postNotificationName:NSApplicationWillTerminateNotification object:self];
 
-      [NSClassFromString(@"Win32RunningCopyPipe") performSelector:@selector(invalidateRunningCopyPipe)];
+        [NSClassFromString(@"Win32RunningCopyPipe") performSelector:@selector(invalidateRunningCopyPipe)];
 
-      exit(0);
+        exit(0);
     }
 }
 
 -(void)replyToOpenOrPrint:(NSApplicationDelegateReply)reply {
-   NSUnimplementedMethod();
+    NSUnimplementedMethod();
 }
 
 -(void)arrangeInFront:sender {
@@ -1168,7 +1167,7 @@ id NSApp=nil;
         id target = [[windowsItems objectAtIndex:i] target];
 
         if ([target isKindOfClass:[NSWindow class]])
-            [visibleWindows addObject:target];
+        [visibleWindows addObject:target];
     }
 
     count = [visibleWindows count];
@@ -1196,27 +1195,27 @@ id NSApp=nil;
 }
 
 -(NSMenu *)servicesMenu {
-   return [[NSApp mainMenu] _menuWithName:@"_NSServicesMenu"];
+    return [[NSApp mainMenu] _menuWithName:@"_NSServicesMenu"];
 }
 
 -(void)setServicesMenu:(NSMenu *)menu {
-   NSUnimplementedMethod();
+    NSUnimplementedMethod();
 }
 
 -servicesProvider {
-   return nil;
+    return nil;
 }
 
 -(void)setServicesProvider:provider {
 }
 
 -(void)registerServicesMenuSendTypes:(NSArray *)sendTypes returnTypes:(NSArray *)returnTypes {
-   //tiredofthesewarnings NSUnsupportedMethod();
+    //tiredofthesewarnings NSUnsupportedMethod();
 }
 
 -validRequestorForSendType:(NSString *)sendType returnType:(NSString *)returnType {
-   NSUnimplementedMethod();
-   return nil;
+    NSUnimplementedMethod();
+    return nil;
 }
 
 
@@ -1226,63 +1225,63 @@ id NSApp=nil;
 
 -(void)orderFrontStandardAboutPanelWithOptions:(NSDictionary *)options {
     NSSystemInfoPanel *standardAboutPanel = [[NSSystemInfoPanel
-standardAboutPanel] retain];
-   [standardAboutPanel showInfoPanel:self withOptions:options];
+        standardAboutPanel] retain];
+    [standardAboutPanel showInfoPanel:self withOptions:options];
 
 }
 
 -(void)activateContextHelpMode:sender {
-   NSUnimplementedMethod();
+    NSUnimplementedMethod();
 }
 
 -(void)showGuessPanel:sender {
-	[[[NSSpellChecker sharedSpellChecker] spellingPanel] makeKeyAndOrderFront: self];
+    [[[NSSpellChecker sharedSpellChecker] spellingPanel] makeKeyAndOrderFront: self];
 }
 
 -(void)showHelp:sender
 {
-	NSString *helpBookFolder = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleHelpBookFolder"];
-	if(helpBookFolder != nil) {
-		BOOL isDir;
-		NSString *folder = [[NSBundle mainBundle] pathForResource:helpBookFolder ofType:nil];
-		if(folder != nil && [[NSFileManager defaultManager] fileExistsAtPath:folder isDirectory:&isDir] && isDir) {
-			NSBundle* helpBundle = [NSBundle bundleWithPath: folder];
-			if (helpBundle) {
-				NSString *helpBookName = [[helpBundle infoDictionary] objectForKey:@"CFBundleHelpTOCFile"];
-				if(helpBookName != nil) {
-					NSString* helpFilePath = [helpBundle pathForResource: helpBookName ofType: nil];
-					if (helpFilePath) {
-						if([[NSWorkspace sharedWorkspace] openFile:helpFilePath withApplication:@"Help Viewer"]==YES) {
-							return;
-						}
-					}
-				}
-				// Perhaps there's an index.html file that'll be usable?
-				NSString* helpFilePath = [helpBundle pathForResource: @"index" ofType: @"html"];
-				if (helpFilePath) {
-					if([[NSWorkspace sharedWorkspace] openFile:helpFilePath withApplication:@"Help Viewer"]==YES) {
-						return;
-					}
-				}
-			}
-		}
-	}
+    NSString *helpBookFolder = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleHelpBookFolder"];
+    if(helpBookFolder != nil) {
+        BOOL isDir;
+        NSString *folder = [[NSBundle mainBundle] pathForResource:helpBookFolder ofType:nil];
+        if(folder != nil && [[NSFileManager defaultManager] fileExistsAtPath:folder isDirectory:&isDir] && isDir) {
+                             NSBundle* helpBundle = [NSBundle bundleWithPath: folder];
+                             if (helpBundle) {
+                                 NSString *helpBookName = [[helpBundle infoDictionary] objectForKey:@"CFBundleHelpTOCFile"];
+                                 if(helpBookName != nil) {
+                                     NSString* helpFilePath = [helpBundle pathForResource: helpBookName ofType: nil];
+                                     if (helpFilePath) {
+                                         if([[NSWorkspace sharedWorkspace] openFile:helpFilePath withApplication:@"Help Viewer"]==YES) {
+                                             return;
+                                         }
+                                     }
+                                 }
+                                 // Perhaps there's an index.html file that'll be usable?
+                                 NSString* helpFilePath = [helpBundle pathForResource: @"index" ofType: @"html"];
+                                 if (helpFilePath) {
+                                     if([[NSWorkspace sharedWorkspace] openFile:helpFilePath withApplication:@"Help Viewer"]==YES) {
+                                         return;
+                                     }
+                                 }
+                             }
+        }
+    }
 
-   NSString *processName = [[NSProcessInfo processInfo] processName];
-   NSAlert *alert = [[NSAlert alloc] init];
-   [alert setMessageText: NSLocalizedStringFromTableInBundle(@"Help", nil, [NSBundle bundleForClass: [NSApplication class]], @"Help alert title")];
-   [alert setInformativeText:[NSString stringWithFormat: NSLocalizedStringFromTableInBundle(@"Help isn't available for %@.", nil, [NSBundle bundleForClass: [NSApplication class]], @""), processName]];
-   [alert runModal];
-   [alert release];
+    NSString *processName = [[NSProcessInfo processInfo] processName];
+    NSAlert *alert = [[NSAlert alloc] init];
+    [alert setMessageText: NSLocalizedStringFromTableInBundle(@"Help", nil, [NSBundle bundleForClass: [NSApplication class]], @"Help alert title")];
+    [alert setInformativeText:[NSString stringWithFormat: NSLocalizedStringFromTableInBundle(@"Help isn't available for %@.", nil, [NSBundle bundleForClass: [NSApplication class]], @""), processName]];
+    [alert runModal];
+    [alert release];
 }
 
 -(NSDockTile *)dockTile {
-   return _dockTile;
+    return _dockTile;
 }
 
 - (void)doCommandBySelector:(SEL)selector {
     if ([_delegate respondsToSelector:selector])
-        [_delegate performSelector:selector withObject:nil];
+           [_delegate performSelector:selector withObject:nil];
     else
         [super doCommandBySelector:selector];
 }
@@ -1292,12 +1291,12 @@ standardAboutPanel] retain];
 }
 
 -(void)_windowWillBecomeActive:(NSWindow *)window {
-   [_attentionTimer invalidate];
-   _attentionTimer=nil;
+    [_attentionTimer invalidate];
+    _attentionTimer=nil;
 
-   if(![self isActive]){
-    [[NSNotificationCenter defaultCenter] postNotificationName:NSApplicationWillBecomeActiveNotification object:self];
-   }
+    if(![self isActive]){
+        [[NSNotificationCenter defaultCenter] postNotificationName:NSApplicationWillBecomeActiveNotification object:self];
+    }
 }
 
 -(void)_windowDidBecomeActive:(NSWindow *)window {
@@ -1308,69 +1307,69 @@ standardAboutPanel] retain];
 
 -(void)_windowWillBecomeDeactive:(NSWindow *)window {
    if(![self isActiveExcludingWindow:window]){
-	   [[NSNotificationCenter defaultCenter] postNotificationName:NSApplicationWillResignActiveNotification object:self];
+       [[NSNotificationCenter defaultCenter] postNotificationName:NSApplicationWillResignActiveNotification object:self];
    }
 }
 
 -(void)_windowDidBecomeDeactive:(NSWindow *)window {
-   if(![self isActive]){
+    if(![self isActive]){
 
-	   // Exposed menus are running tight event tracking loops and would remain visible when the app deactivates (making
-	   // the UI less than community minded) - unfortunately because they're in these tracking loops they're waiting
-	   // on events and even though they could receive the notification sent here they can't deal with it until an event is
-	   // received to let them proceed. This special event type was added to help them get unstuck and remove the menu on
-	   // deactivation
-	   NSEvent* appKitEvent = [NSEvent otherEventWithType: NSAppKitDefined location: NSZeroPoint modifierFlags: 0 timestamp: 0 windowNumber: 0 context: nil subtype: NSApplicationDeactivated data1: 0 data2: 0];
-	   [self postEvent: appKitEvent atStart: YES];
+        // Exposed menus are running tight event tracking loops and would remain visible when the app deactivates (making
+        // the UI less than community minded) - unfortunately because they're in these tracking loops they're waiting
+        // on events and even though they could receive the notification sent here they can't deal with it until an event is
+        // received to let them proceed. This special event type was added to help them get unstuck and remove the menu on
+        // deactivation
+        NSEvent* appKitEvent = [NSEvent otherEventWithType: NSAppKitDefined location: NSZeroPoint modifierFlags: 0 timestamp: 0 windowNumber: 0 context: nil subtype: NSApplicationDeactivated data1: 0 data2: 0];
+        [self postEvent: appKitEvent atStart: YES];
 
-	   [[NSNotificationCenter defaultCenter] postNotificationName:NSApplicationDidResignActiveNotification object:self];
-   }
+        [[NSNotificationCenter defaultCenter] postNotificationName:NSApplicationDidResignActiveNotification object:self];
+    }
 }
-  //private method called when the application is reopened
+//private method called when the application is reopened
 -(void)_reopen
 {
-	BOOL doReopen=YES;
-	if ([_delegate respondsToSelector:@selector(applicationShouldHandleReopen:hasVisibleWindows:)])
-	doReopen=	[_delegate applicationShouldHandleReopen:self hasVisibleWindows:!_isHidden];
-	if(!doReopen) return;
-	if(_isHidden) [self unhide:nil];
+    BOOL doReopen=YES;
+    if ([_delegate respondsToSelector:@selector(applicationShouldHandleReopen:hasVisibleWindows:)])
+    doReopen=	[_delegate applicationShouldHandleReopen:self hasVisibleWindows:!_isHidden];
+    if(!doReopen) return;
+    if(_isHidden) [self unhide:nil];
 
 }
 
 @end
 
 int NSApplicationMain(int argc, const char *argv[]) {
-   NSAutoreleasePool *pool=[NSAutoreleasePool new];
-   NSBundle *bundle=[NSBundle mainBundle];
-   Class     clazz=[bundle principalClass];
-   NSString *nibFile=[[bundle infoDictionary] objectForKey:@"NSMainNibFile"];
+    NSAutoreleasePool *pool=[NSAutoreleasePool new];
+    NSBundle *bundle=[NSBundle mainBundle];
+    Class     clazz=[bundle principalClass];
+    NSString *nibFile=[[bundle infoDictionary] objectForKey:@"NSMainNibFile"];
 
-   [NSClassFromString(@"Win32RunningCopyPipe") performSelector:@selector(startRunningCopyPipe)];
+    [NSClassFromString(@"Win32RunningCopyPipe") performSelector:@selector(startRunningCopyPipe)];
 
-   if(clazz==Nil) {
-      clazz=[NSApplication class];
-   }
+    if(clazz==Nil) {
+        clazz=[NSApplication class];
+    }
 
-   [clazz sharedApplication];
+    [clazz sharedApplication];
 
-   nibFile=[nibFile stringByDeletingPathExtension];
+    nibFile=[nibFile stringByDeletingPathExtension];
 
-   if(![NSBundle loadNibNamed:nibFile owner:NSApp]) {
-      NSLog(@"Unable to load main nib file %@",nibFile);
-   }
+    if(![NSBundle loadNibNamed:nibFile owner:NSApp]) {
+        NSLog(@"Unable to load main nib file %@",nibFile);
+    }
 
-   [pool release];
+    [pool release];
 
-   [NSApp run];
+    [NSApp run];
 
-   return 0;
+    return 0;
 }
 
 void NSUpdateDynamicServices(void) {
-   NSUnimplementedFunction();
+    NSUnimplementedFunction();
 }
 
 BOOL NSPerformService(NSString *itemName, NSPasteboard *pasteboard) {
-   NSUnimplementedFunction();
-   return NO;
+    NSUnimplementedFunction();
+    return NO;
 }
