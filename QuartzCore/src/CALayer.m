@@ -472,12 +472,34 @@ NSString * const kCATransition = @"transition";
     }
 }
 
+- (CGAffineTransform)transformToWindow {
+    CGAffineTransform t;
+    if(self.superlayer) {
+        t = [self.superlayer transformToWindow];
+    } else {
+        t = CGAffineTransformIdentity;
+    }
+
+#warning TODO affineTransform
+    return CGAffineTransformTranslate(t, self.frame.origin.x, self.frame.origin.y);
+}
+
 - (CGPoint)convertPoint:(CGPoint)aPoint fromLayer:(CALayer *)layer {
-    assert(0);
+    if(!layer) return aPoint;
+
+    CGAffineTransform x = [self transformToWindow];
+    CGAffineTransform y = [layer transformToWindow];
+    CGAffineTransform z = CGAffineTransformConcat(y, CGAffineTransformInvert(x));
+    return CGPointApplyAffineTransform(aPoint, z);
 }
 
 - (CGPoint)convertPoint:(CGPoint)aPoint toLayer:(CALayer *)layer {
-    assert(0);
+    if(!layer) return aPoint;
+
+    CGAffineTransform x = [self transformToWindow];
+    CGAffineTransform y = [layer transformToWindow];
+    CGAffineTransform z = CGAffineTransformConcat(x, CGAffineTransformInvert(y));
+    return CGPointApplyAffineTransform(aPoint, z);
 }
 
 - (CGAffineTransform)affineTransform {
