@@ -369,7 +369,6 @@ NSString * const kCATransition = @"transition";
         return;
 
     [_animations setObject:animation forKey:key];
-    [_context startTimerIfNeeded];
 }
 
 -(CAAnimation *)animationForKey:(NSString *)key {

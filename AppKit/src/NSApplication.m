@@ -665,7 +665,7 @@ id NSApp=nil;
     [self _checkForAppActivation];
      [self _displayAllWindowsIfNeeded];
 
-     nextEvent = [[_display nextEventMatchingMask:mask untilDate:untilDate inMode:mode dequeue:dequeue] retain];
+     nextEvent = nil;//[[_display nextEventMatchingMask:mask untilDate:untilDate inMode:mode dequeue:dequeue] retain];
 
      if([nextEvent type]==NSAppKitSystem){
       [nextEvent release];
@@ -1372,4 +1372,3 @@ BOOL NSPerformService(NSString *itemName, NSPasteboard *pasteboard) {
    NSUnimplementedFunction();
    return NO;
 }
-

@@ -3,7 +3,7 @@
 #import <OpenGLES/ES2/gl.h>
 #import <CoreGraphics/CGGeometry.h>
 
-@class CARenderer, CALayer, CGLPixelSurface, NSTimer, NSMutableArray, NSNumber;
+@class CARenderer, CALayer, CGLPixelSurface, NSMutableArray, NSNumber;
 //@class CGLPixelFormat, ESGLContext;
 //typedef CGLPixelFormat *CGLPixelFormatObj;
 
@@ -14,8 +14,6 @@
     CALayer *_layer;
     CARenderer *_renderer;
     GLuint _framebuffer;
-
-    NSTimer *_timer;
 }
 
 - initWithFrame:(CGRect)rect;
@@ -26,7 +24,5 @@
 - (void)invalidate;
 
 - (void)render;
-
-- (void)startTimerIfNeeded;
 
 @end

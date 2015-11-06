@@ -17,8 +17,6 @@
 }
 
 -(void)dealloc {
-   [_timer invalidate];
-   [_timer release];
    [super dealloc];
 }
 
@@ -55,19 +53,6 @@
 
 -(void)render {
    [self renderLayer:_layer];
-}
-
--(void)timer:(NSTimer *)timer {
-   [_renderer beginFrameAtTime:CACurrentMediaTime() timeStamp:NULL];
-
-   [self render];
-
-   [_renderer endFrame];
-}
-
--(void)startTimerIfNeeded {
-   if(_timer==nil)
-    _timer=[[NSTimer scheduledTimerWithTimeInterval:1.0/60.0 target:self selector:@selector(timer:) userInfo:nil repeats:YES] retain];
 }
 
 @end

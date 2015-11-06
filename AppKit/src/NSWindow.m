@@ -1829,7 +1829,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 }
 
 -(void)displayIfNeeded {
-   if([self isVisible] && ![self isMiniaturized] && [self viewsNeedDisplay]){
+   if([self isVisible] && ![self isMiniaturized] /*&& [self viewsNeedDisplay]*/){
     NSAutoreleasePool *pool=[NSAutoreleasePool new];
 
 	if ([NSGraphicsContext quartzDebuggingIsEnabled] == YES) {

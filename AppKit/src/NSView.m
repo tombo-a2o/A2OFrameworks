@@ -1948,10 +1948,10 @@ static NSGraphicsContext *graphicsContextForView(NSView *view){
 }
 
 -(void)_displayIfNeededWithoutViewWillDraw {
-   if([self needsDisplay]){
+//   if([self needsDisplay]){
     [self displayRect:unionOfInvalidRects(self)];
-    clearNeedsDisplay(self);
-   }
+//    clearNeedsDisplay(self);
+//   }
 
 	NSEnumerator* viewEnumerator = [self _subviewsInDisplayOrderEnumerator];
 
@@ -2025,6 +2025,7 @@ static NSGraphicsContext *graphicsContextForView(NSView *view){
 }
 
 -(void)displayRectIgnoringOpacity:(NSRect)rect {
+#if 0
    NSRect visibleRect=[self visibleRect];
 
    rect=NSIntersectionRect(rect,visibleRect);
@@ -2070,9 +2071,11 @@ static NSGraphicsContext *graphicsContextForView(NSView *view){
 			   [child displayRectIgnoringOpacity:check];
 	   }
    }
+#endif
 
    [_layerContext render];
 
+#if 0
 	// Don't do anything to interfere with what will be drawn in non-debug mode
 	if ([NSGraphicsContext inQuartzDebugMode] == NO) {
 		removeRectFromInvalidInVisibleRect(self,rect,visibleRect);
@@ -2085,6 +2088,7 @@ static NSGraphicsContext *graphicsContextForView(NSView *view){
    // If the view hierarchy is being displayed as needed at the end of an event, flushing will be disabled and this will just
    // mark the window as needing flushing which will happen when all the views have finished being displayed
    [[self window] flushWindow];
+#endif
 }
 
 -(void)displayRectIgnoringOpacity:(NSRect)rect inContext:(NSGraphicsContext *)context {
