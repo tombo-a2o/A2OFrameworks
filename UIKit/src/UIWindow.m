@@ -527,11 +527,11 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
         }
     }
 
-    NSCursor *newCursor = [view mouseCursorForEvent:event] ?: [NSCursor arrowCursor];
-
-    if ([NSCursor currentCursor] != newCursor) {
-        [newCursor set];
-    }
+    // NSCursor *newCursor = [view mouseCursorForEvent:event] ?: [NSCursor arrowCursor];
+    //
+    // if ([NSCursor currentCursor] != newCursor) {
+    //     [newCursor set];
+    // }
 }
 
 @end
