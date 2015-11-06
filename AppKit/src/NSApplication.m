@@ -125,6 +125,62 @@ id NSApp=nil;
     }
 }
 
+static EM_BOOL sendTouchEvnetToApp(int eventType, const EmscriptenTouchEvent *touchEvent, void *userData) {
+    NSLog(@"event %d", eventType);
+
+    switch(eventType) {
+    case EMSCRIPTEN_EVENT_TOUCHSTART:
+        break;
+    case EMSCRIPTEN_EVENT_TOUCHEND:
+        break;
+    case EMSCRIPTEN_EVENT_TOUCHMOVE:
+        break;
+    case EMSCRIPTEN_EVENT_TOUCHCANCEL:
+        break;
+    }
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        //    NSEvent *event = [NSEvent mouseEventWithType:(NSEventType)type location:(NSPoint)location modifierFlags:(NSUInteger)flags timestamp:(NSTimeInterval)timestamp windowNumber:(NSInteger)windowNumber context:(NSGraphicsContext *)context eventNumber:(NSInteger)eventNumber clickCount:(NSInteger)clickCount pressure:(float)pressure];
+        //    [NSApp sendEvent:event];
+    });
+}
+
+static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mouseEvent, void *userData) {
+    NSLog(@"event %d", eventType);
+
+    NSEventType type;
+    switch(eventType) {
+    case EMSCRIPTEN_EVENT_MOUSEDOWN:
+        type = NSLeftMouseDown;
+        break;
+    case EMSCRIPTEN_EVENT_MOUSEUP:
+        type = NSLeftMouseUp;
+        break;
+    case EMSCRIPTEN_EVENT_MOUSEMOVE:
+        if(mouseEvent->buttons & 1) {
+            type = NSLeftMouseDragged;
+            break;
+        } else {
+            return NO;
+        }
+    default:
+        return NO;
+    }
+
+    NSPoint location;
+    location.x = mouseEvent->canvasX;
+    location.y = mouseEvent->canvasY;
+    NSUInteger flags = 0;
+
+    NSTimeInterval timestamp = mouseEvent->timestamp;
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSWindow* window = [NSApp mainWindow];
+        NSEvent *event = [NSEvent mouseEventWithType:type location:location modifierFlags:flags timestamp:timestamp windowNumber:window.windowNumber context:NULL eventNumber:0 clickCount:0 pressure:0];
+        [NSApp sendEvent:event];
+    });
+}
+
 -init {
     if(NSApp)
         NSAssert(!NSApp, @"NSApplication is a singleton");
@@ -143,6 +199,17 @@ id NSApp=nil;
 
     [self _showSplashImage];
 
+    emscripten_set_touchstart_callback(NULL, NULL, TRUE, sendTouchEvnetToApp);
+    emscripten_set_touchend_callback(NULL, NULL, TRUE, sendTouchEvnetToApp);
+    emscripten_set_touchmove_callback(NULL, NULL, TRUE, sendTouchEvnetToApp);
+    emscripten_set_touchcancel_callback(NULL, NULL, TRUE, sendTouchEvnetToApp);
+
+    emscripten_set_click_callback(NULL, NULL, TRUE, sentMouseEventToApp);
+    emscripten_set_mousedown_callback(NULL, NULL, TRUE, sentMouseEventToApp);
+    emscripten_set_mouseup_callback(NULL, NULL, TRUE, sentMouseEventToApp);
+    emscripten_set_mousemove_callback(NULL, NULL, TRUE, sentMouseEventToApp);
+    emscripten_set_mouseenter_callback(NULL, NULL, TRUE, sentMouseEventToApp);
+    emscripten_set_mouseleave_callback(NULL, NULL, TRUE, sentMouseEventToApp);
     return NSApp;
 }
 
@@ -631,6 +698,7 @@ id NSApp=nil;
 }
 
 -(void)sendEvent:(NSEvent *)event {
+    if(!event) return;
     if([event type]==NSKeyDown){
         unsigned modifierFlags=[event modifierFlags];
 
@@ -639,7 +707,8 @@ id NSApp=nil;
                 return;
     }
 
-    [[event window] sendEvent:event];
+    //[[event window] sendEvent:event];
+    [_windows[0] sendEvent:event];
 }
 
 // This method is used by NSWindow
