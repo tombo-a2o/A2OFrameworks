@@ -105,3 +105,22 @@ CGSize CGSizeApplyAffineTransform(CGSize size,CGAffineTransform xform){
 
     return s;
 }
+
+CGRect CGRectApplyAffineTransform(CGRect rect, CGAffineTransform t){
+    CGRect r;
+    double x1 = (double)t.a * rect.size.width;
+    double x2 = (double)t.c * rect.size.height;
+    double y1 = (double)t.b * rect.size.width;
+    double y2 = (double)t.d * rect.size.height;
+
+#define _min(x,y) (x>y ? y : x)
+#define _min4(x1,x2) (_min(x1,0)+_min(x2,0))
+#define _abs(x) (x>=0 ? x : -x)
+
+    r.origin.x = (CGFloat)((double)t.a * rect.origin.x + (double)t.c * rect.origin.y + t.tx + _min4(x1,x2));
+    r.origin.y = (CGFloat)((double)t.b * rect.origin.x + (double)t.d * rect.origin.y + t.ty + _min4(y1,y2));
+    r.size.width = (CGFloat)(_abs(x1) + _abs(x2));
+    r.size.height = (CGFloat)(_abs(y1) + _abs(y2));
+
+    return r;
+}
