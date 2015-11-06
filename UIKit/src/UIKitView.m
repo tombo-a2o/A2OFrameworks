@@ -68,6 +68,10 @@
     UINSResponderShim *_responderShim;
 }
 
+-(BOOL)isOpaque {
+   return YES;
+}
+
 - (id)initWithFrame:(NSRect)frame
 {
     if ((self = [super initWithFrame:frame])) {
