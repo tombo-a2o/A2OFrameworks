@@ -146,7 +146,7 @@ static EM_BOOL sendTouchEvnetToApp(int eventType, const EmscriptenTouchEvent *to
 }
 
 static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mouseEvent, void *userData) {
-    NSLog(@"event %d", eventType);
+//    NSLog(@"event %d", eventType);
 
     NSEventType type;
     switch(eventType) {
@@ -169,14 +169,14 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
 
     NSPoint location;
     location.x = mouseEvent->canvasX;
-    location.y = mouseEvent->canvasY;
+    location.y = 568 - mouseEvent->canvasY;
     NSUInteger flags = 0;
 
     NSTimeInterval timestamp = mouseEvent->timestamp;
 
     dispatch_async(dispatch_get_main_queue(), ^{
         NSWindow* window = [NSApp mainWindow];
-        NSEvent *event = [NSEvent mouseEventWithType:type location:location modifierFlags:flags timestamp:timestamp windowNumber:window.windowNumber context:NULL eventNumber:0 clickCount:0 pressure:0];
+        NSEvent *event = [NSEvent mouseEventWithType:type location:location modifierFlags:flags timestamp:timestamp windowNumber:window.windowNumber context:NULL eventNumber:0 clickCount:1 pressure:0];
         [NSApp sendEvent:event];
     });
 }
@@ -699,6 +699,8 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
 
 -(void)sendEvent:(NSEvent *)event {
     if(!event) return;
+
+    //if(event) NSLog(@"NSApp sendEvent %@", event);
     if([event type]==NSKeyDown){
         unsigned modifierFlags=[event modifierFlags];
 
