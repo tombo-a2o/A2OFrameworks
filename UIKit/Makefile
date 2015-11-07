@@ -1,10 +1,9 @@
 include ../../Foundation/System/Makefile.template
 
 CC				= emcc
-STYLE_CFLAGS	= -DDEBUG
+STYLE_CPPFLAGS	= -DDEBUG $(OPT_CPPFLAGS)
 CFLAGS			= -v -c -std=gnu99 -pipe -Wmost -Wno-trigraphs -Wreturn-type -fobjc-arc -fconstant-cfstrings -fno-exceptions -fblocks -fobjc-runtime=ios-8 -DDEPLOYMENT_TARGET_EMSCRIPTEN=1 -DMAC_OS_X_VERSION_MAX_ALLOWED=MAC_OS_X_VERSION_10_9 -I./include -I./private_include -include ./UIKit_Prefix.pch
-STYLE_CPPFLAGS	= -DDEBUG
-CPPFLAGS		= -v -c -std=c++11 -pipe -Wmost -Wno-trigraphs -Wreturn-type -fobjc-arc -fconstant-cfstrings -fno-exceptions -fblocks -fobjc-runtime=ios-8 -DDEPLOYMENT_TARGET_EMSCRIPTEN=1 -DMAC_OS_X_VERSION_MAX_ALLOWED=MAC_OS_X_VERSION_10_9 -I./include -I./private_include -include ./UIKit_Prefix.pch
+CXXFLAGS		= -v -c -std=c++11 -pipe -Wmost -Wno-trigraphs -Wreturn-type -fobjc-arc -fconstant-cfstrings -fno-exceptions -fblocks -fobjc-runtime=ios-8 -DDEPLOYMENT_TARGET_EMSCRIPTEN=1 -DMAC_OS_X_VERSION_MAX_ALLOWED=MAC_OS_X_VERSION_10_9 -I./include -I./private_include -include ./UIKit_Prefix.pch
 
 BUILD_DIR		?= build/debug
 INSTALL_DIR		= $(EMSCRIPTEN)/system/frameworks
