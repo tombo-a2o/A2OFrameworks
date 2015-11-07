@@ -1,6 +1,7 @@
 #import "O2Context_builtin_FT.h"
 #import <Onyx2D/O2GraphicsState.h>
 #import "O2Font_FT.h"
+#import "O2Font_canvas.h"
 #import <Onyx2D/O2Paint_color.h>
 
 @implementation O2Context_builtin_FT
@@ -54,20 +55,16 @@ static void applyCoverageToSpan_lRGBA8888_PRE(O2argb8u *dst,unsigned char *cover
     }
 }
 
-
-static void drawFreeTypeBitmap(O2Context_builtin_FT *self, O2Surface *surface, FT_Bitmap *bitmap, int left, int top, O2Paint *paint) {
+static void drawFreeTypeBitmap(O2Context_builtin_FT *self, O2Surface *surface, uint8_t *coverage, int bitmapWidth, int bitmapHeight, int left, int top, O2Paint *paint) {
     // FIXME: clipping
-    int bitmapWidth = bitmap->width;
-    int bitmapHeight = bitmap->rows;
     int surfaceWidth = O2ImageGetWidth(surface);
     int surfaceHeight = O2ImageGetHeight(surface);
     O2argb8u      *dstBuffer = __builtin_alloca(bitmapWidth*sizeof(O2argb8u));
     O2argb8u      *srcBuffer = __builtin_alloca(bitmapHeight*sizeof(O2argb8u));
-    unsigned char *coverage = bitmap->buffer;
 
     // for(int j = 0; j < bitmapHeight; j++) {
     // for(int i = 0; i < bitmapWidth; i++) {
-    //     printf("%x", bitmap->buffer[i + j*bitmapWidth]>>4);
+    //     printf("%x", coverage[i + j*bitmapWidth]>>4);
     // }
     // puts("");
     // }
@@ -116,6 +113,33 @@ static void drawFreeTypeBitmap(O2Context_builtin_FT *self, O2Surface *surface, F
 }
 
 -(void)showGlyphs:(const O2Glyph *)glyphs advances:(const O2Size *)advances count:(unsigned)count {
+    O2GState *gState = O2ContextCurrentGState(self);
+
+    if([gState->_font isKindOfClass:[O2Font_canvas class]]) {
+        [self showGlyphs_canvas:glyphs advances:advances count:count];
+    } else if([gState->_font isKindOfClass:[O2Font_FT class]]) {
+        [self showGlyphs_FT:glyphs advances:advances count:count];
+    }
+}
+
+-(void)showGlyphs_canvas:(const O2Glyph *)glyphs advances:(const O2Size *)advances count:(unsigned)count {
+    O2AffineTransform transform = O2ContextGetUserSpaceToDeviceSpaceTransform(self);
+    O2GState *gState = O2ContextCurrentGState(self);
+    O2Paint *paint = paintFromColor(gState->_fillColor);
+    O2Point point = O2PointApplyAffineTransform(NSMakePoint(_textMatrix.tx, _textMatrix.ty), transform);
+    O2Font_canvas *font = (O2Font_canvas*)gState->_font;
+
+    NSString *text = [NSString stringWithCharacters:glyphs length:count];
+    int width, height, left, top;
+    NSString *fontName = (NSString*)O2FontCopyFullName(font);
+    uint8_t *bitmap = a2o_renderFontToBitmapBuffer([fontName UTF8String], gState->_pointSize, [text UTF8String], transform.a, transform.b, transform.c, transform.d, &width, &height, &left, &top);
+
+    drawFreeTypeBitmap(self, _surface, bitmap, width, height, point.x + left, point.y - top, paint);
+
+    free(bitmap);
+}
+
+-(void)showGlyphs_FT:(const O2Glyph *)glyphs advances:(const O2Size *)advances count:(unsigned)count {
     // FIXME: use advances if not NULL
 
     O2AffineTransform transform = O2ContextGetUserSpaceToDeviceSpaceTransform(self);
@@ -156,7 +180,7 @@ static void drawFreeTypeBitmap(O2Context_builtin_FT *self, O2Surface *surface, F
         if(ftError)
             continue;
 
-        drawFreeTypeBitmap(self, _surface, &slot->bitmap,
+        drawFreeTypeBitmap(self, _surface, slot->bitmap.buffer, slot->bitmap.width, slot->bitmap.rows,
             point.x + slot->bitmap_left, point.y - slot->bitmap_top, paint);
 
         point.x += slot->advance.x >> 6;

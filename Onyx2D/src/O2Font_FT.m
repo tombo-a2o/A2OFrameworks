@@ -8,7 +8,7 @@
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 #import "O2Font_FT.h"
 
-O2FontRef O2FontCreateWithFontName_platform(NSString *name) {
+O2FontRef O2FontCreateWithFontName_freetype(NSString *name) {
     return [[O2Font_FT alloc] initWithFontName:name];
 }
 
@@ -21,6 +21,7 @@ O2FontRef O2FontCreateWithDataProvider_platform(O2DataProviderRef provider) {
 
 }
 
+/*
 @implementation O2Font(FreeType)
 
     +allocWithZone:(NSZone *)zone {
@@ -28,6 +29,7 @@ O2FontRef O2FontCreateWithDataProvider_platform(O2DataProviderRef provider) {
     }
 
 @end
+*/
 
 @implementation O2Font_FT
 
@@ -54,7 +56,7 @@ FT_Library O2FontSharedFreeTypeLibrary(){
    FT_Error ret=FT_New_Face(O2FontSharedFreeTypeLibrary(),[filename fileSystemRepresentation],0,&_face);
 
    if(ret!=0) {
-       NSLog(@"FT_New_Face returned %d",ret);
+       NSLog(@"FT_New_Face returned %d %@ %@", ret, name, filename);
        return nil;
    }
 

@@ -21,6 +21,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import "O2Encoding.h"
 #import "O2PDFCharWidths.h"
 #import "O2Font_FT.h"
+#import "O2Font_canvas.h"
 
 void O2ContextDefaultShowText(O2ContextRef self,const unichar *text,unsigned length);
 
@@ -1231,7 +1232,9 @@ void O2ContextDefaultShowText(O2ContextRef self,const unichar *text,unsigned len
     O2Font          *font = O2GStateFont(gState);
     O2Glyph          glyphs[length];
 
-    if([font isKindOfClass:[O2Font_FT class]]) {
+    if([font isKindOfClass:[O2Font_canvas class]]) {
+        [(O2Font_canvas*)font getGlyphsForCodePoints:text glyphs:glyphs length:length];
+    } else if([font isKindOfClass:[O2Font_FT class]]) {
         [(O2Font_FT*)font getGlyphsForCodePoints:text glyphs:glyphs length:length];
     } else {
         assert(0);
