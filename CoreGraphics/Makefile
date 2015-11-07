@@ -3,7 +3,7 @@ include ../../Foundation/System/Makefile.template
 export PKG_CONFIG_LIBDIR=${EMSCRIPTEN}/system/lib/pkgconfig:${EMSCRIPTEN}/system/local/lib/pkgconfig
 
 CC				= emcc
-CFLAGS			= -v -c -x objective-c -std=gnu99 -pipe -Wmost -Wno-trigraphs -Wreturn-type -fno-objc-arc -fconstant-cfstrings -fno-exceptions -fblocks -fobjc-runtime=macosx -DDEPLOYMENT_TARGET_EMSCRIPTEN=1 -DMAC_OS_X_VERSION_MAX_ALLOWED=MAC_OS_X_VERSION_10_9 -I./include -I./private_include `pkg-config pixman-1 --cflags` `pkg-config cairo --cflags`
+CFLAGS			= -v -c -x objective-c -std=gnu99 -pipe -Wmost -Wno-trigraphs -Wreturn-type -fno-objc-arc -fconstant-cfstrings -fno-exceptions -fblocks -fobjc-runtime=macosx -DDEPLOYMENT_TARGET_EMSCRIPTEN=1 -DMAC_OS_X_VERSION_MAX_ALLOWED=MAC_OS_X_VERSION_10_9 -I./include -I./private_include `pkg-config pixman-1 --cflags` `pkg-config cairo --cflags` $(OPT_CFLAGS)
 
 BUILD_DIR		?= build/debug
 INSTALL_DIR		= $(EMSCRIPTEN)/system/frameworks
