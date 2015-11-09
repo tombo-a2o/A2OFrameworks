@@ -60,7 +60,7 @@ static void drawFreeTypeBitmap(O2Context_builtin_FT *self, O2Surface *surface, u
     int surfaceWidth = O2ImageGetWidth(surface);
     int surfaceHeight = O2ImageGetHeight(surface);
     O2argb8u      *dstBuffer = __builtin_alloca(bitmapWidth*sizeof(O2argb8u));
-    O2argb8u      *srcBuffer = __builtin_alloca(bitmapHeight*sizeof(O2argb8u));
+    O2argb8u      *srcBuffer = __builtin_alloca(bitmapWidth*sizeof(O2argb8u));
 
     // for(int j = 0; j < bitmapHeight; j++) {
     // for(int i = 0; i < bitmapWidth; i++) {
