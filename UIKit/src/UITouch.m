@@ -47,7 +47,7 @@
         _phase = UITouchPhaseBegan;
         _timestamp = [NSDate timeIntervalSinceReferenceDate];
         _gestureRecognizers = [NSMutableArray new];
-        
+
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_viewDidMoveToSuperviewNotification:) name:UIViewDidMoveToSuperviewNotification object:nil];
     }
     return self;
@@ -68,7 +68,7 @@
 - (void)setTimestamp:(NSTimeInterval)timestamp
 {
     _timestamp = timestamp;
-    
+
     if (_phase == UITouchPhaseBegan) {
         _beganPhaseTimestamp = timestamp;
     }
@@ -82,7 +82,7 @@
 - (void)setPhase:(UITouchPhase)phase
 {
     _phase = phase;
-    
+
     if (phase == UITouchPhaseStationary || phase == UITouchPhaseBegan) {
         _previousLocationOnScreen = _locationOnScreen;
     }
@@ -107,7 +107,7 @@
     if (_phase == UITouchPhaseStationary || _phase == UITouchPhaseBegan) {
         _previousLocationOnScreen = locationOnScreen;
     }
-    
+
     if (_phase == UITouchPhaseBegan) {
         _beganPhaseLocationOnScreen = locationOnScreen;
     }
@@ -171,7 +171,7 @@
 - (NSString *)description
 {
     NSString *phase = @"";
-    
+
     switch (self.phase) {
         case UITouchPhaseBegan:
             phase = @"Began";
@@ -189,8 +189,8 @@
             phase = @"Cancelled";
             break;
     }
-    
-    return [NSString stringWithFormat:@"<%@: %p; timestamp = %e; tapCount = %lu; phase = %@; view = %@; window = %@>", [self class], self, self.timestamp, (unsigned long)self.tapCount, phase, self.view, self.window];
+
+    return [NSString stringWithFormat:@"<%@: %p; timestamp = %e; location=(%f,%f); tapCount = %lu; phase = %@; view = %@; window = %@>", [self class], self, self.timestamp, _locationOnScreen.x, _locationOnScreen.y, (unsigned long)self.tapCount, phase, self.view, self.window];
 }
 
 @end
