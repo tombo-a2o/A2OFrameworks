@@ -33,18 +33,12 @@
 @implementation UIFont
 + (UIFont *)systemFontOfSize:(CGFloat)fontSize
 {
-    NSLog(@"Not implemented: %s", __FUNCTION__);
-    UIFont *font = [[UIFont alloc] init];
-    font->_pointSize = fontSize;
-    return font;
+    return [UIFont fontWithName:@"Arial" size:fontSize];
 }
 
 + (UIFont *)boldSystemFontOfSize:(CGFloat)fontSize
 {
-    NSLog(@"Not implemented: %s", __FUNCTION__);
-    UIFont *font = [[UIFont alloc] init];
-    font->_pointSize = fontSize;
-    return font;
+    return [UIFont fontWithName:@"ArialBold" size:fontSize];
 }
 
 + (UIFont *)fontWithName:(NSString *)fontName size:(CGFloat)fontSize
