@@ -71,7 +71,7 @@ static void drawFreeTypeBitmap(O2Context_builtin_FT *self, O2Surface *surface, u
     // puts("");
 
     //NSLog(@"bitmap=(%d,%d), left,top=(%d, %d) surface=(%d,%d)", bitmapWidth, bitmapHeight, left, top, surfaceWidth, surfaceHeight);
-    for(int row = MAX(0, -top), y = top; row < bitmapHeight && y < surfaceHeight; row++, y++) {
+    for(int row = MAX(0, -top), y = MAX(0, top); row < bitmapHeight && y < surfaceHeight; row++, y++) {
         int x = left;
         int length = MIN(bitmapWidth, surfaceWidth - left);
 
