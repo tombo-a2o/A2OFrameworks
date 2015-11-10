@@ -8,6 +8,8 @@
 #import <OpenGLES/ES2/glext.h>
 #import <Onyx2D/O2Surface.h>
 #import <CoreGraphics/CGBitmapContext.h>
+#import <CoreGraphics/CGColor.h>
+#import <CoreGraphics/CGColorSpace.h>
 #import "CAUtil.h"
 
 @implementation CARenderer {
@@ -357,11 +359,23 @@ void CATexImage2DCGImage(CGImageRef image){
 
 static void generateGLColorFromCGColor(CGColorRef cgColor, GLfloat components[4]) {
     if(cgColor) {
+        CGColorSpaceRef colorSpace = CGColorGetColorSpace(cgColor);
+        CGColorSpaceModel model = CGColorSpaceGetModel(colorSpace);
         const CGFloat *cgComponets = CGColorGetComponents(cgColor);
-        components[0] = cgComponets[0];
-        components[1] = cgComponets[1];
-        components[2] = cgComponets[2];
-        components[3] = CGColorGetNumberOfComponents(cgColor) == 4 ? cgComponets[3] : 1.0;
+        if(model == kCGColorSpaceModelMonochrome) {
+            components[0] = cgComponets[0];
+            components[1] = cgComponets[0];
+            components[2] = cgComponets[0];
+            components[3] = cgComponets[1];
+        } else if(model == kCGColorSpaceModelRGB) {
+            components[0] = cgComponets[0];
+            components[1] = cgComponets[1];
+            components[2] = cgComponets[2];
+            components[3] = cgComponets[3];
+        } else {
+            NSLog(@"unimplemented color space");
+            assert(0);
+        }
     } else {
         components[0] = 0.0;
         components[1] = 0.0;
@@ -479,13 +493,14 @@ static void generateGLColorFromCGColor(CGColorRef cgColor, GLfloat components[4]
 }
 
 -(void)render {
-    glClearColor(0.0, 0.0, 0.0, 1.0);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClearColor(1.0, 1.0, 1.0, 1.0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
 
     glEnable(GL_BLEND);
-    glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
     // fprintf(stderr, "bounds %f %f\n",_bounds.size.width, _bounds.size.height);
     CGAffineTransform projection = CGAffineTransformMake(2.0/_bounds.size.width, 0, 0, -2.0/_bounds.size.height, -1.0, 1.0);
