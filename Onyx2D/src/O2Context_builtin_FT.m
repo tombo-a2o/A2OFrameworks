@@ -55,6 +55,13 @@ static void applyCoverageToSpan_lRGBA8888_PRE(O2argb8u *dst,unsigned char *cover
     }
 }
 
+#define DEBUG_drawFreeTypeBitmap 0
+#if DEBUG_drawFreeTypeBitmap
+#define PRINTBUFFER(buffer, length, color) do{for(int i=0;i<length;i++) printf("%x", buffer[i].color>>4);puts("");}while(0)
+#else
+#define PRINTBUFFER(buffer, length, color)
+#endif
+
 static void drawFreeTypeBitmap(O2Context_builtin_FT *self, O2Surface *surface, uint8_t *coverage, int bitmapWidth, int bitmapHeight, int left, int top, O2Paint *paint) {
     // FIXME: clipping
     int surfaceWidth = O2ImageGetWidth(surface);
@@ -62,13 +69,15 @@ static void drawFreeTypeBitmap(O2Context_builtin_FT *self, O2Surface *surface, u
     O2argb8u      *dstBuffer = __builtin_alloca(bitmapWidth*sizeof(O2argb8u));
     O2argb8u      *srcBuffer = __builtin_alloca(bitmapWidth*sizeof(O2argb8u));
 
-    // for(int j = 0; j < bitmapHeight; j++) {
-    // for(int i = 0; i < bitmapWidth; i++) {
-    //     printf("%x", coverage[i + j*bitmapWidth]>>4);
-    // }
-    // puts("");
-    // }
-    // puts("");
+#if DEBUG_drawFreeTypeBitmap
+    for(int j = 0; j < bitmapHeight; j++) {
+    for(int i = 0; i < bitmapWidth; i++) {
+        printf("%x", coverage[i + j*bitmapWidth]>>4);
+    }
+    puts("");
+    }
+    puts("");
+#endif
 
     //NSLog(@"bitmap=(%d,%d), left,top=(%d, %d) surface=(%d,%d)", bitmapWidth, bitmapHeight, left, top, surfaceWidth, surfaceHeight);
     for(int row = MAX(0, -top), y = MAX(0, top); row < bitmapHeight && y < surfaceHeight; row++, y++) {
@@ -78,24 +87,38 @@ static void drawFreeTypeBitmap(O2Context_builtin_FT *self, O2Surface *surface, u
         O2argb8u *dst = dstBuffer;
         O2argb8u *src = srcBuffer;
 
+        // read surface and copy it to dst
         O2argb8u *direct = surface->_read_argb8u(surface, x, y, dst, length);
+
+        PRINTBUFFER(dstBuffer, bitmapWidth, a);
 
         if(direct != NULL)
             dst = direct;
 
         while(YES){
+            // read paint pattern to src (filled with constant value if paint is color)
+            // if paint is color, chunk = length
+            // if paint is image, chunk = pattern length ?
             int chunk = O2PaintReadSpan_argb8u_PRE(paint, x, y, src, length);
+            PRINTBUFFER(srcBuffer, bitmapWidth, a);
 
             if(chunk < 0) {
                 chunk = -chunk;
             } else {
-
+                // blend dst(original image) into src(paint). If copy, do nothing (src left unchanged)
                 self->_blend_argb8u_PRE(src, dst, chunk);
 
+                PRINTBUFFER(srcBuffer, bitmapWidth, a);
+
+                // dst = src(paint) * c + dst * (1-c)
                 applyCoverageToSpan_lRGBA8888_PRE(dst, coverage, src, chunk);
 
-                if(direct==NULL)
+                PRINTBUFFER(dstBuffer, bitmapWidth, a);
+
+                if(direct==NULL) {
+                    // write back dst to surface
                     O2SurfaceWriteSpan_argb8u_PRE(surface, x, y, dst, chunk);
+                }
             }
             coverage += chunk;
 
