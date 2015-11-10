@@ -334,6 +334,8 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)displayIfNeeded {
+    [self layoutIfNeeded];
+
     if(_needsDisplay) {
         [self display];
         [self _setTextureId:0];
