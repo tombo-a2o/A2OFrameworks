@@ -472,9 +472,7 @@ static UIApplication *_theApplication = nil;
     }
 
     if (target) {
-        typedef void(*EventActionMethod)(id, SEL, id, UIEvent *);
-        EventActionMethod method = (EventActionMethod)[target methodForSelector:action];
-        method(target, action, sender, event);
+        [target performSelector:action withObject:sender withObject:event];
         return YES;
     }
 
