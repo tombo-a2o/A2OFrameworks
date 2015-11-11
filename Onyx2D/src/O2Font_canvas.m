@@ -10,6 +10,7 @@ O2FontRef O2FontCreateWithFontName_canvas(NSString *name) {
 
     _unitsPerEm=100;
     a2o_getFontMetrics([_name UTF8String], _unitsPerEm, &_ascent, &_descent, &_capHeight, &_xHeight);
+    _descent = -_descent; // descent should be negative value
     return self;
 }
 
