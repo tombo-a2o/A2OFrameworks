@@ -18,8 +18,6 @@
     GLint _attrTexCoord;
     GLint _unifTransform;
     GLint _unifOpacity;
-    GLint _unifHasTexure;
-    GLint _unifBgColor;
 }
 
 -(CGRect)bounds {
@@ -47,17 +45,9 @@ static const char *fragmentShaderSource =
     "varying vec2 texcoordVarying;\n"
     "uniform sampler2D texture;\n"
     "uniform float opacity;\n"
-    "uniform bool hasTexture;\n"
-    "uniform vec4 bgColor;\n"
     "void main() {\n"
-    "    if(hasTexture) {\n"
-    "        vec4 texColor = texture2D(texture, texcoordVarying);\n"
-    "        gl_FragColor = texColor * opacity;\n"
-//    "        gl_FragColor = bgColor * opacity;\n"
-//    "        gl_FragColor = mix(bgColor, texColor, texColor.a) * opacity;\n"
-    "    } else {\n"
-    "        gl_FragColor = bgColor * opacity;\n"
-    "    }\n"
+    "    vec4 texColor = texture2D(texture, texcoordVarying);\n"
+    "    gl_FragColor = texColor * opacity;\n"
     "}\n";
 
 
@@ -71,14 +61,10 @@ static const char *fragmentShaderSource =
    _attrTexCoord = glGetAttribLocation(_program, "texcoord");
    _unifTransform = glGetUniformLocation(_program, "transform");
    _unifOpacity = glGetUniformLocation(_program, "opacity");
-   _unifHasTexure = glGetUniformLocation(_program, "hasTexture");
-   _unifBgColor = glGetUniformLocation(_program, "bgColor");
    assert(_attrPosition >= 0);
    assert(_attrTexCoord >= 0);
    assert(_unifTransform >= 0);
    assert(_unifOpacity >= 0);
-   assert(_unifHasTexure >= 0);
-   assert(_unifBgColor >= 0);
 
    return self;
 }
@@ -357,31 +343,34 @@ void CATexImage2DCGImage(CGImageRef image){
     glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,imageWidth,imageHeight,0,glFormat,glType,pixelBytes);
 }
 
-static void generateGLColorFromCGColor(CGColorRef cgColor, GLfloat components[4]) {
+static void generateTextureFromCGColor(CGColorRef cgColor) {
+    uint8_t components[4];
     if(cgColor) {
         CGColorSpaceRef colorSpace = CGColorGetColorSpace(cgColor);
         CGColorSpaceModel model = CGColorSpaceGetModel(colorSpace);
         const CGFloat *cgComponets = CGColorGetComponents(cgColor);
         if(model == kCGColorSpaceModelMonochrome) {
-            components[0] = cgComponets[0];
-            components[1] = cgComponets[0];
-            components[2] = cgComponets[0];
-            components[3] = cgComponets[1];
+            components[0] = cgComponets[0]*255;
+            components[1] = cgComponets[0]*255;
+            components[2] = cgComponets[0]*255;
+            components[3] = cgComponets[1]*255;
         } else if(model == kCGColorSpaceModelRGB) {
-            components[0] = cgComponets[0];
-            components[1] = cgComponets[1];
-            components[2] = cgComponets[2];
-            components[3] = cgComponets[3];
+            components[0] = cgComponets[0]*255;
+            components[1] = cgComponets[1]*255;
+            components[2] = cgComponets[2]*255;
+            components[3] = cgComponets[3]*255;
         } else {
             NSLog(@"unimplemented color space");
             assert(0);
         }
     } else {
-        components[0] = 0.0;
-        components[1] = 0.0;
-        components[2] = 0.0;
-        components[3] = 0.0;
+        components[0] = 0;
+        components[1] = 0;
+        components[2] = 0;
+        components[3] = 0;
     }
+
+    glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,1,1,0,GL_RGBA,GL_UNSIGNED_BYTE, components);
 }
 
 -(void)_renderLayer:(CALayer *)layer z:(float)z currentTime:(CFTimeInterval)currentTime transform:(CGAffineTransform)transform {
@@ -404,18 +393,19 @@ static void generateGLColorFromCGColor(CGColorRef cgColor, GLfloat components[4]
     if(loadPixelData || [layer _imageRef] != image){
         [layer _setImageRef: image];
 
+        if(!texture) {
+            glGenTextures(1, &texture);
+            [layer _setTextureId:texture];
+        }
+        glBindTexture(GL_TEXTURE_2D, texture);
+
         if(image) {
-            if(!texture) {
-                glGenTextures(1, &texture);
-                [layer _setTextureId:texture];
-            }
-            glBindTexture(GL_TEXTURE_2D, texture);
             if([image isKindOfClass: NSClassFromString(@"O2BitmapContext")]) {
                 CATexImage2DCGBitmapContext(image);
             } else if([image isKindOfClass: NSClassFromString(@"O2Image")]){
                 CATexImage2DCGImage(image);
             }
-
+#warning TODO use POT texture
             // Force linear interpolation due to WebGL npot texture limitation
 
             // GLint minFilter=interpolationFromName(layer.minificationFilter);
@@ -429,7 +419,14 @@ static void generateGLColorFromCGColor(CGColorRef cgColor, GLfloat components[4]
             glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
             glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
         } else {
-            glBindTexture(GL_TEXTURE_2D, 0);
+#warning TODO interpolate?
+            generateTextureFromCGColor(layer.backgroundColor);
+
+            glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+            glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
         }
     }
 
@@ -441,8 +438,6 @@ static void generateGLColorFromCGColor(CGColorRef cgColor, GLfloat components[4]
 
     CGFloat w = bounds.size.width;
     CGFloat h = bounds.size.height;
-    // NSLog(@"bounds %f %f", w, h);
-    // NSLog(@"opacity %f", opacity);
 
     GLfloat textureVertices[4*2] = {
         0.0, 0.0,
@@ -457,10 +452,10 @@ static void generateGLColorFromCGColor(CGColorRef cgColor, GLfloat components[4]
         1.0, 0.0
     };
     GLfloat vertices[4*3] = {
-        0, 0, -z/65536,
-        w, 0, -z/65536,
-        0, h, -z/65536,
-        w, h, -z/65536,
+        0, 0, 0,
+        w, 0, 0,
+        0, h, 0,
+        w, h, 0,
     };
 
     CGAffineTransform local = CGAffineTransformMakeTranslation(position.x-(bounds.size.width*anchorPoint.x),position.y-(bounds.size.height*anchorPoint.y));
@@ -480,14 +475,22 @@ static void generateGLColorFromCGColor(CGColorRef cgColor, GLfloat components[4]
 
     glUniformMatrix3fv(_unifTransform, 1, GL_FALSE, transformArray);
     glUniform1f(_unifOpacity, opacity);
-    glUniform1i(_unifHasTexure, glIsTexture(texture));
-    GLfloat color[4];
-    generateGLColorFromCGColor(layer.backgroundColor, color);
-    glUniform4fv(_unifBgColor, 1, color);
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-    for(CALayer *child in layer.sublayers) {
+    NSArray *sublayers = [layer.sublayers sortedArrayUsingComparator:^(CALayer *l1, CALayer *l2) {
+        CGFloat z1 = interpolateFloatInLayerKey(l1, @"zPosition",currentTime);
+        CGFloat z2 = interpolateFloatInLayerKey(l2, @"zPosition",currentTime);
+        if(z1 > z2) {
+            return NSOrderedDescending;
+        } else if(z1 < z2) {
+            return NSOrderedAscending;
+        } else {
+            return NSOrderedSame;
+        }
+    }];
+
+    for(CALayer *child in sublayers) {
         [self _renderLayer:child z:z+1 currentTime:currentTime transform:t];
     }
 }
