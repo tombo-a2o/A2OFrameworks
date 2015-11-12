@@ -86,6 +86,8 @@ CA_EXPORT NSString * const kCATransition;
 @property(copy) NSString *contentsGravity;
 @property CGRect contentsCenter;
 @property CGFloat contentsScale;
+@property CGFloat borderWidth;
+@property CGColorRef borderColor;
 
 - init;
 

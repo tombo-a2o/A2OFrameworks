@@ -16,8 +16,12 @@
     GLuint _program;
     GLint _attrPosition;
     GLint _attrTexCoord;
+    GLint _attrDistance;
     GLint _unifTransform;
     GLint _unifOpacity;
+    GLint _unifCornerRadius;
+    GLint _unifBorderWidth;
+    GLint _unifBorderColor;
 }
 
 -(CGRect)bounds {
@@ -34,20 +38,31 @@ static const char *vertexShaderSource =
     "precision mediump float;\n"
     "attribute vec3 position;\n"
     "attribute vec2 texcoord;\n"
+    "attribute vec2 distance;\n"
     "uniform mat3 transform;\n"
     "varying vec2 texcoordVarying;\n"
+    "varying vec2 distanceVarying;\n"
     "void main() { \n"
     "   gl_Position = vec4((transform * vec3(position.xy, 1.0)).xy, position.z, 1.0);\n"
     "   texcoordVarying = texcoord;\n"
+    "   distanceVarying = distance;\n"
     "}\n";
 static const char *fragmentShaderSource =
     "precision mediump float;\n"
     "varying vec2 texcoordVarying;\n"
+    "varying vec2 distanceVarying;\n"
     "uniform sampler2D texture;\n"
     "uniform float opacity;\n"
+    "uniform float cornerRadius;\n"
+//    "uniform float borderWidth;\n"
+//    "uniform vec4 borderColor;\n"
     "void main() {\n"
     "    vec4 texColor = texture2D(texture, texcoordVarying);\n"
-    "    gl_FragColor = texColor * opacity;\n"
+    "    float distance = length(distanceVarying) - cornerRadius;\n"
+    "    float cornerMask = distance > 0.0 ? 0.0 : 1.0; //clamp(-distance, 0.0, 1.0);\n"
+//    "    float borderMask = clamp(borderWidth/2.0-abs(distance), 0.0, 1.0);\n"
+//"    gl_FragColor = vec4(texColor.rgb, texColor.a * cornerMask * opacity) * (1.0-borderMask) + borderColor * borderMask;\n"
+    "    gl_FragColor = vec4(texColor.rgb, texColor.a * cornerMask * opacity);\n"
     "}\n";
 
 
@@ -59,12 +74,20 @@ static const char *fragmentShaderSource =
    _program = loadAndLinkShader(vertexShaderSource, fragmentShaderSource);
    _attrPosition = glGetAttribLocation(_program, "position");
    _attrTexCoord = glGetAttribLocation(_program, "texcoord");
+   _attrDistance = glGetAttribLocation(_program, "distance");
    _unifTransform = glGetUniformLocation(_program, "transform");
    _unifOpacity = glGetUniformLocation(_program, "opacity");
+   _unifCornerRadius = glGetUniformLocation(_program, "cornerRadius");
+   // _unifBorderWidth = glGetUniformLocation(_program, "borderWidth");
+   // _unifBorderColor = glGetUniformLocation(_program, "borderColor");
    assert(_attrPosition >= 0);
    assert(_attrTexCoord >= 0);
+   assert(_attrDistance >= 0);
    assert(_unifTransform >= 0);
    assert(_unifOpacity >= 0);
+   assert(_unifCornerRadius >= 0);
+   // assert(_unifBorderWidth >= 0);
+   // assert(_unifBorderColor >= 0);
 
    return self;
 }
@@ -343,22 +366,21 @@ void CATexImage2DCGImage(CGImageRef image){
     glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,imageWidth,imageHeight,0,glFormat,glType,pixelBytes);
 }
 
-static void generateTextureFromCGColor(CGColorRef cgColor) {
-    uint8_t components[4];
+static void getColorComponents(CGColorRef cgColor, CGFloat components[4]) {
     if(cgColor) {
         CGColorSpaceRef colorSpace = CGColorGetColorSpace(cgColor);
         CGColorSpaceModel model = CGColorSpaceGetModel(colorSpace);
         const CGFloat *cgComponets = CGColorGetComponents(cgColor);
         if(model == kCGColorSpaceModelMonochrome) {
-            components[0] = cgComponets[0]*255;
-            components[1] = cgComponets[0]*255;
-            components[2] = cgComponets[0]*255;
-            components[3] = cgComponets[1]*255;
+            components[0] = cgComponets[0];
+            components[1] = cgComponets[0];
+            components[2] = cgComponets[0];
+            components[3] = cgComponets[1];
         } else if(model == kCGColorSpaceModelRGB) {
-            components[0] = cgComponets[0]*255;
-            components[1] = cgComponets[1]*255;
-            components[2] = cgComponets[2]*255;
-            components[3] = cgComponets[3]*255;
+            components[0] = cgComponets[0];
+            components[1] = cgComponets[1];
+            components[2] = cgComponets[2];
+            components[3] = cgComponets[3];
         } else {
             NSLog(@"unimplemented color space");
             assert(0);
@@ -370,7 +392,17 @@ static void generateTextureFromCGColor(CGColorRef cgColor) {
         components[3] = 0;
     }
 
-    glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,1,1,0,GL_RGBA,GL_UNSIGNED_BYTE, components);
+}
+
+static void generateTextureFromCGColor(CGColorRef cgColor) {
+    CGFloat componentsFloat[4];
+    uint8_t componentsByte[4];
+    getColorComponents(cgColor, componentsFloat);
+    for(int i = 0; i < 4; i++) {
+        componentsByte[i] = componentsFloat[i]*255;
+    }
+
+    glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,1,1,0,GL_RGBA,GL_UNSIGNED_BYTE, componentsByte);
 }
 
 -(void)_renderLayer:(CALayer *)layer z:(float)z currentTime:(CFTimeInterval)currentTime transform:(CGAffineTransform)transform {
@@ -435,28 +467,29 @@ static void generateTextureFromCGColor(CGColorRef cgColor) {
     // fprintf(stderr, "pos %f %f\n", position.x, position.y);
     CGRect  bounds=interpolateRectInLayerKey(layer,@"bounds",currentTime);
     float   opacity=interpolateFloatInLayerKey(layer,@"opacity",currentTime);
+    float   cornerRadius = interpolateFloatInLayerKey(layer,@"cornerRadius",currentTime);
+    float   borderWidth = interpolateFloatInLayerKey(layer,@"borderWidth",currentTime);
 
     CGFloat w = bounds.size.width;
     CGFloat h = bounds.size.height;
 
-    GLfloat textureVertices[4*2] = {
-        0.0, 0.0,
-        1.0, 0.0,
-        0.0, 1.0,
-        1.0, 1.0
-    };
-    GLfloat textureVerticesFlip[4*2] = {
-        0.0, 1.0,
-        1.0, 1.0,
-        0.0, 0.0,
-        1.0, 0.0
-    };
-    GLfloat vertices[4*3] = {
-        0, 0, 0,
-        w, 0, 0,
-        0, h, 0,
-        w, h, 0,
-    };
+    GLfloat x[] = {0, cornerRadius, w-cornerRadius, w};
+    GLfloat y[] = {0, cornerRadius, h-cornerRadius, h};
+    GLfloat r[] = {cornerRadius, 0, 0, cornerRadius};
+    GLfloat vertices[4*4*8];
+    for(int j = 0; j < 4; j++) {
+        for(int i = 0; i < 4; i++) {
+            int idx = j*4+i;
+            vertices[idx*8  ] = x[i];   // coordinate
+            vertices[idx*8+1] = y[j];
+            vertices[idx*8+2] = x[i]/w; // texture coord
+            vertices[idx*8+3] = y[j]/h;
+            vertices[idx*8+4] = x[i]/w; // texture coord(flip)
+            vertices[idx*8+5] = 1.0-y[j]/h;
+            vertices[idx*8+6] = r[i];  // corner radius
+            vertices[idx*8+7] = r[j];
+        }
+    }
 
     CGAffineTransform local = CGAffineTransformMakeTranslation(position.x-(bounds.size.width*anchorPoint.x),position.y-(bounds.size.height*anchorPoint.y));
     CGAffineTransform t  = CGAffineTransformConcat(local, transform);
@@ -469,14 +502,32 @@ static void generateTextureFromCGColor(CGColorRef cgColor) {
 
     glEnableVertexAttribArray(_attrPosition);
     glEnableVertexAttribArray(_attrTexCoord);
+    glEnableVertexAttribArray(_attrDistance);
 
-    glVertexAttribPointer(_attrPosition, 3, GL_FLOAT, GL_FALSE, 0, vertices);
-    glVertexAttribPointer(_attrTexCoord, 2, GL_FLOAT, GL_FALSE, 0, [layer _flipTexture] ? textureVerticesFlip : textureVertices);
+    GLuint vertexObject;
+    glGenBuffers(1, &vertexObject);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexObject);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(_attrPosition, 2, GL_FLOAT, GL_FALSE, 8*sizeof(GLfloat), 0);
+    glVertexAttribPointer(_attrTexCoord, 2, GL_FLOAT, GL_FALSE, 8*sizeof(GLfloat), (GLfloat*)NULL + ([layer _flipTexture] ? 4 : 2));
+    glVertexAttribPointer(_attrDistance, 2, GL_FLOAT, GL_FALSE, 8*sizeof(GLfloat), (GLfloat*)NULL + 6);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     glUniformMatrix3fv(_unifTransform, 1, GL_FALSE, transformArray);
     glUniform1f(_unifOpacity, opacity);
+    glUniform1f(_unifCornerRadius, cornerRadius);
+    // glUniform1f(_unifBorderWidth, borderWidth);
+    GLfloat borderColor[4];
+    getColorComponents(layer.borderColor, borderColor);
+    // glUniform4fv(_unifBorderColor, 1, borderColor);
 
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    const GLushort index[] = {
+        0, 4, 1, 5, 2, 6, 3, 7, 7, 11, 6, 10, 5, 9, 4, 8, 8, 12, 9, 13, 10, 14, 11, 15
+    };
+    glDrawElements(GL_TRIANGLE_STRIP, sizeof(index)/sizeof(GLushort), GL_UNSIGNED_SHORT, index);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
     NSArray *sublayers = [layer.sublayers sortedArrayUsingComparator:^(CALayer *l1, CALayer *l2) {
         CGFloat z1 = interpolateFloatInLayerKey(l1, @"zPosition",currentTime);
