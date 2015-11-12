@@ -83,6 +83,7 @@ static void drawFreeTypeBitmap(O2Context_builtin_FT *self, O2Surface *surface, u
     for(int row = MAX(0, -top), y = MAX(0, top); row < bitmapHeight && y < surfaceHeight; row++, y++) {
         int x = left;
         int length = MIN(bitmapWidth, surfaceWidth - left);
+        if(length < 0) break;
 
         O2argb8u *dst = dstBuffer;
         O2argb8u *src = srcBuffer;
