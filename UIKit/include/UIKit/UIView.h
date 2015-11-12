@@ -30,6 +30,7 @@
 #import <UIKit/UIResponder.h>
 #import <UIKit/UIGeometry.h>
 #import <UIKit/UIAppearance.h>
+#import <QuartzCore/CALayer.h>
 
 typedef NS_OPTIONS(NSUInteger, UIViewAutoresizing) {
     UIViewAutoresizingNone                 = 0,
@@ -82,12 +83,12 @@ typedef NS_OPTIONS(NSUInteger, UIViewAnimationOptions) {
     UIViewAnimationOptionOverrideInheritedCurve    = 1 <<  6,		// not currently supported
     UIViewAnimationOptionAllowAnimatedContent      = 1 <<  7,		// not currently supported
     UIViewAnimationOptionShowHideTransitionViews   = 1 <<  8,
-    
+
     UIViewAnimationOptionCurveEaseInOut            = 0 << 16,
     UIViewAnimationOptionCurveEaseIn               = 1 << 16,
     UIViewAnimationOptionCurveEaseOut              = 2 << 16,
     UIViewAnimationOptionCurveLinear               = 3 << 16,
-    
+
     UIViewAnimationOptionTransitionNone            = 0 << 20,
     UIViewAnimationOptionTransitionFlipFromLeft    = 1 << 20,
     UIViewAnimationOptionTransitionFlipFromRight   = 2 << 20,

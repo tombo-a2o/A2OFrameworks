@@ -27,16 +27,106 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import <UIKit/UIAlertView.h>
-#import <UIKit/UIApplication.h>
+#import <UIKit/UIKit.h>
 
-#import <AppKit/NSAlert.h>
-#import <AppKit/NSPanel.h>
-#import <AppKit/NSButton.h>
+@interface UIAlertView()
+- (void)_closeWithResult:(NSInteger)result;
+@end
+
+@interface _UIAlertWindow : UIWindow
+@end
+
+@implementation _UIAlertWindow
+@end
+
+
+@interface _UIAlertViewController : UIViewController
+-(instancetype)initWithAlertView:(UIAlertView*)alertView;
+@property(nonatomic,retain) UIAlertView *alertView;
+@end
+
+@implementation _UIAlertViewController
+
+-(instancetype)initWithAlertView:(UIAlertView*)alertView {
+    self = [super init];
+    _alertView = alertView;
+    return self;
+}
+
+static void adjustHeight(UIView* view, CGFloat width) {
+    CGSize size = [view sizeThatFits:CGSizeMake(width,1000)];
+    CGRect rect = view.frame;
+    rect.size.height = size.height;
+    view.frame = rect;
+}
+
+- (void)viewDidLoad {
+    UIView *rootView = [[UIView alloc] initWithFrame:CGRectMake(30,115,260,260)];
+    rootView.backgroundColor = [UIColor whiteColor];
+    rootView.layer.cornerRadius = 10;
+
+    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 10, 240, 50)];
+    titleLabel.text = _alertView.title;
+    titleLabel.textColor = [UIColor blackColor];
+    titleLabel.font = [UIFont boldSystemFontOfSize:17];
+    titleLabel.textAlignment = NSTextAlignmentCenter;
+    titleLabel.lineBreakMode = NSLineBreakByCharWrapping;
+    titleLabel.numberOfLines = 0;
+    adjustHeight(titleLabel, 230);
+    [rootView addSubview:titleLabel];
+
+    UILabel *messageLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, CGRectGetMaxY(titleLabel.frame)+5, 240, 80)];
+    messageLabel.text = _alertView.message;
+    messageLabel.textColor = [UIColor blackColor];
+    messageLabel.font = [UIFont systemFontOfSize:13];
+    messageLabel.textAlignment = NSTextAlignmentCenter;
+    messageLabel.lineBreakMode = NSLineBreakByCharWrapping;
+    messageLabel.numberOfLines = 0;
+    adjustHeight(messageLabel, 240);
+    [rootView addSubview:messageLabel];
+
+    CGFloat top = CGRectGetMaxY(messageLabel.frame)+20;
+
+    for(int i = 0; i < _alertView.numberOfButtons; i++) {
+        NSString *title = [_alertView buttonTitleAtIndex:i];
+
+        UIButton *button = [[UIButton alloc] initWithFrame:CGRectMake(0, top, 260, 42)];
+        button.tag = i;
+        [button setTitle:title forState:UIControlStateNormal];
+        [button setTitleColor:[UIColor colorWithRed:0.0 green:122.0/255.0 blue:1.0 alpha:1.0] forState:UIControlStateNormal];
+        if(i == _alertView.cancelButtonIndex) {
+            button.titleLabel.font = [UIFont boldSystemFontOfSize:17];
+        } else {
+            button.titleLabel.font = [UIFont systemFontOfSize:17];
+        }
+        [button addTarget:self action:@selector(close:) forControlEvents:UIControlEventTouchUpInside];
+        [rootView addSubview:button];
+
+        UIView *hr = [[UIView alloc] initWithFrame:CGRectMake(0, top, 260, 1)];
+        hr.backgroundColor = [UIColor colorWithWhite:0.9 alpha:1.0];
+        [rootView addSubview:hr];
+
+        top = CGRectGetMaxY(button.frame);
+    }
+    CGRect frame = rootView.frame;
+    frame.size.height = top;
+    rootView.frame = frame;
+    rootView.center = self.view.center;
+
+    [self.view addSubview:rootView];
+}
+
+- (void)close:(UIButton*)sender {
+    [_alertView _closeWithResult:sender.tag];
+}
+
+@end
+
+
 
 @implementation UIAlertView {
     NSMutableArray *_buttonTitles;
-    
+
     struct {
         unsigned clickedButtonAtIndex : 1;
         unsigned alertViewCancel : 1;
@@ -45,6 +135,9 @@
         unsigned willDismissWithButtonIndex : 1;
         unsigned didDismissWithButtonIndex : 1;
     } _delegateHas;
+
+    _UIAlertViewController *_controller;
+    _UIAlertWindow *_window;
 }
 
 - (id)initWithTitle:(NSString *)title message:(NSString *)message delegate:(id)delegate cancelButtonTitle:(NSString *)cancelButtonTitle otherButtonTitles:(NSString *)otherButtonTitles, ...
@@ -55,10 +148,6 @@
         self.delegate = delegate;
         _buttonTitles = [NSMutableArray arrayWithCapacity:1];
 
-        if (cancelButtonTitle) {
-            self.cancelButtonIndex = [self addButtonWithTitle:cancelButtonTitle];
-        }
-        
         if (otherButtonTitles) {
             [self addButtonWithTitle:otherButtonTitles];
 
@@ -69,8 +158,12 @@
             while ((buttonTitle=va_arg(argumentList, NSString *))) {
                 [self addButtonWithTitle:buttonTitle];
             }
-            
+
             va_end(argumentList);
+        }
+
+        if (cancelButtonTitle) {
+            self.cancelButtonIndex = [self addButtonWithTitle:cancelButtonTitle];
         }
     }
     return self;
@@ -107,91 +200,53 @@
 
 - (void)show
 {
-    // capture the current button configuration and build an NSAlert
-    // we show it after letting the runloop finish because UIKit stuff is often written with the assumption
-    // that showing an alert doesn't block the runloop. Kinda icky, but the same pattern is used for UIActionSheet
-    // and the UIMenuController and I don't know there's a lot that I can do about it.
-    // NSAlert does have a mode that doesn't block the runloop, but it has other drawbacks that I didn't like
-    // so opting to do it this way here. :/
-
-    NSAlert *alert = [[NSAlert alloc] init];
-    NSMutableArray *buttonOrder = [[NSMutableArray alloc] initWithCapacity:self.numberOfButtons];
-    
-    if (self.title) {
-        [alert setMessageText:self.title];
-    }
-    
-    if (self.message) {
-        [alert setInformativeText:self.message];
-    }
-    
-    for (NSInteger buttonIndex=0; buttonIndex<self.numberOfButtons; buttonIndex++) {
-        if (buttonIndex != self.cancelButtonIndex) {
-            [alert addButtonWithTitle:[_buttonTitles objectAtIndex:buttonIndex]];
-            [buttonOrder addObject:[NSNumber numberWithInt:buttonIndex]];
-        }
-    }
-    
-    if (self.cancelButtonIndex >= 0) {
-        NSButton *btn = [alert addButtonWithTitle:[_buttonTitles objectAtIndex:self.cancelButtonIndex]];
-
-        // only change the key equivelent if there's more than one button, otherwise we lose the "Return" key for triggering the default action
-        if (self.numberOfButtons > 1) {
-            [btn setKeyEquivalent:@"\033"];		// this should make the escape key trigger the cancel option
-        }
-
-        [buttonOrder addObject:[NSNumber numberWithInt:self.cancelButtonIndex]];
-    }
-    
     if (_delegateHas.willPresentAlertView) {
         [_delegate willPresentAlertView:self];
     }
-    
-    [self performSelector:@selector(_showAlertWithOptions:)
-               withObject:[NSDictionary dictionaryWithObjectsAndKeys:
-                           alert,		@"alert",
-                           buttonOrder, @"buttonOrder",
-                           nil]
-               afterDelay:0];
-}
 
-- (void)_showAlertWithOptions:(NSDictionary *)options
-{
-    NSAlert *alert = [options objectForKey:@"alert"];
-    NSMutableArray *buttonOrder = [options objectForKey:@"buttonOrder"];
-    
+    _controller = [[_UIAlertViewController alloc] initWithAlertView:self];
+    _window = [[_UIAlertWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    _window.rootViewController = _controller;
+    _window.windowLevel = UIWindowLevelNormal + 5;
+    _window.backgroundColor = [UIColor colorWithWhite:0 alpha:.4];
+
+    [_window makeKeyAndVisible];
+
+    // _controller.view.transform = CGAffineTransformMakeScale(1.1, 1.1);
+    // _window.backgroundColor = [UIColor colorWithWhite:0 alpha:0.0];
+    // [UIView animateWithDuration:0.2f
+    //                       delay:0.0f
+    //                     options:UIViewAnimationOptionCurveEaseOut
+    //                  animations:^{
+    //                      _controller.view.transform = CGAffineTransformMakeScale(1.0, 1.0);
+    //                      _window.backgroundColor = [UIColor colorWithWhite:0 alpha:.4];
+    //                  } completion:^(BOOL finished) {
+    //                  }];
+
+
     if (_delegateHas.didPresentAlertView) {
         [_delegate didPresentAlertView:self];
     }
-    
-    NSInteger result = [alert runModal];
-    NSInteger buttonIndex = -1;
-    
-    switch (result) {
-        case NSAlertFirstButtonReturn:
-            buttonIndex = [[buttonOrder objectAtIndex:0] intValue];
-            break;
-        case NSAlertSecondButtonReturn:
-            buttonIndex = [[buttonOrder objectAtIndex:1] intValue];
-            break;
-        case NSAlertThirdButtonReturn:
-            buttonIndex = [[buttonOrder objectAtIndex:2] intValue];
-            break;
-        default:
-            buttonIndex = [[buttonOrder objectAtIndex:2+(result-NSAlertThirdButtonReturn)] intValue];
-            break;
-    }
-    
-    if (_delegateHas.clickedButtonAtIndex) {
-        [_delegate alertView:self clickedButtonAtIndex:buttonIndex];
+}
+
+- (void)_closeWithResult:(NSInteger)result {
+    if (_delegateHas.willDismissWithButtonIndex) {
+        [_delegate alertView:self willDismissWithButtonIndex:result];
     }
 
-    if (_delegateHas.willDismissWithButtonIndex) {
-        [_delegate alertView:self willDismissWithButtonIndex:buttonIndex];
+    if (_delegateHas.clickedButtonAtIndex) {
+        [_delegate alertView:self clickedButtonAtIndex:result];
     }
-    
+
+    [_controller.view removeFromSuperview];
+    _window.rootViewController = nil;
+    [_window setHidden:YES];
+    _controller = nil;
+    _window = nil;
+    //    [[[UIApplication sharedApplication].delegate window] makeKeyAndVisible];
+
     if (_delegateHas.didDismissWithButtonIndex) {
-        [_delegate alertView:self didDismissWithButtonIndex:buttonIndex];
+        [_delegate alertView:self didDismissWithButtonIndex:result];
     }
 }
 
