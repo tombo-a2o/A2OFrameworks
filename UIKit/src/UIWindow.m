@@ -160,20 +160,18 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
 - (void)setScreen:(UIScreen *)theScreen
 {
     if (theScreen != _screen) {
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:UIScreenModeDidChangeNotification object:_screen];
 
         const BOOL wasHidden = self.hidden;
-        [self _makeHidden];
+        if(_screen) {
+            [self _makeHidden];
+        }
 
-        [self.layer removeFromSuperlayer];
         _screen = theScreen;
-        [[_screen _layer] addSublayer:self.layer];
 
-        if (!wasHidden) {
+        if (!wasHidden && theScreen) {
             [self _makeVisible];
         }
 
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_screenModeChangedNotification:) name:UIScreenModeDidChangeNotification object:_screen];
     }
 }
 
@@ -334,7 +332,10 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
         [super setHidden:YES];
 
         if (self.screen) {
+            [[NSNotificationCenter defaultCenter] removeObserver:self name:UIScreenModeDidChangeNotification object:_screen];
+            [self.layer removeFromSuperlayer];
             [self.screen _removeWindow:self];
+            _screen = nil;
             [[NSNotificationCenter defaultCenter] postNotificationName:UIWindowDidBecomeHiddenNotification object:self];
         }
     }
@@ -346,8 +347,10 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
         [super setHidden:NO];
 
         if (self.screen) {
+            [[self.screen _layer] addSublayer:self.layer];
             [self.screen _addWindow:self];
             [[NSNotificationCenter defaultCenter] postNotificationName:UIWindowDidBecomeVisibleNotification object:self];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_screenModeChangedNotification:) name:UIScreenModeDidChangeNotification object:_screen];
         }
     }
 }

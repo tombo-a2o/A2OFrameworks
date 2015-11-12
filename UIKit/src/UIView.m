@@ -83,7 +83,7 @@ static BOOL _animationsEnabled = YES;
 - (id)initWithFrame:(CGRect)theFrame
 {
     if ((self=[super init])) {
-        DEBUGLOG(@"UIView initWithFrame %x %@ %@", self, theFrame, [self class]);
+        DEBUGLOG(@"UIView initWithFrame %x %@ %@", self, NSStringFromCGRect(theFrame), [self class]);
 
         _implementsDrawRect = [[self class] _instanceImplementsDrawRect];
         _clearsContextBeforeDrawing = YES;
