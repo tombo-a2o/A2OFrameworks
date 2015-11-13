@@ -17,7 +17,9 @@
 }
 
 -(void)dealloc {
-   [super dealloc];
+    [_glContext release];
+    [_renderer release];
+    [super dealloc];
 }
 
 -(void)setFrame:(CGRect)rect {

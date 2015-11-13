@@ -241,6 +241,8 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)dealloc {
+    [self _setTextureId:0]; // delete texture
+    [self setContents:nil]; // release contents
     [_sublayers release];
     [_animations release];
     [_minificationFilter release];
@@ -318,14 +320,16 @@ NSString * const kCATransition = @"transition";
         _flipTexture = NO;
     } else {
 #warning TODO reuse context
+        CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
         CGContextRef context = CGBitmapContextCreate(
                 NULL,
                 _bounds.size.width,
                 _bounds.size.height,
                 8,
                 0,
-                CGColorSpaceCreateDeviceRGB(),
+                colorSpace,
                 kO2BitmapByteOrder32Big|kO2ImageAlphaLast);
+        CGColorSpaceRelease(colorSpace); // colorSpace is retained by context
         assert(context);
         [self drawInContext:context];
         [self setContents:context];

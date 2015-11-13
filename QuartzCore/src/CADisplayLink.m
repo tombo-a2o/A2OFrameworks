@@ -20,6 +20,11 @@
     return self;
 }
 
+- (void)dealloc {
+    [self invalidate];
+    [super dealloc];
+}
+
 - (void)addToRunLoop:(NSRunLoop *)runloop forMode:(NSString *)mode {
     _source = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 1<<10, dispatch_get_current_queue());
     dispatch_source_set_timer(_source, 0, 0, 0);

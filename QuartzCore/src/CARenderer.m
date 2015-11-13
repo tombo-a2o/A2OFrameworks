@@ -24,6 +24,8 @@
     GLint _unifBorderColor;
 }
 
+
+
 -(CGRect)bounds {
    return _bounds;
 }
@@ -72,6 +74,7 @@ static const char *fragmentShaderSource =
    _rootLayer=nil;
 
    _program = loadAndLinkShader(vertexShaderSource, fragmentShaderSource);
+   assert(_program);
    _attrPosition = glGetAttribLocation(_program, "position");
    _attrTexCoord = glGetAttribLocation(_program, "texcoord");
    _attrDistance = glGetAttribLocation(_program, "distance");
@@ -92,7 +95,13 @@ static const char *fragmentShaderSource =
    return self;
 }
 
-#warning TODO dealloc
+- (void)dealloc {
+    if(_program) {
+        glDeleteProgram(_program);
+    }
+    [_rootLayer release];
+    [super dealloc];
+}
 
 +(CARenderer *)rendererWithEAGLContext:(void *)eaglContext options:(NSDictionary *)options {
    return [[[self alloc] initWithEAGLContext:eaglContext options:options] autorelease];
@@ -498,8 +507,6 @@ static void generateTextureFromCGColor(CGColorRef cgColor) {
     // fprintf(stderr, "transform(total) %f %f %f %f %f %f\n", t.a, t.b, t.tx, t.c, t.d, t.ty);
     GLfloat transformArray[9] = {t.a, t.b, 0.0, t.c, t.d, 0.0, t.tx, t.ty, 1.0};
 
-    glUseProgram(_program);
-
     glEnableVertexAttribArray(_attrPosition);
     glEnableVertexAttribArray(_attrTexCoord);
     glEnableVertexAttribArray(_attrDistance);
@@ -556,9 +563,13 @@ static void generateTextureFromCGColor(CGColorRef cgColor) {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
+    glUseProgram(_program);
+
     // fprintf(stderr, "bounds %f %f\n",_bounds.size.width, _bounds.size.height);
     CGAffineTransform projection = CGAffineTransformMake(2.0/_bounds.size.width, 0, 0, -2.0/_bounds.size.height, -1.0, 1.0);
     [self _renderLayer:_rootLayer z:0 currentTime:CACurrentMediaTime() transform:projection];
+
+    glUseProgram(0);
 
     glFlush();
 }
