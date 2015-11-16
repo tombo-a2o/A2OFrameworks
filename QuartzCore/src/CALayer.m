@@ -269,6 +269,7 @@ NSString * const kCATransition = @"transition";
     [layers removeObject:layer];
 
     [self setSublayers:[layers arrayByAddingObject:layer]];
+    [layers release];
 }
 
 -(void)replaceSublayer:(CALayer *)layer with:(CALayer *)other {
