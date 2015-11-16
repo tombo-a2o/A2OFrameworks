@@ -243,6 +243,7 @@ NSString * const kCATransition = @"transition";
 -(void)dealloc {
     [self _setTextureId:0]; // delete texture
     [self setContents:nil]; // release contents
+    [_sublayers makeObjectsPerformSelector:@selector(_setSuperLayer:) withObject:nil];
     [_sublayers release];
     [_animations release];
     [_minificationFilter release];
@@ -443,7 +444,7 @@ NSString * const kCATransition = @"transition";
 
 // Layout logic is derived from WinObjC
 - (NSArray*)_listNeededLayoutLayers {
-    NSMutableArray *result = [[NSMutableArray alloc] init];
+    NSMutableArray *result = [[[NSMutableArray alloc] init] autorelease];
     if(_needsLayout) [result addObject:self];
     for(CALayer *layer in _sublayers) {
         [result addObjectsFromArray:[layer _listNeededLayoutLayers]];
@@ -528,4 +529,6 @@ NSString * const kCATransition = @"transition";
 -(BOOL)_flipTexture {
     return _flipTexture;
 }
+
+
 @end
