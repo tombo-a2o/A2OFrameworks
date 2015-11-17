@@ -68,7 +68,7 @@ bool load_png_image(const unsigned char *buffer, int length, int *outWidth, int 
     png_structp png_ptr;
     png_infop info_ptr;
     unsigned int sig_read = 0;
-	
+
     /* Create and initialize the png_struct
      * with the desired error handler
      * functions.  If you want to use the
@@ -82,11 +82,11 @@ bool load_png_image(const unsigned char *buffer, int length, int *outWidth, int 
      */
     png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING,
 									 NULL, NULL, NULL);
-	
+
     if (png_ptr == NULL) {
         return false;
     }
-	
+
     /* Allocate/initialize the memory
      * for image information.  REQUIRED. */
     info_ptr = png_create_info_struct(png_ptr);
@@ -94,7 +94,7 @@ bool load_png_image(const unsigned char *buffer, int length, int *outWidth, int 
         png_destroy_read_struct(&png_ptr, NULL, NULL);
         return false;
     }
-	
+
     /* Set error handling if you are
      * using the setjmp/longjmp method
      * (this is the normal method of
@@ -112,7 +112,7 @@ bool load_png_image(const unsigned char *buffer, int length, int *outWidth, int 
          * problem reading the file */
         return false;
     }
-	
+
     /* Set up the output control if
      * you are using standard C streams */
 	png_data_t data = {
@@ -124,13 +124,13 @@ bool load_png_image(const unsigned char *buffer, int length, int *outWidth, int 
     /* If we have already
      * read some of the signature */
     png_set_sig_bytes(png_ptr, sig_read);
-	
+
     png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_STRIP_16 | PNG_TRANSFORM_SHIFT | PNG_TRANSFORM_PACKING | PNG_TRANSFORM_EXPAND | PNG_TRANSFORM_GRAY_TO_RGB, NULL);
-	
+
 	int nb_comp = png_get_channels(png_ptr, info_ptr);
     int width = png_get_image_width(png_ptr, info_ptr);
     int height = png_get_image_height(png_ptr, info_ptr);
-	
+
 	// Adjust the size to adding the alpha if needed
     unsigned int row_bytes = png_get_rowbytes(png_ptr, info_ptr);
 	if (nb_comp == 3) {
@@ -144,7 +144,7 @@ bool load_png_image(const unsigned char *buffer, int length, int *outWidth, int 
     }
 
     png_bytepp row_pointers = png_get_rows(png_ptr, info_ptr);
-	
+
     for (int i = 0; i < height; i++) {
 		if (nb_comp == 3) {
 			// Add the alpha bytes
@@ -161,14 +161,14 @@ bool load_png_image(const unsigned char *buffer, int length, int *outWidth, int 
 			memcpy(*outData+(row_bytes * i), row_pointers[i], row_bytes);
 		}
     }
-	
+
 	*outWidth = width;
 	*outHeight = height;
 
     /* Clean up after the read,
      * and free any memory allocated */
     png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-	
+
     /* That's it */
     return true;
 }
@@ -202,7 +202,7 @@ static int e(char *str)
 }
 
    #define e(x,y)  e(x)
-#define ep(x,y)   (e(x,y),NULL)   
+#define ep(x,y)   (e(x,y),NULL)
 
 static void start_mem(const uint8 *buffer, int len)
 {
@@ -660,11 +660,11 @@ unsigned char *stbi_png_load_from_memory(const unsigned char *buffer, int len, i
 
    if(size!=signatureLength)
     return NO;
-    
+
    for(i=0;i<signatureLength;i++)
     if(signature[i]!=check[i])
      return NO;
-     
+
    return YES;
 }
 
@@ -697,10 +697,10 @@ unsigned char *stbi_png_load_from_memory(const unsigned char *buffer, int len, i
    int            bitsPerPixel=32;
    int            bytesPerRow=(bitsPerPixel/(sizeof(char)*8))*width;
    NSData        *bitmap;
-   
+
    if(pixels==NULL)
     return nil;
-    
+
 // clamp premultiplied data, this should probably be moved into the O2Image init
    int i;
    for(i=0;i<bytesPerRow*height;i+=4){
@@ -709,7 +709,7 @@ unsigned char *stbi_png_load_from_memory(const unsigned char *buffer, int len, i
            unsigned char r=pixels[i+0];
            unsigned char g=pixels[i+1];
            unsigned char b=pixels[i+2];
-           
+
            pixels[i+0]=MIN(r,a);
            pixels[i+1]=MIN(g,a);
            pixels[i+2]=MIN(b,a);
@@ -722,11 +722,11 @@ unsigned char *stbi_png_load_from_memory(const unsigned char *buffer, int len, i
    O2ColorSpaceRef colorSpace=O2ColorSpaceCreateDeviceRGB();
    _image=[[O2Image alloc] initWithWidth:width height:height bitsPerComponent:8 bitsPerPixel:bitsPerPixel bytesPerRow:bytesPerRow
       colorSpace:colorSpace bitmapInfo:kO2ImageAlphaPremultipliedLast|kO2BitmapByteOrder32Big decoder:NULL provider:provider decode:NULL interpolate:NO renderingIntent:kO2RenderingIntentDefault];
-      
+
    [colorSpace release];
    [provider release];
    [bitmap release];
-   
+
    return _image;
 }
 
@@ -739,11 +739,11 @@ unsigned char *stbi_png_load_from_memory(const unsigned char *buffer, int len, i
     }
     int width = O2ImageGetWidth(_image);
     int height = O2ImageGetHeight(_image);
-    return (CFDictionaryRef)[NSDictionary dictionaryWithObjectsAndKeys:
+    return (CFDictionaryRef)[[NSDictionary dictionaryWithObjectsAndKeys:
         [NSNumber numberWithInteger:width], kCGImagePropertyPixelWidth,
         [NSNumber numberWithInteger:height], kCGImagePropertyPixelHeight,
         [NSNumber numberWithBool:YES], kCGImagePropertyHasAlpha,
-        nil];
+        nil] copy];
 }
 
 @end
