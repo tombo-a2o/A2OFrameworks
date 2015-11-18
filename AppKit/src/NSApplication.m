@@ -128,21 +128,39 @@ id NSApp=nil;
 static EM_BOOL sendTouchEvnetToApp(int eventType, const EmscriptenTouchEvent *touchEvent, void *userData) {
     NSLog(@"event %d", eventType);
 
+    // handle only single touch
+    if(touchEvent->numTouches == 0) return NO;
+
+    NSEventType type;
     switch(eventType) {
     case EMSCRIPTEN_EVENT_TOUCHSTART:
+        type = NSLeftMouseDown;
         break;
     case EMSCRIPTEN_EVENT_TOUCHEND:
+        type = NSLeftMouseUp;
         break;
     case EMSCRIPTEN_EVENT_TOUCHMOVE:
+        type = NSLeftMouseDragged;
         break;
     case EMSCRIPTEN_EVENT_TOUCHCANCEL:
+        type = NSLeftMouseUp;
         break;
     }
 
+
+    NSPoint location;
+    location.x = touchEvent->touches[0].canvasX;
+    location.y = 568 - touchEvent->touches[0].canvasY;
+    NSUInteger flags = 0;
+
+    NSTimeInterval timestamp = touchEvent->touches[0].identifier;
+
     dispatch_async(dispatch_get_main_queue(), ^{
-        //    NSEvent *event = [NSEvent mouseEventWithType:(NSEventType)type location:(NSPoint)location modifierFlags:(NSUInteger)flags timestamp:(NSTimeInterval)timestamp windowNumber:(NSInteger)windowNumber context:(NSGraphicsContext *)context eventNumber:(NSInteger)eventNumber clickCount:(NSInteger)clickCount pressure:(float)pressure];
-        //    [NSApp sendEvent:event];
+        NSWindow* window = [NSApp mainWindow];
+        NSEvent *event = [NSEvent mouseEventWithType:type location:location modifierFlags:flags timestamp:timestamp windowNumber:window.windowNumber context:NULL eventNumber:0 clickCount:1 pressure:0];
+        [NSApp sendEvent:event];
     });
+    return YES;
 }
 
 static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mouseEvent, void *userData) {
@@ -179,6 +197,7 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
         NSEvent *event = [NSEvent mouseEventWithType:type location:location modifierFlags:flags timestamp:timestamp windowNumber:window.windowNumber context:NULL eventNumber:0 clickCount:1 pressure:0];
         [NSApp sendEvent:event];
     });
+    return YES;
 }
 
 -init {
