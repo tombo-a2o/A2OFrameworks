@@ -662,42 +662,42 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
 -(void)run {
 
     static BOOL didlaunch = NO;
-    NSAutoreleasePool *pool;
 
     _isRunning=YES;
 
     if (!didlaunch) {
         didlaunch = YES;
-        pool=[NSAutoreleasePool new];
-        [self finishLaunching];
-
-        dispatch_source_t source = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 2<<10, dispatch_get_current_queue());
-        dispatch_source_set_timer(source, 0, 0, 0);
-        dispatch_source_set_event_handler(source, ^{
-            NSAutoreleasePool *pool = [NSAutoreleasePool new];
-            NSEvent           *event;
-            event=[self nextEventMatchingMask:NSAnyEventMask untilDate:[NSDate distantFuture] inMode:NSDefaultRunLoopMode dequeue:YES];
-
-            NS_DURING
-                [self sendEvent:event];
-
-            NS_HANDLER
-                [self reportException:localException];
-            NS_ENDHANDLER
-
-            [self _checkForReleasedWindows];
-            // [self _checkForTerminate];
-
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSAutoreleasePool *pool=[NSAutoreleasePool new];
+            [self finishLaunching];
             [pool release];
 
-            if (!_isRunning) {
-                dispatch_source_cancel(source);
-            }
-        });
-        dispatch_resume(source);
+            dispatch_source_t source = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 2<<10, dispatch_get_current_queue());
+            dispatch_source_set_timer(source, 0, 0, 0);
+            dispatch_source_set_event_handler(source, ^{
+                NSAutoreleasePool *pool = [NSAutoreleasePool new];
+                NSEvent           *event;
+                event=[self nextEventMatchingMask:NSAnyEventMask untilDate:[NSDate distantFuture] inMode:NSDefaultRunLoopMode dequeue:YES];
 
+                NS_DURING
+                    [self sendEvent:event];
+
+                NS_HANDLER
+                    [self reportException:localException];
+                NS_ENDHANDLER
+
+                [self _checkForReleasedWindows];
+                // [self _checkForTerminate];
+
+                [pool release];
+
+                if (!_isRunning) {
+                    dispatch_source_cancel(source);
+                }
+            });
+            dispatch_resume(source);
+        });
         dispatch_main();
-        [pool release];
     }
 }
 
