@@ -33,6 +33,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <pthread.h>
 #import <emscripten.h>
 #import <emscripten/html5.h>
+#import <emscripten/trace.h>
 
 #define pthread_mutex_init(a,b)
 #define pthread_mutex_lock(a)
@@ -660,6 +661,7 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
 }
 
 -(void)run {
+    emscripten_trace_report_memory_layout();
 
     static BOOL didlaunch = NO;
 
@@ -669,7 +671,9 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
         didlaunch = YES;
         dispatch_async(dispatch_get_main_queue(), ^{
             NSAutoreleasePool *pool=[NSAutoreleasePool new];
+            emscripten_trace_report_memory_layout();
             [self finishLaunching];
+            emscripten_trace_report_memory_layout();
             [pool release];
 
             dispatch_source_t source = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 2<<10, dispatch_get_current_queue());
