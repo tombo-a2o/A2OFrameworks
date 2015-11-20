@@ -4,7 +4,7 @@ export PKG_CONFIG_LIBDIR=${EMSCRIPTEN}/system/lib/pkgconfig:${EMSCRIPTEN}/system
 
 CC				= emcc
 STYLE_CPPFLAGS ?= -DDEBUG -O0 -g
-CPPFLAGS = -v -c -pipe -Wmost -Wno-trigraphs -Wreturn-type -fno-objc-arc -fconstant-cfstrings -fno-exceptions -fblocks -fobjc-runtime=macosx -DDEPLOYMENT_TARGET_EMSCRIPTEN=1 -DMAC_OS_X_VERSION_MAX_ALLOWED=MAC_OS_X_VERSION_10_9 -I./include `pkg-config pixman-1 --cflags` `pkg-config cairo --cflags`
+CPPFLAGS = -v -c -pipe -Wmost -Wno-trigraphs -Wreturn-type -fno-objc-arc -fconstant-cfstrings -fno-exceptions -fblocks -D__IPHONE_OS_VERSION_MIN_REQUIRED=70000 -DDEPLOYMENT_TARGET_EMSCRIPTEN=1 -I./include `pkg-config pixman-1 --cflags` `pkg-config cairo --cflags`
 CFLAGS = -x objective-c -std=gnu99
 
 BUILD_DIR		?= build/debug

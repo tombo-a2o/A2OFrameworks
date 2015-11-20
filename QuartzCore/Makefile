@@ -2,7 +2,7 @@ include ../../Foundation/System/Makefile.template
 
 CC				= emcc
 STYLE_CPPFLAGS ?= -DDEBUG -O0 -g
-CPPFLAGS = -v -c -pipe -Wmost -Wno-trigraphs -Wreturn-type -fno-objc-arc -fconstant-cfstrings -fno-exceptions -fblocks -DDEPLOYMENT_TARGET_EMSCRIPTEN=1  -D__IPHONE_OS_VERSION_MIN_REQUIRED=70000 -DMAC_OS_X_VERSION_MAX_ALLOWED=MAC_OS_X_VERSION_10_9 -I./include -I./private_include
+CPPFLAGS = -v -c -pipe -Wmost -Wno-trigraphs -Wreturn-type -fno-objc-arc -fconstant-cfstrings -fno-exceptions -fblocks -DDEPLOYMENT_TARGET_EMSCRIPTEN=1  -D__IPHONE_OS_VERSION_MIN_REQUIRED=70000 -I./include -I./private_include
 CFLAGS = -x objective-c -std=gnu99
 
 BUILD_DIR		?= build/debug
