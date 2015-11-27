@@ -12,7 +12,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <AppKit/NSMenu.h>
 #import <AppKit/NSMenuItem.h>
 #import <AppKit/NSEvent.h>
-#import <AppKit/NSModalSessionX.h>
 #import <AppKit/NSScreen.h>
 //#import <AppKit/NSColorPanel.h>
 #import <AppKit/NSDisplay.h>
@@ -859,20 +858,6 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
     return [[_modalStack lastObject] modalWindow];
 }
 
--(NSModalSession)beginModalSessionForWindow:(NSWindow *)window {
-   NSModalSessionX *session=[NSModalSessionX sessionWithWindow:window];
-
-   [_modalStack addObject:session];
-
-   [window _hideMenuViewIfNeeded];
-   if(![window isVisible]){
-       [window center];
-   }
-   [window makeKeyAndOrderFront:self];
-
-   return session;
-}
-
 -(int)runModalSession:(NSModalSession)session {
     while([session stopCode]==NSRunContinuesResponse) {
         NSAutoreleasePool *pool=[NSAutoreleasePool new];
@@ -937,34 +922,6 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
     // This should silently ignore any attempt to end a session when there is none.
     [[_modalStack lastObject] stopModalWithCode:code];
 }
-
--(void)_mainThreadRunModalForWindow:(NSMutableDictionary *)values {
-    NSWindow *window=[values objectForKey:@"NSWindow"];
-
-    NSModalSession session=[self beginModalSessionForWindow:window];
-    int result;
-
-    while((result=[NSApp runModalSession:session])==NSRunContinuesResponse){
-     [[NSRunLoop currentRunLoop] runMode:NSModalPanelRunLoopMode beforeDate:[NSDate distantFuture]];
-    }
-
-    [self endModalSession:session];
-
-    [values setObject:[NSNumber numberWithInteger:result] forKey:@"result"];
-}
-
--(int)runModalForWindow:(NSWindow *)window {
-    NSMutableDictionary *values=[NSMutableDictionary dictionary];
-
-    [values setObject:window forKey:@"NSWindow"];
-
-    [self performSelectorOnMainThread:@selector(_mainThreadRunModalForWindow:) withObject:values waitUntilDone:YES modes:[NSArray arrayWithObjects:NSDefaultRunLoopMode,NSModalPanelRunLoopMode,nil]];
-
-    NSNumber *result=[values objectForKey:@"result"];
-
-    return [result integerValue];
-}
-
 
 -(void)stopModal {
     [self stopModalWithCode:NSRunStoppedResponse];

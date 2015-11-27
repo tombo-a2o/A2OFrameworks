@@ -20,8 +20,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 //#import <AppKit/NSColor.h>
 //#import <AppKit/NSGraphics.h>
 //#import <AppKit/NSGraphicsContextFunctions.h>
-#import <AppKit/NSDraggingManager.h>
-#import <AppKit/NSDragging.h>
 #import <Foundation/NSKeyedArchiver.h>
 #import <AppKit/NSPasteboard.h>
 #import <AppKit/NSObject+BindingSupport.h>
@@ -2203,16 +2201,6 @@ static NSGraphicsContext *graphicsContextForView(NSView *view){
    [pasteboard setData:data forType:NSPDFPboardType];
 }
 
--(void)dragImage:(NSImage *)image at:(NSPoint)location offset:(NSSize)offset event:(NSEvent *)event pasteboard:(NSPasteboard *)pasteboard source:source slideBack:(BOOL)slideBack {
-	location = [self convertPoint:location toView:nil];
-   [[NSDraggingManager draggingManager] dragImage:image at:location offset:offset event:event pasteboard:pasteboard source:source slideBack:slideBack];
-}
-
--(BOOL)dragFile:(NSString *)path fromRect:(NSRect)rect slideBack:(BOOL)slideBack event:(NSEvent *)event {
-   NSUnimplementedMethod();
-   return NO;
-}
-
 -(BOOL)acceptsFirstResponder {
    return NO;
 }
@@ -2274,41 +2262,6 @@ static NSGraphicsContext *graphicsContextForView(NSView *view){
 
 -(void)rightMouseDown:(NSEvent *)event {
    [NSMenu popUpContextMenu:[self menuForEvent:event] withEvent:event forView:self];
-}
-
-
-// default NSDraggingDestination
--(NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender {
-   return NSDragOperationNone;
-}
-
--(NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)sender {
-   return [sender draggingSourceOperationMask];
-}
-
--(void)draggingExited:(id <NSDraggingInfo>)sender {
-   // do nothing
-}
-
--(BOOL)prepareForDragOperation:(id <NSDraggingInfo>)sender {
-   return NO;
-}
-
--(BOOL)performDragOperation:(id <NSDraggingInfo>)sender {
-   return NO;
-}
-
--(void)concludeDragOperation:(id <NSDraggingInfo>)sender {
-   // do nothing
-}
-
--(NSArray *)_draggedTypes {
-   return _draggedTypes;
-}
-
-- (BOOL)dragPromisedFilesOfTypes:(NSArray *)types fromRect:(NSRect)rect source:(id)source slideBack:(BOOL)slideBack event:(NSEvent *)event {
-   NSUnimplementedMethod();
-   return NO;
 }
 
 -(NSPoint)convertPointFromBase:(NSPoint)aPoint; {

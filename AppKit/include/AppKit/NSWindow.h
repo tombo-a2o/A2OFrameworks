@@ -192,7 +192,6 @@ APPKIT_EXPORT NSString *const NSWindowDidChangeScreenNotification;
 
     NSWindowController *_windowController;
     NSMutableArray *_drawers;
-    NSToolbar *_toolbar;
     NSWindowAnimationContext *_animationContext;
 
     NSRect _savedFrame;

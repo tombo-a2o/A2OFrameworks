@@ -21,10 +21,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <AppKit/NSMenuItem.h>
 #import <AppKit/NSPanel.h>
 #import <AppKit/NSView.h>
-#import <AppKit/NSDraggingManager.h>
 #import <AppKit/NSCursor.h>
 #import <AppKit/NSTrackingArea.h>
-#import <AppKit/NSToolbar.h>
 #import <AppKit/NSWindowAnimationContext.h>
 #import <AppKit/NSDisplay.h>
 #import <AppKit/NSRaise.h>
@@ -51,13 +49,6 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 
 @interface CGWindow(Private)
 - (void)dirtyRect:(CGRect)rect;
-@end
-
-@interface NSToolbar (NSToolbar_privateForWindow)
-- (void)_setWindow:(NSWindow *)window;
-- (NSView *)_view;
--(CGFloat)visibleHeight;
--(void)layoutFrameSizeWithWidth:(CGFloat)width;
 @end
 
 @interface NSWindow ()
@@ -649,10 +640,6 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
    return NO;
 }
 
--(NSToolbar *)toolbar {
-    return _toolbar;
-}
-
 -(NSView *)initialFirstResponder {
    return _initialFirstResponder;
 }
@@ -1051,56 +1038,6 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
    [[self platformWindow] setAlphaValue:value];
 }
 
--(void)_toolbarSizeDidChangeFromOldHeight:(CGFloat)oldHeight {
-   CGFloat    newHeight,contentHeightDelta;
-   NSView    *toolbarView=[_toolbar _view];
-   NSUInteger mask=[[self contentView] autoresizingMask];
-   NSRect     frame=[self frame];
-
-   [_toolbar layoutFrameSizeWithWidth:NSWidth([[self _backgroundView] bounds])];
-   newHeight=(_toolbar==nil)?0:[_toolbar visibleHeight];
-   contentHeightDelta=newHeight-oldHeight;
-
-   frame.size.height+=contentHeightDelta;
-   frame.origin.y-=contentHeightDelta;
-
-   NSPoint toolbarOrigin;
-   NSRect backgroundBounds=[self _backgroundView].bounds;
-   toolbarOrigin.x=backgroundBounds.origin.x;
-   toolbarOrigin.y=NSMaxY([[self contentView] frame])-contentHeightDelta;
-   [toolbarView setFrameOrigin:toolbarOrigin];
-
-   [[self contentView] setAutoresizingMask:NSViewNotSizable];
-   [self setFrame:frame display:NO animate:NO];
-
-   [[self contentView] setAutoresizingMask:mask];
-}
-
--(void)setToolbar:(NSToolbar *)toolbar {
-   if(toolbar!=_toolbar){
-    CGFloat oldHeight=0;
-
-    toolbar=[toolbar retain];
-
-    if(_toolbar!=nil){
-     oldHeight=[_toolbar visibleHeight];
-     [_toolbar _setWindow:nil];
-     [[_toolbar _view] removeFromSuperview];
-     [_toolbar release];
-     [[self _backgroundView] setNeedsDisplay:YES];
-    }
-
-    _toolbar = toolbar;
-
-    if(_toolbar!=nil){
-     [_toolbar _setWindow:self];
-     [[self _backgroundView] addSubview:[_toolbar _view]];
-     [[self _backgroundView] setNeedsDisplay:YES];
-    }
-    [self _toolbarSizeDidChangeFromOldHeight:oldHeight];
-   }
-}
-
 - (void)setDefaultButtonCell:(NSButtonCell *)buttonCell {
     [_defaultButtonCell autorelease];
     _defaultButtonCell = [buttonCell retain];
@@ -1469,8 +1406,8 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
    // if([self hasMainMenu])
    //  result.size.height+=[NSMainMenuView menuHeight];
 
-   if([_toolbar _view]!=nil && ![[_toolbar _view] isHidden])
-    result.size.height+=[[_toolbar _view] frame].size.height;
+   // if([_toolbar _view]!=nil && ![[_toolbar _view] isHidden])
+   //  result.size.height+=[[_toolbar _view] frame].size.height;
 
     return result;
 }
@@ -1481,8 +1418,8 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
    // if([self hasMainMenu])
    //  result.size.height-=[NSMainMenuView menuHeight];
 
-   if([_toolbar _view]!=nil && ![[_toolbar _view] isHidden])
-    result.size.height-=[[_toolbar _view] frame].size.height;
+   // if([_toolbar _view]!=nil && ![[_toolbar _view] isHidden])
+   //  result.size.height-=[[_toolbar _view] frame].size.height;
 
    return result;
 }
@@ -2301,7 +2238,6 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 }
 
 -(void)update {
-    [[self toolbar] validateVisibleItems];
    [[NSNotificationCenter defaultCenter]
        postNotificationName:NSWindowDidUpdateNotification
                      object:self];
@@ -2436,12 +2372,12 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 }
 
 -(void)toggleToolbarShown:sender {
-    [_toolbar setVisible:![_toolbar isVisible]];
-    [sender setTitle:[NSString stringWithFormat:@"%@ Toolbar", [_toolbar isVisible] ? @"Hide" : @"Show"]];
+    // [_toolbar setVisible:![_toolbar isVisible]];
+    // [sender setTitle:[NSString stringWithFormat:@"%@ Toolbar", [_toolbar isVisible] ? @"Hide" : @"Show"]];
 }
 
 -(void)runToolbarCustomizationPalette:sender {
-    [_toolbar runCustomizationPalette:sender];
+    // [_toolbar runCustomizationPalette:sender];
 }
 
 - (void)keyDown:(NSEvent *)event {
