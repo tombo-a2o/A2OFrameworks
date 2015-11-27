@@ -1316,13 +1316,13 @@ static inline void buildTransformsIfNeeded(NSView *self) {
 }
 
 -(void)scrollPoint:(NSPoint)point {
-   NSClipView *clipView=[self _enclosingClipView];
-
-   if(clipView!=nil){
-    NSPoint origin=[self convertPoint:point toView:clipView];
-
-    [clipView scrollToPoint:origin];
-   }
+   // NSClipView *clipView=[self _enclosingClipView];
+   //
+   // if(clipView!=nil){
+   //  NSPoint origin=[self convertPoint:point toView:clipView];
+   //
+   //  [clipView scrollToPoint:origin];
+   // }
 }
 
 #if 0
@@ -1655,9 +1655,6 @@ static void clearInvalidRects(NSView *self){
 }
 
 static void clearNeedsDisplay(NSView *self){
-	if ([NSGraphicsContext inQuartzDebugMode]) {
-		return;
-	}
    clearInvalidRects(self);
    self->_needsDisplay=NO;
 }
@@ -1729,82 +1726,12 @@ static void clearNeedsDisplay(NSView *self){
    NSUnimplementedMethod();
 }
 
-static NSGraphicsContext *graphicsContextForView(NSView *view){
-   if(view->_layer!=nil){
-    NSRect             frame=[view frame];
-    size_t             width=frame.size.width;
-    size_t             height=frame.size.height;
-    CGColorSpaceRef    colorSpace=CGColorSpaceCreateDeviceRGB();
-    CGContextRef       context=CGBitmapContextCreate(NULL,width,height,8,0,colorSpace,kCGImageAlphaPremultipliedFirst|kCGBitmapByteOrder32Host);
-    NSGraphicsContext *result=[NSGraphicsContext graphicsContextWithGraphicsPort:context flipped:NO];
-
-    CGColorSpaceRelease(colorSpace);
-    CGContextRelease(context);
-
-    return result;
-   }
-
-   return [[view window] graphicsContext];
-}
-
--(void)_lockFocusInContext:(NSGraphicsContext *)context {
-    assert(context);
-
-    CGContextRef graphicsPort=[context graphicsPort];
-
-    [NSGraphicsContext saveGraphicsState];
-    [NSGraphicsContext setCurrentContext:context];
-
-    [[context focusStack] addObject:self];
-
-    CGContextSaveGState(graphicsPort);
-    CGContextResetClip(graphicsPort);
-
-    if(_layer!=nil)
-     CGContextSetCTM(graphicsPort,[self transformToLayer]);
-    else
-     CGContextSetCTM(graphicsPort,[self transformToWindow]);
-
-    CGContextClipToRect(graphicsPort,[self visibleRect]);
-
-    [self setUpGState];
-}
-
--(void)lockFocus {
-   [self _lockFocusInContext:graphicsContextForView(self)];
-}
-
 -(BOOL)lockFocusIfCanDraw {
    if([self canDraw]){
     [self lockFocus];
     return YES;
    }
    return NO;
-}
-
--(BOOL)lockFocusIfCanDrawInContext:(NSGraphicsContext *)context {
-   if(context!=nil){
-    [self _lockFocusInContext:context];
-    return YES;
-   }
-   return NO;
-}
-
-
--(void)unlockFocus {
-   NSGraphicsContext *graphicsContext=[NSGraphicsContext currentContext];
-   CGContextRef       context=[graphicsContext graphicsPort];
-
-   if(_layer!=nil){
-    CGImageRef image=CGBitmapContextCreateImage(context);
-
-    [_layer setContents:image];
-   }
-
-   CGContextRestoreGState(context);
-
-   [[graphicsContext focusStack] removeLastObject];
-   [NSGraphicsContext restoreGraphicsState];
 }
 
 -(BOOL)needsToDrawRect:(NSRect)rect {

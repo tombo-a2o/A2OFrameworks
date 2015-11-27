@@ -243,8 +243,6 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
    [_contentView setAutoresizesSubviews:YES];
    [_contentView setAutoresizingMask:NSViewWidthSizable|NSViewHeightSizable];
 
-   _backgroundColor=[[NSColor windowBackgroundColor] copy];
-
    _delegate=nil;
    _firstResponder=self;
    _sharedFieldEditor=nil;
@@ -354,8 +352,6 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 		[_platformWindow setLevel:_level];
 
 		[self _updatePlatformWindowTitle];
-
-		[[NSDraggingManager draggingManager] registerWindow:self dragTypes:nil];
 	}
 }
 
@@ -384,18 +380,6 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 -(void)postNotificationName:(NSString *)name {
    [[NSNotificationCenter defaultCenter] postNotificationName:name
      object:self];
-}
-
--(NSGraphicsContext *)graphicsContext {
-   NSValue           *key=[NSValue valueWithPointer:[NSThread currentThread]];
-   NSGraphicsContext *result=[_threadToContext objectForKey:key];
-
-   if(result==nil){
-    result=[NSGraphicsContext graphicsContextWithWindow:self];
-    [_threadToContext setObject:result forKey:key];
-   }
-
-   return result;
 }
 
 -(void)platformWindowDidInvalidateCGContext:(CGWindow *)window {
@@ -525,11 +509,6 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 
 -(BOOL)hidesOnDeactivate {
    return _hidesOnDeactivate;
-}
-
--(BOOL)worksWhenModal {
-	// We do work when we're running a modal session
-	return (_sheetContext && [_sheetContext modalSession] != nil);
 }
 
 -(BOOL)isSheet {
@@ -815,14 +794,6 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 // So, doing a hard display right here is not the right thing to do, delay it
    if(display)
     [_backgroundView setNeedsDisplay:YES];
-
-   if(animate){
-     NSWindowAnimationContext *context;
-
-     context = [NSWindowAnimationContext contextToTransformWindow:self startRect:[self frame] targetRect:newFrame resizeTime:    [self animationResizeTime:newFrame] display:display];
-
-    [self _animateWithContext:context];
-   }
 }
 
 -(void)setContentSize:(NSSize)size {
@@ -972,24 +943,9 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
    [self _updatePlatformWindowTitle];
 }
 
--(void)setBackgroundColor:(NSColor *)color {
-   if (color==nil) color = [NSColor windowBackgroundColor];
-   color=[color copy];
-   [_backgroundColor release];
-   _backgroundColor=color;
-   [_backgroundView setNeedsDisplay:YES];
-}
-
 -(void)setAlphaValue:(CGFloat)value {
    _alphaValue=value;
    [[self platformWindow] setAlphaValue:value];
-}
-
-- (void)setDefaultButtonCell:(NSButtonCell *)buttonCell {
-    [_defaultButtonCell autorelease];
-    _defaultButtonCell = [buttonCell retain];
-    [_defaultButtonCell setKeyEquivalent:@"\r"];
-    [[_defaultButtonCell controlView] setNeedsDisplay:YES];
 }
 
 -(void)setWindowController:(NSWindowController *)value {
@@ -1203,10 +1159,6 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 
 -(NSButtonCell *)defaultButtonCell {
     return _defaultButtonCell;
-}
-
--(NSWindow *)attachedSheet {
-   return [_sheetContext sheet];
 }
 
 -(id)windowController {
@@ -1611,42 +1563,6 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
     _defaultButtonCellKeyEquivalentDisabled = NO;
 }
 
--(NSText *)fieldEditor:(BOOL)create forObject:object {
-   NSTextView *newFieldEditor = nil;
-   if([_delegate respondsToSelector:@selector(windowWillReturnFieldEditor:toObject:)])
-      newFieldEditor = [_delegate windowWillReturnFieldEditor:self toObject:object];
-
-   if(create && newFieldEditor == nil && _sharedFieldEditor == nil)
-      newFieldEditor = _sharedFieldEditor = [[NSTextView alloc] init];
-
-   if (newFieldEditor)
-      _currentFieldEditor = newFieldEditor;
-   else
-      _currentFieldEditor = _sharedFieldEditor;
-
-   if (_currentFieldEditor) {
-      [_currentFieldEditor setHorizontallyResizable:NO];
-      [_currentFieldEditor setVerticallyResizable:NO];
-      [_currentFieldEditor setFieldEditor:YES];
-      [_currentFieldEditor setAutoresizingMask:NSViewWidthSizable|NSViewHeightSizable];
-   }
-
-   return _currentFieldEditor;
-}
-
--(void)endEditingFor:object {
-   if (_currentFieldEditor) {
-      if ((NSResponder *)_currentFieldEditor == _firstResponder) {
-         _firstResponder = object;
-         [_currentFieldEditor resignFirstResponder];
-      }
-      [_currentFieldEditor setDelegate:nil];
-      [_currentFieldEditor removeFromSuperview];
-      [_currentFieldEditor setString:@""];
-      _currentFieldEditor = nil;
-   }
-}
-
 -(void)disableScreenUpdatesUntilFlush {
    NSUnimplementedMethod();
 }
@@ -1709,18 +1625,6 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
    if([self isVisible] && ![self isMiniaturized] /*&& [self viewsNeedDisplay]*/){
     NSAutoreleasePool *pool=[NSAutoreleasePool new];
 
-	if ([NSGraphicsContext quartzDebuggingIsEnabled] == YES) {
-
-		// Show all the views getting redrawn
-	   [NSGraphicsContext setQuartzDebugMode: YES];
-	   [self disableFlushWindow];
-	   [_backgroundView displayIfNeeded];
-	   [self enableFlushWindow];
-	   [self flushWindowIfNeeded];
-	}
-
-	[NSGraphicsContext setQuartzDebugMode: NO];
-
     [self disableFlushWindow];
     [_backgroundView displayIfNeeded];
     [self enableFlushWindow];
@@ -1731,33 +1635,20 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 }
 
 -(void)display {
-/* FIXME: See Issue #405, display when the window is not visible causes layout problems (maybe the underlying Win32 window doesnt exist and we're not getting resize feedback messages?), so there is a problem. The fix is to not display when we aren't visible, displayIfNeeded does this already so it makes sense. The underlying problem should be fixed too though.
- */
-   if([self isVisible]){
-    NSAutoreleasePool *pool=[NSAutoreleasePool new];
+    /* FIXME: See Issue #405, display when the window is not visible causes layout problems (maybe the underlying Win32 window doesnt exist and we're not getting resize feedback messages?), so there is a problem. The fix is to not display when we aren't visible, displayIfNeeded does this already so it makes sense. The underlying problem should be fixed too though.
+    */
+    if([self isVisible]){
+        NSAutoreleasePool *pool=[NSAutoreleasePool new];
 
-	if ([NSGraphicsContext quartzDebuggingIsEnabled] == YES) {
-
-		// Show all the views getting redrawn
-	   [NSGraphicsContext setQuartzDebugMode: YES];
-	   [self disableFlushWindow];
-	   [_backgroundView display];
-	   [self enableFlushWindow];
-	   [self flushWindowIfNeeded];
-	}
-
-	[NSGraphicsContext setQuartzDebugMode: NO];
-
-	[self disableFlushWindow];
-    [_backgroundView display];
-    [self enableFlushWindow];
-    [self flushWindowIfNeeded];
-    [pool release];
-   }
-   else {
-    // If we were asked to display and weren't visible, mark it for display
-    [_backgroundView setNeedsDisplay:YES];
-}
+        [self disableFlushWindow];
+        [_backgroundView display];
+        [self enableFlushWindow];
+        [self flushWindowIfNeeded];
+        [pool release];
+    } else {
+        // If we were asked to display and weren't visible, mark it for display
+        [_backgroundView setNeedsDisplay:YES];
+    }
 }
 
 -(void)invalidateShadow {
@@ -1972,39 +1863,6 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
     // So make sure self lives at least through this current run loop...
     [[self retain] autorelease];
 
-    if (_sheetContext != nil) {
-        NSView *view = [_backgroundView hitTest:[event locationInWindow]];
-
-        // Pretend that the event goes to the toolbar's view, no matter where it really is.
-        // Could cause problems if custom views wanted to do something while the palette is running;
-        // however they shouldn't be doing that!
-        if ([[self toolbar] customizationPaletteIsRunning] &&
-            (view == [[self toolbar] _view] || [[[[self toolbar] _view] subviews] containsObject:view])) {
-            switch ([event type]) {
-                case NSLeftMouseDown:
-                    [[[self toolbar] _view] mouseDown:event];
-                    break;
-
-                case NSLeftMouseUp:
-                    [[[self toolbar] _view] mouseUp:event];
-                    break;
-
-                case NSLeftMouseDragged:
-                    [[[self toolbar] _view] mouseDragged:event];
-                    break;
-
-                default:
-                    break;
-            }
-			return;
-        }
-        else if ([event type] == NSPlatformSpecific){
-            //[self _setSheetOriginAndFront];
-            [_platformWindow sendEvent:[(NSEvent_CoreGraphics *)event coreGraphicsEvent]];
-			return;
-        }
-    }
-
     BOOL shouldValidateToolbarItems = YES;
 	// OK let's see if anyone else wants it
    switch([event type]){
@@ -2094,11 +1952,11 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
      NSUnimplementedMethod();
      break;
    }
-    if (shouldValidateToolbarItems && [self toolbar]) {
-        [NSObject cancelPreviousPerformRequestsWithTarget:[self toolbar] selector:@selector(validateVisibleItems) object:nil];
-        [[self toolbar] performSelector:@selector(validateVisibleItems) withObject:nil afterDelay:.5];
-
-    }
+    // if (shouldValidateToolbarItems && [self toolbar]) {
+    //     [NSObject cancelPreviousPerformRequestsWithTarget:[self toolbar] selector:@selector(validateVisibleItems) object:nil];
+    //     [[self toolbar] performSelector:@selector(validateVisibleItems) withObject:nil afterDelay:.5];
+    //
+    // }
 }
 
 -(void)postEvent:(NSEvent *)event atStart:(BOOL)atStart {
@@ -2173,10 +2031,6 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 -(void)unregisterDraggedTypes {
    [_draggedTypes release];
    _draggedTypes=nil;
-}
-
--(void)dragImage:(NSImage *)image at:(NSPoint)location offset:(NSSize)offset event:(NSEvent *)event pasteboard:(NSPasteboard *)pasteboard source:source slideBack:(BOOL)slideBack {
-   [[NSDraggingManager draggingManager] dragImage:image at:location offset:offset event:event pasteboard:pasteboard source:source slideBack:slideBack];
 }
 
 -validRequestorForSendType:(NSString *)sendType returnType:(NSString *)returnType {
@@ -2419,20 +2273,6 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
     [_backgroundView setNeedsDisplay:YES];
 }
 
--(void)_hideMenuViewIfNeeded {
-   if([self hasMainMenu] && _menuView!=nil && ![_menuView isHidden]){
-    [_menuView setHidden:YES];
-    [self _resizeWithOldMenuViewSize:[_menuView frame].size];
-   }
-}
-
--(void)_showMenuViewIfNeeded {
-   if([self hasMainMenu] && _menuView!=nil && [_menuView isHidden]){
-    [_menuView setHidden:NO];
-    [self _resizeWithOldMenuViewSize:NSMakeSize(0,0)];
-   }
-}
-
 -(void)setMenu:(NSMenu *)menu {
    if(_menuView!=nil){
     NSSize  oldSize=[_menuView frame].size;
@@ -2464,53 +2304,6 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
    return _draggedTypes;
 }
 
--(void)_setSheetOrigin {
-   NSWindow *sheet=[_sheetContext sheet];
-   NSRect    sheetFrame=[sheet frame];
-   NSRect    frame=[self frame];
-   NSPoint   origin;
-
-   origin.y=frame.origin.y+(frame.size.height-sheetFrame.size.height);
-   origin.x=frame.origin.x+floor((frame.size.width-sheetFrame.size.width)/2);
-
-
-   if ([self toolbar] != nil) {
-       if (_menuView != nil)
-           origin.y -= [_menuView frame].size.height;
-
-       origin.y -= [[[self toolbar] _view] frame].size.height;
-
-       // Depending on the final border types used on the toolbar and the sheets, the sheet placement
-       // sometimes looks better with a little "adjustment"....
-       origin.y++;
-   }
-
-   [sheet setFrameOrigin:origin];
-}
-
--(void)_setSheetOriginAndFront {
-   if(_sheetContext!=nil){
-    [self _setSheetOrigin];
-
-    [[_sheetContext sheet] orderFront:nil];
-   }
-}
-
--(NSSheetContext *)_sheetContext {
-   return _sheetContext;
-}
-
--(void)_detachSheetContextAnimateAndOrderOut {
-    NSWindow *sheet = [_sheetContext sheet];
-    NSRect sheetFrame = [sheet frame];
-
-    sheet->_isVisible=NO;
-    [[sheet platformWindow] sheetOrderOutToFrame:NSMakeRect(sheetFrame.origin.x,NSMaxY(sheetFrame),sheetFrame.size.width,0)];
-
-    [_sheetContext release];
-    _sheetContext=nil;
-}
-
 -(void)_flashWindow {
    if([self _isApplicationWindow])
     [[self platformWindow] flashWindow];
@@ -2519,7 +2312,6 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 -(void)platformWindowActivated:(CGWindow *)window displayIfNeeded:(BOOL)displayIfNeeded {
    [NSApp _windowWillBecomeActive:self];
 
-   [self _setSheetOriginAndFront];
    [_childWindows makeObjectsPerformSelector:@selector(_parentWindowDidActivate:) withObject:self];
    [_drawers makeObjectsPerformSelector:@selector(parentWindowDidActivate:) withObject:self];
 
@@ -2609,7 +2401,6 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 
    _makeSureIsOnAScreen=YES;
 
-   [self _setSheetOriginAndFront];
    [_childWindows makeObjectsPerformSelector:@selector(_parentWindowDidChangeFrame:) withObject:self];
    [_drawers makeObjectsPerformSelector:@selector(parentWindowDidChangeFrame:) withObject:self];
 
@@ -2629,7 +2420,6 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 }
 
 -(void)platformWindowExitMove:(CGWindow *)window {
-   [self _setSheetOriginAndFront];
    [_childWindows makeObjectsPerformSelector:@selector(_parentWindowDidExitMove:) withObject:self];
    [_drawers makeObjectsPerformSelector:@selector(parentWindowDidExitMove:) withObject:self];
 }
@@ -2909,12 +2699,6 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 -(NSUndoManager *)undoManager {
     if ([_delegate respondsToSelector:@selector(windowWillReturnUndoManager:)])
         return [_delegate windowWillReturnUndoManager:self];
-
-    // If this window is associated with a document, return the document's undo manager.
-    // Apple's documentation says this is the delegate's responsibility, but that's not how it works in real life.
-    if (_undoManager == nil) {
-        _undoManager = [[[[self windowController] document] undoManager] retain];
-    }
 
     //  If the delegate does not implement this method, the NSWindow creates an NSUndoManager for the window and all its views. -- seems like some duplication vs. NSDocument, but oh well..
     if (_undoManager == nil){
