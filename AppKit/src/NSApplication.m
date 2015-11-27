@@ -15,8 +15,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <AppKit/NSScreen.h>
 //#import <AppKit/NSColorPanel.h>
 #import <AppKit/NSDisplay.h>
-#import <AppKit/NSSheetContext.h>
-#import <AppKit/NSSystemInfoPanel.h>
 #import <AppKit/NSWorkspace.h>
 //#import <AppKit/NSDockTile.h>
 #import <CoreGraphics/CGWindow.h>
@@ -96,7 +94,6 @@ id NSApp=nil;
         [splash display];
     }
 }
-#endif
 
 -(void)_closeSplashImage {
     int i;
@@ -112,6 +109,7 @@ id NSApp=nil;
      }
     }
 }
+#endif
 
 static EM_BOOL sendTouchEvnetToApp(int eventType, const EmscriptenTouchEvent *touchEvent, void *userData) {
     NSLog(@"event %d", eventType);
@@ -512,7 +510,7 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
     [NSTimer scheduledTimerWithTimeInterval:0.1 target:nil
                                    selector:NULL userInfo:nil repeats:NO];
 
-    [self _closeSplashImage];
+//    [self _closeSplashImage];
 
     if ([self openFiles]) {
         needsUntitled = NO;
@@ -1170,12 +1168,6 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
    [self orderFrontStandardAboutPanelWithOptions:nil];
 }
 
--(void)orderFrontStandardAboutPanelWithOptions:(NSDictionary *)options {
-    NSSystemInfoPanel *standardAboutPanel = [[NSSystemInfoPanel
-        standardAboutPanel] retain];
-    [standardAboutPanel showInfoPanel:self withOptions:options];
-
-}
 
 -(void)activateContextHelpMode:sender {
     NSUnimplementedMethod();

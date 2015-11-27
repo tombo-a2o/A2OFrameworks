@@ -8,8 +8,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #import <AppKit/NSResponder.h>
 #import <AppKit/NSEvent.h>
-#import <AppKit/NSKeyboardBindingManager.h>
-#import <AppKit/NSKeyboardBinding.h>
 #import <AppKit/NSApplication.h>
 #import <Foundation/NSKeyedArchiver.h>
 #import <AppKit/NSRaise.h>
@@ -63,6 +61,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         [_nextResponder doCommandBySelector:selector];
 }
 
+#if 0
 -(void)interpretKeyEvents:(NSArray *)events {
    int i,icount=[events count];
 
@@ -106,7 +105,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     }
    }
 }
-
+#endif
 -(BOOL)performKeyEquivalent:(NSEvent *)event {
    return NO;
 }

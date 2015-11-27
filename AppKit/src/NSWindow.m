@@ -9,8 +9,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #import <AppKit/NSWindow.h>
 #import <AppKit/NSWindow-Private.h>
-#import <AppKit/NSThemeFrame.h>
-#import <AppKit/NSSheetContext.h>
 #import <AppKit/NSApplication.h>
 #import <AppKit/NSScreen.h>
 #import <AppKit/NSEvent.h>
@@ -23,7 +21,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <AppKit/NSView.h>
 #import <AppKit/NSCursor.h>
 #import <AppKit/NSTrackingArea.h>
-#import <AppKit/NSWindowAnimationContext.h>
 #import <AppKit/NSDisplay.h>
 #import <AppKit/NSRaise.h>
 
@@ -791,56 +788,6 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 
 -(void)setFrame:(NSRect)frame display:(BOOL)display {
    [self setFrame:frame display:display animate:NO];
-}
-
-- (void)_animateWithContext:(NSWindowAnimationContext *)context
-{
-    NSRect frame = [self frame];
-    NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:context, @"NSWindowAnimationContext", nil];
-
-    if (_animationContext == nil)
-        _animationContext = [context retain];
-
-    if (_animationContext != context)
-        [NSException raise:NSInvalidArgumentException
-                    format:@"-[%@ %@]: attempt to animate frame while animation still in progress",
-            [self class], NSStringFromSelector(_cmd)];
-
-    [[NSNotificationCenter defaultCenter] postNotificationName:NSWindowWillAnimateNotification object:self userInfo:userInfo];
-
-    [context decrement];
-
-    if ([context stepCount] > 0) {
-        frame.origin.x += [context stepRect].origin.x;
-        frame.origin.y += [context stepRect].origin.y;
-        frame.size.width += [context stepRect].size.width;
-        frame.size.height += [context stepRect].size.height;
-    }
-    else
-        frame = [context targetRect];
-
-    [self setFrame:frame display:[context display]];
-
-    [[NSNotificationCenter defaultCenter] postNotificationName:NSWindowAnimatingNotification object:self userInfo:userInfo];
-
-    if ([context stepCount] > 0) {
-        [self performSelector:_cmd withObject:context afterDelay:[context stepInterval]];
-    }
-    else {
-        [[NSNotificationCenter defaultCenter] postNotificationName:NSWindowDidAnimateNotification object:self userInfo:userInfo];
-
-        [_animationContext release];
-        _animationContext = nil;
-#if 0
-        if ([_backgroundView cachesImageForAnimation])
-            [_backgroundView invalidateCachedImage];
-#endif
-    }
-}
-
-- (NSWindowAnimationContext *)_animationContext
-{
-    return _animationContext;
 }
 
 -(void)setFrame:(NSRect)newFrame display:(BOOL)display animate:(BOOL)animate  {
@@ -2547,34 +2494,6 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 
     [[_sheetContext sheet] orderFront:nil];
    }
-}
-
--(void)_attachSheetContextOrderFrontAndAnimate:(NSSheetContext *)sheetContext {
-   NSWindow *sheet = [sheetContext sheet];
-   NSRect    sheetFrame;
-
-   if ([sheet styleMask] != NSDocModalWindowMask)
-    [sheet setStyleMask:NSDocModalWindowMask];
-
-   [_sheetContext autorelease];
-   _sheetContext=[sheetContext retain];
-
-   [(NSThemeFrame *)[sheet _backgroundView] setWindowBorderType:NSWindowSheetBorderType];
-
-   [self _setSheetOrigin];
-   sheetFrame = [sheet frame];
-
-   sheet->_isVisible=YES;
-   [sheet display];
-   [[sheet platformWindow] sheetOrderFrontFromFrame:NSMakeRect(sheetFrame.origin.x,NSMaxY(sheetFrame),sheetFrame.size.width,0) aboveWindow:[self platformWindow]];
-   [self makeKeyWindow];
-}
-
-- (void)_setSheetContext:(NSSheetContext *)sheetContext
-{
-	[sheetContext retain];
-	[_sheetContext release];
-	_sheetContext = sheetContext;
 }
 
 -(NSSheetContext *)_sheetContext {

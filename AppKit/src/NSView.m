@@ -12,7 +12,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <AppKit/NSEvent.h>
 #import <AppKit/NSWindow-Private.h>
 #import <AppKit/NSCursor.h>
-#import <AppKit/NSCursorRect.h>
 #import <AppKit/NSTrackingArea.h>
 #import <AppKit/NSMenu.h>
 //#import <AppKit/NSScrollView.h>
@@ -993,49 +992,49 @@ static inline void buildTransformsIfNeeded(NSView *self) {
 }
 
 -(void)addCursorRect:(NSRect)rect cursor:(NSCursor *)cursor {
-   NSCursorRect *cursorRect=[[NSCursorRect alloc] initWithCursor:cursor];
-   NSTrackingArea *area=nil;
-
-   area=[[NSTrackingArea alloc] _initWithRect:rect options:NSTrackingCursorUpdate|NSTrackingActiveInKeyWindow owner:cursorRect userData:NULL retainUserData:NO isToolTip:NO isLegacy:YES];
-   [_trackingAreas addObject:area];
-   [area release];
-   [cursorRect release];
-
-   [self _trackingAreasChanged];
+   // NSCursorRect *cursorRect=[[NSCursorRect alloc] initWithCursor:cursor];
+   // NSTrackingArea *area=nil;
+   //
+   // area=[[NSTrackingArea alloc] _initWithRect:rect options:NSTrackingCursorUpdate|NSTrackingActiveInKeyWindow owner:cursorRect userData:NULL retainUserData:NO isToolTip:NO isLegacy:YES];
+   // [_trackingAreas addObject:area];
+   // [area release];
+   // [cursorRect release];
+   //
+   // [self _trackingAreasChanged];
 }
 
 -(void)removeCursorRect:(NSRect)rect cursor:(NSCursor *)cursor {
-   NSInteger count=[_trackingAreas count];
-
-   while(--count>=0){
-    NSTrackingArea *area=[_trackingAreas objectAtIndex:count];
-    NSObject *candidate=[area owner];
-
-    if([area _isLegacy]==YES &&
-       [candidate isKindOfClass:[NSCursorRect class]]==YES &&
-       [(NSCursorRect *)candidate cursor]==cursor){
-     [_trackingAreas removeObjectAtIndex:count];
-     break;
-    }
-   }
-
-   [self _trackingAreasChanged];
+   // NSInteger count=[_trackingAreas count];
+   //
+   // while(--count>=0){
+   //  NSTrackingArea *area=[_trackingAreas objectAtIndex:count];
+   //  NSObject *candidate=[area owner];
+   //
+   //  if([area _isLegacy]==YES &&
+   //     [candidate isKindOfClass:[NSCursorRect class]]==YES &&
+   //     [(NSCursorRect *)candidate cursor]==cursor){
+   //   [_trackingAreas removeObjectAtIndex:count];
+   //   break;
+   //  }
+   // }
+   //
+   // [self _trackingAreasChanged];
 }
 
 -(void)discardCursorRects {
-   NSInteger count=[_trackingAreas count];
-
-   while(--count>=0){
-    NSTrackingArea *area=[_trackingAreas objectAtIndex:count];
-
-    if([area _isLegacy]==YES && ([area options]&NSTrackingCursorUpdate)){
-     [_trackingAreas removeObjectAtIndex:count];
-    }
-   }
-
-   [[self subviews] makeObjectsPerformSelector:_cmd];
-
-   [self _trackingAreasChanged];
+   // NSInteger count=[_trackingAreas count];
+   //
+   // while(--count>=0){
+   //  NSTrackingArea *area=[_trackingAreas objectAtIndex:count];
+   //
+   //  if([area _isLegacy]==YES && ([area options]&NSTrackingCursorUpdate)){
+   //   [_trackingAreas removeObjectAtIndex:count];
+   //  }
+   // }
+   //
+   // [[self subviews] makeObjectsPerformSelector:_cmd];
+   //
+   // [self _trackingAreasChanged];
 }
 
 -(void)resetCursorRects {
