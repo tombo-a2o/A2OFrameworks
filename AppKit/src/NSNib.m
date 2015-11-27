@@ -11,12 +11,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <AppKit/NSRaise.h>
 #import <Foundation/NSKeyedArchiver.h>
 #import <AppKit/NSNibLoading.h>
-#import <AppKit/NSMenu.h>
-#import <AppKit/NSApplication.h>
-#import <AppKit/NSTableCornerView.h>
-#import "NSIBObjectData.h"
-#import <AppKit/NSNibHelpConnector.h>
-#import "NSCustomObject.h"
 #import "NSNibUnarchiver.h"
 
 NSString * const NSNibOwner=@"NSOwner";
@@ -33,23 +27,23 @@ NSString * const NSNibTopLevelObjects=@"NSNibTopLevelObjects";
 -initWithContentsOfFile:(NSString *)path {
 
     NIBDEBUG(@"initWithContentsOfFile: %@", path);
-    
+
    NSString *keyedobjects=path;
    BOOL      isDirectory=NO;
 
 	if([[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDirectory] && isDirectory)
     keyedobjects=[[path stringByAppendingPathComponent:@"keyedobjects"] stringByAppendingPathExtension:@"nib"];
-   
+
    if(!keyedobjects && !isDirectory)
       keyedobjects=path; // assume new-style compiled xib
-   
+
    if((_data=[[NSData alloc] initWithContentsOfFile:path])==nil){
     [self release];
     return nil;
    }
 
    _allObjects=[NSMutableArray new];
-   
+
    return self;
 }
 
@@ -61,7 +55,7 @@ NSString * const NSNibTopLevelObjects=@"NSNibTopLevelObjects";
     [self release];
     return nil;
    }
-   
+
    return [self initWithContentsOfFile:[url path]];
 }
 
@@ -71,15 +65,15 @@ NSString * const NSNibTopLevelObjects=@"NSNibTopLevelObjects";
 
     if(bundle==nil)
     bundle = [NSBundle mainBundle];
-    
+
    NSString *path=[bundle pathForResource:name ofType:@"nib"];
-   
+
    if(path==nil){
     NSLog(@"%s: unable to init nib with name '%@'", __PRETTY_FUNCTION__, name);
     [self release];
     return nil;
    }
-   
+
    return [self initWithContentsOfFile:path];
 }
 
@@ -107,43 +101,19 @@ NSString * const NSNibTopLevelObjects=@"NSNibTopLevelObjects";
 }
 
 -(BOOL)instantiateNibWithExternalNameTable:(NSDictionary *)nameTable {
-    
+
     NIBDEBUG(@"instantiateNibWithExternalNameTable: %@", nameTable);
-    
+
    NSAutoreleasePool *pool=[NSAutoreleasePool new];
    _nameTable=[nameTable retain];
     //NSKeyedUnarchiver *unarchiver=[[[NSKeyedUnarchiver alloc] initForReadingWithData:_data] autorelease];
     NSNibUnarchiver *unarchiver=[[NSNibUnarchiver unarchiveObjectWithData:_data] autorelease];
-    NSIBObjectData    *objectData;
     int                i,count;
-    NSMenu            *menu;
     NSArray           *topLevelObjects;
-    
+
     //[unarchiver setDelegate:self];
     NIBDEBUG(@"unarchiver %@", unarchiver);
-    
-    /*
-    TO DO:
-     - utf8 in the multinational panel
-     - misaligned objects in boxes everywhere
-    */
-    //[unarchiver setClass:[NSTableCornerView class] forClassName:@"_NSCornerView"];
-    //[unarchiver setClass:[NSNibHelpConnector class] forClassName:@"NSIBHelpConnector"];
-    
-    objectData=[unarchiver decodeObjectForKey:@"IB.objectdata"];
-        
-    [objectData buildConnectionsWithNameTable:_nameTable];
-	if((menu=[objectData mainMenu])!=nil) {
-		// Rename the first item to have the application name.
-		if ([menu numberOfItems] > 0) {
-			NSMenuItem *firstItem = [menu itemAtIndex: 0];
-			NSString *appName = [[[NSBundle mainBundle] localizedInfoDictionary] objectForKey:(NSString *)kCFBundleNameKey];
-			[firstItem setTitle: appName];
-		}
-		[NSApp setMainMenu:menu];
-	}
-	
-    //topLevelObjects = [objectData topLevelObjects];
+
     topLevelObjects = [unarchiver decodeObjectForKey:@"UINibTopLevelObjectsKey"];
 
     NIBDEBUG(@"topLevelObjects %@", topLevelObjects);
@@ -156,7 +126,7 @@ NSString * const NSNibTopLevelObjects=@"NSNibTopLevelObjects";
     if([_nameTable objectForKey:NSNibTopLevelObjects]) {
         [[_nameTable objectForKey:NSNibTopLevelObjects] setArray:topLevelObjects];
 	}
-    
+
     // We do not need to add the objects from nameTable to allObjects as they get put into the uid->object table already
     // Do we send awakeFromNib to objects in the nameTable *not* present in the nib ?
 
@@ -164,7 +134,7 @@ NSString * const NSNibTopLevelObjects=@"NSNibTopLevelObjects";
 
     for(i=0;i<count;i++){
      id object=[_allObjects objectAtIndex:i];
-     
+
      if([object respondsToSelector:@selector(awakeFromNib)])
       [object awakeFromNib];
     }
@@ -176,14 +146,11 @@ NSString * const NSNibTopLevelObjects=@"NSNibTopLevelObjects";
       [object performSelector:@selector(postAwakeFromNib)];
     }
 
-    [[objectData visibleWindows] makeObjectsPerformSelector:@selector(makeKeyAndOrderFront:) withObject:nil];
-    
     [_nameTable release];
     _nameTable=nil;
 
     [pool release];
 
-    //return (objectData!=nil);
     return (topLevelObjects!=nil);
 }
 
@@ -194,13 +161,13 @@ NSString * const NSNibTopLevelObjects=@"NSNibTopLevelObjects";
     NSMutableArray   *topLevelObjects = (objects != NULL ? [[NSMutableArray alloc] init] : nil);
    NSDictionary     *nameTable=[NSDictionary dictionaryWithObjectsAndKeys:owner, NSNibOwner, topLevelObjects, NSNibTopLevelObjects, nil];
    BOOL             result = [self instantiateNibWithExternalNameTable:nameTable];
-   
+
    if(objects != NULL){
        if(result)
            *objects = [NSArray arrayWithArray:topLevelObjects];
        [topLevelObjects release];
    }
-   
+
    return result;
 }
 
