@@ -8,7 +8,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #import <AppKit/NSApplication.h>
 #import <AppKit/NSWindow-Private.h>
-#import <AppKit/NSPanel.h>
 #import <AppKit/NSMenu.h>
 #import <AppKit/NSMenuItem.h>
 #import <AppKit/NSEvent.h>
@@ -326,8 +325,8 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
     for(NSNumber *number in numbers){
         NSWindow *window=[self windowWithWindowNumber:[number integerValue]];
 
-        if(window!=nil && ![window isKindOfClass:[NSPanel class]])
-                               [result addObject:window];
+        // if(window!=nil && ![window isKindOfClass:[NSPanel class]])
+       [result addObject:window];
     }
 
     return result;
@@ -397,8 +396,8 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
     for(i=0;i<count;i++){
         NSWindow *window=[_windows objectAtIndex:i];
 
-        if(![window isKindOfClass:[NSPanel class]])
-                  [window setMenu:_mainMenu];
+        // if(![window isKindOfClass:[NSPanel class]])
+      [window setMenu:_mainMenu];
     }
 }
 
@@ -560,7 +559,7 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
     while(--count>=0){
         NSWindow *check=[_windows objectAtIndex:count];
 
-        if(![check isKindOfClass:[NSPanel class]] && [check isVisible]){
+        if([check isVisible]){
             return;
         }
     }

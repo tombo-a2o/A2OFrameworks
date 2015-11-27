@@ -11,14 +11,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <AppKit/NSApplication.h>
 #import <AppKit/NSCursor.h>
 #import <AppKit/NSEvent.h>
-#import <AppKit/NSObject+BindingSupport.h>
 #import <AppKit/NSMenu.h>
 #import <AppKit/NSMenuItem.h>
 #import <AppKit/NSParagraphStyle.h>
 #import <AppKit/NSPasteboard.h>
 #import <AppKit/NSResponder.h>
 #import <AppKit/NSScreen.h>
-#import <AppKit/NSStringDrawing.h>
 #import <AppKit/NSText.h>
 #import <AppKit/NSTrackingArea.h>
 #import <AppKit/NSView.h>

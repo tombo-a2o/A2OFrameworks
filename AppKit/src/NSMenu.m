@@ -286,7 +286,7 @@ BOOL itemIsEnabled(NSMenuItem *item) {
         } else if ([target respondsToSelector:@selector(validateMenuItem:)]) {
             enabled = [target validateMenuItem:item];
         } else if ([target respondsToSelector:@selector(validateUserInterfaceItem:)]) { // New validation scheme
-            enabled = [target validateUserInterfaceItem:item];
+            // enabled = [target validateUserInterfaceItem:item];
         } else {
             enabled = YES;
         }
@@ -309,10 +309,10 @@ BOOL itemIsEnabled(NSMenuItem *item) {
             BOOL enabled = itemIsEnabled(item) ? YES : NO;
             BOOL currentlyEnabled = [item isEnabled] ? YES : NO;
 
-            if(enabled!=currentlyEnabled && ![item _binderForBinding:@"enabled" create:NO]){
-                [item setEnabled:enabled];
-                [self itemChanged:item];
-            }
+            // if(enabled!=currentlyEnabled && ![item _binderForBinding:@"enabled" create:NO]){
+            //     [item setEnabled:enabled];
+            //     [self itemChanged:item];
+            // }
         }
 
         [[item submenu] update];

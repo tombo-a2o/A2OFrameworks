@@ -17,7 +17,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <CoreGraphics/CoreGraphics.h>
 #import <AppKit/NSMenu.h>
 #import <AppKit/NSMenuItem.h>
-#import <AppKit/NSPanel.h>
 #import <AppKit/NSView.h>
 #import <AppKit/NSCursor.h>
 #import <AppKit/NSTrackingArea.h>
@@ -343,10 +342,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
  */
 -(void)_createPlatformWindowOnMainThread {
 	if(_platformWindow==nil){
-		if([self isKindOfClass:[NSPanel class]])
-			_platformWindow=[[[NSDisplay currentDisplay] panelWithFrame: _frame styleMask:_styleMask backingType:_backingType] retain];
-		else
-			_platformWindow=[[[NSDisplay currentDisplay] windowWithFrame: _frame styleMask:_styleMask backingType:_backingType] retain];
+	    _platformWindow=[[[NSDisplay currentDisplay] windowWithFrame: _frame styleMask:_styleMask backingType:_backingType] retain];
 
 		[_platformWindow setDelegate:self];
 		[_platformWindow setLevel:_level];
@@ -512,7 +508,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 }
 
 -(BOOL)isSheet {
-  return (_styleMask&NSDocModalWindowMask)?YES:NO;
+  return NO;
 }
 
 -(BOOL)acceptsMouseMovedEvents {
@@ -887,7 +883,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 }
 
 -(BOOL)_isApplicationWindow {
-   return (![self isKindOfClass:[NSPanel class]] && [self isVisible] && ![self isExcludedFromWindowsMenu])?YES:NO;
+   return ([self isVisible] && ![self isExcludedFromWindowsMenu])?YES:NO;
 }
 
 -(void)setTitle:(NSString *)title {
@@ -1811,7 +1807,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 
      [self displayIfNeeded];
      // this is here since it would seem that doing this any earlier will not work.
-     if(![self isKindOfClass:[NSPanel class]] && ![self isExcludedFromWindowsMenu]) {
+     if(![self isExcludedFromWindowsMenu]) {
          [NSApp changeWindowsItem:self title:_title filename:NO];
      }
 

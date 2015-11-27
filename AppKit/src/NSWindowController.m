@@ -7,7 +7,7 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 #import <AppKit/NSWindowController.h>
 #import <AppKit/NSWindow.h>
-//#import <AppKit/NSNibLoading.h>
+#import <AppKit/NSNibLoading.h>
 #import <AppKit/NSNib.h>
 #import <AppKit/NSApplication.h>
 
@@ -71,12 +71,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 -(NSWindow *)window {
    if(_window==nil && [self windowNibPath]!=nil){
     [self windowWillLoad];
-    [_document windowControllerWillLoadNib:self];
+    // [_document windowControllerWillLoadNib:self];
 
     [self loadWindow];
 
     [self windowDidLoad];
-    [_document windowControllerDidLoadNib:self];
+    // [_document windowControllerDidLoadNib:self];
    }
 
    return _window;
@@ -105,16 +105,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 -(void)_windowWillClose:(NSNotification *)note {
 	[self setWindow:nil];
-
-	if (_document){
-   [[self retain] autorelease];
-
-   if([self shouldCloseDocument] || [[_document windowControllers] count]==1)
-    [_document close];
-   else {
-    [_document removeWindowController:self];
-   }
-  }
 }
 
 -(BOOL)isWindowLoaded {
@@ -216,16 +206,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 -(NSString *)windowFrameAutosaveName {
    return _windowFrameAutosaveName;
-}
-
--(void)synchronizeWindowTitleWithDocumentName {
-   if(_document!=nil && _window!=nil){
-    NSString *displayName=[_document displayName];
-    NSString *title=[self windowTitleForDocumentDisplayName:displayName];
-    NSString *path=[_document fileName];
-
-    [_window setTitle:title];
-   }
 }
 
 -(NSString *)windowTitleForDocumentDisplayName:(NSString *)displayName {
