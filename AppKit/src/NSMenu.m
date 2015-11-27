@@ -11,12 +11,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <AppKit/NSApplication.h>
 #import <AppKit/NSWindow.h>
 #import <AppKit/NSEvent.h>
-#import <AppKit/NSMenuWindow.h>
-#import <AppKit/NSMenuView.h>
 #import <Foundation/NSKeyedArchiver.h>
 
 @implementation NSMenu
 
+#if 0
 +(void)popUpContextMenu:(NSMenu *)menu withEvent:(NSEvent *)event forView:(NSView *)view {
    [menu update];
    if([[menu itemArray] count]>0){
@@ -25,19 +24,20 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     NSMenuWindow *menuWindow=[[NSMenuWindow alloc] initWithMenu:menu];
     NSMenuView   *menuView=[menuWindow menuView];
     NSMenuItem   *item;
-    
+
     [menuWindow setReleasedWhenClosed:YES];
     [menuWindow setFrameTopLeftPoint:[window convertBaseToScreen:point]];
     [menuWindow orderFront:nil];
 
     item=[menuView trackForEvent:event];
- 
+
     [menuWindow close];
 
     if(item!=nil)
      [NSApp sendAction:[item action] to:[item target] from:item];
    }
 }
+#endif
 
 -(void)encodeWithCoder:(NSCoder *)coder {
    [coder encodeObject:_title forKey:@"NSTitle"];
@@ -49,13 +49,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 -initWithCoder:(NSCoder *)coder {
    if([coder allowsKeyedCoding]){
     NSKeyedUnarchiver *keyed=(NSKeyedUnarchiver *)coder;
-    
+
     _supermenu=[keyed decodeObjectForKey:@"NSMenu"];
     _title=[[keyed decodeObjectForKey:@"NSTitle"] copy];
     _name=[[keyed decodeObjectForKey:@"NSName"] copy];
-    
+
     _itemArray=[[NSMutableArray alloc] initWithArray:[keyed decodeObjectForKey:@"NSMenuItems"]];
-    _autoenablesItems=![keyed decodeBoolForKey:@"NSNoAutoenable"];    
+    _autoenablesItems=![keyed decodeBoolForKey:@"NSNoAutoenable"];
    }
    else {
     [NSException raise:NSInvalidArgumentException format:@"%@ can not initWithCoder:%@",isa,[coder class]];
@@ -84,14 +84,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 -copyWithZone:(NSZone *)zone {
 	NSMenu *copy=NSCopyObject(self, 0, zone);
-	
+
 	copy->_title=[_title copyWithZone:zone];
 	copy->_name=[_name copyWithZone:zone];
 	copy->_itemArray = [[NSMutableArray alloc] init];
 	for (NSMenuItem *item in _itemArray) {
 		[copy addItem: [[item copyWithZone:zone] autorelease]];
     }
-	
+
 	return copy;
 }
 
@@ -179,7 +179,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 -(int)indexOfItemWithRepresentedObject:object {
    int i,count=[_itemArray count];
-   
+
    for(i=0;i<count;i++)
     if([[(NSMenuItem *)[_itemArray objectAtIndex:i] representedObject] isEqual:object])
      return i;
@@ -208,7 +208,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 -(int)indexOfItemWithSubmenu:(NSMenu *)submenu {
     int i, count=[_itemArray count];
 
-    for (i = 0; i < count; ++i) 
+    for (i = 0; i < count; ++i)
         if ([[_itemArray objectAtIndex:i] submenu] == submenu)
             return i;
 
@@ -275,22 +275,22 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 BOOL itemIsEnabled(NSMenuItem *item) {
     BOOL enabled=NO;
-    
+
     if([item action]!=NULL){
         id target=[item target];
-        
+
         target=[NSApp targetForAction:[item action] to:[item target] from:nil];
-        
+
         if ((target == nil) || ![target respondsToSelector:[item action]]) {
             enabled = NO;
         } else if ([target respondsToSelector:@selector(validateMenuItem:)]) {
             enabled = [target validateMenuItem:item];
         } else if ([target respondsToSelector:@selector(validateUserInterfaceItem:)]) { // New validation scheme
-            enabled = [target validateUserInterfaceItem:item];
+            // enabled = [target validateUserInterfaceItem:item];
         } else {
             enabled = YES;
         }
-    } 
+    }
 
     return enabled;
 }
@@ -301,20 +301,20 @@ BOOL itemIsEnabled(NSMenuItem *item) {
     }
 
     int i,count=[_itemArray count];
-    
+
     for(i=0;i<count;i++){
         NSMenuItem *item=[_itemArray objectAtIndex:i];
-        
+
         if(_autoenablesItems){
             BOOL enabled = itemIsEnabled(item) ? YES : NO;
             BOOL currentlyEnabled = [item isEnabled] ? YES : NO;
-            
-            if(enabled!=currentlyEnabled && ![item _binderForBinding:@"enabled" create:NO]){
-                [item setEnabled:enabled];
-                [self itemChanged:item];
-            }
+
+            // if(enabled!=currentlyEnabled && ![item _binderForBinding:@"enabled" create:NO]){
+            //     [item setEnabled:enabled];
+            //     [self itemChanged:item];
+            // }
         }
-        
+
         [[item submenu] update];
     }
 }
@@ -326,17 +326,17 @@ BOOL itemIsEnabled(NSMenuItem *item) {
     int       i,count=[_itemArray count];
     NSString *characters=[event charactersIgnoringModifiers];
     unsigned  modifiers=[event modifierFlags];
-    
+
     if (_autoenablesItems)
         [self update];
-    
+
     for(i=0;i<count;i++){
         NSMenuItem *item=[_itemArray objectAtIndex:i];
         unsigned    itemModifiers=[item keyEquivalentModifierMask]&(NSCommandKeyMask|NSAlternateKeyMask);
         NSString *key=[item keyEquivalent];
-        
+
         if((modifiers&(NSCommandKeyMask|NSAlternateKeyMask))==itemModifiers){
-            
+
             if([key isEqualToString:characters]){
                 /* This *must* accurately reflect menu validation when ignoring or processing
                     key equivalents. Relying on update to keep isEnabled in the proper state is
@@ -346,11 +346,11 @@ BOOL itemIsEnabled(NSMenuItem *item) {
                     return [NSApp sendAction:[item action] to:[item target] from:item];
             }
         }
-        
+
         if([[item submenu] performKeyEquivalent:event])
             return YES;
     }
-    
+
     return NO;
 }
 
@@ -373,15 +373,15 @@ BOOL itemIsEnabled(NSMenuItem *item) {
     return self;
    else {
     int i,count=[_itemArray count];
-    
+
     for(i=0;i<count;i++){
      NSMenu *check=[[[_itemArray objectAtIndex:i] submenu] _menuWithName:name];
-     
+
      if(check!=nil)
       return check;
     }
-   }   
-   
+   }
+
    return nil;
 }
 

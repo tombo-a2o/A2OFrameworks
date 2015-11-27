@@ -7,13 +7,9 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
 #import <AppKit/NSResponder.h>
-#import <AppKit/NSAlert.h>
 #import <AppKit/NSEvent.h>
-#import <AppKit/NSKeyboardBindingManager.h>
-#import <AppKit/NSKeyboardBinding.h>
 #import <AppKit/NSApplication.h>
 #import <Foundation/NSKeyedArchiver.h>
-#import <AppKit/NSGraphics.h>
 #import <AppKit/NSRaise.h>
 #import <objc/runtime.h>
 
@@ -25,8 +21,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 -initWithCoder:(NSCoder *)coder {
    if([coder allowsKeyedCoding]){
     // NSKeyedUnarchiver *keyed=(NSKeyedUnarchiver *)coder;
-    
-    //; _nextResponder=[keyed decodeObjectForKey:@"NSNextResponder"]; 
+
+    //; _nextResponder=[keyed decodeObjectForKey:@"NSNextResponder"];
    }
    return self;
 }
@@ -65,6 +61,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         [_nextResponder doCommandBySelector:selector];
 }
 
+#if 0
 -(void)interpretKeyEvents:(NSArray *)events {
    int i,icount=[events count];
 
@@ -84,12 +81,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     }
     else if([self respondsToSelector:@selector(insertText:)]){
      string=[event characters];
- 
-     if([string length]>0){ // FIX THIS IN APPKIT shouldnt get 0 length 
+
+     if([string length]>0){ // FIX THIS IN APPKIT shouldnt get 0 length
 
       unsigned j,length=[string length];
       unichar  buffer[length];
-		
+
       [string getCharacters:buffer];
       for(j=0;j<length;j++){
        unichar check=buffer[j];
@@ -108,7 +105,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     }
    }
 }
-
+#endif
 -(BOOL)performKeyEquivalent:(NSEvent *)event {
    return NO;
 }
@@ -123,8 +120,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 }
 
 -(void)noResponderFor:(SEL)action {
-   if(sel_isEqual(action,@selector(keyDown:)))
-    NSBeep();
 }
 
 -(BOOL)acceptsFirstResponder {
@@ -155,7 +150,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 			newError = [delegate application:NSApp willPresentError:error];
 		else
 			newError = error;
-		
+
 		NSError *strippedError; //newError stripped of its recovery options if necessary
 		BOOL needToRemoveOptions=NO;
 		BOOL validRecoveryAttempter=NO;
@@ -179,11 +174,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 			[newUserInfo removeObjectForKey:NSLocalizedRecoveryOptionsErrorKey];
 			strippedError = [NSError errorWithDomain:[newError domain] code:[newError code] userInfo:newUserInfo];
 		}
-		else 
+		else
 			strippedError = newError;
-		NSInteger alertButton=[[NSAlert alertWithError:strippedError] runModal];
-		if (validRecoveryAttempter)
-			result = [recoveryAttempter attemptRecoveryFromError:strippedError optionIndex:alertButton];
+		// NSInteger alertButton=[[NSAlert alertWithError:strippedError] runModal];
+		// if (validRecoveryAttempter)
+		// 	result = [recoveryAttempter attemptRecoveryFromError:strippedError optionIndex:alertButton];
 	}
 	else {
 		//Forward message to nextResponder or to NSApp if there is no nextResponder

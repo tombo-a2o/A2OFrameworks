@@ -10,8 +10,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 // Reviewed for API completeness against 10.6.
 
 #import <AppKit/NSResponder.h>
-#import <AppKit/NSGraphics.h>
-#import <AppKit/NSAnimation.h>
+//#import <AppKit/NSGraphics.h>
+//#import <AppKit/NSAnimation.h>
 #import <AppKit/AppKitExport.h>
 #import <CoreGraphics/CoreGraphics.h>
 //#import <CoreGraphics/CoreGraphics.h>
@@ -67,7 +67,7 @@ APPKIT_EXPORT NSString *const NSViewFrameDidChangeNotification;
 APPKIT_EXPORT NSString *const NSViewBoundsDidChangeNotification;
 APPKIT_EXPORT NSString *const NSViewFocusDidChangeNotification;
 
-@interface NSView : NSResponder <NSAnimatablePropertyContainer> {
+@interface NSView : NSResponder {
     NSRect _frame;
     NSRect _bounds;
     NSWindow *_window;
@@ -99,7 +99,6 @@ APPKIT_EXPORT NSString *const NSViewFocusDidChangeNotification;
     CGAffineTransform _transformToWindow;
     CGAffineTransform _transformToLayer;
     NSRect _visibleRect;
-    NSFocusRingType _focusRingType;
 
     BOOL _wantsLayer;
     CALayer *_layer;
@@ -116,7 +115,6 @@ APPKIT_EXPORT NSString *const NSViewFocusDidChangeNotification;
 
 + (NSView *)focusView;
 + (NSMenu *)defaultMenu;
-+ (NSFocusRingType)defaultFocusRingType;
 
 - initWithFrame:(NSRect)frame;
 
@@ -144,7 +142,6 @@ APPKIT_EXPORT NSString *const NSViewFocusDidChangeNotification;
 - (NSArray *)subviews;
 - (BOOL)autoresizesSubviews;
 - (unsigned)autoresizingMask;
-- (NSFocusRingType)focusRingType;
 
 - (int)tag;
 - (BOOL)isFlipped;
@@ -210,7 +207,6 @@ APPKIT_EXPORT NSString *const NSViewFocusDidChangeNotification;
 - (void)setPostsBoundsChangedNotifications:(BOOL)flag;
 
 - (void)addSubview:(NSView *)view;
-- (void)addSubview:(NSView *)view positioned:(NSWindowOrderingMode)ordering relativeTo:(NSView *)relativeTo;
 - (void)replaceSubview:(NSView *)oldView with:(NSView *)newView;
 - (void)setSubviews:(NSArray *)newSubviews;
 - (void)sortSubviewsUsingFunction:(NSComparisonResult (*)(id, id, void *))compareFunction context:(void *)context;
@@ -218,7 +214,6 @@ APPKIT_EXPORT NSString *const NSViewFocusDidChangeNotification;
 - (void)willRemoveSubview:(NSView *)subview;
 - (void)setAutoresizesSubviews:(BOOL)flag;
 - (void)setAutoresizingMask:(unsigned int)mask;
-- (void)setFocusRingType:(NSFocusRingType)value;
 
 - (void)setNextKeyView:(NSView *)next;
 - (BOOL)acceptsFirstMouse:(NSEvent *)event;

@@ -8,7 +8,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <AppKit/NSWindowController.h>
 #import <AppKit/NSWindow.h>
 #import <AppKit/NSNibLoading.h>
-#import <AppKit/NSDocument.h>
 #import <AppKit/NSNib.h>
 #import <AppKit/NSApplication.h>
 
@@ -18,7 +17,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
    _window=[window retain];
    [_window setWindowController:self];
    [_window setReleasedWhenClosed:NO];
-   
+
    if(_window!=nil)
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_windowWillClose:) name:NSWindowWillCloseNotification object:_window];
 
@@ -72,12 +71,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 -(NSWindow *)window {
    if(_window==nil && [self windowNibPath]!=nil){
     [self windowWillLoad];
-    [_document windowControllerWillLoadNib:self];
+    // [_document windowControllerWillLoadNib:self];
 
     [self loadWindow];
 
     [self windowDidLoad];
-    [_document windowControllerDidLoadNib:self];
+    // [_document windowControllerDidLoadNib:self];
    }
 
    return _window;
@@ -85,37 +84,27 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 -(void)setWindow:(NSWindow *)window {
    NSNotificationCenter *center=[NSNotificationCenter defaultCenter];
-   
-   
+
+
    if (_window)
     [center removeObserver:self name:NSWindowWillCloseNotification object:_window];
-    
+
    window=[window retain];
 
    [_window setWindowController:nil];
    [_window release];
 
    _window=window;
-   
+
    [_window setWindowController:self];
    [_window setReleasedWhenClosed:NO];
-   
+
    if (_window)
     [center addObserver:self selector:@selector(_windowWillClose:) name:NSWindowWillCloseNotification object:_window];
 }
 
 -(void)_windowWillClose:(NSNotification *)note {
 	[self setWindow:nil];
-
-	if (_document){
-   [[self retain] autorelease];
-
-   if([self shouldCloseDocument] || [[_document windowControllers] count]==1)
-    [_document close];
-   else {
-    [_document removeWindowController:self];
-   }
-  }
 }
 
 -(BOOL)isWindowLoaded {
@@ -127,7 +116,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     static       NSPoint cascadeTopLeftSavedPoint={0.0, 0.0};
     NSString     *path=[self windowNibPath];
     NSDictionary *nameTable;
-   
+
     _topLevelObjects = [[NSMutableArray alloc] init];
     nameTable=[NSDictionary dictionaryWithObjectsAndKeys:_owner, NSNibOwner, _topLevelObjects, NSNibTopLevelObjects, nil];
 
@@ -136,7 +125,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     }
 
     [self synchronizeWindowTitleWithDocumentName];
-   
+
     if (_shouldCascadeWindows)
        cascadeTopLeftSavedPoint=[_window cascadeTopLeftFromPoint:cascadeTopLeftSavedPoint];
    }
@@ -219,18 +208,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
    return _windowFrameAutosaveName;
 }
 
--(void)synchronizeWindowTitleWithDocumentName {
-   if(_document!=nil && _window!=nil){
-    NSString *displayName=[_document displayName];
-    NSString *title=[self windowTitleForDocumentDisplayName:displayName];
-    NSString *path=[_document fileName];
-
-    [_window setTitle:title];
-   }
-}
-
 -(NSString *)windowTitleForDocumentDisplayName:(NSString *)displayName {
-  NSString *appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleName"]; 
+  NSString *appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleName"];
   if (appName)
     return [NSString stringWithFormat:@"%@ - %@", displayName, appName];
   else

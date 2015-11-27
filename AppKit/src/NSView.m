@@ -12,21 +12,15 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <AppKit/NSEvent.h>
 #import <AppKit/NSWindow-Private.h>
 #import <AppKit/NSCursor.h>
-#import <AppKit/NSCursorRect.h>
 #import <AppKit/NSTrackingArea.h>
 #import <AppKit/NSMenu.h>
-#import <AppKit/NSScrollView.h>
-#import <AppKit/NSClipView.h>
-#import <AppKit/NSColor.h>
-#import <AppKit/NSGraphics.h>
-#import <AppKit/NSGraphicsContextFunctions.h>
-#import <AppKit/NSDraggingManager.h>
-#import <AppKit/NSDragging.h>
-#import <AppKit/NSPrintOperation.h>
-#import <AppKit/NSPrintInfo.h>
+//#import <AppKit/NSScrollView.h>
+//#import <AppKit/NSClipView.h>
+//#import <AppKit/NSColor.h>
+//#import <AppKit/NSGraphics.h>
+//#import <AppKit/NSGraphicsContextFunctions.h>
 #import <Foundation/NSKeyedArchiver.h>
 #import <AppKit/NSPasteboard.h>
-#import <AppKit/NSObject+BindingSupport.h>
 #import <Onyx2D/O2Context.h>
 #import <AppKit/NSRaise.h>
 #import <AppKit/NSViewBackingLayer.h>
@@ -54,15 +48,10 @@ static BOOL NSViewLayersEnabled=NO;
 }
 
 +(NSView *)focusView {
-   return [NSCurrentFocusStack() lastObject];
+   return nil;//[NSCurrentFocusStack() lastObject];
 }
 
 +(NSMenu *)defaultMenu {
-   return nil;
-}
-
-+(NSFocusRingType)defaultFocusRingType {
-   NSUnimplementedMethod();
    return nil;
 }
 
@@ -158,7 +147,7 @@ static BOOL NSViewLayersEnabled=NO;
 -(void)dealloc {
 
 	// Do this first?
-	[self _unbindAllBindings];
+//	[self _unbindAllBindings];
 
    _window=nil;
    [_menu release];
@@ -421,10 +410,6 @@ static inline void buildTransformsIfNeeded(NSView *self) {
 
 -(unsigned)autoresizingMask {
    return _autoresizingMask;
-}
-
--(NSFocusRingType)focusRingType {
-   return _focusRingType;
 }
 
 -(int)tag {
@@ -891,17 +876,6 @@ static inline void buildTransformsIfNeeded(NSView *self) {
    [self _insertSubview:view atIndex:NSNotFound];
 }
 
--(void)addSubview:(NSView *)view positioned:(NSWindowOrderingMode)ordering relativeTo:(NSView *)relativeTo {
-   unsigned index=[_subviews indexOfObjectIdenticalTo:relativeTo];
-
-   if(index==NSNotFound)
-    index=(ordering==NSWindowBelow)?0:NSNotFound;
-   else
-    index=(ordering==NSWindowBelow)?index:((index+1==[_subviews count])?NSNotFound:index+1);
-
-   [self _insertSubview:view atIndex:index];
-}
-
 -(void)replaceSubview:(NSView *)oldView with:(NSView *)newView {
    unsigned index=[_subviews indexOfObjectIdenticalTo:oldView];
 
@@ -941,11 +915,6 @@ static inline void buildTransformsIfNeeded(NSView *self) {
 
 -(void)setAutoresizingMask:(unsigned int)mask {
    _autoresizingMask=mask;
-}
-
--(void)setFocusRingType:(NSFocusRingType)value {
-   _focusRingType=value;
-   [self setNeedsDisplay:YES];
 }
 
 -(void)setTag:(int)tag {
@@ -1022,49 +991,49 @@ static inline void buildTransformsIfNeeded(NSView *self) {
 }
 
 -(void)addCursorRect:(NSRect)rect cursor:(NSCursor *)cursor {
-   NSCursorRect *cursorRect=[[NSCursorRect alloc] initWithCursor:cursor];
-   NSTrackingArea *area=nil;
-
-   area=[[NSTrackingArea alloc] _initWithRect:rect options:NSTrackingCursorUpdate|NSTrackingActiveInKeyWindow owner:cursorRect userData:NULL retainUserData:NO isToolTip:NO isLegacy:YES];
-   [_trackingAreas addObject:area];
-   [area release];
-   [cursorRect release];
-
-   [self _trackingAreasChanged];
+   // NSCursorRect *cursorRect=[[NSCursorRect alloc] initWithCursor:cursor];
+   // NSTrackingArea *area=nil;
+   //
+   // area=[[NSTrackingArea alloc] _initWithRect:rect options:NSTrackingCursorUpdate|NSTrackingActiveInKeyWindow owner:cursorRect userData:NULL retainUserData:NO isToolTip:NO isLegacy:YES];
+   // [_trackingAreas addObject:area];
+   // [area release];
+   // [cursorRect release];
+   //
+   // [self _trackingAreasChanged];
 }
 
 -(void)removeCursorRect:(NSRect)rect cursor:(NSCursor *)cursor {
-   NSInteger count=[_trackingAreas count];
-
-   while(--count>=0){
-    NSTrackingArea *area=[_trackingAreas objectAtIndex:count];
-    NSObject *candidate=[area owner];
-
-    if([area _isLegacy]==YES &&
-       [candidate isKindOfClass:[NSCursorRect class]]==YES &&
-       [(NSCursorRect *)candidate cursor]==cursor){
-     [_trackingAreas removeObjectAtIndex:count];
-     break;
-    }
-   }
-
-   [self _trackingAreasChanged];
+   // NSInteger count=[_trackingAreas count];
+   //
+   // while(--count>=0){
+   //  NSTrackingArea *area=[_trackingAreas objectAtIndex:count];
+   //  NSObject *candidate=[area owner];
+   //
+   //  if([area _isLegacy]==YES &&
+   //     [candidate isKindOfClass:[NSCursorRect class]]==YES &&
+   //     [(NSCursorRect *)candidate cursor]==cursor){
+   //   [_trackingAreas removeObjectAtIndex:count];
+   //   break;
+   //  }
+   // }
+   //
+   // [self _trackingAreasChanged];
 }
 
 -(void)discardCursorRects {
-   NSInteger count=[_trackingAreas count];
-
-   while(--count>=0){
-    NSTrackingArea *area=[_trackingAreas objectAtIndex:count];
-
-    if([area _isLegacy]==YES && ([area options]&NSTrackingCursorUpdate)){
-     [_trackingAreas removeObjectAtIndex:count];
-    }
-   }
-
-   [[self subviews] makeObjectsPerformSelector:_cmd];
-
-   [self _trackingAreasChanged];
+   // NSInteger count=[_trackingAreas count];
+   //
+   // while(--count>=0){
+   //  NSTrackingArea *area=[_trackingAreas objectAtIndex:count];
+   //
+   //  if([area _isLegacy]==YES && ([area options]&NSTrackingCursorUpdate)){
+   //   [_trackingAreas removeObjectAtIndex:count];
+   //  }
+   // }
+   //
+   // [[self subviews] makeObjectsPerformSelector:_cmd];
+   //
+   // [self _trackingAreasChanged];
 }
 
 -(void)resetCursorRects {
@@ -1346,15 +1315,16 @@ static inline void buildTransformsIfNeeded(NSView *self) {
 }
 
 -(void)scrollPoint:(NSPoint)point {
-   NSClipView *clipView=[self _enclosingClipView];
-
-   if(clipView!=nil){
-    NSPoint origin=[self convertPoint:point toView:clipView];
-
-    [clipView scrollToPoint:origin];
-   }
+   // NSClipView *clipView=[self _enclosingClipView];
+   //
+   // if(clipView!=nil){
+   //  NSPoint origin=[self convertPoint:point toView:clipView];
+   //
+   //  [clipView scrollToPoint:origin];
+   // }
 }
 
+#if 0
 -(BOOL)scrollRectToVisible:(NSRect)rect {
     NSClipView *clipView = [self _enclosingClipView];
     NSView *documentView = [clipView documentView];
@@ -1408,6 +1378,7 @@ static inline void buildTransformsIfNeeded(NSView *self) {
     }
     return NO;
 }
+#endif
 
 -(void)scrollClipView:(NSClipView *)clipView toPoint:(NSPoint)newOrigin {
    NSUnimplementedMethod();
@@ -1683,9 +1654,6 @@ static void clearInvalidRects(NSView *self){
 }
 
 static void clearNeedsDisplay(NSView *self){
-	if ([NSGraphicsContext inQuartzDebugMode]) {
-		return;
-	}
    clearInvalidRects(self);
    self->_needsDisplay=NO;
 }
@@ -1757,82 +1725,12 @@ static void clearNeedsDisplay(NSView *self){
    NSUnimplementedMethod();
 }
 
-static NSGraphicsContext *graphicsContextForView(NSView *view){
-   if(view->_layer!=nil){
-    NSRect             frame=[view frame];
-    size_t             width=frame.size.width;
-    size_t             height=frame.size.height;
-    CGColorSpaceRef    colorSpace=CGColorSpaceCreateDeviceRGB();
-    CGContextRef       context=CGBitmapContextCreate(NULL,width,height,8,0,colorSpace,kCGImageAlphaPremultipliedFirst|kCGBitmapByteOrder32Host);
-    NSGraphicsContext *result=[NSGraphicsContext graphicsContextWithGraphicsPort:context flipped:NO];
-
-    CGColorSpaceRelease(colorSpace);
-    CGContextRelease(context);
-
-    return result;
-   }
-
-   return [[view window] graphicsContext];
-}
-
--(void)_lockFocusInContext:(NSGraphicsContext *)context {
-    assert(context);
-
-    CGContextRef graphicsPort=[context graphicsPort];
-
-    [NSGraphicsContext saveGraphicsState];
-    [NSGraphicsContext setCurrentContext:context];
-
-    [[context focusStack] addObject:self];
-
-    CGContextSaveGState(graphicsPort);
-    CGContextResetClip(graphicsPort);
-
-    if(_layer!=nil)
-     CGContextSetCTM(graphicsPort,[self transformToLayer]);
-    else
-     CGContextSetCTM(graphicsPort,[self transformToWindow]);
-
-    CGContextClipToRect(graphicsPort,[self visibleRect]);
-
-    [self setUpGState];
-}
-
--(void)lockFocus {
-   [self _lockFocusInContext:graphicsContextForView(self)];
-}
-
 -(BOOL)lockFocusIfCanDraw {
    if([self canDraw]){
     [self lockFocus];
     return YES;
    }
    return NO;
-}
-
--(BOOL)lockFocusIfCanDrawInContext:(NSGraphicsContext *)context {
-   if(context!=nil){
-    [self _lockFocusInContext:context];
-    return YES;
-   }
-   return NO;
-}
-
-
--(void)unlockFocus {
-   NSGraphicsContext *graphicsContext=[NSGraphicsContext currentContext];
-   CGContextRef       context=[graphicsContext graphicsPort];
-
-   if(_layer!=nil){
-    CGImageRef image=CGBitmapContextCreateImage(context);
-
-    [_layer setContents:image];
-   }
-
-   CGContextRestoreGState(context);
-
-   [[graphicsContext focusStack] removeLastObject];
-   [NSGraphicsContext restoreGraphicsState];
 }
 
 -(BOOL)needsToDrawRect:(NSRect)rect {
@@ -2103,6 +2001,7 @@ static NSGraphicsContext *graphicsContextForView(NSView *view){
    return [[self superview] autoscroll:event];
 }
 
+#if 0
 -(void)scrollRect:(NSRect)rect by:(NSSize)delta {
    NSPoint point=rect.origin;
 
@@ -2114,14 +2013,11 @@ static NSGraphicsContext *graphicsContextForView(NSView *view){
     [self unlockFocus];
    }
 }
+#endif
 
 -(BOOL)mouseDownCanMoveWindow {
    NSUnimplementedMethod();
    return NO;
-}
-
--(void)print:sender {
-   [[NSPrintOperation printOperationWithView:self] runOperation];
 }
 
 -(void)beginDocument {
@@ -2130,6 +2026,7 @@ static NSGraphicsContext *graphicsContextForView(NSView *view){
 -(void)endDocument {
 }
 
+#if 0
 -(void)beginPageInRect:(NSRect)rect atPlacement:(NSPoint)placement {
    CGContextRef      graphicsPort=NSCurrentGraphicsPort();
    CGRect            mediaBox=NSMakeRect(0,0,rect.size.width,rect.size.height);
@@ -2161,6 +2058,7 @@ static NSGraphicsContext *graphicsContextForView(NSView *view){
    CGContextEndPage(graphicsPort);
    [NSCurrentFocusStack() removeLastObject];
 }
+#endif
 
 -(NSAttributedString *)pageHeader {
    NSUnimplementedMethod();
@@ -2214,24 +2112,6 @@ static NSGraphicsContext *graphicsContextForView(NSView *view){
    return NSZeroRect;
 }
 
--(NSData *)dataWithEPSInsideRect:(NSRect)rect {
-   NSMutableData    *result=[NSMutableData data];
-   NSPrintOperation *operation=[NSPrintOperation EPSOperationWithView:self insideRect:rect toData:result];
-
-   [operation runOperation];
-
-   return result;
-}
-
--(NSData *)dataWithPDFInsideRect:(NSRect)rect {
-   NSMutableData    *result=[NSMutableData data];
-   NSPrintOperation *operation=[NSPrintOperation PDFOperationWithView:self insideRect:rect toData:result];
-
-   [operation runOperation];
-
-   return result;
-}
-
 -(void)writeEPSInsideRect:(NSRect)rect toPasteboard:(NSPasteboard *)pasteboard {
    NSData *data=[self dataWithEPSInsideRect:rect];
 
@@ -2246,20 +2126,11 @@ static NSGraphicsContext *graphicsContextForView(NSView *view){
    [pasteboard setData:data forType:NSPDFPboardType];
 }
 
--(void)dragImage:(NSImage *)image at:(NSPoint)location offset:(NSSize)offset event:(NSEvent *)event pasteboard:(NSPasteboard *)pasteboard source:source slideBack:(BOOL)slideBack {
-	location = [self convertPoint:location toView:nil];
-   [[NSDraggingManager draggingManager] dragImage:image at:location offset:offset event:event pasteboard:pasteboard source:source slideBack:slideBack];
-}
-
--(BOOL)dragFile:(NSString *)path fromRect:(NSRect)rect slideBack:(BOOL)slideBack event:(NSEvent *)event {
-   NSUnimplementedMethod();
-   return NO;
-}
-
 -(BOOL)acceptsFirstResponder {
    return NO;
 }
 
+#if 0
 -(void)scrollWheel:(NSEvent *)event {
     NSScrollView *scrollView=[self enclosingScrollView];
 
@@ -2289,6 +2160,7 @@ static NSGraphicsContext *graphicsContextForView(NSView *view){
         [documentView scrollRectToVisible:visible];
     }
 }
+#endif
 
 -(BOOL)performKeyEquivalent:(NSEvent *)event {
    int i,count=[_subviews count];
@@ -2315,41 +2187,6 @@ static NSGraphicsContext *graphicsContextForView(NSView *view){
 
 -(void)rightMouseDown:(NSEvent *)event {
    [NSMenu popUpContextMenu:[self menuForEvent:event] withEvent:event forView:self];
-}
-
-
-// default NSDraggingDestination
--(NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender {
-   return NSDragOperationNone;
-}
-
--(NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)sender {
-   return [sender draggingSourceOperationMask];
-}
-
--(void)draggingExited:(id <NSDraggingInfo>)sender {
-   // do nothing
-}
-
--(BOOL)prepareForDragOperation:(id <NSDraggingInfo>)sender {
-   return NO;
-}
-
--(BOOL)performDragOperation:(id <NSDraggingInfo>)sender {
-   return NO;
-}
-
--(void)concludeDragOperation:(id <NSDraggingInfo>)sender {
-   // do nothing
-}
-
--(NSArray *)_draggedTypes {
-   return _draggedTypes;
-}
-
-- (BOOL)dragPromisedFilesOfTypes:(NSArray *)types fromRect:(NSRect)rect source:(id)source slideBack:(BOOL)slideBack event:(NSEvent *)event {
-   NSUnimplementedMethod();
-   return NO;
 }
 
 -(NSPoint)convertPointFromBase:(NSPoint)aPoint; {

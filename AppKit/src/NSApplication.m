@@ -8,27 +8,17 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #import <AppKit/NSApplication.h>
 #import <AppKit/NSWindow-Private.h>
-#import <AppKit/NSPanel.h>
 #import <AppKit/NSMenu.h>
 #import <AppKit/NSMenuItem.h>
 #import <AppKit/NSEvent.h>
-#import <AppKit/NSModalSessionX.h>
-#import <AppKit/NSNibLoading.h>
 #import <AppKit/NSScreen.h>
-#import <AppKit/NSColorPanel.h>
+//#import <AppKit/NSColorPanel.h>
 #import <AppKit/NSDisplay.h>
-#import <AppKit/NSPageLayout.h>
-#import <AppKit/NSDocumentController.h>
-#import <AppKit/NSImage.h>
-#import <AppKit/NSImageView.h>
-#import <AppKit/NSSheetContext.h>
-#import <AppKit/NSSystemInfoPanel.h>
-#import <AppKit/NSAlert.h>
 #import <AppKit/NSWorkspace.h>
-#import <AppKit/NSDockTile.h>
+//#import <AppKit/NSDockTile.h>
 #import <CoreGraphics/CGWindow.h>
 #import <AppKit/NSRaise.h>
-#import <AppKit/NSSpellChecker.h>
+//#import <AppKit/NSSpellChecker.h>
 #import <objc/message.h>
 #import <pthread.h>
 #import <emscripten.h>
@@ -62,16 +52,8 @@ NSString * const NSApplicationWillTerminateNotification=@"NSApplicationWillTermi
 
 NSString * const NSApplicationDidChangeScreenParametersNotification=@"NSApplicationDidChangeScreenParametersNotification";
 
-@interface NSDocumentController(forward)
--(void)_updateRecentDocumentsMenu;
-@end
-
 @interface NSMenu(Private)
 -(NSMenu *)_menuWithName:(NSString *)name;
-@end
-
-@interface NSDockTile(Private)
--initWithOwner:owner;
 @end
 
 @implementation NSApplication
@@ -91,6 +73,7 @@ id NSApp=nil;
     NSUnimplementedMethod();
 }
 
+#if 0
 -(void)_showSplashImage {
     NSImage *image=[NSImage imageNamed:@"splash"];
 
@@ -125,6 +108,7 @@ id NSApp=nil;
      }
     }
 }
+#endif
 
 static EM_BOOL sendTouchEvnetToApp(int eventType, const EmscriptenTouchEvent *touchEvent, void *userData) {
     NSLog(@"event %d", eventType);
@@ -210,14 +194,13 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
     _windows=[NSMutableArray new];
     _mainMenu=nil;
 
-    _dockTile=[[NSDockTile alloc] initWithOwner:self];
     _modalStack=[NSMutableArray new];
 
     _lock=NSZoneMalloc(NULL,sizeof(pthread_mutex_t));
 
     pthread_mutex_init(_lock,NULL);
 
-    [self _showSplashImage];
+//    [self _showSplashImage];
 
     emscripten_set_touchstart_callback(NULL, NULL, TRUE, sendTouchEvnetToApp);
     emscripten_set_touchend_callback(NULL, NULL, TRUE, sendTouchEvnetToApp);
@@ -293,10 +276,6 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
     _keyWindow=window;
 }
 
--(NSImage *)applicationIconImage {
-    return _applicationIconImage;
-}
-
 -(BOOL)isActiveExcludingWindow:(NSWindow *)exclude {
     int count=[_windows count];
 
@@ -337,20 +316,6 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
         [[_windows objectAtIndex:count] miniaturize:sender];
 }
 
--(NSArray *)orderedDocuments {
-    NSMutableArray *result=[NSMutableArray array];
-    NSArray        *orderedWindows=[self orderedWindows];
-
-    for(NSWindow *checkWindow in orderedWindows){
-        NSDocument *checkDocument=[[checkWindow windowController] document];
-
-        if(checkDocument!=nil)
-            [result addObject:checkDocument];
-    }
-
-    return result;
-}
-
 -(NSArray *)orderedWindows {
     extern NSArray *CGSOrderedWindowNumbers();
 
@@ -360,8 +325,8 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
     for(NSNumber *number in numbers){
         NSWindow *window=[self windowWithWindowNumber:[number integerValue]];
 
-        if(window!=nil && ![window isKindOfClass:[NSPanel class]])
-                               [result addObject:window];
+        // if(window!=nil && ![window isKindOfClass:[NSPanel class]])
+       [result addObject:window];
     }
 
     return result;
@@ -431,21 +396,13 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
     for(i=0;i<count;i++){
         NSWindow *window=[_windows objectAtIndex:i];
 
-        if(![window isKindOfClass:[NSPanel class]])
-                  [window setMenu:_mainMenu];
+        // if(![window isKindOfClass:[NSPanel class]])
+      [window setMenu:_mainMenu];
     }
 }
 
 -(void)setMenu:(NSMenu *)menu {
    [self setMainMenu:menu];
-}
-
--(void)setApplicationIconImage:(NSImage *)image {
-    image=[image retain];
-    [_applicationIconImage release];
-    _applicationIconImage=image;
-
-    [image setName: @"NSApplicationIcon"];
 }
 
 -(void)setWindowsMenu:(NSMenu *)menu {
@@ -503,20 +460,6 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
     }
 }
 
--(void)updateWindowsItem:(NSWindow *)window {
-#if 0
-    NSUnimplementedMethod();
-#else
-    NSMenu *menu=[self windowsMenu];
-    int     itemIndex=[[self windowsMenu] indexOfItemWithTarget:window andAction:@selector(makeKeyAndOrderFront:)];
-
-    if(itemIndex!=-1){
-        NSMenuItem *item=[menu itemAtIndex:itemIndex];
-
-    }
-#endif
-}
-
 -(BOOL)openFiles
 {
     BOOL opened = NO;
@@ -561,28 +504,11 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
         [self reportException:localException];
     NS_ENDHANDLER
 
-    // Load the application icon if we have one
-    NSString* iconName = [[[NSBundle mainBundle]
-    infoDictionary]
-    objectForKey:@"CFBundleIconFile"];
-    if (iconName) {
-        iconName = [iconName stringByAppendingPathExtension: @"icns"];
-        NSImage* image = [NSImage imageNamed: iconName];
-        [self setApplicationIconImage: image];
-    }
-
     // Give us a first event
     [NSTimer scheduledTimerWithTimeInterval:0.1 target:nil
                                    selector:NULL userInfo:nil repeats:NO];
 
-    [self _closeSplashImage];
-
-    NSDocumentController *controller = nil;
-    id types=[[[NSBundle mainBundle]
-    infoDictionary]
-    objectForKey:@"CFBundleDocumentTypes"];
-    if([types count] > 0)
-        controller = [NSDocumentController sharedDocumentController];
+//    [self _closeSplashImage];
 
     if ([self openFiles]) {
         needsUntitled = NO;
@@ -594,15 +520,6 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
 
     if(needsUntitled && _delegate && [_delegate respondsToSelector: @selector(applicationOpenUntitledFile:)]) {
         needsUntitled = ![_delegate applicationOpenUntitledFile: self];
-    }
-
-    if(needsUntitled && controller && ![controller documentClassForType:[controller defaultType]]) {
-        needsUntitled = NO;
-    }
-
-    if(needsUntitled && controller) {
-        [controller _updateRecentDocumentsMenu];
-        [controller newDocument: self];
     }
 
     NS_DURING
@@ -642,7 +559,7 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
     while(--count>=0){
         NSWindow *check=[_windows objectAtIndex:count];
 
-        if(![check isKindOfClass:[NSPanel class]] && [check isVisible]){
+        if([check isVisible]){
             return;
         }
     }
@@ -874,18 +791,11 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
             return target;
     }
 
-    NSDocumentController *documentController = [NSDocumentController sharedDocumentController];
-    if ([[documentController currentDocument] respondsToSelector:action])
-        return [documentController currentDocument];
-
     if([self respondsToSelector:action])
         return self;
 
     if([[self delegate] respondsToSelector:action])
         return [self delegate];
-
-    if([documentController respondsToSelector:action])
-        return documentController;
 
     return nil;
 }
@@ -944,194 +854,6 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
     return [[_modalStack lastObject] modalWindow];
 }
 
--(NSModalSession)beginModalSessionForWindow:(NSWindow *)window {
-   NSModalSessionX *session=[NSModalSessionX sessionWithWindow:window];
-
-   [_modalStack addObject:session];
-
-   [window _hideMenuViewIfNeeded];
-   if(![window isVisible]){
-       [window center];
-   }
-   [window makeKeyAndOrderFront:self];
-
-   return session;
-}
-
--(int)runModalSession:(NSModalSession)session {
-    while([session stopCode]==NSRunContinuesResponse) {
-        NSAutoreleasePool *pool=[NSAutoreleasePool new];
-        NSEvent           *event=[self nextEventMatchingMask:NSAnyEventMask untilDate:[NSDate date] inMode:NSModalPanelRunLoopMode dequeue:YES];
-
-        if(event==nil){
-            [pool release];
-            break;
-        }
-
-        NSWindow          *window=[event window];
-
-
-        // in theory this could get weird, but all we want is the ESC-cancel keybinding, afaik NSApp doesn't respond to any other doCommandBySelectors...
-        if([event type]==NSKeyDown && window == [session modalWindow])
-            [self interpretKeyEvents:[NSArray arrayWithObject:event]];
-
-        if(window==[session modalWindow] || [window worksWhenModal])
-            [self sendEvent:event];
-        else if([event type]==NSLeftMouseDown)
-            [[session modalWindow] makeKeyAndOrderFront:self];
-        else {
-            // We need to preserve some events which are not processed in the modal loop and requeue them.
-            // The particular case we need to handle is mouse down. run modal. then actually receive the mouse up when the modal is done.
-            // So we know this works in Cocoa, save the mouse up here.
-            // We don't want to save mouse moved or such.
-            // There is kind of adhoc, probably a better way to do it, find out which combinations should work (e.g. mouse enter, do we get mouse exit?)
-            if([[session unprocessedEvents] count]==0){
-
-                switch([event type]){
-
-                case NSLeftMouseUp:
-                case NSRightMouseUp:
-                    [session addUnprocessedEvent: event];
-                    break;
-                default:
-                    // don't save
-                    break;
-                }
-            }
-        }
-        [pool release];
-    }
-
-
-    return [session stopCode];
-}
-
--(void)endModalSession:(NSModalSession)session {
-    if(session!=[_modalStack lastObject])
-        [NSException raise:NSInvalidArgumentException format:@"-[%@ %s] modal session %@ is not the current one %@",[self class],sel_getName(_cmd),session,[_modalStack lastObject]];
-
-    for(NSEvent *requeue in [session unprocessedEvents]){
-        [self postEvent:requeue atStart:YES];
-    }
-
-    [[session modalWindow] _showMenuViewIfNeeded];
-    [_modalStack removeLastObject];
-}
-
--(void)stopModalWithCode:(int)code {
-    // This should silently ignore any attempt to end a session when there is none.
-    [[_modalStack lastObject] stopModalWithCode:code];
-}
-
--(void)_mainThreadRunModalForWindow:(NSMutableDictionary *)values {
-    NSWindow *window=[values objectForKey:@"NSWindow"];
-
-    NSModalSession session=[self beginModalSessionForWindow:window];
-    int result;
-
-    while((result=[NSApp runModalSession:session])==NSRunContinuesResponse){
-     [[NSRunLoop currentRunLoop] runMode:NSModalPanelRunLoopMode beforeDate:[NSDate distantFuture]];
-    }
-
-    [self endModalSession:session];
-
-    [values setObject:[NSNumber numberWithInteger:result] forKey:@"result"];
-}
-
--(int)runModalForWindow:(NSWindow *)window {
-    NSMutableDictionary *values=[NSMutableDictionary dictionary];
-
-    [values setObject:window forKey:@"NSWindow"];
-
-    [self performSelectorOnMainThread:@selector(_mainThreadRunModalForWindow:) withObject:values waitUntilDone:YES modes:[NSArray arrayWithObjects:NSDefaultRunLoopMode,NSModalPanelRunLoopMode,nil]];
-
-    NSNumber *result=[values objectForKey:@"result"];
-
-    return [result integerValue];
-}
-
-
--(void)stopModal {
-    [self stopModalWithCode:NSRunStoppedResponse];
-}
-
--(void)abortModal {
-    [self stopModalWithCode:NSRunAbortedResponse];
-}
-
-// cancel modal windows
--(void)cancel:sender {
-    if ([self modalWindow] != nil)
-        [self abortModal];
-}
-
--(void)beginSheet:(NSWindow *)sheet modalForWindow:(NSWindow *)window modalDelegate:modalDelegate didEndSelector:(SEL)didEndSelector contextInfo:(void *)contextInfo {
-    NSSheetContext *context=[NSSheetContext sheetContextWithSheet:sheet modalDelegate:modalDelegate didEndSelector:didEndSelector contextInfo:contextInfo frame:[sheet frame]];
-
-    if ([[NSUserDefaults standardUserDefaults] boolForKey: @"NSRunAllSheetsAsModalPanel"]) {
-        // Center the sheet on the window
-        NSPoint windowCenter = NSMakePoint(NSMidX([window frame]), NSMidY([window frame]));
-        NSPoint sheetCenter = NSMakePoint(NSMidX([sheet frame]), NSMidY([sheet frame]));
-        NSPoint origin = [sheet frame].origin;
-        origin.x += windowCenter.x - sheetCenter.x;
-        origin.y += windowCenter.y - sheetCenter.y;
-        [sheet setFrameOrigin:origin];
-
-        [sheet _setSheetContext: context];
-        [sheet setLevel: NSModalPanelWindowLevel];
-        NSModalSession session = [self beginModalSessionForWindow: sheet];
-        [context setModalSession: session];
-        while([NSApp runModalSession:session] == NSRunContinuesResponse){
-            [[NSRunLoop currentRunLoop] runMode:NSModalPanelRunLoopMode beforeDate:[NSDate distantFuture]];
-        }
-        [self endModalSession:session];
-    } else {
-        [window _attachSheetContextOrderFrontAndAnimate:context];
-    }
-}
-
--(void)endSheet:(NSWindow *)sheet returnCode:(int)returnCode {
-
-    if ([[NSUserDefaults standardUserDefaults] boolForKey: @"NSRunAllSheetsAsModalPanel"]) {
-        NSSheetContext* context = [sheet _sheetContext];
-        NSModalSession session = [context modalSession];
-        [session stopModalWithCode: NSRunStoppedResponse];
-        IMP function=[[context modalDelegate] methodForSelector:[context didEndSelector]];
-
-        if(function!=NULL) {
-            function([context modalDelegate],[context didEndSelector],sheet,returnCode,[context contextInfo]);
-        }
-        [sheet _setSheetContext: nil];
-
-    } else {
-
-        int count=[_windows count];
-
-        while(--count>=0){
-            NSWindow       *check=[_windows objectAtIndex:count];
-            NSSheetContext *context=[check _sheetContext];
-            IMP             function;
-
-            if([context sheet]==sheet){
-                [[context retain] autorelease];
-
-                [check _detachSheetContextAnimateAndOrderOut];
-
-                function=[[context modalDelegate] methodForSelector:[context didEndSelector]];
-
-                if(function!=NULL)
-                    function([context modalDelegate],[context didEndSelector],sheet,returnCode,[context contextInfo]);
-
-                return;
-            }
-        }
-    }
-}
-
--(void)endSheet:(NSWindow *)sheet {
-    [self endSheet:sheet returnCode:0];
-}
-
 -(void)reportException:(NSException *)exception {
     NSLog(@"NSApplication got exception: %@",exception);
 }
@@ -1151,12 +873,8 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
     NSUnimplementedMethod();
 }
 
--(void)runPageLayout:sender {
-    [[NSPageLayout pageLayout] runModal];
-}
-
 -(void)orderFrontColorPanel:(id)sender {
-   [[NSColorPanel sharedColorPanel] orderFront:sender];
+//   [[NSColorPanel sharedColorPanel] orderFront:sender];
 }
 
 -(void)orderFrontCharacterPalette:sender {
@@ -1217,21 +935,6 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
 
 -(void)terminate:sender
 {
-    [[NSDocumentController sharedDocumentController] closeAllDocumentsWithDelegate:self
-                                                               didCloseAllSelector:@selector(_documentController:didCloseAll:contextInfo:)
-                                                                       contextInfo:NULL];
-}
-
--(void)_documentController:(NSDocumentController *)docController didCloseAll:(BOOL)didCloseAll contextInfo:(void *)info
-{
-    // callback method for terminate:
-    if (didCloseAll)
-    {
-        if ([_delegate respondsToSelector:@selector(applicationShouldTerminate:)])
-            [self replyToApplicationShouldTerminate: [_delegate applicationShouldTerminate:self] == NSTerminateNow];
-        else
-            [self replyToApplicationShouldTerminate:YES];
-    }
 }
 
 -(void)replyToApplicationShouldTerminate:(BOOL)terminate
@@ -1317,17 +1020,12 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
    [self orderFrontStandardAboutPanelWithOptions:nil];
 }
 
--(void)orderFrontStandardAboutPanelWithOptions:(NSDictionary *)options {
-    NSSystemInfoPanel *standardAboutPanel = [[NSSystemInfoPanel
-        standardAboutPanel] retain];
-    [standardAboutPanel showInfoPanel:self withOptions:options];
-
-}
 
 -(void)activateContextHelpMode:sender {
     NSUnimplementedMethod();
 }
 
+#if 0
 -(void)showGuessPanel:sender {
     [[[NSSpellChecker sharedSpellChecker] spellingPanel] makeKeyAndOrderFront: self];
 }
@@ -1368,6 +1066,7 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
     [alert runModal];
     [alert release];
 }
+#endif
 
 -(NSDockTile *)dockTile {
     return _dockTile;
@@ -1432,6 +1131,7 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
 
 @end
 
+#if 0
 int NSApplicationMain(int argc, const char *argv[]) {
     NSAutoreleasePool *pool=[NSAutoreleasePool new];
     NSBundle *bundle=[NSBundle mainBundle];
@@ -1458,6 +1158,7 @@ int NSApplicationMain(int argc, const char *argv[]) {
 
     return 0;
 }
+#endif
 
 void NSUpdateDynamicServices(void) {
     NSUnimplementedFunction();
