@@ -27,6 +27,14 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#if 1
+@protocol UICustomNSTextViewDelegate
+@end
+
+@interface UICustomNSTextView : NSObject
+@end
+#else
+
 #import <AppKit/NSTextView.h>
 
 @class CALayer, UICustomNSTextView;
@@ -49,3 +57,5 @@
 - (void)setDelegate:(id<UICustomNSTextViewDelegate>)d;
 
 @end
+
+#endif

@@ -27,6 +27,12 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#if 1
+@implementation UIPopoverController
+@end
+
+#else
+
 #import "UIPopoverController+UIPrivate.h"
 #import <UIKit/UIViewController.h>
 #import <UIKit/UIWindow.h>
@@ -50,32 +56,32 @@ static NSPoint PopoverWindowOrigin(NSWindow *inWindow, NSRect fromRect, NSSize p
     // 1) define a set of possible quads around fromRect that the popover could appear in
     // 2) eliminate quads based on arrow direction restrictions and sizes
     // 3) the first quad that is large enough "wins"
-    
+
     NSRect screenRect = [[inWindow screen] visibleFrame];
-    
+
     NSRect bottomQuad = NSMakeRect(screenRect.origin.x, screenRect.origin.y, screenRect.size.width, fromRect.origin.y-screenRect.origin.y);
     NSRect topQuad = NSMakeRect(screenRect.origin.x, fromRect.origin.y+fromRect.size.height, screenRect.size.width, screenRect.size.height-fromRect.origin.y-fromRect.size.height-screenRect.origin.y);
     NSRect leftQuad = NSMakeRect(screenRect.origin.x, screenRect.origin.y, fromRect.origin.x-screenRect.origin.x, screenRect.size.height-screenRect.origin.y);
     NSRect rightQuad = NSMakeRect(fromRect.origin.x+fromRect.size.width, screenRect.origin.y, screenRect.size.width-fromRect.origin.x-fromRect.size.width-screenRect.origin.x, screenRect.size.height-screenRect.origin.y);
-    
+
     pointTo->x = fromRect.origin.x+(fromRect.size.width/2.f);
     pointTo->y = fromRect.origin.y+(fromRect.size.height/2.f);
-    
+
     NSPoint origin;
     origin.x = fromRect.origin.x + (fromRect.size.width/2.f) - (popoverSize.width/2.f);
     origin.y = fromRect.origin.y + (fromRect.size.height/2.f) - (popoverSize.height/2.f);
-    
+
     const CGFloat minimumPadding = 40;
     const BOOL allowTopOrBottom = (pointTo->x >= NSMinX(screenRect)+minimumPadding && pointTo->x <= NSMaxX(screenRect)-minimumPadding);
     const BOOL allowLeftOrRight = (pointTo->y >= NSMinY(screenRect)+minimumPadding && pointTo->y <= NSMaxY(screenRect)-minimumPadding);
-    
+
     const BOOL allowTopQuad = ((arrowDirections & UIPopoverArrowDirectionDown) != 0) && topQuad.size.width > 0 && topQuad.size.height > 0 && allowTopOrBottom;
     const BOOL allowBottomQuad = ((arrowDirections & UIPopoverArrowDirectionUp) != 0) && bottomQuad.size.width > 0 && bottomQuad.size.height > 0 && allowTopOrBottom;
     const BOOL allowLeftQuad = ((arrowDirections & UIPopoverArrowDirectionRight) != 0) && leftQuad.size.width > 0 && leftQuad.size.height > 0 && allowLeftOrRight;
     const BOOL allowRightQuad = ((arrowDirections & UIPopoverArrowDirectionLeft) != 0) && rightQuad.size.width > 0 && rightQuad.size.height > 0 && allowLeftOrRight;
-    
+
     const CGFloat arrowPadding = 8;		// the arrow images are slightly larger to account for shadows, but the arrow point needs to be up against the rect exactly so this helps with that
-        
+
     if (allowBottomQuad && SizeIsLessThanOrEqualSize(popoverSize,bottomQuad.size)) {
         pointTo->y = fromRect.origin.y;
         origin.y = fromRect.origin.y - popoverSize.height + arrowPadding;
@@ -95,11 +101,11 @@ static NSPoint PopoverWindowOrigin(NSWindow *inWindow, NSRect fromRect, NSSize p
     } else {
         *arrowDirection = UIPopoverArrowDirectionUnknown;
     }
-    
+
     NSRect windowRect;
     windowRect.origin = origin;
     windowRect.size = popoverSize;
-    
+
     if (NSMaxX(windowRect) > NSMaxX(screenRect)) {
         windowRect.origin.x = NSMaxX(screenRect) - popoverSize.width;
     }
@@ -112,10 +118,10 @@ static NSPoint PopoverWindowOrigin(NSWindow *inWindow, NSRect fromRect, NSSize p
     if (NSMinY(windowRect) < NSMinY(screenRect)) {
         windowRect.origin.y = NSMinY(screenRect);
     }
-    
+
     windowRect.origin.x = roundf(windowRect.origin.x);
     windowRect.origin.y = roundf(windowRect.origin.y);
-    
+
     return windowRect.origin;
 }
 
@@ -123,9 +129,9 @@ static NSPoint PopoverWindowOrigin(NSWindow *inWindow, NSRect fromRect, NSSize p
     UIPopoverView *_popoverView;
     UIPopoverNSWindow *_popoverWindow;
     NSWindow *_overlayWindow;
-    
+
     BOOL _isDismissing;
-    
+
     struct {
         unsigned popoverControllerDidDismissPopover : 1;
         unsigned popoverControllerShouldDismissPopover : 1;
@@ -202,7 +208,7 @@ static NSPoint PopoverWindowOrigin(NSWindow *inWindow, NSRect fromRect, NSSize p
         assert(_overlayWindow == nil);
         assert(_popoverView == nil);
         assert(_popoverWindow == nil);
-        
+
         // build an overlay window which will capture any clicks on the main window the popover is being presented from and then dismiss it.
         // this overlay can also be used to implement the pass-through views of the popover, but I'm not going to do that right now since
         // we don't need it. attach the overlay window to the "main" window.
@@ -218,7 +224,7 @@ static NSPoint PopoverWindowOrigin(NSWindow *inWindow, NSRect fromRect, NSSize p
         [_overlayWindow setFrameOrigin:windowFrame.origin];
         [viewNSWindow addChildWindow:_overlayWindow ordered:NSWindowAbove];
 
-        // now build the actual popover view which represents the popover's chrome, and since it's a UIView, we need to build a UIKitView 
+        // now build the actual popover view which represents the popover's chrome, and since it's a UIView, we need to build a UIKitView
         // as well to put it in our NSWindow...
         _popoverView = [[UIPopoverView alloc] initWithContentView:_contentViewController.view size:_contentViewController.contentSizeForViewInPopover];
         [_popoverView setHidden:YES];
@@ -242,13 +248,13 @@ static NSPoint PopoverWindowOrigin(NSWindow *inWindow, NSRect fromRect, NSSize p
     // all this works out... I first ran into this problem with NSMenus. A NSWindow is a bit different, but I think this makes sense here
     // too so premptively doing it to avoid potential problems.)
     UIApplicationInterruptTouchesInView(nil);
-    
+
     // now position the popover window according to the passed in parameters.
     CGRect windowRect = [view convertRect:rect toView:nil];
     CGRect screenRect = [view.window convertRect:windowRect toWindow:nil];
     CGRect desktopScreenRect = [view.window.screen convertRect:screenRect toScreen:nil];
     NSPoint pointTo = NSMakePoint(0,0);
-    
+
     // finally, let's show it!
     [_popoverWindow setFrameOrigin:PopoverWindowOrigin(_overlayWindow, NSRectFromCGRect(desktopScreenRect), NSSizeFromCGSize(_popoverView.frame.size), arrowDirections, &pointTo, &_popoverArrowDirection)];
     [_popoverWindow setAlphaValue:1];
@@ -265,15 +271,15 @@ static NSPoint PopoverWindowOrigin(NSWindow *inWindow, NSRect fromRect, NSSize p
         CGPoint viewPointTo = [view convertPoint:windowPointTo fromView:nil];
         [_popoverView pointTo:viewPointTo inView:view];
     }
-    
+
     if (animated) {
         _popoverView.transform = CGAffineTransformMakeScale(0.98f,0.98f);
         _popoverView.alpha = 0.4f;
-        
+
         [UIView animateWithDuration:0.08 animations:^(void) {
             _popoverView.transform = CGAffineTransformIdentity;
         }];
-        
+
         [UIView animateWithDuration:0.1 animations:^(void) {
             _popoverView.alpha = 1.f;
         }];
@@ -298,15 +304,15 @@ static NSPoint PopoverWindowOrigin(NSWindow *inWindow, NSRect fromRect, NSSize p
 
     [_popoverWindow close];
     [_overlayWindow close];
-    
+
     _popoverWindow = nil;
     _overlayWindow = nil;
     _popoverView = nil;
-    
+
     _popoverArrowDirection = UIPopoverArrowDirectionUnknown;
-    
+
     [parentWindow makeKeyAndOrderFront:self];
-    
+
     _isDismissing = NO;
 }
 
@@ -332,7 +338,7 @@ static NSPoint PopoverWindowOrigin(NSWindow *inWindow, NSRect fromRect, NSSize p
 
         if (shouldDismiss) {
             [self dismissPopoverAnimated:YES];
-            
+
             if (_delegateHas.popoverControllerDidDismissPopover) {
                 [_delegate popoverControllerDidDismissPopover:self];
             }
@@ -341,3 +347,5 @@ static NSPoint PopoverWindowOrigin(NSWindow *inWindow, NSRect fromRect, NSSize p
 }
 
 @end
+
+#endif

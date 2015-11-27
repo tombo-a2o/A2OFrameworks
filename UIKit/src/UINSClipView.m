@@ -39,6 +39,8 @@
     UIScrollView *_parentView;
 }
 
+#if 0
+
 - (id)initWithFrame:(NSRect)frame parentView:(UIScrollView *)aView
 {
     if ((self=[super initWithFrame:frame])) {
@@ -115,5 +117,7 @@
 
     return hitNSView;
 }
+
+#endif
 
 @end

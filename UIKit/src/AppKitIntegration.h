@@ -27,8 +27,6 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIColorAppKitIntegration.h"
-#import "UIImageAppKitIntegration.h"
 #import "UIResponderAppKitIntegration.h"
 #import "UIScreenAppKitIntegration.h"
 #import "UIActionSheetAppKitIntegration.h"

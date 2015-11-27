@@ -329,6 +329,9 @@ static UIApplication *_theApplication = nil;
     // otherwise... we have to do a deferred thing so we can show an alert while we wait for background tasks to finish...
 
     void (^taskFinisher)(void) = ^{
+#if 1        
+        NSLog(@"%s fix me", __FUNCTION__);
+#else
         NSAlert *alert = [[NSAlert alloc] init];
         [alert setAlertStyle:NSInformationalAlertStyle];
         [alert setShowsSuppressionButton:NO];
@@ -372,6 +375,7 @@ static UIApplication *_theApplication = nil;
 
         // tell the real NSApp we're all done here
         [NSApp replyToApplicationShouldTerminate:YES];
+#endif
     };
 
     // I need to delay this but run it on the main thread and also be able to run it in the panel run loop mode

@@ -27,6 +27,16 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#if 1
+#import <AppKit/NSView.h>
+
+@protocol UICustomNSClipViewBehaviorDelegate
+@end
+
+@interface UICustomNSClipView : NSView
+@end
+#else
+
 #import <AppKit/NSClipView.h>
 
 @class CALayer;
@@ -50,3 +60,4 @@
 @property (nonatomic, weak) CALayer *parentLayer;
 @property (nonatomic, assign) id<UICustomNSClipViewBehaviorDelegate> behaviorDelegate;
 @end
+#endif
