@@ -1,4 +1,5 @@
 #import <AppKit/A2ODisplay.h>
+#import <AppKit/NSScreen.h>
 #import <CoreGraphics/A2OWindow.h>
 
 @implementation NSDisplay(A2O)

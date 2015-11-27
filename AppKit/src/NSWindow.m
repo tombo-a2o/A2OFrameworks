@@ -16,22 +16,22 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <AppKit/NSScreen.h>
 #import <AppKit/NSEvent.h>
 #import <AppKit/NSEvent_CoreGraphics.h>
-#import <AppKit/NSColor.h>
+//#import <AppKit/NSColor.h>
 #import <CoreGraphics/CGWindow.h>
 #import <CoreGraphics/CoreGraphics.h>
-#import <AppKit/NSGraphics.h>
+//#import <AppKit/NSGraphics.h>
 #import <AppKit/NSMenu.h>
 #import <AppKit/NSMenuItem.h>
 #import <AppKit/NSPanel.h>
 #import <AppKit/NSView.h>
-#import <AppKit/NSImage.h>
+//#import <AppKit/NSImage.h>
 #import <AppKit/NSDraggingManager.h>
 #import <AppKit/NSCursor.h>
 #import <AppKit/NSTextView.h>
 #import <AppKit/NSTrackingArea.h>
 #import <AppKit/NSToolbar.h>
 #import <AppKit/NSWindowAnimationContext.h>
-#import <AppKit/NSToolTipWindow.h>
+//#import <AppKit/NSToolTipWindow.h>
 #import <AppKit/NSDisplay.h>
 #import <AppKit/NSRaise.h>
 
@@ -138,10 +138,6 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 
 @implementation NSWindow
 
-+(NSWindowDepth)defaultDepthLimit {
-   return 0;
-}
-
 /* This method is Cococtron specific and can be override by subclasses, do not change method name */
 +(BOOL)hasMainMenuForStyleMask:(NSUInteger)styleMask {
     if(styleMask&NSTitledWindowMask)
@@ -207,7 +203,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 
 // This is Apple private API
 +(Class)frameViewClassForStyleMask:(unsigned int)styleMask {
-   return [NSThemeFrame class];
+   return [NSView class];
 }
 
 -init {
@@ -422,6 +418,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
    [_threadToContext removeAllObjects];
 }
 
+#if 0
 -(NSDictionary *)deviceDescription {
    NSValue *resolution=[NSValue valueWithSize:NSMakeSize(72.0,72.0)];
    NSValue *size=[NSValue valueWithSize:[self frame].size];
@@ -434,6 +431,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
     size,NSDeviceSize,
     nil];
 }
+#endif
 
 -(void *)windowRef {
    NSUnimplementedMethod();
@@ -641,10 +639,6 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 
 -(CGFloat)alphaValue {
    return _alphaValue;
-}
-
--(NSWindowDepth)depthLimit {
-   return 0;
 }
 
 -(NSSize)resizeIncrements {
@@ -1218,10 +1212,6 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
    _contentResizeIncrements=value;
 }
 
--(void)setDepthLimit:(NSWindowDepth)value {
-   NSUnimplementedMethod();
-}
-
 -(void)setDisplaysWhenScreenProfileChanges:(BOOL)value {
    _displaysWhenScreenProfileChanges=value;
 }
@@ -1528,6 +1518,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
    return _childWindows;
 }
 
+#if 0
 -(void)addChildWindow:(NSWindow *)child ordered:(NSWindowOrderingMode)ordered {
    if(_childWindows==nil)
     _childWindows=[NSMutableArray new];
@@ -1536,6 +1527,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
    [child setParentWindow:self];
    [child makeKeyAndOrderFront:nil];
 }
+#endif
 
 -(void)removeChildWindow:(NSWindow *)child {
    [child orderOut:nil];
@@ -1547,6 +1539,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
    [self orderOut:nil];
 }
 
+#if 0
 -(void)_parentWindowDidActivate:(NSWindow *)parent {
    [self orderWindow:NSWindowAbove relativeTo:[_parentWindow windowNumber]];
 }
@@ -1554,6 +1547,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 -(void)_parentWindowDidDeactivate:(NSWindow *)parent {
    [self orderWindow:NSWindowAbove relativeTo:[_parentWindow windowNumber]];
 }
+#endif
 
 -(void)_parentWindowDidMiniaturize:(NSWindow *)parent {
    [self orderOut:nil];
@@ -1562,19 +1556,22 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 -(void)_parentWindowDidChangeFrame:(NSWindow *)parent {
 }
 
+#if 0
 -(void)_parentWindowDidExitMove:(NSWindow *)parent {
    [self orderWindow:NSWindowAbove relativeTo:[_parentWindow windowNumber]];
 }
+#endif
 
 -(BOOL)acceptsFirstResponder {
    return YES;
 }
 
 -(BOOL)makeFirstResponder:(NSResponder *)responder {
-
+#if 0
    if(_firstResponder==responder ||
       ([responder isKindOfClass:[NSControl class]] && _firstResponder==[(NSControl *)responder currentEditor]))
     return YES;
+#endif
 
    if(![_firstResponder resignFirstResponder])
     return NO;
@@ -1977,6 +1974,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
       [_trackingAreas removeObjectAtIndex:count];
     }
 
+#if 0
     if(!toolTipsAllowed){
      // We have to do this here as Area handling won't even recignize ToolTips now.
      NSToolTipWindow *toolTipWindow=[NSToolTipWindow sharedToolTipWindow];
@@ -1984,6 +1982,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
      [NSObject cancelPreviousPerformRequestsWithTarget:toolTipWindow selector:@selector(orderFront:) object:nil];
      [toolTipWindow orderOut:nil];
     }
+#endif
    }
 }
 
@@ -2024,13 +2023,11 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
    [self setFrame:frame display:YES];
 }
 
--(void)orderWindow:(NSWindowOrderingMode)place relativeTo:(int)relativeTo {
+-(void)orderWindow:(int)place relativeTo:(int)relativeTo {
 // The move notifications are sent under unknown conditions around orderFront: in the Apple AppKit, we do them all the time here until it's figured out. I suspect it is a side effect of off-screen windows being at off-screen coordinates (as opposed to just being hidden)
 
    [self postNotificationName:NSWindowWillMoveNotification];
 
-   switch(place){
-    case NSWindowAbove:
      [self update];
 
      _isVisible=YES;
@@ -2047,33 +2044,6 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
          [NSApp changeWindowsItem:self title:_title filename:NO];
      }
 
-     break;
-
-    case NSWindowBelow:
-     [self update];
-
-     _isVisible=YES;
-     [[self platformWindow] placeBelowWindow:relativeTo];
-/* In some instances when a COMMAND is issued from a menu item to bring a
-   window front, the window is not displayed right (black, incomplete). This
-   may be the right place to do this, maybe not, further investigation is
-   required
- */
-     [self displayIfNeeded];
-     // this is here since it would seem that doing this any earlier will not work.
-     if(![self isKindOfClass:[NSPanel class]] && ![self isExcludedFromWindowsMenu]) {
-       [NSApp changeWindowsItem:self title:_title filename:NO];
-     }
-     break;
-
-    case NSWindowOut:
-     _isVisible=NO;
-     [[self platformWindow] hideWindow];
-     if (![self isKindOfClass:[NSPanel class]]) {
-       [NSApp removeWindowsItem:self];
-     }
-     break;
-   }
 
    [self postNotificationName:NSWindowDidMoveNotification];
 }
@@ -2347,8 +2317,9 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 
 // Order window before making it key, per doc.s and behavior
 
+#if 0
    [self orderWindow:NSWindowAbove relativeTo:0];
-
+#endif
 	if([self canBecomeKeyWindow])
 		[self makeKeyWindow];
 
@@ -2357,9 +2328,10 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 }
 
 -(void)orderFront:sender {
-   [self orderWindow:NSWindowAbove relativeTo:0];
+   [self orderWindow:1 relativeTo:0];
 }
 
+#if 0
 -(void)orderBack:sender {
    [self orderWindow:NSWindowBelow relativeTo:0];
 }
@@ -2367,7 +2339,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 -(void)orderOut:sender {
    [self orderWindow:NSWindowOut relativeTo:0];
 }
-
+#endif
 -(void)performClose:sender
 {
   if([_delegate respondsToSelector:@selector(windowShouldClose:)])
@@ -2504,10 +2476,12 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
     [self selectPreviousKeyView:nil];
 }
 
+#if 0
 - (void)insertNewline:sender {
     if (_defaultButtonCell != nil)
         [(NSControl *)[_defaultButtonCell controlView] performClick:nil];
 }
+#endif
 
 -(void)_showForActivation {
    if(_hiddenForDeactivate){
@@ -2766,6 +2740,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
    [NSApp updateWindows];
 }
 
+#if 0
 -(void)platformWindowDeminiaturized:(CGWindow *)window {
    [self _updatePlatformWindowTitle];
    if(_sheetContext!=nil){
@@ -2796,6 +2771,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 
    [NSApp updateWindows];
 }
+#endif
 
 -(void)platformWindow:(CGWindow *)window frameChanged:(NSRect)frame didSize:(BOOL)didSize {
     // Don't allow the platform window changes to violate our window size limits (if we have them)
@@ -2926,6 +2902,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
     id owner=[area owner];
 
 	   if([area _isToolTip]==YES){
+#if 0
 		   NSToolTipWindow *toolTipWindow=[NSToolTipWindow sharedToolTipWindow];
 
 		   if([self isKeyWindow]==NO || [self _sheetContext]!=nil)
@@ -2957,6 +2934,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
                    raiseToolTipWindow=YES;
                }
 		   }
+#endif
 	   }
 	   else{ // not ToolTip
      NSTrackingAreaOptions options=[area options];
@@ -3085,6 +3063,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
      }
    }
 
+#if 0
    if(raiseToolTipWindow==YES){
     NSTimeInterval delay=((NSTimeInterval)[[NSUserDefaults standardUserDefaults] integerForKey:@"NSInitialToolTipDelay"])/1000.;
 
@@ -3092,7 +3071,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
      delay=2.;
     [[NSToolTipWindow sharedToolTipWindow] performSelector:@selector(orderFront:) withObject:nil afterDelay:delay];
    }
-
+#endif
    if(!cursorIsSet){
     NSPoint check=[_contentView convertPoint:mousePoint fromView:nil];
 

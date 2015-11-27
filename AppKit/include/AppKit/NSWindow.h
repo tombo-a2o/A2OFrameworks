@@ -199,8 +199,6 @@ APPKIT_EXPORT NSString *const NSWindowDidChangeScreenNotification;
     NSPoint _mouseDownLocationInWindow;
 }
 
-+ (NSWindowDepth)defaultDepthLimit;
-
 + (NSRect)frameRectForContentRect:(NSRect)contentRect styleMask:(unsigned)styleMask;
 + (NSRect)contentRectForFrameRect:(NSRect)frameRect styleMask:(unsigned)styleMask;
 + (float)minFrameWidthWithTitle:(NSString *)title styleMask:(unsigned)styleMask;
@@ -276,7 +274,6 @@ APPKIT_EXPORT NSString *const NSWindowDidChangeScreenNotification;
 - (NSDockTile *)dockTile;
 - (NSColor *)backgroundColor;
 - (CGFloat)alphaValue;
-- (NSWindowDepth)depthLimit;
 - (NSSize)resizeIncrements;
 - (NSSize)contentResizeIncrements;
 - (BOOL)preservesContentDuringLiveResize;
@@ -337,7 +334,6 @@ APPKIT_EXPORT NSString *const NSWindowDidChangeScreenNotification;
 - (void)setShowsResizeIndicator:(BOOL)value;
 - (void)setShowsToolbarButton:(BOOL)value;
 - (void)setContentResizeIncrements:(NSSize)value;
-- (void)setDepthLimit:(NSWindowDepth)value;
 - (void)setDisplaysWhenScreenProfileChanges:(BOOL)value;
 - (void)setMovableByWindowBackground:(BOOL)value;
 - (void)setAllowsToolTipsWhenApplicationIsInactive:(BOOL)value;
@@ -392,7 +388,6 @@ APPKIT_EXPORT NSString *const NSWindowDidChangeScreenNotification;
 
 - (NSWindow *)parentWindow;
 - (NSArray *)childWindows;
-- (void)addChildWindow:(NSWindow *)child ordered:(NSWindowOrderingMode)ordered;
 - (void)removeChildWindow:(NSWindow *)child;
 
 - (BOOL)makeFirstResponder:(NSResponder *)responder;
@@ -446,7 +441,7 @@ APPKIT_EXPORT NSString *const NSWindowDidChangeScreenNotification;
 
 - (void)close;
 - (void)center;
-- (void)orderWindow:(NSWindowOrderingMode)place relativeTo:(int)relativeTo;
+- (void)orderWindow:(int)place relativeTo:(int)relativeTo;
 - (void)orderFrontRegardless;
 
 - (NSPoint)mouseLocationOutsideOfEventStream;

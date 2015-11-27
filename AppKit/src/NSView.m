@@ -15,11 +15,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <AppKit/NSCursorRect.h>
 #import <AppKit/NSTrackingArea.h>
 #import <AppKit/NSMenu.h>
-#import <AppKit/NSScrollView.h>
-#import <AppKit/NSClipView.h>
-#import <AppKit/NSColor.h>
-#import <AppKit/NSGraphics.h>
-#import <AppKit/NSGraphicsContextFunctions.h>
+//#import <AppKit/NSScrollView.h>
+//#import <AppKit/NSClipView.h>
+//#import <AppKit/NSColor.h>
+//#import <AppKit/NSGraphics.h>
+//#import <AppKit/NSGraphicsContextFunctions.h>
 #import <AppKit/NSDraggingManager.h>
 #import <AppKit/NSDragging.h>
 #import <AppKit/NSPrintOperation.h>
@@ -54,15 +54,10 @@ static BOOL NSViewLayersEnabled=NO;
 }
 
 +(NSView *)focusView {
-   return [NSCurrentFocusStack() lastObject];
+   return nil;//[NSCurrentFocusStack() lastObject];
 }
 
 +(NSMenu *)defaultMenu {
-   return nil;
-}
-
-+(NSFocusRingType)defaultFocusRingType {
-   NSUnimplementedMethod();
    return nil;
 }
 
@@ -158,7 +153,7 @@ static BOOL NSViewLayersEnabled=NO;
 -(void)dealloc {
 
 	// Do this first?
-	[self _unbindAllBindings];
+//	[self _unbindAllBindings];
 
    _window=nil;
    [_menu release];
@@ -421,10 +416,6 @@ static inline void buildTransformsIfNeeded(NSView *self) {
 
 -(unsigned)autoresizingMask {
    return _autoresizingMask;
-}
-
--(NSFocusRingType)focusRingType {
-   return _focusRingType;
 }
 
 -(int)tag {
@@ -891,17 +882,6 @@ static inline void buildTransformsIfNeeded(NSView *self) {
    [self _insertSubview:view atIndex:NSNotFound];
 }
 
--(void)addSubview:(NSView *)view positioned:(NSWindowOrderingMode)ordering relativeTo:(NSView *)relativeTo {
-   unsigned index=[_subviews indexOfObjectIdenticalTo:relativeTo];
-
-   if(index==NSNotFound)
-    index=(ordering==NSWindowBelow)?0:NSNotFound;
-   else
-    index=(ordering==NSWindowBelow)?index:((index+1==[_subviews count])?NSNotFound:index+1);
-
-   [self _insertSubview:view atIndex:index];
-}
-
 -(void)replaceSubview:(NSView *)oldView with:(NSView *)newView {
    unsigned index=[_subviews indexOfObjectIdenticalTo:oldView];
 
@@ -941,11 +921,6 @@ static inline void buildTransformsIfNeeded(NSView *self) {
 
 -(void)setAutoresizingMask:(unsigned int)mask {
    _autoresizingMask=mask;
-}
-
--(void)setFocusRingType:(NSFocusRingType)value {
-   _focusRingType=value;
-   [self setNeedsDisplay:YES];
 }
 
 -(void)setTag:(int)tag {
@@ -1355,6 +1330,7 @@ static inline void buildTransformsIfNeeded(NSView *self) {
    }
 }
 
+#if 0
 -(BOOL)scrollRectToVisible:(NSRect)rect {
     NSClipView *clipView = [self _enclosingClipView];
     NSView *documentView = [clipView documentView];
@@ -1408,6 +1384,7 @@ static inline void buildTransformsIfNeeded(NSView *self) {
     }
     return NO;
 }
+#endif
 
 -(void)scrollClipView:(NSClipView *)clipView toPoint:(NSPoint)newOrigin {
    NSUnimplementedMethod();
@@ -2103,6 +2080,7 @@ static NSGraphicsContext *graphicsContextForView(NSView *view){
    return [[self superview] autoscroll:event];
 }
 
+#if 0
 -(void)scrollRect:(NSRect)rect by:(NSSize)delta {
    NSPoint point=rect.origin;
 
@@ -2114,6 +2092,7 @@ static NSGraphicsContext *graphicsContextForView(NSView *view){
     [self unlockFocus];
    }
 }
+#endif
 
 -(BOOL)mouseDownCanMoveWindow {
    NSUnimplementedMethod();
@@ -2130,6 +2109,7 @@ static NSGraphicsContext *graphicsContextForView(NSView *view){
 -(void)endDocument {
 }
 
+#if 0
 -(void)beginPageInRect:(NSRect)rect atPlacement:(NSPoint)placement {
    CGContextRef      graphicsPort=NSCurrentGraphicsPort();
    CGRect            mediaBox=NSMakeRect(0,0,rect.size.width,rect.size.height);
@@ -2161,6 +2141,7 @@ static NSGraphicsContext *graphicsContextForView(NSView *view){
    CGContextEndPage(graphicsPort);
    [NSCurrentFocusStack() removeLastObject];
 }
+#endif
 
 -(NSAttributedString *)pageHeader {
    NSUnimplementedMethod();
@@ -2260,6 +2241,7 @@ static NSGraphicsContext *graphicsContextForView(NSView *view){
    return NO;
 }
 
+#if 0
 -(void)scrollWheel:(NSEvent *)event {
     NSScrollView *scrollView=[self enclosingScrollView];
 
@@ -2289,6 +2271,7 @@ static NSGraphicsContext *graphicsContextForView(NSView *view){
         [documentView scrollRectToVisible:visible];
     }
 }
+#endif
 
 -(BOOL)performKeyEquivalent:(NSEvent *)event {
    int i,count=[_subviews count];

@@ -13,22 +13,18 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <AppKit/NSMenuItem.h>
 #import <AppKit/NSEvent.h>
 #import <AppKit/NSModalSessionX.h>
-#import <AppKit/NSNibLoading.h>
 #import <AppKit/NSScreen.h>
-#import <AppKit/NSColorPanel.h>
+//#import <AppKit/NSColorPanel.h>
 #import <AppKit/NSDisplay.h>
 #import <AppKit/NSPageLayout.h>
 #import <AppKit/NSDocumentController.h>
-#import <AppKit/NSImage.h>
-#import <AppKit/NSImageView.h>
 #import <AppKit/NSSheetContext.h>
 #import <AppKit/NSSystemInfoPanel.h>
-#import <AppKit/NSAlert.h>
 #import <AppKit/NSWorkspace.h>
-#import <AppKit/NSDockTile.h>
+//#import <AppKit/NSDockTile.h>
 #import <CoreGraphics/CGWindow.h>
 #import <AppKit/NSRaise.h>
-#import <AppKit/NSSpellChecker.h>
+//#import <AppKit/NSSpellChecker.h>
 #import <objc/message.h>
 #import <pthread.h>
 #import <emscripten.h>
@@ -70,10 +66,6 @@ NSString * const NSApplicationDidChangeScreenParametersNotification=@"NSApplicat
 -(NSMenu *)_menuWithName:(NSString *)name;
 @end
 
-@interface NSDockTile(Private)
--initWithOwner:owner;
-@end
-
 @implementation NSApplication
 
 id NSApp=nil;
@@ -91,6 +83,7 @@ id NSApp=nil;
     NSUnimplementedMethod();
 }
 
+#if 0
 -(void)_showSplashImage {
     NSImage *image=[NSImage imageNamed:@"splash"];
 
@@ -110,6 +103,7 @@ id NSApp=nil;
         [splash display];
     }
 }
+#endif
 
 -(void)_closeSplashImage {
     int i;
@@ -217,7 +211,7 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
 
     pthread_mutex_init(_lock,NULL);
 
-    [self _showSplashImage];
+//    [self _showSplashImage];
 
     emscripten_set_touchstart_callback(NULL, NULL, TRUE, sendTouchEvnetToApp);
     emscripten_set_touchend_callback(NULL, NULL, TRUE, sendTouchEvnetToApp);
@@ -291,10 +285,6 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
 
 -(void)_setKeyWindow:(NSWindow *)window {
     _keyWindow=window;
-}
-
--(NSImage *)applicationIconImage {
-    return _applicationIconImage;
 }
 
 -(BOOL)isActiveExcludingWindow:(NSWindow *)exclude {
@@ -440,14 +430,6 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
    [self setMainMenu:menu];
 }
 
--(void)setApplicationIconImage:(NSImage *)image {
-    image=[image retain];
-    [_applicationIconImage release];
-    _applicationIconImage=image;
-
-    [image setName: @"NSApplicationIcon"];
-}
-
 -(void)setWindowsMenu:(NSMenu *)menu {
     [_windowsMenu autorelease];
     _windowsMenu=[menu retain];
@@ -560,16 +542,6 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
     NS_HANDLER
         [self reportException:localException];
     NS_ENDHANDLER
-
-    // Load the application icon if we have one
-    NSString* iconName = [[[NSBundle mainBundle]
-    infoDictionary]
-    objectForKey:@"CFBundleIconFile"];
-    if (iconName) {
-        iconName = [iconName stringByAppendingPathExtension: @"icns"];
-        NSImage* image = [NSImage imageNamed: iconName];
-        [self setApplicationIconImage: image];
-    }
 
     // Give us a first event
     [NSTimer scheduledTimerWithTimeInterval:0.1 target:nil
@@ -1156,7 +1128,7 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
 }
 
 -(void)orderFrontColorPanel:(id)sender {
-   [[NSColorPanel sharedColorPanel] orderFront:sender];
+//   [[NSColorPanel sharedColorPanel] orderFront:sender];
 }
 
 -(void)orderFrontCharacterPalette:sender {
@@ -1328,6 +1300,7 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
     NSUnimplementedMethod();
 }
 
+#if 0
 -(void)showGuessPanel:sender {
     [[[NSSpellChecker sharedSpellChecker] spellingPanel] makeKeyAndOrderFront: self];
 }
@@ -1368,6 +1341,7 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
     [alert runModal];
     [alert release];
 }
+#endif
 
 -(NSDockTile *)dockTile {
     return _dockTile;
@@ -1432,6 +1406,7 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
 
 @end
 
+#if 0
 int NSApplicationMain(int argc, const char *argv[]) {
     NSAutoreleasePool *pool=[NSAutoreleasePool new];
     NSBundle *bundle=[NSBundle mainBundle];
@@ -1458,6 +1433,7 @@ int NSApplicationMain(int argc, const char *argv[]) {
 
     return 0;
 }
+#endif
 
 void NSUpdateDynamicServices(void) {
     NSUnimplementedFunction();

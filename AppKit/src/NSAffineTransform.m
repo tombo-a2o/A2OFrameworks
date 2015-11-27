@@ -1,6 +1,6 @@
 #import <AppKit/NSAffineTransform.h>
-#import <AppKit/NSBezierPath.h>
-#import <AppKit/NSGraphicsContext.h>
+//#import <AppKit/NSBezierPath.h>
+//#import <AppKit/NSGraphicsContext.h>
 #import <CoreGraphics/CoreGraphics.h>
 
 @implementation NSAffineTransform(AppKit)
@@ -8,7 +8,7 @@
 -(void)concat {
    NSAffineTransformStruct atStruct=[self transformStruct];
    CGAffineTransform       cgMatrix;
-   
+
    cgMatrix.a=atStruct.m11;
    cgMatrix.b=atStruct.m12;
    cgMatrix.c=atStruct.m21;
@@ -16,13 +16,13 @@
    cgMatrix.tx=atStruct.tX;
    cgMatrix.ty=atStruct.tY;
 
-   CGContextConcatCTM([[NSGraphicsContext currentContext] graphicsPort],cgMatrix);
+//   CGContextConcatCTM([[NSGraphicsContext currentContext] graphicsPort],cgMatrix);
 }
 
 -(void)set {
    NSAffineTransformStruct atStruct=[self transformStruct];
    CGAffineTransform       cgMatrix;
-   
+
    cgMatrix.a=atStruct.m11;
    cgMatrix.b=atStruct.m12;
    cgMatrix.c=atStruct.m21;
@@ -30,15 +30,15 @@
    cgMatrix.tx=atStruct.tX;
    cgMatrix.ty=atStruct.tY;
 
-   CGContextSetCTM([[NSGraphicsContext currentContext] graphicsPort],cgMatrix);
+//   CGContextSetCTM([[NSGraphicsContext currentContext] graphicsPort],cgMatrix);
 }
 
--(NSBezierPath *)transformBezierPath:(NSBezierPath *)bezierPath {
-   NSBezierPath *result=[[bezierPath copy] autorelease];
-   
-   [result transformUsingAffineTransform:self];
-   
-   return result;
-}
+// -(NSBezierPath *)transformBezierPath:(NSBezierPath *)bezierPath {
+//    NSBezierPath *result=[[bezierPath copy] autorelease];
+//
+//    [result transformUsingAffineTransform:self];
+//
+//    return result;
+// }
 
 @end

@@ -7,7 +7,7 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 #import <AppKit/NSWindowController.h>
 #import <AppKit/NSWindow.h>
-#import <AppKit/NSNibLoading.h>
+//#import <AppKit/NSNibLoading.h>
 #import <AppKit/NSDocument.h>
 #import <AppKit/NSNib.h>
 #import <AppKit/NSApplication.h>
@@ -18,7 +18,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
    _window=[window retain];
    [_window setWindowController:self];
    [_window setReleasedWhenClosed:NO];
-   
+
    if(_window!=nil)
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_windowWillClose:) name:NSWindowWillCloseNotification object:_window];
 
@@ -85,21 +85,21 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 -(void)setWindow:(NSWindow *)window {
    NSNotificationCenter *center=[NSNotificationCenter defaultCenter];
-   
-   
+
+
    if (_window)
     [center removeObserver:self name:NSWindowWillCloseNotification object:_window];
-    
+
    window=[window retain];
 
    [_window setWindowController:nil];
    [_window release];
 
    _window=window;
-   
+
    [_window setWindowController:self];
    [_window setReleasedWhenClosed:NO];
-   
+
    if (_window)
     [center addObserver:self selector:@selector(_windowWillClose:) name:NSWindowWillCloseNotification object:_window];
 }
@@ -127,7 +127,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     static       NSPoint cascadeTopLeftSavedPoint={0.0, 0.0};
     NSString     *path=[self windowNibPath];
     NSDictionary *nameTable;
-   
+
     _topLevelObjects = [[NSMutableArray alloc] init];
     nameTable=[NSDictionary dictionaryWithObjectsAndKeys:_owner, NSNibOwner, _topLevelObjects, NSNibTopLevelObjects, nil];
 
@@ -136,7 +136,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     }
 
     [self synchronizeWindowTitleWithDocumentName];
-   
+
     if (_shouldCascadeWindows)
        cascadeTopLeftSavedPoint=[_window cascadeTopLeftFromPoint:cascadeTopLeftSavedPoint];
    }
@@ -230,7 +230,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 }
 
 -(NSString *)windowTitleForDocumentDisplayName:(NSString *)displayName {
-  NSString *appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleName"]; 
+  NSString *appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleName"];
   if (appName)
     return [NSString stringWithFormat:@"%@ - %@", displayName, appName];
   else
