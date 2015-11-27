@@ -27,6 +27,13 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#if 1
+
+@implementation UITextLayer
+@end
+
+#else
+
 #import "UITextLayer.h"
 #import <UIKit/UIScrollView.h>
 #import "UICustomNSTextView.h"
@@ -36,7 +43,6 @@
 #import "AppKitIntegration.h"
 #import "UIView+UIPrivate.h"
 #import "UIKey.h"
-#import <AppKit/NSLayoutManager.h>
 #import <AppKit/NSWindow.h>
 
 @interface UITextLayer () <UICustomNSClipViewBehaviorDelegate, UICustomNSTextViewDelegate>
@@ -49,7 +55,7 @@
     UICustomNSTextView *_textView;
     UICustomNSClipView *_clipView;
     BOOL _changingResponderStatus;
-    
+
     struct {
         unsigned didChange : 1;
         unsigned didChangeSelection : 1;
@@ -67,13 +73,13 @@
         _textDelegateHas.didChange = [_containerView respondsToSelector:@selector(_textDidChange)];
         _textDelegateHas.didChangeSelection = [_containerView respondsToSelector:@selector(_textDidChangeSelection)];
         _textDelegateHas.didReturnKey = [_containerView respondsToSelector:@selector(_textDidReceiveReturnKey)];
-        
+
         _containerCanScroll = [_containerView respondsToSelector:@selector(setContentOffset:)]
             && [_containerView respondsToSelector:@selector(contentOffset)]
             && [_containerView respondsToSelector:@selector(setContentSize:)]
             && [_containerView respondsToSelector:@selector(contentSize)]
             && [_containerView respondsToSelector:@selector(isScrollEnabled)];
-        
+
         _clipView = [(UICustomNSClipView *)[UICustomNSClipView alloc] initWithFrame:NSMakeRect(0,0,100,100)];
         _textView = [(UICustomNSTextView *)[UICustomNSTextView alloc] initWithFrame:[_clipView frame] secureTextEntry:_secureTextEntry isField:isField];
 
@@ -110,7 +116,7 @@
     _clipView.behaviorDelegate = self;
 
     [_containerView.window.screen.UIKitView addSubview:_clipView];
-    
+
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateScrollViewContentOffset) name:NSViewBoundsDidChangeNotification object:_clipView];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hierarchyDidChangeNotification:) name:UIViewFrameDidChangeNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hierarchyDidChangeNotification:) name:UIViewBoundsDidChangeNotification object:nil];
@@ -123,7 +129,7 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIViewFrameDidChangeNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIViewBoundsDidChangeNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIViewDidMoveToSuperviewNotification object:nil];
-    
+
     _clipView.parentLayer = nil;
     _clipView.behaviorDelegate = nil;
 
@@ -150,7 +156,7 @@
         if (![_clipView superview]) {
             [self addNSView];
         }
-        
+
         UIWindow *window = [_containerView window];
         const CGRect windowRect = [window convertRect:self.frame fromView:_containerView];
         const CGRect screenRect = [window convertRect:windowRect toWindow:nil];
@@ -210,18 +216,21 @@
 
 - (void)setFont:(UIFont *)newFont
 {
+    NSLog(@"%s fix me", __FUNCTION__);
+
     assert(newFont != nil);
     if (newFont != _font) {
         _font = newFont;
-        [_textView setFont:[_font NSFont]];
+        //[_textView setFont:[_font NSFont]];
     }
 }
 
 - (void)setTextColor:(UIColor *)newColor
 {
+    NSLog(@"%s fix me", __FUNCTION__);
     if (newColor != _textColor) {
         _textColor = newColor;
-        [_textView setTextColor:[_textColor NSColor]];
+        //[_textView setTextColor:[_textColor NSColor]];
     }
 }
 
@@ -300,7 +309,7 @@
 - (BOOL)hitTestForClipViewPoint:(NSPoint)point
 {
     UIScreen *screen = [_containerView window].screen;
-    
+
     if (screen) {
         return (_containerView == [screen.UIKitView hitTestUIView:point]);
     }
@@ -315,8 +324,12 @@
 
 - (CGSize)sizeThatFits:(CGSize)size
 {
+    NSLog(@"%s fix me", __FUNCTION__);
+    return CGSizeZero;
+#if 0
     NSRect rect = [_textView.layoutManager usedRectForTextContainer:_textView.textContainer];
     return CGSizeMake(MIN(rect.size.width, size.width), rect.size.height);
+#endif
 }
 
 
@@ -387,7 +400,7 @@
         }
         return YES;
     }
-    
+
     return NO;
 }
 
@@ -414,7 +427,7 @@
     if ([self shouldBeVisible] && ![_clipView superview]) {
         [self addNSView];
     }
-    
+
     _changingResponderStatus = YES;
     const BOOL result = [[_textView window] makeFirstResponder:_textView];
     _changingResponderStatus = NO;
@@ -433,7 +446,7 @@
 - (BOOL)textView:(UICustomNSTextView *)aTextView shouldAcceptKeyDown:(NSEvent *)theNSEvent
 {
     UIKey *key = [[UIKey alloc] initWithNSEvent:theNSEvent];
-    
+
     if (key.action) {
         [aTextView doCommandBySelector:key.action];
         return NO;
@@ -443,3 +456,5 @@
 }
 
 @end
+
+#endif

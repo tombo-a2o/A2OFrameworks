@@ -27,6 +27,8 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#if 0
+
 #import "UIPhotosAlbum.h"
 #import <UIKit/UIImage.h>
 #import <AppKit/NSSavePanel.h>
@@ -97,3 +99,5 @@
 }
 
 @end
+
+#endif

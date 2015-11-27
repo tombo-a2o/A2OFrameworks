@@ -34,6 +34,8 @@
 
 @implementation UICustomNSClipView
 
+#if 0
+
 - (id)initWithFrame:(NSRect)frame
 {
     if ((self=[super initWithFrame:frame])) {
@@ -118,4 +120,5 @@
     return hit;
 }
 
+#endif
 @end

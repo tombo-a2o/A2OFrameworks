@@ -29,7 +29,7 @@
 
 #import <UIKit/UIImage.h>
 
-@class NSImage, UIImageRep;
+@class UIImageRep;
 
 @interface UIImage (UIPrivate)
 + (void)_cacheImage:(UIImage *)image forName:(NSString *)name;

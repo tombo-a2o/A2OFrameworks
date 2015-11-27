@@ -47,6 +47,8 @@
 }
 @synthesize NSView=_view;
 
+#if 0
+
 #pragma mark -
 #pragma mark Initialization
 
@@ -256,5 +258,7 @@
     
     return didResign;
 }
+
+#endif
 
 @end

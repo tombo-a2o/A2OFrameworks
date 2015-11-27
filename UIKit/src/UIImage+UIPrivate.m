@@ -28,11 +28,9 @@
  */
 
 #import "UIImage+UIPrivate.h"
-#import "UIImageAppKitIntegration.h"
 #import <UIKit/UIColor.h>
 #import <UIKit/UIGraphics.h>
 #import "UIImageRep.h"
-#import <AppKit/NSImage.h>
 
 NSMutableDictionary *imageCache = nil;
 

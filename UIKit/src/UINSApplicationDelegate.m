@@ -47,8 +47,10 @@
 {
     NSApplication *app = (NSApplication *)[notification object];
     _window = [[NSWindow alloc] initWithContentRect:CGRectMake(0,0,320,568) styleMask:0 backing:NSBackingStoreBuffered defer:NO];
+    assert(_window);
     [_window orderFront:nil];
     UIKitView *uiKitView = [[UIKitView alloc] initWithFrame:CGRectMake(0,0,320,568)];
+    assert(uiKitView);
     _window.contentView = uiKitView;
 
     NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];

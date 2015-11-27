@@ -30,10 +30,20 @@
 #import <UIKit/UIGraphics.h>
 #import <UIKit/UIImage.h>
 #import <UIKit/UIScreen.h>
-#import <AppKit/AppKit.h>
 
 static NSMutableArray *contextStack = nil;
 static NSMutableArray *imageContextStack = nil;
+
+static void setCurrentContext(CGContextRef context)
+{
+    NSMutableDictionary *shared = [[NSThread currentThread] threadDictionary];
+
+    if(context==nil) {
+        [shared setObject:[NSNull null] forKey:@"UIGraphicsContext"];
+    } else {
+        [shared setObject:(__bridge id)context forKey:@"UIGraphicsContext"];
+    }
+}
 
 void UIGraphicsPushContext(CGContextRef ctx)
 {
@@ -41,24 +51,31 @@ void UIGraphicsPushContext(CGContextRef ctx)
         contextStack = [[NSMutableArray alloc] initWithCapacity:1];
     }
 
-    if ([NSGraphicsContext currentContext]) {
-        [contextStack addObject:[NSGraphicsContext currentContext]];
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    if (context) {
+        [contextStack addObject:(__bridge id)context];
     }
 
-    [NSGraphicsContext setCurrentContext:[NSGraphicsContext graphicsContextWithGraphicsPort:(void *)ctx flipped:YES]];
+    setCurrentContext(ctx);
 }
 
 void UIGraphicsPopContext()
 {
     if ([contextStack lastObject]) {
-        [NSGraphicsContext setCurrentContext:[contextStack lastObject]];
+        setCurrentContext((__bridge CGContextRef)[contextStack lastObject]);
         [contextStack removeLastObject];
     }
 }
 
 CGContextRef UIGraphicsGetCurrentContext()
 {
-    return [[NSGraphicsContext currentContext] graphicsPort];
+    NSMutableDictionary *shared = [[NSThread currentThread] threadDictionary];
+    CGContextRef result = (__bridge CGContextRef)[shared objectForKey:@"UIGraphicsContext"];
+
+    if(result==(__bridge CGContextRef)[NSNull null])
+        return nil;
+
+    return result;
 }
 
 CGFloat _UIGraphicsGetContextScaleFactor(CGContextRef ctx)
