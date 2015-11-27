@@ -10,28 +10,22 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <AppKit/NSWindow.h>
 #import <AppKit/NSWindow-Private.h>
 #import <AppKit/NSThemeFrame.h>
-#import <AppKit/NSMainMenuView.h>
 #import <AppKit/NSSheetContext.h>
 #import <AppKit/NSApplication.h>
 #import <AppKit/NSScreen.h>
 #import <AppKit/NSEvent.h>
 #import <AppKit/NSEvent_CoreGraphics.h>
-//#import <AppKit/NSColor.h>
 #import <CoreGraphics/CGWindow.h>
 #import <CoreGraphics/CoreGraphics.h>
-//#import <AppKit/NSGraphics.h>
 #import <AppKit/NSMenu.h>
 #import <AppKit/NSMenuItem.h>
 #import <AppKit/NSPanel.h>
 #import <AppKit/NSView.h>
-//#import <AppKit/NSImage.h>
 #import <AppKit/NSDraggingManager.h>
 #import <AppKit/NSCursor.h>
-#import <AppKit/NSTextView.h>
 #import <AppKit/NSTrackingArea.h>
 #import <AppKit/NSToolbar.h>
 #import <AppKit/NSWindowAnimationContext.h>
-//#import <AppKit/NSToolTipWindow.h>
 #import <AppKit/NSDisplay.h>
 #import <AppKit/NSRaise.h>
 
@@ -154,8 +148,8 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 +(NSRect)frameRectForContentRect:(NSRect)contentRect styleMask:(unsigned)styleMask {
    NSRect result=CGOutsetRectForNativeWindowBorder(contentRect,styleMask);
 
-    if([self hasMainMenuForStyleMask:styleMask])
-        result.size.height+=[NSMainMenuView menuHeight];
+    // if([self hasMainMenuForStyleMask:styleMask])
+    //     result.size.height+=[NSMainMenuView menuHeight];
 
    return result;
 }
@@ -163,8 +157,8 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 +(NSRect)contentRectForFrameRect:(NSRect)frameRect styleMask:(unsigned)styleMask {
    NSRect result=CGInsetRectForNativeWindowBorder(frameRect,styleMask);
 
-    if([self hasMainMenuForStyleMask:styleMask])
-        result.size.height-=[NSMainMenuView menuHeight];
+    // if([self hasMainMenuForStyleMask:styleMask])
+    //     result.size.height-=[NSMainMenuView menuHeight];
 
    return result;
 }
@@ -239,6 +233,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
    _miniwindowTitle=@"";
 
    _menu=nil;
+#if 0
     if([self hasMainMenu]){
     NSRect frame=NSMakeRect(contentViewFrame.origin.x,NSMaxY(contentViewFrame),contentViewFrame.size.width,[NSMainMenuView menuHeight]);
 
@@ -248,6 +243,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
     _menuView=[[NSMainMenuView alloc] initWithFrame:frame menu:_menu];
     [_menuView setAutoresizingMask:NSViewWidthSizable|NSViewMinYMargin];
    }
+#endif
 
    _backgroundView=[[[isa frameViewClassForStyleMask:styleMask] alloc] initWithFrame:backgroundFrame];
    [_backgroundView setAutoresizesSubviews:YES];
@@ -1470,8 +1466,8 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 
    NSRect result=CGOutsetRectForNativeWindowBorder(contentRect,[self styleMask]);
 
-   if([self hasMainMenu])
-    result.size.height+=[NSMainMenuView menuHeight];
+   // if([self hasMainMenu])
+   //  result.size.height+=[NSMainMenuView menuHeight];
 
    if([_toolbar _view]!=nil && ![[_toolbar _view] isHidden])
     result.size.height+=[[_toolbar _view] frame].size.height;
@@ -1482,8 +1478,8 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 -(NSRect)contentRectForFrameRect:(NSRect)frameRect {
    NSRect result=CGInsetRectForNativeWindowBorder(frameRect,[self styleMask]);
 
-   if([self hasMainMenu])
-    result.size.height-=[NSMainMenuView menuHeight];
+   // if([self hasMainMenu])
+   //  result.size.height-=[NSMainMenuView menuHeight];
 
    if([_toolbar _view]!=nil && ![[_toolbar _view] isHidden])
     result.size.height-=[[_toolbar _view] frame].size.height;
@@ -2353,6 +2349,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
         return;
     }
 
+#if 0
   NSDocument * document = [_windowController document];
   if (document)
     {
@@ -2370,16 +2367,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
         else
            [self close];
     }
-
-}
-
--(void)_document:(NSDocument *)document shouldClose:(BOOL)shouldClose contextInfo:(void *)context
-{
-  // Callback used by performClose:
-  if (shouldClose)
-    {
-      [self close];
-    }
+#endif
 }
 
 -(void)performMiniaturize:sender {
@@ -2588,32 +2576,6 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 {
 	_isVisible = visible;
 }
-
-// default NSDraggingDestination
--(NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender {
-   return NSDragOperationNone;
-}
-
--(NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)sender {
-   return [sender draggingSourceOperationMask];
-}
-
--(void)draggingExited:(id <NSDraggingInfo>)sender {
-   // do nothing
-}
-
--(BOOL)prepareForDragOperation:(id <NSDraggingInfo>)sender {
-   return NO;
-}
-
--(BOOL)performDragOperation:(id <NSDraggingInfo>)sender {
-   return NO;
-}
-
--(void)concludeDragOperation:(id <NSDraggingInfo>)sender {
-   // do nothing
-}
-
 
 -(NSArray *)_draggedTypes {
    return _draggedTypes;

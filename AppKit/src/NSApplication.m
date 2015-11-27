@@ -16,8 +16,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <AppKit/NSScreen.h>
 //#import <AppKit/NSColorPanel.h>
 #import <AppKit/NSDisplay.h>
-#import <AppKit/NSPageLayout.h>
-#import <AppKit/NSDocumentController.h>
 #import <AppKit/NSSheetContext.h>
 #import <AppKit/NSSystemInfoPanel.h>
 #import <AppKit/NSWorkspace.h>
@@ -57,10 +55,6 @@ NSString * const NSApplicationDidUnhideNotification=@"NSApplicationDidUnhideNoti
 NSString * const NSApplicationWillTerminateNotification=@"NSApplicationWillTerminateNotification";
 
 NSString * const NSApplicationDidChangeScreenParametersNotification=@"NSApplicationDidChangeScreenParametersNotification";
-
-@interface NSDocumentController(forward)
--(void)_updateRecentDocumentsMenu;
-@end
 
 @interface NSMenu(Private)
 -(NSMenu *)_menuWithName:(NSString *)name;
@@ -327,20 +321,6 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
         [[_windows objectAtIndex:count] miniaturize:sender];
 }
 
--(NSArray *)orderedDocuments {
-    NSMutableArray *result=[NSMutableArray array];
-    NSArray        *orderedWindows=[self orderedWindows];
-
-    for(NSWindow *checkWindow in orderedWindows){
-        NSDocument *checkDocument=[[checkWindow windowController] document];
-
-        if(checkDocument!=nil)
-            [result addObject:checkDocument];
-    }
-
-    return result;
-}
-
 -(NSArray *)orderedWindows {
     extern NSArray *CGSOrderedWindowNumbers();
 
@@ -485,20 +465,6 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
     }
 }
 
--(void)updateWindowsItem:(NSWindow *)window {
-#if 0
-    NSUnimplementedMethod();
-#else
-    NSMenu *menu=[self windowsMenu];
-    int     itemIndex=[[self windowsMenu] indexOfItemWithTarget:window andAction:@selector(makeKeyAndOrderFront:)];
-
-    if(itemIndex!=-1){
-        NSMenuItem *item=[menu itemAtIndex:itemIndex];
-
-    }
-#endif
-}
-
 -(BOOL)openFiles
 {
     BOOL opened = NO;
@@ -549,13 +515,6 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
 
     [self _closeSplashImage];
 
-    NSDocumentController *controller = nil;
-    id types=[[[NSBundle mainBundle]
-    infoDictionary]
-    objectForKey:@"CFBundleDocumentTypes"];
-    if([types count] > 0)
-        controller = [NSDocumentController sharedDocumentController];
-
     if ([self openFiles]) {
         needsUntitled = NO;
     }
@@ -566,15 +525,6 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
 
     if(needsUntitled && _delegate && [_delegate respondsToSelector: @selector(applicationOpenUntitledFile:)]) {
         needsUntitled = ![_delegate applicationOpenUntitledFile: self];
-    }
-
-    if(needsUntitled && controller && ![controller documentClassForType:[controller defaultType]]) {
-        needsUntitled = NO;
-    }
-
-    if(needsUntitled && controller) {
-        [controller _updateRecentDocumentsMenu];
-        [controller newDocument: self];
     }
 
     NS_DURING
@@ -846,18 +796,11 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
             return target;
     }
 
-    NSDocumentController *documentController = [NSDocumentController sharedDocumentController];
-    if ([[documentController currentDocument] respondsToSelector:action])
-        return [documentController currentDocument];
-
     if([self respondsToSelector:action])
         return self;
 
     if([[self delegate] respondsToSelector:action])
         return [self delegate];
-
-    if([documentController respondsToSelector:action])
-        return documentController;
 
     return nil;
 }
@@ -1123,10 +1066,6 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
     NSUnimplementedMethod();
 }
 
--(void)runPageLayout:sender {
-    [[NSPageLayout pageLayout] runModal];
-}
-
 -(void)orderFrontColorPanel:(id)sender {
 //   [[NSColorPanel sharedColorPanel] orderFront:sender];
 }
@@ -1189,21 +1128,6 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
 
 -(void)terminate:sender
 {
-    [[NSDocumentController sharedDocumentController] closeAllDocumentsWithDelegate:self
-                                                               didCloseAllSelector:@selector(_documentController:didCloseAll:contextInfo:)
-                                                                       contextInfo:NULL];
-}
-
--(void)_documentController:(NSDocumentController *)docController didCloseAll:(BOOL)didCloseAll contextInfo:(void *)info
-{
-    // callback method for terminate:
-    if (didCloseAll)
-    {
-        if ([_delegate respondsToSelector:@selector(applicationShouldTerminate:)])
-            [self replyToApplicationShouldTerminate: [_delegate applicationShouldTerminate:self] == NSTerminateNow];
-        else
-            [self replyToApplicationShouldTerminate:YES];
-    }
 }
 
 -(void)replyToApplicationShouldTerminate:(BOOL)terminate

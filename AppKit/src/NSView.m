@@ -22,8 +22,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 //#import <AppKit/NSGraphicsContextFunctions.h>
 #import <AppKit/NSDraggingManager.h>
 #import <AppKit/NSDragging.h>
-#import <AppKit/NSPrintOperation.h>
-#import <AppKit/NSPrintInfo.h>
 #import <Foundation/NSKeyedArchiver.h>
 #import <AppKit/NSPasteboard.h>
 #import <AppKit/NSObject+BindingSupport.h>
@@ -2099,10 +2097,6 @@ static NSGraphicsContext *graphicsContextForView(NSView *view){
    return NO;
 }
 
--(void)print:sender {
-   [[NSPrintOperation printOperationWithView:self] runOperation];
-}
-
 -(void)beginDocument {
 }
 
@@ -2193,24 +2187,6 @@ static NSGraphicsContext *graphicsContextForView(NSView *view){
 
 -(NSRect)rectForPage:(int)page {
    return NSZeroRect;
-}
-
--(NSData *)dataWithEPSInsideRect:(NSRect)rect {
-   NSMutableData    *result=[NSMutableData data];
-   NSPrintOperation *operation=[NSPrintOperation EPSOperationWithView:self insideRect:rect toData:result];
-
-   [operation runOperation];
-
-   return result;
-}
-
--(NSData *)dataWithPDFInsideRect:(NSRect)rect {
-   NSMutableData    *result=[NSMutableData data];
-   NSPrintOperation *operation=[NSPrintOperation PDFOperationWithView:self insideRect:rect toData:result];
-
-   [operation runOperation];
-
-   return result;
 }
 
 -(void)writeEPSInsideRect:(NSRect)rect toPasteboard:(NSPasteboard *)pasteboard {

@@ -9,7 +9,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import "NSWindowTemplate.h"
 #import <Foundation/NSKeyedArchiver.h>
 #import <AppKit/NSScreen.h>
-#import <AppKit/NSMainMenuView.h>
 #import <AppKit/NSWindow-Private.h>
 
 @interface NSWindow(Private)
@@ -21,7 +20,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 -initWithCoder:(NSCoder *)coder {
    if([coder allowsKeyedCoding]){
     NSKeyedUnarchiver *keyed=(NSKeyedUnarchiver *)coder;
-    
+
     _maxSize=[keyed decodeSizeForKey:@"NSMaxSize"];
     _minSize=[keyed decodeSizeForKey:@"NSMinSize"];
     _screenRect=[keyed decodeRectForKey:@"NSScreenRect"]; // screen created on
@@ -37,8 +36,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
     if ([NSScreen mainScreen])
       _windowRect.origin.y -= _screenRect.size.height - [[NSScreen mainScreen] frame].size.height;
-    if ([NSClassFromString(_windowClass) hasMainMenuForStyleMask:_windowStyleMask])
-      _windowRect.origin.y -= [NSMainMenuView menuHeight];   // compensation for the additional menu bar
+    // if ([NSClassFromString(_windowClass) hasMainMenuForStyleMask:_windowStyleMask])
+    //   _windowRect.origin.y -= [NSMainMenuView menuHeight];   // compensation for the additional menu bar
    }
    else {
     [NSException raise:NSInvalidArgumentException format:@"%@ can not initWithCoder:%@",isa,[coder class]];
@@ -72,11 +71,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
    [result setReleasedWhenClosed:(_wtFlags&0x40000000)?NO:YES];
    [result setHidesOnDeactivate:(_wtFlags&0x80000000)?YES:NO];
    [result setTitle:_windowTitle];
-   
+
    [result setContentView:_windowView];
    [_windowView setAutoresizesSubviews:YES];
    [_windowView setAutoresizingMask:NSViewWidthSizable|NSViewHeightSizable];
-   
+
    if([_viewClass isKindOfClass:[NSToolbar class]]) {
       [result setToolbar:_viewClass];
    }
