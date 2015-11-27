@@ -35,8 +35,6 @@
 
 #import <UIKit/UIFont.h>
 
-@class NSFont;
-
 @interface UIFont (UIPrivate)
 - (CGFontRef)CGFont;
 @end

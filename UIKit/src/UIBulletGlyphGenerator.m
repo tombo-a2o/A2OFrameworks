@@ -28,12 +28,14 @@
  */
 
 #import "UIBulletGlyphGenerator.h"
-#import <AppKit/NSAttributedString.h>
+//#import <AppKit/NSAttributedString.h>
 
 @implementation UIBulletGlyphGenerator
 
 - (void)generateGlyphsForGlyphStorage:(id < NSGlyphStorage >)glyphStorage desiredNumberOfCharacters:(NSUInteger)nChars glyphIndex:(NSUInteger *)glyphIndex characterIndex:(NSUInteger *)charIndex
 {
+    NSLog(@"%s fix me", __FUNCTION__);
+#if 0
     while (nChars > 0) {
         NSFont *font = [[glyphStorage attributedString] attribute:NSFontAttributeName atIndex:*charIndex effectiveRange:NULL];
         NSGlyph g = [font glyphWithName:@"bullet"];
@@ -42,6 +44,7 @@
         (*glyphIndex)++;
         nChars--;
     }
+#endif
 }
 
 @end

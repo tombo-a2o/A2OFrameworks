@@ -210,10 +210,12 @@
 
 - (void)setFont:(UIFont *)newFont
 {
+    NSLog(@"%s fix me", __FUNCTION__);
+
     assert(newFont != nil);
     if (newFont != _font) {
         _font = newFont;
-        [_textView setFont:[_font NSFont]];
+        //[_textView setFont:[_font NSFont]];
     }
 }
 

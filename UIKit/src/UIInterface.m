@@ -28,8 +28,6 @@
  */
 
 #import <UIKit/UIInterface.h>
-#import <AppKit/NSFont.h>
-
 
 @implementation UIColor (UIColorSystemColors)
 
@@ -40,27 +38,27 @@
 
 @end
 
-
+// http://iphonedevwiki.net/index.php/UIFont
 @implementation UIFont (UIFontSystemFonts)
 
 + (CGFloat)systemFontSize
 {
-    return [NSFont systemFontSize];
+    return 14.0;
 }
 
 + (CGFloat)smallSystemFontSize
 {
-    return [NSFont smallSystemFontSize];
+    return 12.0;
 }
 
 + (CGFloat)labelFontSize
 {
-    return [NSFont labelFontSize];
+    return 17.0;
 }
 
 + (CGFloat)buttonFontSize
 {
-    return [NSFont systemFontSizeForControlSize:NSRegularControlSize];
+    return 18.0;
 }
 
 @end
