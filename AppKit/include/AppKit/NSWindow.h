@@ -14,7 +14,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <AppKit/NSView.h>
 #import <CoreGraphics/CoreGraphics.h>
 
-@class NSView, NSEvent, NSColor, NSColorSpace, NSCursor, NSImage, NSScreen, NSText, NSTextView, CGWindow, NSPasteboard, NSSheetContext, NSUndoManager, NSButton, NSButtonCell, NSDrawer, NSDockTile, NSToolbar, NSWindowAnimationContext, NSTrackingArea, NSThemeFrame, NSWindowController, NSMenuItem, CARenderer;
+@class NSView, NSEvent, NSColor, NSColorSpace, NSCursor, NSImage, NSScreen, NSText, NSTextView, CGWindow, NSPasteboard, NSSheetContext, NSUndoManager, NSButton, NSButtonCell, NSDrawer, NSDockTile, NSToolbar, NSWindowAnimationContext, NSTrackingArea, NSThemeFrame, NSMenuItem, CARenderer;
 
 enum {
     NSBorderlessWindowMask = 0x00,
@@ -190,7 +190,6 @@ APPKIT_EXPORT NSString *const NSWindowDidChangeScreenNotification;
     NSView *_initialFirstResponder;
     NSButtonCell *_defaultButtonCell;
 
-    NSWindowController *_windowController;
     NSMutableArray *_drawers;
     NSWindowAnimationContext *_animationContext;
 
@@ -313,7 +312,6 @@ APPKIT_EXPORT NSString *const NSWindowDidChangeScreenNotification;
 - (void)setAlphaValue:(CGFloat)value;
 - (void)setToolbar:(NSToolbar *)toolbar;
 - (void)setDefaultButtonCell:(NSButtonCell *)cell;
-- (void)setWindowController:(NSWindowController *)value;
 - (void)setDocumentEdited:(BOOL)flag;
 - (void)setContentAspectRatio:(NSSize)value;
 - (void)setHasShadow:(BOOL)value;
