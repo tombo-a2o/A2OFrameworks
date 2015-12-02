@@ -122,6 +122,7 @@
 #import <UIKit/UIScrollWheelGestureRecognizer.h>
 
 #import <AppKit/NSParagraphStyle.h>
+#import <AppKit/NSAttributedString.h>
 
 // SystemConfiguration-Helper
 #define kSCNetworkReachabilityFlagsIsWWAN kSCNetworkReachabilityFlagsConnectionOnDemand
