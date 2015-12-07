@@ -30,7 +30,11 @@
 #define NIBOBJ_NULL 0x09
 #define NIBOBJ_UID 0x0A
 
+#if defined(DEBUG)
 #define EbrDebugLog(...) fprintf(stderr, __VA_ARGS__)
+#else
+#define EbrDebugLog(...)
+#endif
 
 class NSNibArchiver;
 
@@ -112,6 +116,7 @@ static Object* objectForUid(NSNibUnarchiver* self, int uid) {
 }
 
 static id constructObject(NSNibUnarchiver* self, Object* pObj) {
+    EbrDebugLog("constructObject: %s \n", pObj->className);
     if (strcmp(pObj->className, "NSArray") == 0 || strcmp(pObj->className, "NSMutableArray") == 0) {
         id* arrayItems;
         int numArrayItems = 0;
@@ -122,6 +127,7 @@ static id constructObject(NSNibUnarchiver* self, Object* pObj) {
 
         for (int i = 0; i < pObj->itemCount; i++) {
             Item* curItem = pObj->items[i];
+            EbrDebugLog("  array: %d %s \n", i, curItem->key);
 
             if (strcmp(curItem->key, "UINibEncoderEmptyKey") == 0) {
                 id item = idForItem(self, curItem);
