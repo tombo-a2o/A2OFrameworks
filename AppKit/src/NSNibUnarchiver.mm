@@ -199,13 +199,16 @@ static id constructObject(NSNibUnarchiver* self, Object* pObj) {
         assert(classId != nil);
 
         EbrDebugLog("Instantiating %s\n", pObj->className);
-        pObj->cachedId = [classId alloc];
+        pObj->cachedId = [[classId alloc] autorelease];
 
         if ([pObj->cachedId respondsToSelector:@selector(instantiateWithCoder:)]) {
             pushObject(self, pObj);
             id orig = pObj->cachedId;
             pObj->cachedId = [pObj->cachedId instantiateWithCoder:(id)self];
-            [orig autorelease];
+            if(pObj->cachedId != orig) {
+                // swapped by UIClassSwapper
+                [pObj->cachedId autorelease];
+            }
             popObject(self);
         }
 
@@ -217,11 +220,10 @@ static id constructObject(NSNibUnarchiver* self, Object* pObj) {
                 EbrDebugLog("%s does not respond to initWithCoder\n", object_getClassName(pObj->cachedId));
             }
         }
-
+        
         if ([pObj->cachedId respondsToSelector:@selector(awakeAfterUsingCoder:)]) {
             pObj->cachedId = [pObj->cachedId awakeAfterUsingCoder:(id)self];
         }
-        [pObj->cachedId autorelease];
         popObject(self);
     }
     return pObj->cachedId;

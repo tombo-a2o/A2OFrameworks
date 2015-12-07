@@ -14,9 +14,14 @@
 //
 //******************************************************************************
 
-#import <Foundation/Foundation.h>
+#import <Foundation/NSObject.h>
 
-@interface NSNib : NSObject
-- (NSArray*)loadNib:(NSString*)filename withOwner:(id)ownerObject;
-- (NSArray*)loadNib:(NSString*)filename withOwner:(id)ownerObject proxies:(NSDictionary*)proxies;
+@interface UIRuntimeEventConnection : NSObject {
+    unsigned mask;
+    SEL selector;
+    id obj, targetControl;
+    BOOL valid;
+}
+- (unsigned)mask;
+- (void)makeConnection;
 @end

@@ -14,9 +14,11 @@
 //
 //******************************************************************************
 
-#import <Foundation/Foundation.h>
-
-@interface NSNib : NSObject
-- (NSArray*)loadNib:(NSString*)filename withOwner:(id)ownerObject;
-- (NSArray*)loadNib:(NSString*)filename withOwner:(id)ownerObject proxies:(NSDictionary*)proxies;
+@interface UIClassSwapper : NSObject {
+@public
+    id className, originalClassName;
+}
+-(id) instantiateWithCoder:(id)coder;
+-(NSString*) originalClassName;
+-(NSString*) className;
 @end

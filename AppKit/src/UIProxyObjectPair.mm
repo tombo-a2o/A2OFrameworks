@@ -14,9 +14,8 @@
 //
 //******************************************************************************
 
-#import <Foundation/Foundation.h>
+#include "UIProxyObjectPair.h"
 
-@interface NSNib : NSObject
-- (NSArray*)loadNib:(NSString*)filename withOwner:(id)ownerObject;
-- (NSArray*)loadNib:(NSString*)filename withOwner:(id)ownerObject proxies:(NSDictionary*)proxies;
+@implementation UIProxyObjectPair : NSObject
+
 @end

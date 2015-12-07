@@ -14,9 +14,10 @@
 //
 //******************************************************************************
 
-#import <Foundation/Foundation.h>
-
-@interface NSNib : NSObject
-- (NSArray*)loadNib:(NSString*)filename withOwner:(id)ownerObject;
-- (NSArray*)loadNib:(NSString*)filename withOwner:(id)ownerObject proxies:(NSDictionary*)proxies;
+@interface UIRuntimeOutletConnection : NSObject {
+@public
+    id source, dest, label;
+}
+-(instancetype) initWithCoder:(NSCoder*)coder;
+-(void) _makeConnection;
 @end

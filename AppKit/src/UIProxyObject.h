@@ -14,9 +14,13 @@
 //
 //******************************************************************************
 
-#import <Foundation/Foundation.h>
-
-@interface NSNib : NSObject
-- (NSArray*)loadNib:(NSString*)filename withOwner:(id)ownerObject;
-- (NSArray*)loadNib:(NSString*)filename withOwner:(id)ownerObject proxies:(NSDictionary*)proxies;
+@interface UIProxyObject : NSObject {
+@public
+    id _obj;
+}
+-(instancetype) initWithCoder:(NSCoder*)coder;
+-(id) _getObject;
++(void) addProxyObject:(id)proxyObject withName:(id)objectName forCoder:(id)coder;
++(void) clearProxyObjects:(id)coder;
 @end
+
