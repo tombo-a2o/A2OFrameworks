@@ -58,6 +58,10 @@
     return self;
 }
 
+- (id)initWithCoder:(NSCoder *)decoder
+{
+    return self;
+}
 - (void)dealloc
 {
     _navigationBar.delegate = nil;

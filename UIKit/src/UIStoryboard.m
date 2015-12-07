@@ -65,11 +65,14 @@
         pathToNib = [[NSBundle mainBundle] pathForResource:fileName ofType:@"nib" inDirectory:_path];
     }
 
-    NSNib *nib = [[NSNib alloc] initWithContentsOfURL:[NSURL fileURLWithPath:pathToNib]];
-    UIApplication *uiApplication = [UIApplication sharedApplication];
+    NSNib *nib = [[NSNib alloc] init];
 
-    NSArray *objs;
-    if([nib instantiateWithOwner:uiApplication topLevelObjects:&objs]) {
+    UIApplication *uiApplication = [UIApplication sharedApplication];
+    //NSDictionary *proxies = [NSDiction dictionaryWithObjectsAndKeys:uiApplication,@"UpstreamPlaceholder-1",self,@"UIStoryboardPlaceholder",nil];
+    NSDictionary *proxies = @{ @"UpstreamPlaceholder-1": uiApplication, @"UIStoryboardPlaceholder": self};
+
+    NSArray *objs = [nib loadNib:pathToNib withOwner:uiApplication proxies:proxies];
+    if(objs) {
         int count = [objs count];
 
         for ( int i = 0; i < count; i ++ ) {
