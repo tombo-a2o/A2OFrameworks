@@ -73,11 +73,9 @@
 //    return nil; ok
     // id allObjects = prop("decodeObjectForKey:", @"UINibObjectsKey");
     NSArray* connections = [prop decodeObjectForKey:@"UINibConnectionsKey"];
-    return nil; //ng
     NSArray* topLevelObjects = [prop decodeObjectForKey:@"UINibTopLevelObjectsKey"];
     NSArray* visibleObjects = [prop decodeObjectForKey:@"UINibVisibleWindowsKey"];
     NSArray* allObjects = [prop decodeObjectForKey:@"UINibObjectsKey"];
-//    return nil; ng
 
     NSLog(@"connections %@", connections);
     for (UIRuntimeEventConnection* curconnection in connections) {
@@ -109,8 +107,6 @@
             [ret addObject:curobject];
         }
     }
-    NSLog(@"toplevel %@", topLevelObjects);
-    NSLog(@"ret %@", ret);
 
     [UIProxyObject clearProxyObjects:prop];
 
