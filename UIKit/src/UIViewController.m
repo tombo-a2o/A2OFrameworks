@@ -28,6 +28,7 @@
  */
 
 #import "UIViewControllerAppKitIntegration.h"
+#import "UIViewController+Private.h"
 #import "UIView+UIPrivate.h"
 #import <UIKit/UIScreen.h>
 #import <UIKit/UIWindow.h>
@@ -56,6 +57,11 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
     BOOL _appearanceTransitionIsAnimated;
     BOOL _viewIsAppearing;
     _UIViewControllerParentageTransition _parentageTransition;
+    
+    UIViewController *_presentingViewController;
+    UIViewController *_presentedViewController;
+    
+    NSString *_nibName;
 }
 
 - (id)init
@@ -68,6 +74,7 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
     if ((self=[super init])) {
         _contentSizeForViewInPopover = CGSizeMake(320,1100);
         _hidesBottomBarWhenPushed = NO;
+        _nibName = nibName;
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveMemoryWarning) name:UIApplicationDidReceiveMemoryWarningNotification object:[UIApplication sharedApplication]];
     }
     return self;
@@ -81,12 +88,12 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
 
 - (NSString *)nibName
 {
-    return nil;
+    return [_nibName copy];
 }
 
-- (NSBundle *)nibBundle
+- (void)setNibName:(NSString*)nibName
 {
-    return nil;
+    _nibName = nibName;
 }
 
 - (UIResponder *)nextResponder
@@ -186,6 +193,11 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
     return _navigationItem;
 }
 
+- (void)setNavigationItem:(UINavigationItem*)navigationItem
+{
+    _navigationItem = navigationItem;
+}
+
 - (void)setTitle:(NSString *)title
 {
     if (![_title isEqual:title]) {
@@ -223,8 +235,28 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
     return nil;
 }
 
-- (void)presentViewController:(UIViewController *)viewControllerToPresent animated:(BOOL)flag completion:(void (^)(void))completion
+- (void)presentViewController:(UIViewController *)viewControllerToPresent animated:(BOOL)animated completion:(void (^)(void))completion
 {
+    if (!_presentedViewController && viewControllerToPresent != self) {
+        _presentedViewController = viewControllerToPresent;
+        //[_presentedViewController _setParentViewController:self];
+
+        UIWindow *window = self.view.window;
+        UIView *selfView = self.view;
+        UIView *newView = _presentedViewController.view;
+
+        newView.autoresizingMask = selfView.autoresizingMask;
+        newView.frame = _wantsFullScreenLayout? window.screen.bounds : window.screen.applicationFrame;
+
+        [window addSubview:newView];
+        [_presentedViewController viewWillAppear:animated];
+
+        [self viewWillDisappear:animated];
+        selfView.hidden = YES;		// I think the real one may actually remove it, which would mean needing to remember the superview, I guess? Not sure...
+        [self viewDidDisappear:animated];
+
+        [_presentedViewController viewDidAppear:animated];
+    }
 }
 
 - (void)dismissViewControllerAnimated:(BOOL)flag completion:(void (^)(void))completion
@@ -527,5 +559,6 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
 {
     _parentageTransition = _UIViewControllerParentageTransitionNone;
 }
+
 
 @end

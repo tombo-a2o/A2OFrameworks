@@ -41,6 +41,17 @@ NSString *const UINavigationItemDidChange = @"UINavigationItemDidChange";
     return self;
 }
 
+- (id)initWithCoder:(NSCoder *)coder
+{
+    self = [super init];
+    _title = [coder decodeObjectForKey:@"UITitle"];
+    _titleView = [coder decodeObjectForKey:@"UITitleView"];
+    _leftBarButtonItem = [coder decodeObjectForKey:@"UILeftBarButtonItem"];
+    _rightBarButtonItem = [coder decodeObjectForKey:@"UIRightBarButtonItem"];
+    
+    return self;
+}
+
 - (void)setBackBarButtonItem:(UIBarButtonItem *)backBarButtonItem
 {
     if (_backBarButtonItem != backBarButtonItem) {

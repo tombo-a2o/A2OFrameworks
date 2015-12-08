@@ -53,6 +53,7 @@ typedef NS_ENUM(NSInteger, UIModalTransitionStyle) {
 
 @interface UIViewController : UIResponder
 - (id)initWithNibName:(NSString *)nibName bundle:(NSBundle *)nibBundle;	// won't load a nib no matter what you do!
+- (id)initWithCoder:(NSCoder*)coder;
 
 - (BOOL)isViewLoaded;
 - (void)loadView;

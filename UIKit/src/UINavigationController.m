@@ -32,6 +32,7 @@
 #import <UIKit/UINavigationBar.h>
 #import <UIKit/UIToolbar.h>
 #import <UIKit/UIScreen.h>
+#import "UINavigationController+Private.h"
 
 @interface UIViewController (UIPrivate)
 - (void)_removeFromParentViewController;
@@ -58,10 +59,6 @@
     return self;
 }
 
-- (id)initWithCoder:(NSCoder *)decoder
-{
-    return self;
-}
 - (void)dealloc
 {
     _navigationBar.delegate = nil;
@@ -455,4 +452,8 @@
     return self.topViewController;
 }
 
+- (void)setToolbar:(UIToolbar*)toolbar
+{
+    _toolbar = toolbar;
+}
 @end

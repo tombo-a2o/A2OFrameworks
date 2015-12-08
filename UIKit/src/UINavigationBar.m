@@ -123,6 +123,20 @@ typedef NS_ENUM(NSInteger, _UINavigationBarTransition) {
     return self;
 }
 
+- (id)initWithCoder:(NSCoder*)coder {
+    self = [super initWithCoder:coder];
+    NSArray* items = [coder decodeObjectForKey:@"UIItems"];
+    if(items) {
+        _navStack = [items mutableCopy];
+    } else {
+        _navStack = [[NSMutableArray alloc] init];
+    }
+    _barStyle = [coder decodeInt32ForKey:@"UIBarStyle"];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_navigationItemDidChange:) name:UINavigationItemDidChange object:nil];
+    return self;
+}
+
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
