@@ -17,6 +17,12 @@
 #include "UIClassSwapper.h"
 #include <objc/runtime.h>
 
+#if defined(DEBUG)
+#define EbrDebugLog(...) fprintf(stderr, __VA_ARGS__)
+#else
+#define EbrDebugLog(...)
+#endif
+
 @implementation UIClassSwapper : NSObject
 - (id)instantiateWithCoder:(id)coder {
     className = [coder decodeObjectForKey:@"UIClassName"];
@@ -30,7 +36,7 @@
     if (classNameId != nil) {
         return [classNameId alloc];
     } else {
-        //EbrDebugLog("Class %s not found!\n", identifier);
+        EbrDebugLog("Class %s not found!\n", identifier);
         return nil;
     }
 }

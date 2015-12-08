@@ -62,7 +62,7 @@ id proxyObjects;
 
         if (curObj->proxiedObjectCoder == coder && [curObj->proxiedObjectName isEqual:proxiedObjectIdentifier]) {
             _obj = curObj->proxiedObject;
-
+            EbrDebugLog("Proxied object found: %s", [proxiedObjectIdentifier UTF8String]);
             return curObj->proxiedObject;
         }
     }

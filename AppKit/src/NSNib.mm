@@ -19,7 +19,7 @@
 #import <UIKit/UIView.h>
 #import <UIKit/UIWindow.h>
 #import "UIProxyObject.h"
-#import "UIRuntimeEventConnection.h"
+#import "UIRuntimeOutletConnection.h"
 #import "NSNibUnarchiver.h"
 
 @implementation NSNib {
@@ -78,8 +78,8 @@
     NSArray* allObjects = [prop decodeObjectForKey:@"UINibObjectsKey"];
 
     NSLog(@"connections %@", connections);
-    for (UIRuntimeEventConnection* curconnection in connections) {
-        //[curconnection makeConnection];
+    for (UIRuntimeOutletConnection* curconnection in connections) {
+        [curconnection makeConnection];
     }
 
     for (UIView* curobject in visibleObjects) {

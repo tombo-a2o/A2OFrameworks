@@ -19,5 +19,5 @@
     id source, dest, label;
 }
 -(instancetype) initWithCoder:(NSCoder*)coder;
--(void) _makeConnection;
+-(void)makeConnection;
 @end

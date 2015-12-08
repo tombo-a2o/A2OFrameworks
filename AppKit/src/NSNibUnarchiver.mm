@@ -236,6 +236,7 @@ static id constructObject(NSNibUnarchiver* self, Object* pObj) {
 }
 
 static id idForItem(NSNibUnarchiver* self, Item* item) {
+    EbrDebugLog("idForItem key=%s\n", item->key);
     if (item->cachedId == nil) {
         switch (item->type) {
             case NIBOBJ_UID: {

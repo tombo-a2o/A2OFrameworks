@@ -30,7 +30,7 @@
     return self;
 }
 
-- (void)_makeConnection {
+- (void)makeConnection {
     const char* labelName = [label UTF8String];
     if (source != nil) {
         EbrDebugLog("Setting property on %s: %s\n", object_getClassName(source), labelName);
@@ -38,7 +38,7 @@
         EbrDebugLog("Source = nil, can't set property %s\n", labelName);
     }
 
-    [source setValue:dest forKey:label];
+//    [source setValue:dest forKey:label];
 
     /*
     char labelLowerName[255];
