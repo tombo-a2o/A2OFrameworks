@@ -14,12 +14,10 @@
 //
 //******************************************************************************
 
-#import <Foundation/NSObject.h>
+#import "UIRuntimeConnection.h"
 
-@interface UIRuntimeEventConnection : NSObject {
+@interface UIRuntimeEventConnection : UIRuntimeConnection {
     unsigned mask;
-    SEL selector;
-    id obj, targetControl;
     BOOL valid;
 }
 - (unsigned)mask;

@@ -17,37 +17,39 @@
 #import "UIRuntimeEventConnection.h"
 #import "UIProxyObject.h"
 
-#define EbrDebugLog(fmt, ...) NSLog(@fmt, __VA_ARGS__)
+#if defined(DEBUG)
+#define EbrDebugLog(...) fprintf(stderr, __VA_ARGS__)
+#else
+#define EbrDebugLog(...)
+#endif
 
 @implementation UIRuntimeEventConnection
 - (id)initWithCoder:(NSCoder*)coder {
-    targetControl = [coder decodeObjectForKey:@"UISource"];
-    obj = [coder decodeObjectForKey:@"UIDestination"];
-    selector = (SEL)NSSelectorFromString([coder decodeObjectForKey:@"UILabel"]);
+    self = [super initWithCoder:coder];
     mask = [coder decodeInt32ForKey:@"UIEventMask"];
-
     return self;
 }
 
 - (void)makeConnection {
-    EbrDebugLog("Source: %s\n", object_getClassName(targetControl));
-    EbrDebugLog("Dest: %s\n", obj != nil ? object_getClassName(obj) : "nil (first responder?)");
-    EbrDebugLog("Event label: %s\n", sel_getName(selector));
+    EbrDebugLog("Source: %s\n", object_getClassName(source));
+    EbrDebugLog("Dest: %s\n", destination != nil ? object_getClassName(destination) : "nil (first responder?)");
+    EbrDebugLog("Event label: %s\n", [label UTF8String]);
     EbrDebugLog("Event mask: %x\n", mask);
 
     valid = TRUE;
 
-    if (obj != nil) {
-        if ([obj isKindOfClass:[UIProxyObject class]]) {
-            UIProxyObject *proxy = obj;
-            obj = [proxy _getObject];
+    if (destination != nil) {
+        if ([destination isKindOfClass:[UIProxyObject class]]) {
+            UIProxyObject *proxy = destination;
+            destination = [proxy _getObject];
         }
     }
 
-    assert(0);
+    //assert(0);
     //[targetControl addEventConnection:self];
 }
 
+/*
 - (instancetype)initWithTarget:(id)target sel:(id)targetsel eventMask:(uint32_t)targetmask {
     obj = target;
     selector = (SEL)NSSelectorFromString(targetsel);
@@ -75,6 +77,7 @@
 - (SEL)sel {
     return selector;
 }
+*/
 
 - (uint32_t)mask {
     return mask;

@@ -14,10 +14,9 @@
 //
 //******************************************************************************
 
-@interface UIRuntimeOutletConnection : NSObject {
-@public
-    id source, dest, label;
-}
+#import "UIRuntimeConnection.h"
+
+@interface UIRuntimeOutletConnection : UIRuntimeConnection
 -(instancetype) initWithCoder:(NSCoder*)coder;
 -(void)makeConnection;
 @end

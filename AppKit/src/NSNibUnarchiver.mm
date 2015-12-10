@@ -14,9 +14,10 @@
 //
 //******************************************************************************
 
-#include <Foundation/Foundation.h>
-#include <objc/runtime.h>
-#include "NSNibUnarchiver.h"
+#import <Foundation/Foundation.h>
+#import <objc/runtime.h>
+#import "NSNibUnarchiver.h"
+#import "UIProxyObject.h"
 
 #define NIBOBJ_INT8 0x00
 #define NIBOBJ_INT16 0x01
@@ -205,7 +206,7 @@ static id constructObject(NSNibUnarchiver* self, Object* pObj) {
         assert(classId != nil);
 
         EbrDebugLog("Instantiating %s\n", pObj->className);
-        pObj->cachedId = [[classId alloc] autorelease];
+        pObj->cachedId = [classId alloc];
 
         if ([pObj->cachedId respondsToSelector:@selector(instantiateWithCoder:)]) {
             pushObject(self, pObj);
@@ -213,18 +214,23 @@ static id constructObject(NSNibUnarchiver* self, Object* pObj) {
             pObj->cachedId = [pObj->cachedId instantiateWithCoder:(id)self];
             if(pObj->cachedId != orig) {
                 // swapped by UIClassSwapper
-                [pObj->cachedId autorelease];
+                [orig release];
             }
             popObject(self);
         }
 
         pushObject(self, pObj);
+        id orig = pObj->cachedId;
         if ([pObj->cachedId respondsToSelector:@selector(initWithCoder:)]) {
             pObj->cachedId = [pObj->cachedId initWithCoder:(id)self];
         } else {
             if (pObj->cachedId) {
                 EbrDebugLog("%s does not respond to initWithCoder\n", object_getClassName(pObj->cachedId));
             }
+        }
+        if(pObj->cachedId == orig) {
+            // instance change means UIProxyObject or UIImageNibPlaceholder returns object, which is autoreleased
+            [pObj->cachedId autorelease];
         }
         
         if ([pObj->cachedId respondsToSelector:@selector(awakeAfterUsingCoder:)]) {
@@ -236,7 +242,6 @@ static id constructObject(NSNibUnarchiver* self, Object* pObj) {
 }
 
 static id idForItem(NSNibUnarchiver* self, Item* item) {
-    EbrDebugLog("idForItem key=%s\n", item->key);
     if (item->cachedId == nil) {
         switch (item->type) {
             case NIBOBJ_UID: {
