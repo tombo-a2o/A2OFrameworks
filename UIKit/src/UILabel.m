@@ -54,7 +54,26 @@
     return self;
 }
 
-
+- (id)initWithCoder:(NSCoder*)coder
+{
+    self = [super initWithCoder:coder];
+    
+    self.text = [coder decodeObjectForKey:@"UIText"];
+    self.userInteractionEnabled = ![coder decodeBoolForKey:@"UIUserInteractionDisabled"];
+    self.textAlignment = [coder decodeIntForKey:@"UITextAlignment"];
+    self.lineBreakMode = UILineBreakModeTailTruncation;
+    self.textColor = [coder decodeObjectForKey:@"UITextColor"];
+    self.backgroundColor = [UIColor whiteColor];
+    self.enabled = YES;
+    self.font = [coder decodeObjectForKey:@"UIFont"];
+    self.numberOfLines = 1;
+    self.contentMode = [coder decodeIntForKey:@"UIContentMode"];
+    self.clipsToBounds = [coder decodeBoolForKey:@"UIClipsToBounds"];
+    //self.shadowOffset = CGSizeMake(0,-1);
+    self.baselineAdjustment = UIBaselineAdjustmentAlignBaselines;
+    
+    return self;
+}
 - (void)setText:(NSString *)newText
 {
     if (_text != newText) {

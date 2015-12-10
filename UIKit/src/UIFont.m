@@ -43,15 +43,7 @@
 
 + (UIFont *)fontWithName:(NSString *)fontName size:(CGFloat)fontSize
 {
-    //NSLog(@"fontName %@", fontName);
-    CGFontRef cgFont = CGFontCreateWithFontName((__bridge CFStringRef)fontName);
-    if(!cgFont) {
-        return nil;
-    }
-    UIFont *font = [[UIFont alloc] init];
-    font->_cgFont = CFRetain(cgFont);
-    font->_pointSize = fontSize;
-    return font;
+    return [[UIFont alloc] initWithName:fontName size:fontSize];
 }
 
 + (NSArray *)familyNames
@@ -67,6 +59,28 @@
 + (UIFont *)preferredFontForTextStyle:(NSString *)style
 {
     assert(0);
+}
+
+- (id)initWithName:(NSString *)fontName size:(CGFloat)fontSize
+{
+    CGFontRef cgFont = CGFontCreateWithFontName((__bridge CFStringRef)fontName);
+    if(!cgFont) {
+        return nil;
+    }
+    self = [super init];
+    _cgFont = CFRetain(cgFont);
+    _pointSize = fontSize;
+    return self;
+}
+
+- (id)initWithCoder:(NSCoder*)coder
+{
+    self = [super init];
+    BOOL systemfont = [coder decodeBoolForKey:@"UISystemFont"];
+    float size = [coder decodeFloatForKey:@"UIFontPointSize"];
+    assert(systemfont);
+    
+    return [self initWithName:@"Arial" size:size];
 }
 
 - (void)dealloc

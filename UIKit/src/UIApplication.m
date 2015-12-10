@@ -62,6 +62,10 @@ const NSTimeInterval UIMinimumKeepAliveTimeout = 0;
 
 static UIApplication *_theApplication = nil;
 
+@interface UIApplication()
+@property (nonatomic, retain) UIViewController *sceneViewController;
+@end
+
 @implementation UIApplication {
     NSUInteger _ignoringInteractionEvents;
     NSDate *_backgroundTasksExpirationDate;

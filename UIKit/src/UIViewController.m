@@ -40,12 +40,17 @@
 #import <UIKit/UIToolbar.h>
 #import <UIKit/UIScreen.h>
 #import <UIKit/UITabBarController.h>
+#import <AppKit/NSNib.h>
 
 typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
     _UIViewControllerParentageTransitionNone = 0,
     _UIViewControllerParentageTransitionToParent,
     _UIViewControllerParentageTransitionFromParent,
 };
+
+@interface UIStoryboard(Private)
+-(NSString*) _path;
+@end
 
 @implementation UIViewController {
     UIView *_view;
@@ -62,6 +67,7 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
     UIViewController *_presentedViewController;
     
     NSString *_nibName;
+    NSBundle *_nibBundle;
 }
 
 - (id)init
@@ -75,6 +81,7 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
         _contentSizeForViewInPopover = CGSizeMake(320,1100);
         _hidesBottomBarWhenPushed = NO;
         _nibName = nibName;
+        _nibBundle = nibBundle ?: [NSBundle mainBundle];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveMemoryWarning) name:UIApplicationDidReceiveMemoryWarningNotification object:[UIApplication sharedApplication]];
     }
     return self;
@@ -139,9 +146,42 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
     }
 }
 
+// this code is originated from WinObjC
 - (void)loadView
 {
-    self.view = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    if(_view) {
+        return;
+    }
+    
+    if(!_nibName) {
+        self.view = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+        return;
+    }
+    
+    NSString *path = [_nibBundle pathForResource:_nibName ofType:@"nib"];
+    if(!path) {
+        path = [[NSBundle mainBundle] pathForResource:_nibName ofType:@"nib"];
+    }
+    if(!path) {
+        NSString* storyboardPath = [self.storyboard _path];
+        if(storyboardPath) {
+            NSString* runtimePath = [storyboardPath stringByAppendingPathComponent:_nibName];
+            runtimePath = [runtimePath stringByAppendingString:@".nib"];
+            path = [[NSBundle mainBundle] pathForResource:@"runtime" ofType:@"nib" inDirectory:runtimePath];
+            if(!path) {
+                path = [[NSBundle mainBundle] pathForResource:_nibName ofType:@"nib" inDirectory:storyboardPath];
+            }
+        }
+    }
+    if(!path) {
+        assert(0);
+    }
+    
+    NSMutableDictionary *proxies = [NSMutableDictionary dictionaryWithDictionary:@{ @"UIStoryboardPlaceholder": self.storyboard}];
+    [proxies addEntriesFromDictionary:self.externalObjects];
+    NSNib *nib = [[NSNib alloc] init];
+    [nib loadNib:path withOwner:self proxies:proxies];
+    self.externalObjects = nil;
 }
 
 - (void)viewDidLoad

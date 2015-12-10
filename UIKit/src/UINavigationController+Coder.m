@@ -16,6 +16,7 @@
 
 #import <UIKit/UINavigationController.h>
 #import "UINavigationController+Private.h"
+#import "UIViewController+Private.h"
 #import <UIKit/UINavigationBar.h>
 
 
@@ -29,10 +30,11 @@
 - (id)initWithCoder:(NSCoder*)coder {
     self = [super initWithCoder:coder];
 
+    //self.viewControllers = [coder decodeObjectForKey:@"UIViewControllers"];
+
     self.navigationBar = [coder decodeObjectForKey:@"UINavigationBar"];
     [self.navigationBar setDelegate:self];
     
-    self.viewControllers = [coder decodeObjectForKey:@"UIViewControllers"];
     if ([coder decodeObjectForKey:@"UINavigationBarHidden"]) {
         [self.navigationBar setHidden:YES];
     }
@@ -48,7 +50,12 @@
         [self.toolbar setHidden:YES];
     }
 
-    //[self setViewControllers:viewControllers animated:YES];
+    // childViewControllers should be cleared to run viewController initialization in setViewControllers
+    // because it is used as a container of viewControllers and assigned in [UIViewController -initWithCoder]
+    // and setViewControllers initializes controllers only when current and new viewControllers are different.
+    self.childViewControllers = [[NSMutableArray alloc] init];
+    NSArray* viewControllers = [coder decodeObjectForKey:@"UIViewControllers"];
+    [self setViewControllers:viewControllers animated:NO];
     //priv->_wantsFullScreenLayout = YES;
 
     return self;

@@ -40,7 +40,6 @@
 
 @implementation UINavigationController {
     UIViewController *_visibleViewController;
-    BOOL _needsDeferredUpdate;
     BOOL _isUpdating;
     BOOL _toolbarHidden;
 }
@@ -90,12 +89,6 @@
 - (BOOL)shouldAutomaticallyForwardAppearanceMethods
 {
     return NO;
-}
-
-- (void)_setNeedsDeferredUpdate
-{
-    _needsDeferredUpdate = YES;
-    [self.view setNeedsLayout];
 }
 
 - (void)_getNavbarRect:(CGRect *)navbarRect contentRect:(CGRect *)contentRect toolbarRect:(CGRect *)toolbarRect forBounds:(CGRect)bounds
@@ -183,6 +176,7 @@
     [self.view insertSubview:newVisibleViewController.view atIndex:0];
     newVisibleViewController.view.transform = inStartTransform;    
         
+    NSLog(@"----------- run animateWithDuration");
     [UIView animateWithDuration:animated? 0.33 : 0
                      animations:^{
                          oldVisibleViewController.view.transform = outEndTransform;
@@ -191,6 +185,7 @@
                          _navigationBar.transform = navbarEndTransform;
                      }
                      completion:^(BOOL finished) {
+                         NSLog(@"----------- animateWithDuration completed!!!");
                          [oldVisibleViewController.view removeFromSuperview];
                          
                          _toolbar.hidden = _toolbarHidden;
@@ -212,14 +207,6 @@
                      }];
 
     _isUpdating = NO;
-}
-
-- (void)viewWillLayoutSubviews
-{
-    if (_needsDeferredUpdate) {
-        _needsDeferredUpdate = NO;
-        [self _updateVisibleViewController:NO];
-    }
 }
 
 - (NSArray *)viewControllers
@@ -285,7 +272,9 @@
     if (animated) {
         [self _updateVisibleViewController:animated];
     } else {
-        [self _setNeedsDeferredUpdate];
+        dispatch_async(dispatch_get_current_queue(), ^{
+            [self _updateVisibleViewController:NO];
+        });
     }
 
     [_navigationBar pushNavigationItem:viewController.navigationItem animated:animated];
@@ -325,7 +314,9 @@
     if (animated) {
         [self _updateVisibleViewController:animated];
     } else {
-        [self _setNeedsDeferredUpdate];
+        dispatch_async(dispatch_get_current_queue(), ^{
+            [self _updateVisibleViewController:NO];
+        });
     }
 
 	return formerTopViewController;

@@ -26,6 +26,8 @@
 @implementation UIView (Coder)
 
 - (id)initWithCoder:(NSCoder*)coder {
+    self = [self init];
+    
     CGRect bounds;
 
     id boundsObj = [coder decodeObjectForKey:@"UIBounds"];
@@ -33,8 +35,18 @@
         if ([boundsObj isKindOfClass:[NSString class]]) {
             bounds = CGRectFromString(boundsObj);
         } else {
-            //assert(0);
-            memcpy(&bounds, (const char*)[boundsObj bytes] + 1, sizeof(CGRect));
+            NSData *data = boundsObj;
+            const char* bytes = [data bytes];
+            double x,y,width,height;
+            // need to be 8-byte alinged to read as double
+            memcpy(&x, bytes+1, sizeof(double));
+            memcpy(&y, bytes+9, sizeof(double));
+            memcpy(&width, bytes+17, sizeof(double));
+            memcpy(&height, bytes+25, sizeof(double));
+            bounds.origin.x = x;
+            bounds.origin.y = y;
+            bounds.size.width = width;
+            bounds.size.height = height;
         }
     } else {
         bounds.origin.x = 0;
@@ -50,7 +62,14 @@
         if ([centerObj isKindOfClass:[NSString class]]) {
             center = CGPointFromString(centerObj);
         } else {
-            memcpy(&center, (const char*)[centerObj bytes] + 1, sizeof(CGPoint));
+            // need to be 8-byte alinged to read as double
+            NSData *data = boundsObj;
+            const char* bytes = [data bytes];
+            double x,y;
+            memcpy(&x, bytes+1, sizeof(double));
+            memcpy(&y, bytes+9, sizeof(double));
+            center.x = x;
+            center.y = y;
         }
     } else {
         center.x = 0;

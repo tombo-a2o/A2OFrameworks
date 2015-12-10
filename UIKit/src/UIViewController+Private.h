@@ -34,4 +34,6 @@
 @property (nonatomic, readwrite, retain) NSBundle *nibBundle;
 @property (nonatomic, readwrite, retain) UINavigationItem *navigationItem;
 @property (nonatomic, readwrite) NSArray *childViewControllers;
+@property (nonatomic, readwrite) UIStoryboard *storyboard;
+@property (nonatomic, readwrite) NSDictionary *externalObjects;
 @end

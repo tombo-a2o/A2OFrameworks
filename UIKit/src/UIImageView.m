@@ -80,6 +80,13 @@ static NSArray *CGImagesWithUIImages(NSArray *images)
     return self;
 }
 
+- (id)initWithCoder:(NSCoder*)coder
+{
+    self = [super initWithCoder:coder];
+    UIImage *image = [coder decodeObjectForKey:@"UIImage"];
+    if(!image) return nil;
+    return [self initWithImage:image];
+}
 
 - (CGSize)sizeThatFits:(CGSize)size
 {

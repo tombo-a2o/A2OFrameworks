@@ -52,10 +52,10 @@
     };
 
     // self.modalTemplates = [coder decodeObjectForKey:@"UIStoryboardSegueTemplates"];
-    // NSDictionary* objs = [coder decodeObjectForKey:@"UIExternalObjectsTableForViewLoading"];
-    // if (objs != nil) {
-    //     self.externalObjects = objs;
-    // }
+    NSDictionary* objs = [coder decodeObjectForKey:@"UIExternalObjectsTableForViewLoading"];
+    if (objs != nil) {
+         self.externalObjects = objs;
+    }
 
     self.childViewControllers = [[coder decodeObjectForKey:@"UIChildViewControllers"] mutableCopy];
     // assert(nibName != nil);

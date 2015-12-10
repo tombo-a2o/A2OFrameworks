@@ -144,6 +144,15 @@ static UIColor *LightTextColor = nil;
     return [self _initWithRepresentations:colorReps];
 }
 
+- (id)initWithCoder:(NSCoder*)coder
+{
+    float red = [coder decodeFloatForKey:@"UIRed"];
+    float green  = [coder decodeFloatForKey:@"UIGreen"];
+    float blue = [coder decodeFloatForKey:@"UIGreen"];
+    float alpha = [coder decodeFloatForKey:@"UIAlpha"];
+    return [self initWithRed:red green:green blue:blue alpha:alpha];
+}
+
 - (UIColorRep *)_bestRepresentationForProposedScale:(CGFloat)scale
 {
     UIColorRep *bestRep = nil;
