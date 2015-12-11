@@ -41,6 +41,23 @@ static NSString *UIButtonContentTypeTitleShadowColor = @"UIButtonContentTypeTitl
 static NSString *UIButtonContentTypeBackgroundImage = @"UIButtonContentTypeBackgroundImage";
 static NSString *UIButtonContentTypeImage = @"UIButtonContentTypeImage";
 
+@interface UIButtonContent : NSObject
+@property(nonatomic, retain) UIImage *image;
+@property(nonatomic, retain) UIColor *shadowColor;
+-(id)initWithCoder:(NSCoder*)coder;
+@end
+
+@implementation UIButtonContent
+-(id)initWithCoder:(NSCoder*)coder
+{
+    self = [super init];
+    self.image = [coder decodeObjectForKey:@"UIImage"];
+    self.shadowColor = [coder decodeObjectForKey:@"UIShadowColor"];
+    return self;
+}
+@end
+
+
 @implementation UIButton {
     UIImageView *_backgroundImageView;
     NSMutableDictionary *_content;
@@ -88,6 +105,38 @@ static NSString *UIButtonContentTypeImage = @"UIButtonContentTypeImage";
     return self;
 }
 
+- (id)initWithCoder:(NSCoder*)coder
+{
+    if ((self = [super initWithCoder:coder])) {
+        _buttonType = UIButtonTypeCustom;
+        _content = [[NSMutableDictionary alloc] init];
+        _titleLabel = [[UILabel alloc] init];
+        _imageView = [[UIImageView alloc] init];
+        _backgroundImageView = [[UIImageView alloc] init];
+        _adjustsImageWhenHighlighted = YES;
+        _adjustsImageWhenDisabled = YES;
+        _showsTouchWhenHighlighted = NO;
+    
+        self.opaque = NO;
+        _titleLabel.lineBreakMode = UILineBreakModeMiddleTruncation;
+        _titleLabel.backgroundColor = [UIColor clearColor];
+        _titleLabel.textAlignment = UITextAlignmentLeft;
+        _titleLabel.shadowOffset = CGSizeZero;
+        [self addSubview:_backgroundImageView];
+        [self addSubview:_imageView];
+        [self addSubview:_titleLabel];
+        
+        NSDictionary *dict = [coder decodeObjectForKey:@"UIButtonStatefulContent"];
+        for (NSNumber *key in [dict keyEnumerator]) {
+            UIControlState state = [key intValue];
+            UIButtonContent *content = [dict valueForKey:key];
+            
+            [self setImage:content.image forState:state];
+            [self setTitleShadowColor:content.shadowColor forState:state];
+        }
+    }
+    return self;
+}
 
 - (NSString *)currentTitle
 {
