@@ -25,6 +25,8 @@
 
 @implementation UIView (Coder)
 
+static double x,y,width,height;
+
 - (id)initWithCoder:(NSCoder*)coder {
     self = [self init];
     
@@ -37,7 +39,6 @@
         } else {
             NSData *data = boundsObj;
             const char* bytes = [data bytes];
-            double x,y,width,height;
             // need to be 8-byte alinged to read as double
             memcpy(&x, bytes+1, sizeof(double));
             memcpy(&y, bytes+9, sizeof(double));
@@ -63,9 +64,8 @@
             center = CGPointFromString(centerObj);
         } else {
             // need to be 8-byte alinged to read as double
-            NSData *data = boundsObj;
+            NSData *data = centerObj;
             const char* bytes = [data bytes];
-            double x,y;
             memcpy(&x, bytes+1, sizeof(double));
             memcpy(&y, bytes+9, sizeof(double));
             center.x = x;
