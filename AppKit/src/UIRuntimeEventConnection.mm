@@ -16,6 +16,7 @@
 
 #import "UIRuntimeEventConnection.h"
 #import "UIProxyObject.h"
+#import <UIKit/UIControl.h>
 
 #if defined(DEBUG)
 #define EbrDebugLog(...) fprintf(stderr, __VA_ARGS__)
@@ -44,9 +45,9 @@
             destination = [proxy _getObject];
         }
     }
-
-    //assert(0);
-    //[targetControl addEventConnection:self];
+    
+    UIControl *control = source;
+    [control addTarget:destination action:NSSelectorFromString(label) forControlEvents:mask];
 }
 
 /*
