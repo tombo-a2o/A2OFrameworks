@@ -28,6 +28,8 @@
 static double x,y,width,height;
 
 - (id)initWithCoder:(NSCoder*)coder {
+    DEBUGLOG(@"UIView initWithCoder %x %@", self, [self class]);
+
     self = [self init];
     
     CGRect bounds;
