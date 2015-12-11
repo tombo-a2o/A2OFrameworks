@@ -7,6 +7,8 @@
 #import <Onyx2D/O2BitmapContext.h>
 #import <OpenGLES/ES2/gl.h>
 
+#import <UIKit/UIKit.h>
+
 NSString * const kCAFilterLinear=@"linear";
 NSString * const kCAFilterNearest=@"nearest";
 NSString * const kCAFilterTrilinear=@"trilinear";
@@ -317,6 +319,8 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)display {
+    if(_bounds.size.width == 0 || _bounds.size.height == 0) return;
+    
     if([_delegate respondsToSelector:@selector(displayLayer:)]) {
         [_delegate displayLayer:self];
         _flipTexture = NO;
