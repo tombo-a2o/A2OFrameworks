@@ -84,7 +84,7 @@ public:
     }
 };
 
-@implementation NSNibUnarchiver : NSObject
+@implementation NSNibUnarchiver
 static void pushObject(NSNibUnarchiver* self, Object* pCur) {
     assert(self->_curObjectLevel < 16);
     self->_curObjectLevel++;
@@ -202,6 +202,7 @@ static id constructObject(NSNibUnarchiver* self, Object* pObj) {
         popObject(self);
     } else {
         id classId = pObj->classType; // objc_getClass(pObj->className);
+        printf("classname %s\n", pObj->className);
         assert(classId != nil);
 
         EbrDebugLog("Instantiating %s\n", pObj->className);
@@ -698,6 +699,11 @@ static id getObjectForKey(NSNibUnarchiver* self, const char* keyName) {
     _bundle = nil;
 
     [super dealloc];
+}
+
+- (BOOL)allowsKeyedCoding
+{
+    return YES;
 }
 
 @end

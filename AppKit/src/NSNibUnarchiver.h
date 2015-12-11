@@ -20,7 +20,7 @@
 typedef struct Object Object;
 typedef struct Item Item;
 
-@interface NSNibUnarchiver : NSObject {
+@interface NSNibUnarchiver : NSCoder {
 @public
     char *_nibData;
     uint32_t _nibLen;
