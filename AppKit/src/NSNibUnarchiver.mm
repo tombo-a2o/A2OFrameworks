@@ -117,7 +117,6 @@ static Object* objectForUid(NSNibUnarchiver* self, int uid) {
 }
 
 static id constructObject(NSNibUnarchiver* self, Object* pObj) {
-    EbrDebugLog("constructObject: %s \n", pObj->className);
     if (strcmp(pObj->className, "NSArray") == 0 || strcmp(pObj->className, "NSMutableArray") == 0) {
         id* arrayItems;
         int numArrayItems = 0;
@@ -128,7 +127,7 @@ static id constructObject(NSNibUnarchiver* self, Object* pObj) {
 
         for (int i = 0; i < pObj->itemCount; i++) {
             Item* curItem = pObj->items[i];
-            EbrDebugLog("  array: %d %s \n", i, curItem->key);
+            //EbrDebugLog("  array: %d %s \n", i, curItem->key);
 
             if (strcmp(curItem->key, "UINibEncoderEmptyKey") == 0) {
                 id item = idForItem(self, curItem);
