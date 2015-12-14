@@ -1200,4 +1200,37 @@ static BOOL _animationsEnabled = YES;
     return [NSString stringWithFormat:@"<%@: %p; frame = %@; hidden = %@; layer = %@>", [self class], self, NSStringFromCGRect(self.frame), (self.hidden ? @"YES" : @"NO"), self.layer];
 }
 
+- (void)dumpViewTree
+{
+    [self dumpViewTreeWithLevel:@[]];
+}
+
+- (void)dumpViewTreeWithLevel:(NSArray*)levels
+{
+    // levels contins each level is last item or not
+    [levels enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop){
+        BOOL current = idx == ([levels count] - 1);
+        if([obj boolValue]) {
+            if(current) {
+                printf("└ ");
+            } else {
+                printf("  ");
+            }
+        } else {
+            if(current) {
+                printf("├ ");
+            } else {
+                printf("│ ");
+            }
+        }
+    }];
+    
+    printf("%s\n", [[self description] UTF8String]);
+    
+    [self.subviews enumerateObjectsUsingBlock:^(id view, NSUInteger idx, BOOL *stop){
+        BOOL isLast = idx == ([self.subviews count] - 1);
+        [view dumpViewTreeWithLevel:[levels arrayByAddingObject: [NSNumber numberWithBool:isLast]]];
+    }];
+}
+
 @end
