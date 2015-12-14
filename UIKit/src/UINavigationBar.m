@@ -116,6 +116,7 @@ typedef NS_ENUM(NSInteger, _UINavigationBarTransition) {
     if ((self=[super initWithFrame:frame])) {
         _navStack = [[NSMutableArray alloc] init];
         _barStyle = UIBarStyleDefault;
+        _translucent = YES;
         //_tintColor = [UIColor colorWithRed:21/255.f green:21/255.f blue:25/255.f alpha:1];
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_navigationItemDidChange:) name:UINavigationItemDidChange object:nil];
@@ -132,6 +133,8 @@ typedef NS_ENUM(NSInteger, _UINavigationBarTransition) {
         _navStack = [[NSMutableArray alloc] init];
     }
     _barStyle = [coder decodeInt32ForKey:@"UIBarStyle"];
+    //[coder decodeInt32ForKey:@"UIBarPosition"];
+    _translucent = [coder decodeBoolForKey:@"UIBarTranslucence"];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_navigationItemDidChange:) name:UINavigationItemDidChange object:nil];
     return self;
@@ -401,8 +404,12 @@ typedef NS_ENUM(NSInteger, _UINavigationBarTransition) {
     // so that it actually doesn "tint" the image instead of define it. That'd probably work better with the bottom line coloring and stuff, too, but
     // for now hardcoding stuff works well enough.
     
-    [self.tintColor setFill];
-    UIRectFill(bounds);
+    if(self.translucent) {
+        //[[UIColor clearColor] setFill];
+    } else {
+        [self.tintColor setFill];
+        UIRectFill(bounds);
+    }
 }
 
 - (void)setBackgroundImage:(UIImage *)backgroundImage forBarMetrics:(UIBarMetrics)barMetrics

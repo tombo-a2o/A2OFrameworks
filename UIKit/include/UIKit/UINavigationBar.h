@@ -56,4 +56,6 @@
 @property (nonatomic, readonly, strong) UINavigationItem *topItem;
 @property (nonatomic, readonly, strong) UINavigationItem *backItem;
 @property (nonatomic, copy) NSDictionary *titleTextAttributes;
+//@property (nonatomic,readonly) UIBarPosition barPosition
+@property (nonatomic, assign, getter=isTranslucent) BOOL translucent;
 @end
