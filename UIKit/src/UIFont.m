@@ -78,9 +78,14 @@
     self = [super init];
     BOOL systemfont = [coder decodeBoolForKey:@"UISystemFont"];
     float size = [coder decodeFloatForKey:@"UIFontPointSize"];
-    assert(systemfont);
+    NSString *fontName;
+    if(systemfont) {
+        fontName = @"Arial";
+    } else {
+        fontName = [coder decodeObjectForKey:@"NSName"];
+    }
     
-    return [self initWithName:@"Arial" size:size];
+    return [self initWithName:fontName size:size];
 }
 
 - (void)dealloc
