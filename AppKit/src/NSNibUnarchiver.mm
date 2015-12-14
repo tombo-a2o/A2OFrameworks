@@ -290,6 +290,21 @@ static id getObjectForKey(NSNibUnarchiver* self, const char* keyName) {
     return idForItem(self, item);
 }
 
+int readLength(char* &offset)
+{
+    int ret = 0;
+    uint8_t byte;
+    int shift = 0;
+    do {
+        byte = *offset;
+        ret |= (byte & 0x7f) << shift;
+        shift += 7;
+        
+        offset++;
+    } while(!(byte & 0x80));
+    return ret;
+}
+
 - (instancetype)initForReadingWithData:(NSData*)data {
     _curObjectLevel = -1;
 
@@ -306,21 +321,12 @@ static id getObjectForKey(NSNibUnarchiver* self, const char* keyName) {
     _curOffset = &_nibData[_fixed[9]];
 
     for (unsigned int i = 0; i < _fixed[8]; i++) {
-        int16_t len = 0;
+        int len = readLength(_curOffset);
+        int extra = readLength(_curOffset);
 
-        memcpy(&len, _curOffset, sizeof(int16_t));
-        _curOffset += 2;
-
-        uint8_t top = len >> 8;
-        len &= 0xFF;
-
-        if (len > 0x80) {
-            len -= 0x80;
-        }
-        if (top == 0x81 || len == 0x1b) {
-            _curOffset += 4; //  ????
-        }
-
+        assert(extra == 0 || extra == 1);
+        _curOffset += extra*4;
+        
         _classNames[i] = (char*)malloc(len + 1);
         memcpy(_classNames[i], _curOffset, len);
 
@@ -337,12 +343,7 @@ static id getObjectForKey(NSNibUnarchiver* self, const char* keyName) {
     _curOffset = &_nibData[_fixed[5]];
 
     for (unsigned int i = 0; i < _fixed[4]; i++) {
-        int16_t len = 0;
-
-        memcpy(&len, _curOffset, 1);
-        _curOffset += 1;
-
-        len -= 0x80;
+        int16_t len = readLength(_curOffset);
 
         _keyNames[i] = (char*)malloc(len + 1);
         memcpy(_keyNames[i], _curOffset, len);
@@ -358,17 +359,8 @@ static id getObjectForKey(NSNibUnarchiver* self, const char* keyName) {
         Item* curItem = new Item();
         _objectItems[i] = curItem;
 
-        int16_t itemKeyName = 0;
+        int16_t itemKeyName = readLength(_curOffset);
 
-        memcpy(&itemKeyName, _curOffset, 1);
-        _curOffset += 1;
-
-        if (itemKeyName >= 0x80) {
-            itemKeyName -= 0x80;
-        } else {
-            assert(0);
-        }
-        // itemKeyName -= 0x80;
         curItem->key = _keyNames[itemKeyName];
 
         int16_t itemType = 0;
@@ -424,24 +416,7 @@ static id getObjectForKey(NSNibUnarchiver* self, const char* keyName) {
                 break;
 
             case NIBOBJ_DATA: {
-                int16_t itemDataLen = 0;
-
-                memcpy(&itemDataLen, _curOffset, 1);
-                _curOffset += 1;
-
-                if (itemDataLen >= 0x80) {
-                    itemDataLen -= 0x80;
-                } else {
-                    int16_t _2nd = 0;
-                    memcpy(&_2nd, _curOffset, 1);
-
-                    if (_2nd < 0x80) {
-                        assert(0);
-                    }
-                    _2nd -= 0x80;
-                    _curOffset += 1;
-                    itemDataLen |= (_2nd << 7);
-                }
+                int16_t itemDataLen = readLength(_curOffset);
 
                 curItem->setItemData(_curOffset, itemDataLen);
                 _curOffset += itemDataLen;
@@ -462,57 +437,20 @@ static id getObjectForKey(NSNibUnarchiver* self, const char* keyName) {
         Object* curObject = new Object();
         _objects[i] = curObject;
 
-        int16_t objectClassName = 0;
-
-        memcpy(&objectClassName, _curOffset, 1);
-        _curOffset += 1;
-        if (objectClassName < 0x80) {
-            assert(0);
-        }
-        objectClassName -= 0x80;
+        int16_t objectClassName = readLength(_curOffset);
+        
         curObject->className = _classNames[objectClassName];
         curObject->classType = _classTypes[objectClassName];
         if (curObject->className == NULL || objectClassName >= _fixed[8]) {
             assert(0);
         }
 
-        int16_t objectItemStart = 0;
-
-        memcpy(&objectItemStart, _curOffset, 1);
-        _curOffset += 1;
-        if (objectItemStart < 0x80) {
-            int16_t nextItem = 0;
-
-            memcpy(&nextItem, _curOffset, 1);
-            _curOffset += 1;
-            if (nextItem < 0x80) {
-                assert(0);
-            }
-            nextItem -= 0x80;
-            objectItemStart |= (nextItem << 7);
-        } else {
-            objectItemStart -= 0x80;
-        }
+        int16_t objectItemStart = readLength(_curOffset);
 
         curObject->items = &_objectItems[objectItemStart];
 
-        int16_t objectItemCount = 0;
+        int16_t objectItemCount = readLength(_curOffset);
 
-        memcpy(&objectItemCount, _curOffset, 1);
-        _curOffset += 1;
-        if (objectItemCount < 0x80) {
-            int16_t nextItem = 0;
-
-            memcpy(&nextItem, _curOffset, 1);
-            _curOffset += 1;
-            if (nextItem < 0x80) {
-                assert(0);
-            }
-            nextItem -= 0x80;
-            objectItemCount |= (nextItem << 7);
-        } else {
-            objectItemCount -= 0x80;
-        }
         curObject->itemCount = objectItemCount;
     }
 
