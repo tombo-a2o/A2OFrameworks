@@ -63,7 +63,7 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
     BOOL _viewIsAppearing;
     _UIViewControllerParentageTransition _parentageTransition;
     
-    UIViewController *_presentingViewController;
+    __weak UIViewController *_presentingViewController;
     UIViewController *_presentedViewController;
     
     NSString *_nibName;
@@ -279,7 +279,7 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
 {
     if (!_presentedViewController && viewControllerToPresent != self) {
         _presentedViewController = viewControllerToPresent;
-        //[_presentedViewController _setParentViewController:self];
+        [_presentedViewController _setPresentingViewController:self];
 
         UIWindow *window = self.view.window;
         UIView *selfView = self.view;
@@ -296,11 +296,43 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
         [self viewDidDisappear:animated];
 
         [_presentedViewController viewDidAppear:animated];
+        
+        if(completion) {
+            completion();
+        }
     }
 }
 
-- (void)dismissViewControllerAnimated:(BOOL)flag completion:(void (^)(void))completion
+- (void)dismissViewControllerAnimated:(BOOL)animated completion:(void (^)(void))completion
 {
+    NSLog(@"%s %@ %@ %@ %@", __FUNCTION__, self, _presentedViewController, _presentingViewController, self.parentViewController);
+    
+    if (_presentedViewController) {
+
+        // if the modalViewController being dismissed has a modalViewController of its own, then we need to go dismiss that, too.
+        // otherwise things can be left hanging around.
+        if (_presentedViewController.presentedViewController) {
+            [_presentedViewController dismissViewControllerAnimated:animated completion:nil];
+        }
+
+        self.view.hidden = NO;
+        [self viewWillAppear:animated];
+
+        [_presentedViewController.view removeFromSuperview];
+        [_presentedViewController _setPresentedViewController:nil];
+        _presentedViewController = nil;
+
+        [self viewDidAppear:animated];
+        
+        if(completion) {
+            completion();
+        }
+    } else if(_presentingViewController) {
+        [_presentingViewController dismissViewControllerAnimated:animated completion:completion];
+    } else {
+        [self.parentViewController dismissViewControllerAnimated:animated completion:completion];
+    }
+
 }
 
 - (void)presentModalViewController:(UIViewController *)modalViewController animated:(BOOL)animated
@@ -449,14 +481,22 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
 
 - (UIViewController *)presentingViewController
 {
-    // TODO
-    return nil;
+    return _presentingViewController;
+}
+
+- (void)_setPresentingViewController:(UIViewController *)viewController
+{
+    _presentingViewController = viewController;
 }
 
 - (UIViewController *)presentedViewController
 {
-    // TODO
-    return nil;
+    return _presentedViewController;
+}
+
+- (void)_setPresentedViewController:(UIViewController *)viewController
+{
+    _presentedViewController = viewController;
 }
 
 - (NSArray *)childViewControllers
