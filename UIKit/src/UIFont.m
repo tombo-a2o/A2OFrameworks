@@ -30,6 +30,17 @@
 #import <UIKit/UIFont.h>
 #import <CoreGraphics/CGFont.h>
 
+NSString *const UIFontTextStyleTitle1 = @"title1";
+NSString *const UIFontTextStyleTitle2 = @"title2";
+NSString *const UIFontTextStyleTitle3 = @"title3";
+NSString *const UIFontTextStyleHeadline = @"headline";
+NSString *const UIFontTextStyleSubheadline = @"subheadline";
+NSString *const UIFontTextStyleBody = @"body";
+NSString *const UIFontTextStyleFootnote = @"footnote";
+NSString *const UIFontTextStyleCaption1 = @"caption1";
+NSString *const UIFontTextStyleCaption2 = @"caption2";
+NSString *const UIFontTextStyleCallout = @"callout";
+
 @implementation UIFont
 + (UIFont *)systemFontOfSize:(CGFloat)fontSize
 {
@@ -58,7 +69,7 @@
 
 + (UIFont *)preferredFontForTextStyle:(NSString *)style
 {
-    assert(0);
+    return [UIFont boldSystemFontOfSize:16];
 }
 
 - (id)initWithName:(NSString *)fontName size:(CGFloat)fontSize
