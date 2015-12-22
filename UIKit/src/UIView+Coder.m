@@ -32,51 +32,8 @@ static double x,y,width,height;
 
     self = [self init];
     
-    CGRect bounds;
-
-    id boundsObj = [coder decodeObjectForKey:@"UIBounds"];
-    if (boundsObj != nil) {
-        if ([boundsObj isKindOfClass:[NSString class]]) {
-            bounds = CGRectFromString(boundsObj);
-        } else {
-            NSData *data = boundsObj;
-            const char* bytes = [data bytes];
-            // need to be 8-byte alinged to read as double
-            memcpy(&x, bytes+1, sizeof(double));
-            memcpy(&y, bytes+9, sizeof(double));
-            memcpy(&width, bytes+17, sizeof(double));
-            memcpy(&height, bytes+25, sizeof(double));
-            bounds.origin.x = x;
-            bounds.origin.y = y;
-            bounds.size.width = width;
-            bounds.size.height = height;
-        }
-    } else {
-        bounds.origin.x = 0;
-        bounds.origin.y = 0;
-        bounds.size.width = 0;
-        bounds.size.height = 0;
-    }
-
-    CGPoint center;
-
-    id centerObj = [coder decodeObjectForKey:@"UICenter"];
-    if (centerObj) {
-        if ([centerObj isKindOfClass:[NSString class]]) {
-            center = CGPointFromString(centerObj);
-        } else {
-            // need to be 8-byte alinged to read as double
-            NSData *data = centerObj;
-            const char* bytes = [data bytes];
-            memcpy(&x, bytes+1, sizeof(double));
-            memcpy(&y, bytes+9, sizeof(double));
-            center.x = x;
-            center.y = y;
-        }
-    } else {
-        center.x = 0;
-        center.y = 0;
-    }
+    CGRect bounds = [coder decodeRectForKey:@"UIBounds"];
+    CGPoint center = [coder decodePointForKey:@"UICenter"];
 
     //PAUSE_ANIMATIONS();
     [self setBounds:bounds];
