@@ -110,6 +110,48 @@ const float UIScrollViewDecelerationRateFast = 0.99;
     return self;
 }
 
+- (id)initWithCoder:(NSCoder*)coder
+{
+    if ((self=[super initWithCoder:coder])) {
+        _contentOffset = CGPointZero;
+        _contentSize = [coder decodeSizeForKey:@"UIContentSize"];
+        _contentInset = UIEdgeInsetsZero;
+        _scrollIndicatorInsets = UIEdgeInsetsZero;
+        _showsVerticalScrollIndicator = [coder decodeBoolForKey:@"UIShowsVerticalScrollIndicator"];
+        _showsHorizontalScrollIndicator = [coder decodeBoolForKey:@"UIShowsHorizontalScrollIndicator"];
+        _maximumZoomScale = [coder decodeFloatForKey:@"UIMaximumZoomScale"];
+        _minimumZoomScale = [coder decodeFloatForKey:@"UIMinimumZoomScale"];
+        _scrollsToTop = YES;
+        _indicatorStyle = UIScrollViewIndicatorStyleDefault;
+        _delaysContentTouches = YES;
+        _canCancelContentTouches = YES;
+        _pagingEnabled = NO;
+        _bouncesZoom = [coder decodeBoolForKey:@"UIBouncesZoom"];
+        _zooming = NO;
+        _alwaysBounceVertical = NO;
+        _alwaysBounceHorizontal = NO;
+        _bounces = YES;
+        _decelerationRate = UIScrollViewDecelerationRateNormal;
+        
+        _panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(_gestureDidChange:)];
+        [self addGestureRecognizer:_panGestureRecognizer];
+
+        _scrollWheelGestureRecognizer = [[UIScrollWheelGestureRecognizer alloc] initWithTarget:self action:@selector(_gestureDidChange:)];
+        [self addGestureRecognizer:_scrollWheelGestureRecognizer];
+
+        _verticalScroller = [[UIScroller alloc] init];
+        _verticalScroller.delegate = self;
+        [self addSubview:_verticalScroller];
+
+        _horizontalScroller = [[UIScroller alloc] init];
+        _horizontalScroller.delegate = self;
+        [self addSubview:_horizontalScroller];
+        
+        self.clipsToBounds = YES;
+    }
+    return self;
+}
+
 - (void)dealloc
 {
     _horizontalScroller.delegate = nil;
