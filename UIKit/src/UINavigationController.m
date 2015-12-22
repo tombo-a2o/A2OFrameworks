@@ -32,6 +32,7 @@
 #import <UIKit/UINavigationBar.h>
 #import <UIKit/UIToolbar.h>
 #import <UIKit/UIScreen.h>
+#import <UIKit/UIWindow.h>
 #import "UINavigationController+Private.h"
 
 @interface UIViewController (UIPrivate)
@@ -204,6 +205,9 @@
                          }
                          
                          [self.delegate navigationController:self didShowViewController:newVisibleViewController animated:animated];
+#if DEBUG
+                         [[[UIScreen mainScreen] performSelector:@selector(keyWindow)] performSelector:@selector(dumpViewTree)];
+#endif
                      }];
 
     _isUpdating = NO;
