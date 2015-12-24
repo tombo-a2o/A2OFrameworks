@@ -17,6 +17,8 @@
 #import <Foundation/Foundation.h>
 
 @interface NSNib : NSObject
+- (instancetype)initWithNibNamed:(NSString *)nibName bundle:(NSBundle *)bundle;
+- (instancetype)initWithNibData:(NSData *)nibData bundle:(NSBundle *)bundle;
 - (NSArray*)loadNib:(NSString*)filename withOwner:(id)ownerObject;
 - (NSArray*)loadNib:(NSString*)filename withOwner:(id)ownerObject proxies:(NSDictionary*)proxies;
 @end

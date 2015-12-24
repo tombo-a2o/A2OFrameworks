@@ -24,6 +24,25 @@
 
 @implementation NSNib {
     NSBundle *_bundle;
+    NSData *_data;
+}
+
+- (instancetype)initWithNibNamed:(NSString *)nibName bundle:(NSBundle *)bundle
+{
+    _bundle = bundle ?: [NSBundle mainBundle];
+    NSString *path = [[_bundle resourcePath] stringByAppendingPathComponent:nibName];
+    _data = [NSData dataWithContentsOfFile:path];
+    if (_data == nil) {
+        _data = [NSData dataWithContentsOfFile:[path stringByAppendingPathComponent:@"/runtime.nib"]];
+    }
+    return self;
+}
+
+- (instancetype)initWithNibData:(NSData *)nibData bundle:(NSBundle *)bundle
+{
+    _bundle = bundle ?: [NSBundle mainBundle];
+    _data = [nibData retain];
+    return self;
 }
 
 /**
@@ -119,6 +138,14 @@
 
 - (NSBundle*)_bundle {
     return _bundle;
+}
+
+- (void)_setData:(NSData*)data {
+    _data = data;
+}
+
+- (NSData*)_data {
+    return _data;
 }
 
 - (void)dealloc {
