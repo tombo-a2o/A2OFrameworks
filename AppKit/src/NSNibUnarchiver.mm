@@ -31,10 +31,12 @@
 #define NIBOBJ_NULL 0x09
 #define NIBOBJ_UID 0x0A
 
-#if defined(DEBUG)
-#define EbrDebugLog(...) fprintf(stderr, __VA_ARGS__)
+#define NIBDEBUG 0
+
+#if defined(DEBUG) && NIBDEBUG
+#define NIBLOG(...) fprintf(stderr, __VA_ARGS__)
 #else
-#define EbrDebugLog(...)
+#define NIBLOG(...)
 #endif
 
 class NSNibArchiver;
@@ -107,7 +109,7 @@ static Item* itemForKey(NSNibUnarchiver* self, const char* keyName) {
         }
     }
 
-    EbrDebugLog("Key %s not found in %x\n", keyName, cur);
+    NIBLOG("Key %s not found in %x\n", keyName, cur);
 
     return NULL;
 }
@@ -127,14 +129,14 @@ static id constructObject(NSNibUnarchiver* self, Object* pObj) {
 
         for (int i = 0; i < pObj->itemCount; i++) {
             Item* curItem = pObj->items[i];
-            //EbrDebugLog("  array: %d %s \n", i, curItem->key);
+            //NIBLOG("  array: %d %s \n", i, curItem->key);
 
             if (strcmp(curItem->key, "UINibEncoderEmptyKey") == 0) {
                 id item = idForItem(self, curItem);
                 if (item == nil) {
                     // idForItem(self, curItem);
                     // assert(0);
-                    EbrDebugLog("Array initialization failed\n");
+                    NIBLOG("Array initialization failed\n");
                 } else {
                     arrayItems[numArrayItems++] = item;
                 }
@@ -202,10 +204,10 @@ static id constructObject(NSNibUnarchiver* self, Object* pObj) {
         popObject(self);
     } else {
         id classId = pObj->classType; // objc_getClass(pObj->className);
-        printf("classname %s\n", pObj->className);
+        NIBLOG("classname %s\n", pObj->className);
         assert(classId != nil);
 
-        EbrDebugLog("Instantiating %s\n", pObj->className);
+        NIBLOG("Instantiating %s\n", pObj->className);
         pObj->cachedId = [classId alloc];
 
         if ([pObj->cachedId respondsToSelector:@selector(instantiateWithCoder:)]) {
@@ -225,7 +227,7 @@ static id constructObject(NSNibUnarchiver* self, Object* pObj) {
             pObj->cachedId = [pObj->cachedId initWithCoder:(id)self];
         } else {
             if (pObj->cachedId) {
-                EbrDebugLog("%s does not respond to initWithCoder\n", object_getClassName(pObj->cachedId));
+                NIBLOG("%s does not respond to initWithCoder\n", object_getClassName(pObj->cachedId));
             }
         }
         if(pObj->cachedId == orig) {
@@ -333,7 +335,7 @@ int readLength(char* &offset)
         _classNames[i][len] = 0;
         _classTypes[i] = objc_getClass(_classNames[i]);
         if (_classTypes[i] == nil) {
-            EbrDebugLog("Couldn't find class %s\n", _classNames[i]);
+            NIBLOG("Couldn't find class %s\n", _classNames[i]);
         }
         _curOffset += len;
     }
@@ -521,7 +523,7 @@ int readLength(char* &offset)
             break;
 
         case NIBOBJ_INT64:
-            EbrDebugLog("Warning: 64-bit NIB item truncated to 32 bits\n");
+            NIBLOG("Warning: 64-bit NIB item truncated to 32 bits\n");
             ret = *((uint32_t*)pItem->data);
             break;
 
