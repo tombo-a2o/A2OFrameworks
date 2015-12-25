@@ -52,6 +52,7 @@
     glViewport(0, 0, width * contentsScale, height * contentsScale);
 
     _renderer.bounds = CGRectMake(0, 0, width, height);
+    [layer layoutIfNeeded];
     [_renderer render];
 
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
