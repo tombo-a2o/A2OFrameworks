@@ -48,6 +48,17 @@
     return self;
 }
 
+- (id)initWithCoder:(NSCoder*)coder
+{
+    if((self = [super initWithCoder:coder])) {
+        _registeredActions = [[NSMutableArray alloc] init];
+        self.enabled = YES;
+        self.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
+        self.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+    }
+    return self;
+}
+
 
 - (void)addTarget:(id)target action:(SEL)action forControlEvents:(UIControlEvents)controlEvents
 {
