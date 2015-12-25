@@ -80,27 +80,34 @@ static BOOL _animationsEnabled = YES;
     return [self initWithFrame:CGRectZero];
 }
 
+- (void)_commonInit
+{
+    _implementsDrawRect = [[self class] _instanceImplementsDrawRect];
+    _clearsContextBeforeDrawing = YES;
+    _autoresizesSubviews = YES;
+    _userInteractionEnabled = YES;
+    _subviews = [[NSMutableSet alloc] init];
+    _gestureRecognizers = [[NSMutableSet alloc] init];
+    
+    _layer = [[[[self class] layerClass] alloc] init];
+    _layer.delegate = self;
+    _layer.layoutManager = [UIViewLayoutManager layoutManager];
+
+    self.contentMode = UIViewContentModeScaleToFill;
+    self.contentScaleFactor = 0;
+    self.alpha = 1;
+    self.opaque = YES;
+}
+
 - (id)initWithFrame:(CGRect)theFrame
 {
     if ((self=[super init])) {
         DEBUGLOG(@"UIView initWithFrame %x %@ %@", self, NSStringFromCGRect(theFrame), [self class]);
 
-        _implementsDrawRect = [[self class] _instanceImplementsDrawRect];
-        _clearsContextBeforeDrawing = YES;
-        _autoresizesSubviews = YES;
-        _userInteractionEnabled = YES;
-        _subviews = [[NSMutableSet alloc] init];
-        _gestureRecognizers = [[NSMutableSet alloc] init];
-
-        _layer = [[[[self class] layerClass] alloc] init];
-        _layer.delegate = self;
-        _layer.layoutManager = [UIViewLayoutManager layoutManager];
-
-        self.contentMode = UIViewContentModeScaleToFill;
-        self.contentScaleFactor = 0;
+        [self _commonInit];
+        
         self.frame = theFrame;
-        self.alpha = 1;
-        self.opaque = YES;
+
         [self setNeedsDisplay];
     }
     return self;

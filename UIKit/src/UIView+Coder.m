@@ -23,6 +23,10 @@
 #define EbrDebugLog(...)
 #endif
 
+@interface UIView(Private)
+- (void)_commonInit;
+@end
+
 @implementation UIView (Coder)
 
 static double x,y,width,height;
@@ -30,7 +34,7 @@ static double x,y,width,height;
 - (id)initWithCoder:(NSCoder*)coder {
     DEBUGLOG(@"UIView initWithCoder %x %@", self, [self class]);
 
-    self = [self init];
+    [self _commonInit];
     
     CGRect bounds = [coder decodeRectForKey:@"UIBounds"];
     CGPoint center = [coder decodePointForKey:@"UICenter"];
