@@ -265,57 +265,68 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)addSublayer:(CALayer *)layer {
-    [self setNeedsLayout];
-    [layer setNeedsLayout];
+    NSUInteger current = [_sublayers indexOfObject:layer];
+    
+    if(current != [_sublayers count] - 1) {
+        [self setNeedsLayout];
+        [layer setNeedsLayout];
 
-    NSMutableArray *layers=[_sublayers mutableCopy];
-    [layers removeObject:layer];
+        NSMutableArray *layers=[_sublayers mutableCopy];
+        if(current != NSNotFound) {
+            [layers removeObjectAtIndex:current];
+        }
 
-    [self setSublayers:[layers arrayByAddingObject:layer]];
-    [layers release];
+        [self setSublayers:[layers arrayByAddingObject:layer]];
+        [layers release];
+    }
 }
 
 -(void)replaceSublayer:(CALayer *)layer with:(CALayer *)other {
-    [self setNeedsLayout];
-    [layer setNeedsLayout];
+    if(layer != other) {
+        [self setNeedsLayout];
+        [layer setNeedsLayout];
 
-    NSMutableArray *layers=[_sublayers mutableCopy];
-    NSUInteger      index=[_sublayers indexOfObjectIdenticalTo:layer];
+        NSMutableArray *layers=[_sublayers mutableCopy];
+        NSUInteger      index=[_sublayers indexOfObjectIdenticalTo:layer];
 
-    [layers replaceObjectAtIndex:index withObject:other];
+        [layers replaceObjectAtIndex:index withObject:other];
 
-    [self setSublayers:layers];
-    [layers release];
+        [self setSublayers:layers];
+        [layers release];
 
-    layer->_superlayer=nil;
-}
-
-- (void)insertSublayer:(CALayer *)aLayer atIndex:(unsigned int)index {
-    [self setNeedsLayout];
-    [aLayer setNeedsLayout];
-
-    NSMutableArray *layers = [_sublayers mutableCopy];
-    NSUInteger current =[layers indexOfObjectIdenticalTo:aLayer];
-    if(current != NSNotFound) {
-        if(current < index) index--;
-        [layers removeObjectAtIndex:current];
+        layer->_superlayer=nil;
     }
-
-    [layers insertObject:aLayer atIndex:index];
-    [self setSublayers:layers];
-    [layers release];
 }
 
-- (void)insertSublayer:(CALayer *)aLayer below:(CALayer *)sublayer {
-   NSUInteger      index=[_sublayers indexOfObjectIdenticalTo:aLayer];
+- (void)insertSublayer:(CALayer *)layer atIndex:(unsigned int)index {
+    NSUInteger current = [_sublayers indexOfObject:layer];
 
-   [self insertSublayer:aLayer atIndex:index];
+    if(current != index && (current == NSNotFound || current+1 != index)) {
+        [self setNeedsLayout];
+        [layer setNeedsLayout];
+
+        NSMutableArray *layers = [_sublayers mutableCopy];
+        if(current != NSNotFound) {
+            if(current < index) index--;
+            [layers removeObjectAtIndex:current];
+        }
+
+        [layers insertObject:layer atIndex:index];
+        [self setSublayers:layers];
+        [layers release];
+    }
 }
 
-- (void)insertSublayer:(CALayer *)aLayer above:(CALayer *)sublayer {
-   NSUInteger      index=[_sublayers indexOfObjectIdenticalTo:aLayer];
+- (void)insertSublayer:(CALayer *)layer below:(CALayer *)sublayer {
+   NSUInteger      index=[_sublayers indexOfObjectIdenticalTo:layer];
 
-   [self insertSublayer:aLayer atIndex:index+1];
+   [self insertSublayer:layer atIndex:index];
+}
+
+- (void)insertSublayer:(CALayer *)layer above:(CALayer *)sublayer {
+   NSUInteger      index=[_sublayers indexOfObjectIdenticalTo:layer];
+
+   [self insertSublayer:layer atIndex:index+1];
 }
 
 -(void)display {
