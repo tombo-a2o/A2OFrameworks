@@ -69,6 +69,27 @@ extern CGFloat _UITableViewDefaultRowHeight;
     return self;
 }
 
+- (id)initWithCoder:(NSCoder*)coder
+{
+    if((self = [super initWithCoder:coder])) {
+        _indentationWidth = 10;
+        _style = UITableViewCellStyleDefault;
+        _selectionStyle = [coder decodeIntegerForKey:@"UISelectionStyle"];
+
+        for(UIView *view in self.subviews) {
+            if([view isKindOfClass:[UITableViewCellSeparator class]]) {
+                _seperatorView = view;
+            }
+        }
+        _contentView = [coder decodeObjectForKey:@"UIContentView"];
+        
+        self.accessoryType = UITableViewCellAccessoryNone;
+        self.editingAccessoryType = UITableViewCellAccessoryNone;
+
+        _reuseIdentifier = [coder decodeObjectForKey:@"UIReuseIdentifier"];
+    }
+    return self;
+}
 
 - (void)layoutSubviews
 {
