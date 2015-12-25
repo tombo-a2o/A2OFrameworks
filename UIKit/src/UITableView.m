@@ -40,6 +40,7 @@
 #import <AppKit/NSMenu.h>
 #import <AppKit/NSMenuItem.h>
 #import <AppKit/NSEvent.h>
+#import <UIKit/UINib.h>
 
 // http://stackoverflow.com/questions/235120/whats-the-uitableview-index-magnifying-glass-character
 NSString *const UITableViewIndexSearch = @"{search}";
@@ -53,6 +54,8 @@ const CGFloat _UITableViewDefaultRowHeight = 43;
     NSMutableDictionary *_cachedCells;
     NSMutableSet *_reusableCells;
     NSMutableArray *_sections;
+    NSDictionary *_cellPrototypes;
+    NSDictionary *_cellPrototypeExternals;
     
     struct {
         unsigned heightForRowAtIndexPath : 1;
@@ -108,6 +111,36 @@ const CGFloat _UITableViewDefaultRowHeight = 43;
     return self;
 }
 
+- (id)initWithCoder:(NSCoder*)coder
+{
+    if ((self=[super initWithCoder:coder])) {
+        _style = UITableViewStylePlain;
+        _cachedCells = [[NSMutableDictionary alloc] init];
+        _sections = [[NSMutableArray alloc] init];
+        _reusableCells = [[NSMutableSet alloc] init];
+
+        self.separatorColor = [UIColor colorWithRed:.88f green:.88f blue:.88f alpha:1];
+        self.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+        self.showsHorizontalScrollIndicator = NO;
+        self.allowsSelection = YES;
+        self.allowsSelectionDuringEditing = NO;
+
+        self.sectionHeaderHeight = [coder decodeFloatForKey:@"UISectionHeaderHeight"];
+        self.sectionFooterHeight = [coder decodeFloatForKey:@"UISectionFooterHeight"];
+        self.alwaysBounceVertical = [coder decodeBoolForKey:@"UIAlwaysBounceVertical"];
+        self.rowHeight = [coder decodeFloatForKey:@"UIRowHeight"];
+
+        // if (_style == UITableViewStylePlain) {
+        //     self.backgroundColor = [UIColor whiteColor];
+        // }
+        
+        _cellPrototypes = [coder decodeObjectForKey:@"UITableViewCellPrototypeNibs"];
+        _cellPrototypeExternals = [coder decodeObjectForKey:@"UITableViewCellPrototypeNibExternalObjects"];
+        
+        [self _setNeedsReload];
+    }
+    return self;
+}
 
 - (void)setDataSource:(id<UITableViewDataSource>)newSource
 {
@@ -564,6 +597,8 @@ const CGFloat _UITableViewDefaultRowHeight = 43;
     [self _updateSectionsCache];
     [self _setContentSize];
     
+    [self _layoutTableView];
+    
     _needsReload = NO;
 }
 
@@ -729,6 +764,13 @@ const CGFloat _UITableViewDefaultRowHeight = 43;
             [strongCell prepareForReuse];
             return strongCell;
         }
+    }
+    
+    UINib *nib = _cellPrototypes[identifier];
+    NSDictionary *externals = _cellPrototypeExternals[identifier];
+    if(nib) {
+        NSArray *array = [nib instantiateWithOwner:self options:@{UINibExternalObjects:externals}];
+        return array[0];
     }
     
     return nil;

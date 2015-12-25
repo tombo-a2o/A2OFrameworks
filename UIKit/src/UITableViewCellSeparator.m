@@ -72,3 +72,6 @@
 }
 
 @end
+
+@implementation _UITableViewCellSeparatorView
+@end
