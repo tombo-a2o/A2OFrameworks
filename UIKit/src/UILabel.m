@@ -63,7 +63,7 @@
     self.textAlignment = [coder decodeIntForKey:@"UITextAlignment"];
     self.lineBreakMode = UILineBreakModeTailTruncation;
     self.textColor = [coder decodeObjectForKey:@"UITextColor"];
-    self.backgroundColor = [UIColor whiteColor];
+    self.backgroundColor = [UIColor clearColor];
     self.enabled = YES;
     self.font = [coder decodeObjectForKey:@"UIFont"];
     self.numberOfLines = 1;
