@@ -14,7 +14,6 @@ NSString * const UINibExternalObjects = @"externals";
 {
     //NSData *data = [coder decodeObjectForKey:@"archiveData"];
     id data = [coder decodeObjectForKey:@"archiveData"];
-    NSLog(@"data %@", data);
     self = [super initWithNibData:data bundle:nil];
     return self;
 }
