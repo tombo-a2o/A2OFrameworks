@@ -192,6 +192,11 @@
     }
 }
 
+- (NSString *)description
+{
+    return [NSString stringWithFormat:@"<%@: %p; size = %@; scale = %f>", [self class], self, NSStringFromCGSize(self.size), self.scale];
+}
+
 @end
 
 void UIImageWriteToSavedPhotosAlbum(UIImage *image, id completionTarget, SEL completionSelector, void *contextInfo)

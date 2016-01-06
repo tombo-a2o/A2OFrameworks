@@ -113,11 +113,10 @@ static NSString *UIButtonContentTypeImage = @"UIButtonContentTypeImage";
         _titleLabel = [[UILabel alloc] init];
         _imageView = [[UIImageView alloc] init];
         _backgroundImageView = [[UIImageView alloc] init];
-        _adjustsImageWhenHighlighted = YES;
-        _adjustsImageWhenDisabled = YES;
+        _adjustsImageWhenHighlighted = [coder decodeBoolForKey:@"UIAdjustsImageWhenHighlighted"];
+        _adjustsImageWhenDisabled = [coder decodeBoolForKey:@"UIAdjustsImageWhenDisabled"];
         _showsTouchWhenHighlighted = NO;
     
-        self.opaque = NO;
         _titleLabel.lineBreakMode = UILineBreakModeMiddleTruncation;
         _titleLabel.backgroundColor = [UIColor clearColor];
         _titleLabel.textAlignment = UITextAlignmentLeft;
@@ -334,6 +333,9 @@ static NSString *UIButtonContentTypeImage = @"UIButtonContentTypeImage";
     if (CGRectGetMaxX(rect) > CGRectGetMaxX(contentRect)) {
         rect.size.width -= CGRectGetMaxX(rect) - CGRectGetMaxX(contentRect);
     }
+    if (CGRectGetMaxY(rect) > CGRectGetMaxY(contentRect)) {
+        rect.size.height -= CGRectGetMaxY(rect) - CGRectGetMaxY(contentRect);
+    }
     
     switch (self.contentHorizontalAlignment) {
         case UIControlContentHorizontalAlignmentCenter:
@@ -374,24 +376,45 @@ static NSString *UIButtonContentTypeImage = @"UIButtonContentTypeImage";
     return rect;
 }
 
+// rect calculation alogrithm is dereived from WinObjC
 - (CGRect)titleRectForContentRect:(CGRect)contentRect
 {
     const UIControlState state = self.state;
     
-    UIEdgeInsets inset = _titleEdgeInsets;
-    inset.left += [self _imageSizeForState:state].width;
+    CGSize titleSize = [self _titleSizeForState:state];
+    CGSize imageSize = [self _imageSizeForState:state];
     
-    return [self _componentRectForSize:[self _titleSizeForState:state] inContentRect:UIEdgeInsetsInsetRect(contentRect,inset) withState:state];
+    CGSize totalSize;
+    totalSize.width = imageSize.width + titleSize.width;
+    totalSize.height = titleSize.height > imageSize.height ? titleSize.height : imageSize.height;
+    
+    CGRect rect = [self _componentRectForSize:totalSize inContentRect:contentRect withState:state];
+    
+    rect.origin.x += imageSize.width;
+    
+    return rect;
 }
 
 - (CGRect)imageRectForContentRect:(CGRect)contentRect
 {
     const UIControlState state = self.state;
     
-    UIEdgeInsets inset = _imageEdgeInsets;
-    inset.right += [self titleRectForContentRect:contentRect].size.width;
+    CGSize titleSize = [self _titleSizeForState:state];
+    CGSize imageSize = [self _imageSizeForState:state];
     
-    return [self _componentRectForSize:[self _imageSizeForState:state] inContentRect:UIEdgeInsetsInsetRect(contentRect,inset) withState:state];
+    CGSize totalSize = imageSize;
+    totalSize.width += titleSize.width;
+    
+    CGRect rect = [self _componentRectForSize:totalSize inContentRect:contentRect withState:state];
+    
+    if(rect.size.width > imageSize.width) {
+        rect.size.width = imageSize.width;
+    }
+    if(rect.size.height > imageSize.height) {
+        rect.size.height = imageSize.height;
+    }
+    
+    return rect;
 }
 
 - (void)layoutSubviews
