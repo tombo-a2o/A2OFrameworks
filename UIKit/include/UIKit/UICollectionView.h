@@ -215,3 +215,8 @@ typedef NSUInteger UICollectionElementCategory;
                                 completion; // allows multiple insert/delete/reload/move calls to be animated simultaneously. Nestable.
 
 @end
+
+@interface NSIndexPath(UICollectionView)
++ (NSIndexPath *)indexPathForItem:(NSInteger)item inSection:(NSInteger)section;
+@property(nonatomic, readonly) NSInteger item;
+@end

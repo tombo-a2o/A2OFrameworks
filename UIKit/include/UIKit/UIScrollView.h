@@ -45,6 +45,7 @@ extern const float UIScrollViewDecelerationRateFast;
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView;
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView;
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView;
+- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(CGPoint *)targetContentOffset;
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate;
 - (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView;
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView;
@@ -53,6 +54,7 @@ extern const float UIScrollViewDecelerationRateFast;
 - (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(UIView *)view atScale:(float)scale;
 - (void)scrollViewDidZoom:(UIScrollView *)scrollView;
 - (BOOL)scrollViewShouldScrollToTop:(UIScrollView *)scrollView;
+- (void)scrollViewDidScrollToTop:(UIScrollView *)scrollView;
 @end
 
 @interface UIScrollView : UIView
