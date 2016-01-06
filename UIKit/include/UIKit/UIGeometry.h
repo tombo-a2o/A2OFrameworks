@@ -97,4 +97,6 @@ NSString *NSStringFromUIOffset(UIOffset offset);
 - (CGSize)decodeCGSizeForKey:(NSString *)key;
 - (void)encodeCGRect:(CGRect)rect forKey:(NSString *)key;
 - (CGRect)decodeCGRectForKey:(NSString *)key;
+- (UIEdgeInsets)decodeUIEdgeInsetsForKey:(NSString *)key;
+- (void)encodeUIEdgeInsets:(UIEdgeInsets)insets forKey:(NSString *)key;
 @end
