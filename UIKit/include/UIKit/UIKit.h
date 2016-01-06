@@ -112,10 +112,11 @@
 #import <UIKit/UITextInput.h>
 #import <UIKit/UICollectionView.h>
 #import <UIKit/UICollectionViewCell.h>
-#import <UIKit/UICollectionReusableView.h>
 #import <UIKit/UICollectionViewLayout.h>
 #import <UIKit/UICollectionViewFlowLayout.h>
+#import <UIKit/UICollectionViewController.h>
 #import <UIKit/UIStoryboard.h>
+#import <UIKit/UINib.h>
 #import <UIKit/UILocalNotification.h>
 
 // non-standard imports
