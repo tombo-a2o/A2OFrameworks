@@ -36,8 +36,8 @@ static double x,y,width,height;
 
     [self _commonInit];
     
-    CGRect bounds = [coder decodeRectForKey:@"UIBounds"];
-    CGPoint center = [coder decodePointForKey:@"UICenter"];
+    CGRect bounds = [coder decodeCGRectForKey:@"UIBounds"];
+    CGPoint center = [coder decodeCGPointForKey:@"UICenter"];
 
     //PAUSE_ANIMATIONS();
     [self setBounds:bounds];

@@ -114,7 +114,7 @@ const float UIScrollViewDecelerationRateFast = 0.99;
 {
     if ((self=[super initWithCoder:coder])) {
         _contentOffset = CGPointZero;
-        _contentSize = [coder decodeSizeForKey:@"UIContentSize"];
+        _contentSize = [coder decodeCGSizeForKey:@"UIContentSize"];
         _contentInset = UIEdgeInsetsZero;
         _scrollIndicatorInsets = UIEdgeInsetsZero;
         _showsVerticalScrollIndicator = [coder decodeBoolForKey:@"UIShowsVerticalScrollIndicator"];
