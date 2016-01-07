@@ -2475,3 +2475,19 @@ static char kUIColletionViewExt;
 }
 
 @end
+
+
+@implementation NSIndexPath (UICollectionView)
+
++ (NSIndexPath *)indexPathForItem:(NSInteger)item inSection:(NSInteger)section
+{
+    NSUInteger path[2] = {section, item};
+    return [self indexPathWithIndexes:path length:2];
+}
+
+- (NSInteger)item
+{
+    return [self indexAtPosition:1];
+}
+
+@end
