@@ -73,7 +73,10 @@ static CATransactionGroup *createImplicitTransactionGroupIfNeeded(){
    [self setValue:value forKey:kCATransactionAnimationDuration];
 }
 
-//+(void)setCompletionBlock:(void (^)(void))value;
++(void)setCompletionBlock:(void (^)(void))value {
+    NSLog(@"%s not implemented", __FUNCTION__);
+}
+
 +(void)setDisableActions:(BOOL)value {
    [self setValue:[NSNumber numberWithBool:value] forKey:kCATransactionDisableActions];
 }
