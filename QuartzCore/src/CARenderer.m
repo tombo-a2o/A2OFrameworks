@@ -416,6 +416,8 @@ static void generateTextureFromCGColor(CGColorRef cgColor) {
 
 -(void)_renderLayer:(CALayer *)layer z:(float)z currentTime:(CFTimeInterval)currentTime transform:(CGAffineTransform)transform {
     //NSLog(@"CARenderer: renderLayer %@ b:%@ f:%@ %f", layer, NSStringFromRect(layer.bounds), NSStringFromRect(layer.frame), z);
+    
+    if(layer.isHidden) return;
 
     [layer displayIfNeeded];
 
