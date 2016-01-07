@@ -778,8 +778,9 @@ const CGFloat _UITableViewDefaultRowHeight = 43;
 
 - (UITableViewCell *)dequeueReusableCellWithIdentifier:(NSString *)identifier forIndexPath:(NSIndexPath *)indexPath
 {
-    NSLog(@"Not implemented %s", __FUNCTION__);
-    return nil;
+    NSLog(@"%s not implemented correctly", __FUNCTION__);
+    UITableViewCell *cell = [self dequeueReusableCellWithIdentifier:identifier];
+    return cell ?: [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
 }
 
 - (void)setEditing:(BOOL)editing animated:(BOOL)animate
