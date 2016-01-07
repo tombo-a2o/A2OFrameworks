@@ -59,6 +59,7 @@ static BOOL NSViewLayersEnabled=NO;
    NSUnimplementedMethod();
 }
 
+#if 0
 -initWithCoder:(NSCoder *)coder {
    [super initWithCoder:coder];
 
@@ -110,9 +111,9 @@ static BOOL NSViewLayersEnabled=NO;
    else {
     [NSException raise:NSInvalidArgumentException format:@"%@ can not initWithCoder:%@",isa,[coder class]];
    }
-
    return self;
 }
+#endif
 
 -init {
    return [self initWithFrame:NSMakeRect(0,0,1,1)];
