@@ -18,7 +18,7 @@
 #import "UIProxyObject.h"
 #import <UIKit/UIControl.h>
 
-#if defined(DEBUG)
+#if defined(NIBDEBUG)
 #define EbrDebugLog(...) fprintf(stderr, __VA_ARGS__)
 #else
 #define EbrDebugLog(...)

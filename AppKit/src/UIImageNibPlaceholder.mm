@@ -28,7 +28,6 @@
     
     if (resourceName != nil) {
         id ret = [UIImage imageNamed:resourceName];
-        NSLog(@"ret %@ %@", resourceName, ret);
         if (ret == nil) {
             ret = [UIImage imageWithCGImage:nil];
         }

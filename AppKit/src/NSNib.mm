@@ -96,7 +96,6 @@
     NSArray* visibleObjects = [prop decodeObjectForKey:@"UINibVisibleWindowsKey"];
     NSArray* allObjects = [prop decodeObjectForKey:@"UINibObjectsKey"];
 
-    NSLog(@"connections %@", connections);
     for (UIRuntimeOutletConnection* curconnection in connections) {
         [curconnection makeConnection];
     }

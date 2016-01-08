@@ -18,7 +18,7 @@
 #include <Foundation/Foundation.h>
 #include "UIProxyObjectPair.h"
 
-#if defined(DEBUG)
+#if defined(NIBDEBUG)
 #define EbrDebugLog(...) fprintf(stderr, __VA_ARGS__)
 #else
 #define EbrDebugLog(...)

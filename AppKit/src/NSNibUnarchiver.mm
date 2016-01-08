@@ -31,9 +31,7 @@
 #define NIBOBJ_NULL 0x09
 #define NIBOBJ_UID 0x0A
 
-#define NIBDEBUG 0
-
-#if defined(DEBUG) && NIBDEBUG
+#if defined(NIBDEBUG)
 #define NIBLOG(...) fprintf(stderr, __VA_ARGS__)
 #else
 #define NIBLOG(...)
