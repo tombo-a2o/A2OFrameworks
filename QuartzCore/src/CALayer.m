@@ -530,11 +530,11 @@ NSString * const kCATransition = @"transition";
 }
 
 - (CGAffineTransform)affineTransform {
-    NSLog(@"%s is not implemented. Ignored.", __FUNCTION__);
+    return CATransform3DGetAffineTransform(_transform);
 }
 
 - (void)setAffineTransform:(CGAffineTransform)m {
-    NSLog(@"%s is not implemented. Ignored.", __FUNCTION__);
+    _transform = CATransform3DMakeAffineTransform(m);
 }
 
 - (id)presentationLayer {
