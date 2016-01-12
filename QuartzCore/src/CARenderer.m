@@ -115,7 +115,18 @@ static void startAnimationsInLayer(CALayer *layer,CFTimeInterval currentTime){
 
         if([check beginTime]==0.0)
             [check setBeginTime:currentTime];
-        if(currentTime>[check beginTime]+[check duration]*[check repeatCount]){
+
+        CFTimeInterval duration = [check duration];
+        float repeatCount = [check repeatCount];
+        CFTimeInterval repeatDuration = [check repeatDuration];
+        if(repeatCount != 0.0) {
+            duration *= repeatCount;
+        }
+        if(repeatDuration != 0.0) {
+            duration = repeatDuration;
+        }
+
+        if(currentTime > [check beginTime] + duration){
             [layer removeAnimationForKey:key];
         }
     }
@@ -569,7 +580,9 @@ static void generateTextureFromCGColor(CGColorRef cgColor) {
 
     // fprintf(stderr, "bounds %f %f\n",_bounds.size.width, _bounds.size.height);
     CGAffineTransform projection = CGAffineTransformMake(2.0/_bounds.size.width, 0, 0, -2.0/_bounds.size.height, -1.0, 1.0);
-    [self _renderLayer:_rootLayer z:0 currentTime:CACurrentMediaTime() transform:projection];
+    CFTimeInterval currentTime = CACurrentMediaTime();
+    [self beginFrameAtTime:currentTime timeStamp:NULL];
+    [self _renderLayer:_rootLayer z:0 currentTime:currentTime transform:projection];
 
     glUseProgram(0);
 
