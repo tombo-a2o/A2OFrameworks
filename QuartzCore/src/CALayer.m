@@ -34,6 +34,7 @@ NSString * const kCATransition = @"transition";
     CGImageRef _imageRef;
     GLuint _textureId;
     BOOL _flipTexture;
+    BOOL _implicitAnimation;
 }
 
 +layer {
@@ -89,7 +90,7 @@ NSString * const kCATransition = @"transition";
 -(void)setPosition:(CGPoint)value {
    CAAnimation *animation=[self animationForKey:@"position"];
 
-   if(animation==nil && ![CATransaction disableActions]){
+   if(animation==nil && ![CATransaction disableActions] && _implicitAnimation){
        id action=[self actionForKey:@"position"];
 
        if(action!=nil)
@@ -106,7 +107,7 @@ NSString * const kCATransition = @"transition";
 -(void)setBounds:(CGRect)value {
    CAAnimation *animation=[self animationForKey:@"bounds"];
 
-   if(animation==nil && ![CATransaction disableActions]){
+   if(animation==nil && ![CATransaction disableActions] && _implicitAnimation){
        id action=[self actionForKey:@"bounds"];
 
        if(action!=nil)
@@ -155,7 +156,7 @@ NSString * const kCATransition = @"transition";
 -(void)setOpacity:(float)value {
    CAAnimation *animation=[self animationForKey:@"opacity"];
 
-   if(animation==nil && ![CATransaction disableActions]){
+   if(animation==nil && ![CATransaction disableActions] && _implicitAnimation){
        id action=[self actionForKey:@"opacity"];
 
        if(action!=nil)
@@ -239,6 +240,7 @@ NSString * const kCATransition = @"transition";
     _textureId = 0;
     _imageRef = nil;
     _flipTexture = NO;
+    _implicitAnimation = YES;
     return self;
 }
 
@@ -541,6 +543,10 @@ NSString * const kCATransition = @"transition";
 
 -(BOOL)_flipTexture {
     return _flipTexture;
+}
+
+-(void)_setImplicitAnimation:(BOOL)anim {
+    _implicitAnimation = anim;
 }
 
 
