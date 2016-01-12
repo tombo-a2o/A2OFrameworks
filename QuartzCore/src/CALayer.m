@@ -390,6 +390,8 @@ NSString * const kCATransition = @"transition";
 -(void)addAnimation:(CAAnimation *)animation forKey:(NSString *)key {
     if(_context==nil)
         return;
+    
+    key = key ?: [NSNull null];
 
     [_animations setObject:animation forKey:key];
 }
@@ -417,6 +419,8 @@ NSString * const kCATransition = @"transition";
         return [NSValue valueWithRect:_bounds];
     if([key isEqualToString:@"frame"])
         return [NSValue valueWithRect:[self frame]];
+    if([key isEqualToString:@"transform"])
+        return [NSValue valueWithCATransform3D:[self transform]];
 
     return [super valueForKey:key];
 }

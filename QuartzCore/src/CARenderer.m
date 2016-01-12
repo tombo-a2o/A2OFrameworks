@@ -283,6 +283,84 @@ static CGRect interpolateRectInLayerKey(CALayer *layer,NSString *key,CFTimeInter
 	return CGRectMake(0,0,0,0);
 }
 
+static CATransform3D interpolateTransform3DInLayerKey(CALayer *layer,NSString *key,CFTimeInterval currentTime){
+	CAAnimation *animation=[layer animationForKey:key];
+
+	if(animation==nil){
+		return [[layer valueForKey:key] CATransform3DValue];
+	}
+
+	if([animation isKindOfClass:[CABasicAnimation class]]){
+		CABasicAnimation *basic=(CABasicAnimation *)animation;
+
+		id fromValue=[basic fromValue];
+		id toValue=[basic toValue];
+
+		if(toValue==nil)
+			toValue=[layer valueForKey:key];
+
+		CATransform3D t1=[fromValue CATransform3DValue];
+		CATransform3D t2=[toValue CATransform3DValue];
+
+		double timingScale=mediaTimingScale(animation,currentTime);
+
+		CATransform3D resultTransform;
+        
+        CGFloat det1, det2;
+        
+        det1 = t1.m11*t1.m22 - t1.m12*t1.m21;
+        det2 = t2.m11*t2.m22 - t2.m12*t2.m21;
+        
+        if(det1 == 0.0 || det2 == 0.0) {
+            // linear
+            resultTransform.m11 = t1.m11+(t2.m11-t1.m11)*timingScale;
+            resultTransform.m21 = t1.m21+(t2.m21-t1.m21)*timingScale;
+            resultTransform.m12 = t1.m12+(t2.m12-t1.m12)*timingScale;
+            resultTransform.m22 = t1.m22+(t2.m22-t1.m22)*timingScale;
+        } else {
+            // |a b|  = |cos -sin| |1  skew| |sx  0 |
+            // |c d|    |sin  cos| |0  1   | |0   sy|
+            // http://math.stackexchange.com/questions/78137/decomposition-of-a-nonsquare-affine-matrix
+            
+            CGFloat rot, rot1, rot2;
+            CGFloat skew, skew1, skew2;
+            CGFloat sx, sx1, sx2;
+            CGFloat sy, sy1, sy2;
+            
+            sx1 = sqrt(t1.m11*t1.m11 + t1.m21*t1.m21);
+            sx2 = sqrt(t2.m11*t2.m11 + t2.m21*t2.m21);
+            
+            sy1 = det1 / sx1;
+            sy2 = det2 / sx2;
+            
+            rot1 = atan2(t1.m21, t1.m11);
+            rot2 = atan2(t2.m21, t2.m11);
+            
+            skew1 = (t1.m11*t1.m12+t1.m21*t1.m22) / det1;
+            skew2 = (t2.m11*t2.m12+t2.m21*t2.m22) / det2;
+            
+            sx = sx1 + (sx2-sx1)*timingScale;
+            sy = sy1 + (sy2-sy1)*timingScale;
+            CGFloat d = rot2 - rot1;
+            if(d > M_PI) d -= M_PI*2;
+            if(d < -M_PI) d += M_PI*2;
+            rot = rot1 + d*timingScale;
+            skew = skew1 + (skew2-skew1)*timingScale;
+            
+            resultTransform.m11 = sx * cos(rot);
+            resultTransform.m12 = sy * (skew*cos(rot) - sin(rot));
+            resultTransform.m21 = sx * sin(rot);
+            resultTransform.m22 = sy * (skew*cos(rot) + cos(rot));
+        }
+        resultTransform.m41 = t1.m41+(t2.m41-t1.m41)*timingScale;
+        resultTransform.m42 = t1.m42+(t2.m42-t1.m42)*timingScale;
+
+		return resultTransform;
+	}
+
+	return CATransform3DIdentity;
+}
+
 static CGImageRef interpolateImageInLayerKey(CALayer *layer,NSString *key,CFTimeInterval currentTime){
     CAAnimation *animation=[layer animationForKey:key];
 
@@ -501,6 +579,7 @@ static void generateTextureFromCGColor(CGColorRef cgColor) {
     float   opacity=interpolateFloatInLayerKey(layer,@"opacity",currentTime);
     float   cornerRadius = interpolateFloatInLayerKey(layer,@"cornerRadius",currentTime);
     float   borderWidth = interpolateFloatInLayerKey(layer,@"borderWidth",currentTime);
+    CGAffineTransform layerTransform = CATransform3DGetAffineTransform(interpolateTransform3DInLayerKey(layer,@"transform",currentTime));
 
     CGFloat w = bounds.size.width;
     CGFloat h = bounds.size.height;
@@ -523,8 +602,10 @@ static void generateTextureFromCGColor(CGColorRef cgColor) {
         }
     }
 
-    CGAffineTransform local = CGAffineTransformMakeTranslation(position.x-(bounds.size.width*anchorPoint.x),position.y-(bounds.size.height*anchorPoint.y));
-    CGAffineTransform t  = CGAffineTransformConcat(local, transform);
+    CGAffineTransform t1 = CGAffineTransformMakeTranslation(-(bounds.size.width*anchorPoint.x),-(bounds.size.height*anchorPoint.y));
+    CGAffineTransform t2 = CGAffineTransformConcat(t1, layerTransform);
+    CGAffineTransform t3 = CGAffineTransformConcat(t2, CGAffineTransformMakeTranslation(position.x, position.y));
+    CGAffineTransform t  = CGAffineTransformConcat(t3, transform);
     // fprintf(stderr, "transform(original) %f %f %f %f %f %f\n", transform.a, transform.b, transform.tx, transform.c, transform.d, transform.ty);
     // fprintf(stderr, "transform(local) %f %f %f %f %f %f\n", local.a, local.b, local.tx, local.c, local.d, local.ty);
     // fprintf(stderr, "transform(total) %f %f %f %f %f %f\n", t.a, t.b, t.tx, t.c, t.d, t.ty);
