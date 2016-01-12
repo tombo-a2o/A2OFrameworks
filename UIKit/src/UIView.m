@@ -40,6 +40,7 @@
 #import "UIColor+UIPrivate.h"
 #import "UIColorRep.h"
 #import <QuartzCore/CALayer.h>
+#import <QuartzCore/CALayer+Private.h>
 
 NSString *const UIViewFrameDidChangeNotification = @"UIViewFrameDidChangeNotification";
 NSString *const UIViewBoundsDidChangeNotification = @"UIViewBoundsDidChangeNotification";
@@ -91,6 +92,7 @@ static BOOL _animationsEnabled = YES;
     _layer = [[[[self class] layerClass] alloc] init];
     _layer.delegate = self;
     _layer.layoutManager = [UIViewLayoutManager layoutManager];
+    [_layer _setImplicitAnimation:NO];
 
     self.contentMode = UIViewContentModeScaleToFill;
     self.contentScaleFactor = 0;
