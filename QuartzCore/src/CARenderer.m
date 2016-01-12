@@ -119,11 +119,15 @@ static void startAnimationsInLayer(CALayer *layer,CFTimeInterval currentTime){
         CFTimeInterval duration = [check duration];
         float repeatCount = [check repeatCount];
         CFTimeInterval repeatDuration = [check repeatDuration];
+        BOOL autoreverses = [check autoreverses];
         if(repeatCount != 0.0) {
             duration *= repeatCount;
         }
         if(repeatDuration != 0.0) {
             duration = repeatDuration;
+        }
+        if(autoreverses) {
+            duration *= 2;
         }
 
         if(currentTime > [check beginTime] + duration){
@@ -167,8 +171,14 @@ static float mediaTimingScale(CAAnimation *animation,CFTimeInterval currentTime)
     CFTimeInterval begin=[animation beginTime];
     CFTimeInterval duration=[animation duration];
     CFTimeInterval delta=currentTime-begin;
-    double         zeroToOne=delta/duration;
-    zeroToOne -= (int)zeroToOne;
+    BOOL autoreverses = [animation autoreverses];
+    
+    double zeroToOne=delta/duration;
+    int count = (int)zeroToOne;
+    zeroToOne -= count;
+    if(autoreverses && (count % 2) == 1) {
+        zeroToOne = 1 - zeroToOne;
+    }
     CAMediaTimingFunction *function=[animation timingFunction];
 
     if(function==nil)
