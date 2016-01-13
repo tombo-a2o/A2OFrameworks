@@ -10,5 +10,4 @@
 -(CGImageRef)_imageRef;
 -(CGFloat)textureSize;
 -(BOOL)_flipTexture;
--(void)_setImplicitAnimation:(BOOL)anim;
 @end
