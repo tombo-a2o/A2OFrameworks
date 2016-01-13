@@ -22,6 +22,7 @@
     GLint _unifCornerRadius;
     GLint _unifBorderWidth;
     GLint _unifBorderColor;
+    GLint _unifBackgroundColor;
 }
 
 
@@ -58,13 +59,16 @@ static const char *fragmentShaderSource =
     "uniform float cornerRadius;\n"
 //    "uniform float borderWidth;\n"
 //    "uniform vec4 borderColor;\n"
+    "uniform vec4 backgroundColor;\n"
     "void main() {\n"
     "    vec4 texColor = texture2D(texture, texcoordVarying);\n"
+    "    float alpha = texColor.a + backgroundColor.a * (1.0-texColor.a);\n"
+    "    vec3 color = alpha > 0.0 ? (texColor.rgb + backgroundColor.rgb * backgroundColor.a * (1.0-texColor.a)) / alpha : vec3(0.0);\n"
     "    float distance = length(distanceVarying) - cornerRadius;\n"
     "    float cornerMask = distance > 0.0 ? 0.0 : 1.0; //clamp(-distance, 0.0, 1.0);\n"
 //    "    float borderMask = clamp(borderWidth/2.0-abs(distance), 0.0, 1.0);\n"
 //"    gl_FragColor = vec4(texColor.rgb, texColor.a * cornerMask * opacity) * (1.0-borderMask) + borderColor * borderMask;\n"
-    "    gl_FragColor = vec4(texColor.rgb, texColor.a * cornerMask * opacity);\n"
+    "    gl_FragColor = vec4(color.rgb, alpha * cornerMask * opacity);\n"
     "}\n";
 
 
@@ -83,6 +87,7 @@ static const char *fragmentShaderSource =
    _unifCornerRadius = glGetUniformLocation(_program, "cornerRadius");
    // _unifBorderWidth = glGetUniformLocation(_program, "borderWidth");
    // _unifBorderColor = glGetUniformLocation(_program, "borderColor");
+   _unifBackgroundColor = glGetUniformLocation(_program, "backgroundColor");
    assert(_attrPosition >= 0);
    assert(_attrTexCoord >= 0);
    assert(_attrDistance >= 0);
@@ -91,6 +96,7 @@ static const char *fragmentShaderSource =
    assert(_unifCornerRadius >= 0);
    // assert(_unifBorderWidth >= 0);
    // assert(_unifBorderColor >= 0);
+   assert(_unifBackgroundColor >= 0);
 
    return self;
 }
@@ -502,14 +508,9 @@ static void getColorComponents(CGColorRef cgColor, CGFloat components[4]) {
 
 }
 
-static void generateTextureFromCGColor(CGColorRef cgColor) {
-    CGFloat componentsFloat[4];
+static void generateTransparentTexture() {
     uint8_t componentsByte[4];
-    getColorComponents(cgColor, componentsFloat);
-    for(int i = 0; i < 4; i++) {
-        componentsByte[i] = componentsFloat[i]*255;
-    }
-
+    memset(componentsByte, 0, sizeof(componentsByte));
     glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,1,1,0,GL_RGBA,GL_UNSIGNED_BYTE, componentsByte);
 }
 
@@ -562,7 +563,7 @@ static void generateTextureFromCGColor(CGColorRef cgColor) {
             glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
         } else {
 #warning TODO interpolate?
-            generateTextureFromCGColor(layer.backgroundColor);
+            generateTransparentTexture();
 
             glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -632,6 +633,9 @@ static void generateTextureFromCGColor(CGColorRef cgColor) {
     GLfloat borderColor[4];
     getColorComponents(layer.borderColor, borderColor);
     // glUniform4fv(_unifBorderColor, 1, borderColor);
+    GLfloat backgroundColor[4];
+    getColorComponents(layer.backgroundColor, backgroundColor);
+    glUniform4fv(_unifBackgroundColor, 1, backgroundColor);
 
     const GLushort index[] = {
         0, 4, 1, 5, 2, 6, 3, 7, 7, 11, 6, 10, 5, 9, 4, 8, 8, 12, 9, 13, 10, 14, 11, 15
