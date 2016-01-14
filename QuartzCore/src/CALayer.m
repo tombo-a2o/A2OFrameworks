@@ -34,6 +34,9 @@ NSString * const kCATransition = @"transition";
     CGImageRef _imageRef;
     GLuint _textureId;
     BOOL _flipTexture;
+    NSMutableArray *_implicitAnimations;
+    CALayer *_presentationLayer;
+    CALayer *_modelLayer;
 }
 
 +layer {
@@ -234,6 +237,7 @@ NSString * const kCATransition = @"transition";
     _minificationFilter=kCAFilterLinear;
     _magnificationFilter=kCAFilterLinear;
     _animations=[[NSMutableDictionary alloc] init];
+    _implicitAnimations = [[NSMutableArray alloc] init];
     _needsDisplay = YES;
     _needsLayout = YES;
     _textureId = 0;
@@ -389,9 +393,11 @@ NSString * const kCATransition = @"transition";
     if(_context==nil)
         return;
     
-    key = key ?: [NSNull null];
-
-    [_animations setObject:animation forKey:key];
+    if(key) {
+        [_animations setObject:animation forKey:key];
+    } else {
+        [_implicitAnimations addObject:animation];
+    }
 }
 
 -(CAAnimation *)animationForKey:(NSString *)key {
@@ -400,6 +406,7 @@ NSString * const kCATransition = @"transition";
 
 -(void)removeAllAnimations {
     [_animations removeAllObjects];
+    [_implicitAnimations removeAllObjects];
 }
 
 -(void)removeAnimationForKey:(NSString *)key {
@@ -424,11 +431,44 @@ NSString * const kCATransition = @"transition";
 }
 
 -(id <CAAction>)actionForKey:(NSString *)key {
-   CABasicAnimation *basic=[CABasicAnimation animationWithKeyPath:key];
+    id action = nil;
+    if([_delegate respondsToSelector:@selector(actionForLayer:forKey:)]) {
+        action = [_delegate actionForLayer:self forKey:key];
+    }
+    if(action) return [action isEqual:[NSNull null]] ? nil : action;
+    
+    action = [self.actions objectForKey:key];
+    if(action) return [action isEqual:[NSNull null]] ? nil : action;
+    
+    NSDictionary *style = self.style;
+    while(style) {
+        NSDictionary *actions = [style objectForKey:@"actions"];
+        action = [actions objectForKey:key];
+        if(action) return [action isEqual:[NSNull null]] ? nil : action;
+        
+        style = [style objectForKey:@"style"];
+    }
+    
+    CABasicAnimation *basic=[CABasicAnimation animationWithKeyPath:key];
 
-   [basic setFromValue:[self valueForKey:key]];
+    [basic setFromValue:[self valueForKey:key]];
 
-   return basic;
+    return basic;
+}
+
+- (NSDictionary*)actions
+{
+    return nil;
+}
+
++ (id<CAAction>)defaultActionForKey:(NSString *)key
+{
+    return nil;
+}
+
+- (NSDictionary*)style
+{
+    return nil;
 }
 
 -(GLuint)_textureId {
@@ -536,7 +576,7 @@ NSString * const kCATransition = @"transition";
 }
 
 - (id)presentationLayer {
-    assert(0);
+    return _presentationLayer;
 }
 
 -(NSString*)description {
@@ -547,5 +587,21 @@ NSString * const kCATransition = @"transition";
     return _flipTexture;
 }
 
-
+// -(id)_generatePresentationLayer {
+//     if(!_presentationLayer) {
+//         _presentationLayer = [self copyWithZone:nil];
+//         _presentationLayer->_modelLayer = self;
+//     }
+//     return _presentationLayer;
+// }
+// 
+// -(void)updateAnimations:(CFTimeInterval)currentTime {
+//     
+//     _presentationLayer = [self _generatePresentationLayer];
+//     
+//     
+//     for(CALayer *child in self.sublayers) {
+//         [child updateAnimations:currentTime];
+//     }
+// }
 @end

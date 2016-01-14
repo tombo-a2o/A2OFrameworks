@@ -12,6 +12,31 @@
 #import <CoreGraphics/CGColorSpace.h>
 #import "CAUtil.h"
 
+@interface CAAnimation(Rendering)
+-(CFTimeInterval)computedDuration;
+@end
+
+@implementation CAAnimation(Rendering)
+-(CFTimeInterval)computedDuration
+{
+    CFTimeInterval duration = self.duration;
+    float repeatCount = self.repeatCount;
+    CFTimeInterval repeatDuration = self.repeatDuration;
+    BOOL autoreverses = self.autoreverses;
+    
+    if(repeatCount != 0.0) {
+        duration *= repeatCount;
+    }
+    if(repeatDuration != 0.0) {
+        duration = repeatDuration;
+    }
+    if(autoreverses) {
+        duration *= 2;
+    }
+    return duration;
+}
+@end
+
 @implementation CARenderer {
     GLuint _program;
     GLint _attrPosition;
@@ -122,19 +147,7 @@ static void startAnimationsInLayer(CALayer *layer,CFTimeInterval currentTime){
         if([check beginTime]==0.0)
             [check setBeginTime:currentTime];
 
-        CFTimeInterval duration = [check duration];
-        float repeatCount = [check repeatCount];
-        CFTimeInterval repeatDuration = [check repeatDuration];
-        BOOL autoreverses = [check autoreverses];
-        if(repeatCount != 0.0) {
-            duration *= repeatCount;
-        }
-        if(repeatDuration != 0.0) {
-            duration = repeatDuration;
-        }
-        if(autoreverses) {
-            duration *= 2;
-        }
+        CFTimeInterval duration = [check computedDuration];
 
         if(currentTime > [check beginTime] + duration){
             [layer removeAnimationForKey:key];
