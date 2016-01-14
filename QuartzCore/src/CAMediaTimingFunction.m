@@ -65,4 +65,22 @@ NSString * const kCAMediaTimingFunctionDefault=@"kCAMediaTimingFunctionDefault";
    }
 }
 
+static inline float cubed(float value){
+   return value*value*value;
+}
+
+static inline float squared(float value){
+   return value*value;
+}
+
+-(float)_solveYFor:(float)x {
+    float t = x;
+
+    //double x=cubed(1.0-t)*0.0+3*squared(1-t)*t*_c1x+3*(1-t)*squared(t)*_c2x+cubed(t)*1.0;
+    double y=cubed(1.0-t)*0.0+3*squared(1-t)*t*_c1y+3*(1-t)*squared(t)*_c2y+cubed(t)*1.0;
+
+// this is wrong
+    return y;
+}
+
 @end

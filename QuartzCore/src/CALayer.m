@@ -9,6 +9,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "CAAnimation+Private.h"
+
 NSString * const kCAFilterLinear=@"linear";
 NSString * const kCAFilterNearest=@"nearest";
 NSString * const kCAFilterTrilinear=@"trilinear";
@@ -587,21 +589,32 @@ NSString * const kCATransition = @"transition";
     return _flipTexture;
 }
 
-// -(id)_generatePresentationLayer {
-//     if(!_presentationLayer) {
-//         _presentationLayer = [self copyWithZone:nil];
-//         _presentationLayer->_modelLayer = self;
-//     }
-//     return _presentationLayer;
-// }
-// 
-// -(void)updateAnimations:(CFTimeInterval)currentTime {
-//     
-//     _presentationLayer = [self _generatePresentationLayer];
-//     
-//     
-//     for(CALayer *child in self.sublayers) {
-//         [child updateAnimations:currentTime];
-//     }
-// }
+-(id)_generatePresentationLayer {
+    if(!_presentationLayer) {
+        _presentationLayer = [self copyWithZone:nil];
+        _presentationLayer->_modelLayer = self;
+    }
+    return _presentationLayer;
+}
+
+-(void)_updateAnimations:(CFTimeInterval)currentTime {
+    if(_modelLayer) return; // return self is presentationLayer
+    
+    for(NSString *key in self.animationKeys){
+        CAAnimation *check=[self animationForKey:key];
+
+        if([check beginTime]==0.0)
+            [check setBeginTime:currentTime];
+
+        CFTimeInterval duration = [check _computedDuration];
+
+        if(currentTime > [check beginTime] + duration && check.isRemovedOnCompletion){
+            [self removeAnimationForKey:key];
+        }
+    }
+
+    for(CALayer *child in self.sublayers) {
+        [child _updateAnimations:currentTime];
+    }
+}
 @end

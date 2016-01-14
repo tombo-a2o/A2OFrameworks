@@ -11,6 +11,7 @@
 #import <CoreGraphics/CGColor.h>
 #import <CoreGraphics/CGColorSpace.h>
 #import "CAUtil.h"
+#import "CAMediaTimingFunction+Private.h"
 
 @interface CAAnimation(Rendering)
 -(CFTimeInterval)computedDuration;
@@ -138,54 +139,6 @@ static const char *fragmentShaderSource =
    return [[[self alloc] initWithEAGLContext:eaglContext options:options] autorelease];
 }
 
-static void startAnimationsInLayer(CALayer *layer,CFTimeInterval currentTime){
-    NSArray *keys=[layer animationKeys];
-
-    for(NSString *key in keys){
-        CAAnimation *check=[layer animationForKey:key];
-
-        if([check beginTime]==0.0)
-            [check setBeginTime:currentTime];
-
-        CFTimeInterval duration = [check computedDuration];
-
-        if(currentTime > [check beginTime] + duration){
-            [layer removeAnimationForKey:key];
-        }
-    }
-
-    for(CALayer *child in layer.sublayers)
-        startAnimationsInLayer(child,currentTime);
-}
-
--(void)beginFrameAtTime:(CFTimeInterval)currentTime timeStamp:(/*CVTimeStamp*/void *)timeStamp {
-    assert(!timeStamp);
-    startAnimationsInLayer(_rootLayer,currentTime);
-}
-
-static inline float cubed(float value){
-   return value*value*value;
-}
-
-static inline float squared(float value){
-   return value*value;
-}
-
-static float applyMediaTimingFunction(CAMediaTimingFunction *function,float t){
-    float result;
-    float cp1[2];
-    float cp2[2];
-
-    [function getControlPointAtIndex:1 values:cp1];
-    [function getControlPointAtIndex:2 values:cp2];
-
-    double x=cubed(1.0-t)*0.0+3*squared(1-t)*t*cp1[0]+3*(1-t)*squared(t)*cp2[0]+cubed(t)*1.0;
-    double y=cubed(1.0-t)*0.0+3*squared(1-t)*t*cp1[1]+3*(1-t)*squared(t)*cp2[1]+cubed(t)*1.0;
-
-// this is wrong
-    return y;
-}
-
 static float mediaTimingScale(CAAnimation *animation,CFTimeInterval currentTime){
     CFTimeInterval begin=[animation beginTime];
     CFTimeInterval duration=[animation duration];
@@ -203,7 +156,7 @@ static float mediaTimingScale(CAAnimation *animation,CFTimeInterval currentTime)
     if(function==nil)
         function=[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionDefault];
 
-    return applyMediaTimingFunction(function,zeroToOne);
+    return [function _solveYFor:zeroToOne];
 }
 
 static float interpolateFloatInLayerKey(CALayer *layer,NSString *key,CFTimeInterval currentTime){
@@ -689,7 +642,7 @@ static void generateTransparentTexture() {
     // fprintf(stderr, "bounds %f %f\n",_bounds.size.width, _bounds.size.height);
     CGAffineTransform projection = CGAffineTransformMake(2.0/_bounds.size.width, 0, 0, -2.0/_bounds.size.height, -1.0, 1.0);
     CFTimeInterval currentTime = CACurrentMediaTime();
-    [self beginFrameAtTime:currentTime timeStamp:NULL];
+    [_rootLayer _updateAnimations:currentTime];
     [self _renderLayer:_rootLayer z:0 currentTime:currentTime transform:projection];
 
     glUseProgram(0);

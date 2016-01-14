@@ -21,6 +21,7 @@ NSString *const kCATransitionFromBottom = @"bottom";
 -init {
    _duration=[CATransaction animationDuration];
    _timingFunction=[[CATransaction animationTimingFunction] retain];
+   _removedOnCompletion=YES;
    return self;
 }
 
@@ -126,6 +127,25 @@ NSString *const kCATransitionFromBottom = @"bottom";
 
 -(void)setTimeOffset:(CFTimeInterval)value {
    _timeOffset=value;
+}
+
+-(CFTimeInterval)_computedDuration
+{
+    CFTimeInterval duration = self.duration;
+    float repeatCount = self.repeatCount;
+    CFTimeInterval repeatDuration = self.repeatDuration;
+    BOOL autoreverses = self.autoreverses;
+    
+    if(repeatCount != 0.0) {
+        duration *= repeatCount;
+    }
+    if(repeatDuration != 0.0) {
+        duration = repeatDuration;
+    }
+    if(autoreverses) {
+        duration *= 2;
+    }
+    return duration;
 }
 
 @end

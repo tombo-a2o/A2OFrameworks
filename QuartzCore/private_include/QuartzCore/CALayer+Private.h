@@ -10,4 +10,5 @@
 -(CGImageRef)_imageRef;
 -(CGFloat)textureSize;
 -(BOOL)_flipTexture;
+-(void)_updateAnimations:(CFTimeInterval)currentTime;
 @end
