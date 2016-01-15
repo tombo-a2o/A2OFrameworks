@@ -2,6 +2,8 @@
 #import <QuartzCore/CATransaction.h>
 #import <AppKit/NSRaise.h>
 
+#import "CAMediaTimingFunction+Private.h"
+
 NSString *const kCATransitionFade = @"fade";
 NSString *const kCATransitionMoveIn = @"movein";
 NSString *const kCATransitionPush = @"push";
@@ -131,21 +133,37 @@ NSString *const kCATransitionFromBottom = @"bottom";
 
 -(CFTimeInterval)_computedDuration
 {
-    CFTimeInterval duration = self.duration;
-    float repeatCount = self.repeatCount;
-    CFTimeInterval repeatDuration = self.repeatDuration;
-    BOOL autoreverses = self.autoreverses;
+    CFTimeInterval duration = _duration;
     
-    if(repeatCount != 0.0) {
-        duration *= repeatCount;
+    if(_repeatCount != 0.0) {
+        duration *= _repeatCount;
     }
-    if(repeatDuration != 0.0) {
-        duration = repeatDuration;
+    if(_repeatDuration != 0.0) {
+        duration = _repeatDuration;
     }
-    if(autoreverses) {
+    if(_autoreverses) {
         duration *= 2;
     }
     return duration;
+}
+
+-(float)_calcScale:(CFTimeInterval)currentTime
+{
+    CFTimeInterval delta = currentTime - _beginTime;
+    
+    double zeroToOne = delta / _duration;
+    int count = (int)zeroToOne;
+    zeroToOne -= count;
+    if(_autoreverses && (count % 2) == 1) {
+        zeroToOne = 1 - zeroToOne;
+    }
+    CAMediaTimingFunction *function = _timingFunction;
+
+    if(function == nil) {
+        function = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionDefault];
+    }
+
+    return [function _solveYFor:zeroToOne];
 }
 
 @end

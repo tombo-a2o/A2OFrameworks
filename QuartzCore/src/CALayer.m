@@ -248,12 +248,39 @@ NSString * const kCATransition = @"transition";
     return self;
 }
 
+-(id)initWithLayer:(id)layer_
+{
+    CALayer *layer = layer_;
+    _superlayer = layer.superlayer;
+    _sublayers = [layer.sublayers mutableCopy];
+    _delegate = layer.delegate;
+    _anchorPoint = layer.anchorPoint;
+    _position = layer.position;
+    _bounds = layer.bounds;
+    _opacity = layer.opacity;
+    _opaque = layer.opaque;
+    _contents = layer.contents;
+    _transform = layer.transform;
+    _sublayerTransform = layer.sublayerTransform;
+    _minificationFilter = layer.minificationFilter;
+    _magnificationFilter = layer.magnificationFilter;
+    _animations = [layer->_animations mutableCopy];
+    _implicitAnimations = [layer->_implicitAnimations mutableCopy];
+    _needsDisplay = YES;
+    _needsLayout = YES;
+    _textureId = layer->_textureId;
+    _imageRef = layer->_imageRef;
+    _flipTexture = layer->_flipTexture;
+    return self;
+}
+
 -(void)dealloc {
     [self _setTextureId:0]; // delete texture
     [self setContents:nil]; // release contents
     [_sublayers makeObjectsPerformSelector:@selector(_setSuperLayer:) withObject:nil];
     [_sublayers release];
     [_animations release];
+    [_implicitAnimations release];
     [_minificationFilter release];
     [_magnificationFilter release];
     [super dealloc];
@@ -591,7 +618,10 @@ NSString * const kCATransition = @"transition";
 
 -(id)_generatePresentationLayer {
     if(!_presentationLayer) {
-        _presentationLayer = [self copyWithZone:nil];
+        _presentationLayer = [[[self class] alloc] initWithLayer:self];
+        //_presentationLayer.sublayers = 
+        //_presentationLayer.mask = 
+        _presentationLayer->_superlayer = self.superlayer.presentationLayer;
         _presentationLayer->_modelLayer = self;
     }
     return _presentationLayer;
@@ -600,18 +630,52 @@ NSString * const kCATransition = @"transition";
 -(void)_updateAnimations:(CFTimeInterval)currentTime {
     if(_modelLayer) return; // return self is presentationLayer
     
+    CALayer *layer = [self _generatePresentationLayer];
+    
     for(NSString *key in self.animationKeys){
         CAAnimation *check=[self animationForKey:key];
-
-        if([check beginTime]==0.0)
-            [check setBeginTime:currentTime];
-
+        if([check beginTime]==0.0) {
+            check.beginTime = currentTime;
+        }
+        
+        if([check isKindOfClass:[CABasicAnimation class]]) {
+            CABasicAnimation *basicAnim = (CABasicAnimation*)check;
+            if(!basicAnim.toValue) basicAnim.toValue = [self valueForKey:basicAnim.keyPath];
+        }
+        if([check isKindOfClass:[CAPropertyAnimation class]]) {
+            [(CAPropertyAnimation*)check _updateProperty:layer currentTime:currentTime];
+        }
+        
         CFTimeInterval duration = [check _computedDuration];
-
         if(currentTime > [check beginTime] + duration && check.isRemovedOnCompletion){
+            // TODO update before remove
             [self removeAnimationForKey:key];
         }
     }
+    
+    NSArray *implicitAnimations = [_implicitAnimations copy];
+    for(CAAnimation *check in implicitAnimations) {
+        if([check beginTime]==0.0)
+            [check setBeginTime:currentTime];
+
+        if([check isKindOfClass:[CABasicAnimation class]]) {
+            CABasicAnimation *basicAnim = (CABasicAnimation*)check;
+            if(!basicAnim.toValue) basicAnim.toValue = [self valueForKey:basicAnim.keyPath];
+        }
+        if([check isKindOfClass:[CAPropertyAnimation class]]) {
+            [(CAPropertyAnimation*)check _updateProperty:layer currentTime:currentTime];
+        }
+        
+        CFTimeInterval duration = [check _computedDuration];
+        if(currentTime > [check beginTime] + duration && check.isRemovedOnCompletion){
+            [_implicitAnimations removeObject:check];
+        }
+    }
+    
+    // if(_presentationLayer && [_animations count] == 0 && [_implicitAnimations count] == 0) {
+    //     [_presentationLayer release];
+    //     _presentationLayer = nil;
+    // }
 
     for(CALayer *child in self.sublayers) {
         [child _updateAnimations:currentTime];

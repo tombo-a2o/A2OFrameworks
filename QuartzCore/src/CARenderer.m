@@ -539,14 +539,16 @@ static void generateTransparentTexture() {
         }
     }
 
-    CGPoint anchorPoint=interpolatePointInLayerKey(layer,@"anchorPoint",currentTime);
-    CGPoint position=interpolatePointInLayerKey(layer,@"position",currentTime);
-    // fprintf(stderr, "pos %f %f\n", position.x, position.y);
-    CGRect  bounds=interpolateRectInLayerKey(layer,@"bounds",currentTime);
-    float   opacity=interpolateFloatInLayerKey(layer,@"opacity",currentTime);
-    float   cornerRadius = interpolateFloatInLayerKey(layer,@"cornerRadius",currentTime);
-    float   borderWidth = interpolateFloatInLayerKey(layer,@"borderWidth",currentTime);
-    CGAffineTransform layerTransform = CATransform3DGetAffineTransform(interpolateTransform3DInLayerKey(layer,@"transform",currentTime));
+    CALayer *l = layer.presentationLayer ?: layer;
+    
+    CGPoint anchorPoint = l.anchorPoint;
+    CGPoint position = l.position;
+    //fprintf(stderr, "pos %f %f\n", position.x, position.y);
+    CGRect  bounds = l.bounds;
+    float   opacity = l.opacity;
+    float   cornerRadius = l.cornerRadius;
+    float   borderWidth = l.borderWidth;
+    CGAffineTransform layerTransform = CATransform3DGetAffineTransform(l.transform);
 
     CGFloat w = bounds.size.width;
     CGFloat h = bounds.size.height;

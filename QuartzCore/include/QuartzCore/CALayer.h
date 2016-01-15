@@ -3,6 +3,7 @@
 #import <CoreGraphics/CoreGraphics.h>
 #import <QuartzCore/CATransform3D.h>
 #import <QuartzCore/CAAction.h>
+#import <QuartzCore/CAMediaTiming.h>
 
 @class CAAnimation, CALayerContext;
 
@@ -37,7 +38,7 @@ CA_EXPORT NSString * const kCAOnOrderIn;
 CA_EXPORT NSString * const kCAOnOrderOut;
 CA_EXPORT NSString * const kCATransition;
 
-@interface CALayer : NSObject {
+@interface CALayer : NSObject<NSCoding, CAMediaTiming> {
     CALayerContext *_context;
     CALayer *_superlayer;
     NSArray *_sublayers;
