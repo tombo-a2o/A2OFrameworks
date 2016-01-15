@@ -42,9 +42,9 @@
    _cumulative=value;
 }
 
--(void)_updateProperty:(CALayer*)layer currentTime:(CFTimeInterval)currentTime
+-(void)_updateProperty:(CALayer*)layer
 {
-    float scale = [self _calcScale:currentTime];
+    float scale = [self _scale];
     NSValue *current = [layer valueForKeyPath:_keyPath];
     const char* type = current.objCType;
     NSValue *value = [self _interpolate:scale withType:type];

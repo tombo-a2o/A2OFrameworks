@@ -1,12 +1,13 @@
 #import <QuartzCore/CAAnimation.h>
 
 @interface CAAnimation(Rendering)
--(CFTimeInterval)_computedDuration;
--(float)_calcScale:(CFTimeInterval)currentTime;
+-(float)_scale;
+-(BOOL)_isFinished;
+-(void)_updateCurrentTime:(CFTimeInterval)currentTime;
 @end
 
 @interface CAPropertyAnimation(Rendering)
--(void)_updateProperty:(CALayer*)layer currentTime:(CFTimeInterval)currentTime;
+-(void)_updateProperty:(CALayer*)layer;
 -(CGFloat)_interpolateFloat:(float)scale;
 -(CATransform3D)_interpolateTransform3D:(float)scale;
 -(CGAffineTransform)_interpolateAffineTransform:(float)scale;

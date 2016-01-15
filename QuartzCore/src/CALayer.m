@@ -633,42 +633,43 @@ NSString * const kCATransition = @"transition";
     CALayer *layer = [self _generatePresentationLayer];
     
     for(NSString *key in self.animationKeys){
-        CAAnimation *check=[self animationForKey:key];
-        if([check beginTime]==0.0) {
-            check.beginTime = currentTime;
+        CAAnimation *animation = [self animationForKey:key];
+        if([animation beginTime]==0.0) {
+            animation.beginTime = currentTime;
         }
         
-        if([check isKindOfClass:[CABasicAnimation class]]) {
-            CABasicAnimation *basicAnim = (CABasicAnimation*)check;
+        [animation _updateCurrentTime:currentTime];
+        
+        if([animation isKindOfClass:[CABasicAnimation class]]) {
+            CABasicAnimation *basicAnim = (CABasicAnimation*)animation;
             if(!basicAnim.toValue) basicAnim.toValue = [self valueForKey:basicAnim.keyPath];
         }
-        if([check isKindOfClass:[CAPropertyAnimation class]]) {
-            [(CAPropertyAnimation*)check _updateProperty:layer currentTime:currentTime];
+        if([animation isKindOfClass:[CAPropertyAnimation class]]) {
+            [(CAPropertyAnimation*)animation _updateProperty:layer];
         }
         
-        CFTimeInterval duration = [check _computedDuration];
-        if(currentTime > [check beginTime] + duration && check.isRemovedOnCompletion){
-            // TODO update before remove
+        if([animation _isFinished] && animation.isRemovedOnCompletion){
             [self removeAnimationForKey:key];
         }
     }
     
     NSArray *implicitAnimations = [_implicitAnimations copy];
-    for(CAAnimation *check in implicitAnimations) {
-        if([check beginTime]==0.0)
-            [check setBeginTime:currentTime];
+    for(CAAnimation *animation in implicitAnimations) {
+        if([animation beginTime]==0.0)
+            [animation setBeginTime:currentTime];
 
-        if([check isKindOfClass:[CABasicAnimation class]]) {
-            CABasicAnimation *basicAnim = (CABasicAnimation*)check;
+        [animation _updateCurrentTime:currentTime];
+            
+        if([animation isKindOfClass:[CABasicAnimation class]]) {
+            CABasicAnimation *basicAnim = (CABasicAnimation*)animation;
             if(!basicAnim.toValue) basicAnim.toValue = [self valueForKey:basicAnim.keyPath];
         }
-        if([check isKindOfClass:[CAPropertyAnimation class]]) {
-            [(CAPropertyAnimation*)check _updateProperty:layer currentTime:currentTime];
+        if([animation isKindOfClass:[CAPropertyAnimation class]]) {
+            [(CAPropertyAnimation*)animation _updateProperty:layer];
         }
         
-        CFTimeInterval duration = [check _computedDuration];
-        if(currentTime > [check beginTime] + duration && check.isRemovedOnCompletion){
-            [_implicitAnimations removeObject:check];
+        if([animation _isFinished] && animation.isRemovedOnCompletion){
+            [_implicitAnimations removeObject:animation];
         }
     }
     

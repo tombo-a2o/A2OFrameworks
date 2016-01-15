@@ -14,16 +14,21 @@ NSString *const kCATransitionFromRight = @"right";
 NSString *const kCATransitionFromTop = @"top";
 NSString *const kCATransitionFromBottom = @"bottom";
 
-@implementation CAAnimation
+@implementation CAAnimation {
+    float _scale;
+    CFTimeInterval _currentTime;
+    CFTimeInterval _totalDuration;
+}
 
 +animation {
    return [[[self alloc] init] autorelease];
 }
 
 -init {
-   _duration=[CATransaction animationDuration];
-   _timingFunction=[[CATransaction animationTimingFunction] retain];
-   _removedOnCompletion=YES;
+   _duration = [CATransaction animationDuration];
+   _timingFunction = [[CATransaction animationTimingFunction] retain];
+   _removedOnCompletion = YES;
+   [self _updateTotalDuration];
    return self;
 }
 
@@ -60,9 +65,9 @@ NSString *const kCATransitionFromBottom = @"bottom";
 }
 
 -(void)setTimingFunction:(CAMediaTimingFunction *)value {
-   value=[value retain];
+   value = [value retain];
    [_timingFunction release];
-   _timingFunction=value;
+   _timingFunction = value;
 }
 
 -(BOOL)autoreverses {
@@ -71,6 +76,7 @@ NSString *const kCATransitionFromBottom = @"bottom";
 
 -(void)setAutoreverses:(BOOL)value {
    _autoreverses=value;
+   [self _updateTotalDuration];
 }
 
 -(CFTimeInterval)beginTime {
@@ -78,7 +84,7 @@ NSString *const kCATransitionFromBottom = @"bottom";
 }
 
 -(void)setBeginTime:(CFTimeInterval)value {
-   _beginTime=value;
+   _beginTime = value;
 }
 
 -(CFTimeInterval)duration {
@@ -86,7 +92,8 @@ NSString *const kCATransitionFromBottom = @"bottom";
 }
 
 -(void)setDuration:(CFTimeInterval)value {
-   _duration=value;
+   _duration = value;
+   [self _updateTotalDuration];
 }
 
 -(NSString *)fillMode {
@@ -104,7 +111,8 @@ NSString *const kCATransitionFromBottom = @"bottom";
 }
 
 -(void)setRepeatCount:(float)value {
-   _repeatCount=value;
+   _repeatCount = value;
+   [self _updateTotalDuration];
 }
 
 -(CFTimeInterval)repeatDuration {
@@ -112,7 +120,8 @@ NSString *const kCATransitionFromBottom = @"bottom";
 }
 
 -(void)setRepeatDuration:(CFTimeInterval)value {
-   _repeatDuration=value;
+   _repeatDuration = value;
+   [self _updateTotalDuration];
 }
 
 -(float)speed {
@@ -131,25 +140,40 @@ NSString *const kCATransitionFromBottom = @"bottom";
    _timeOffset=value;
 }
 
--(CFTimeInterval)_computedDuration
-{
-    CFTimeInterval duration = _duration;
-    
-    if(_repeatCount != 0.0) {
-        duration *= _repeatCount;
-    }
-    if(_repeatDuration != 0.0) {
-        duration = _repeatDuration;
-    }
-    if(_autoreverses) {
-        duration *= 2;
-    }
-    return duration;
+-(void)_updateCurrentTime:(CFTimeInterval)currentTime {
+    _currentTime = currentTime;
+    [self _updateScale];
 }
 
--(float)_calcScale:(CFTimeInterval)currentTime
+-(void)_updateTotalDuration
 {
-    CFTimeInterval delta = currentTime - _beginTime;
+    _totalDuration = _duration;
+    
+    if(_repeatCount != 0.0) {
+        _totalDuration *= _repeatCount;
+    }
+    if(_repeatDuration != 0.0) {
+        _totalDuration = _repeatDuration;
+    }
+    if(_autoreverses) {
+        _totalDuration *= 2;
+    }
+}
+
+-(float)_scale
+{
+    return _scale;
+}
+
+-(void)_updateScale
+{
+    CFTimeInterval delta = _currentTime - _beginTime;
+    
+    if(delta > _totalDuration) {
+        _scale = 1.0;
+        _fillMode = kCAFillModeRemoved;
+        return;
+    }
     
     double zeroToOne = delta / _duration;
     int count = (int)zeroToOne;
@@ -157,13 +181,17 @@ NSString *const kCATransitionFromBottom = @"bottom";
     if(_autoreverses && (count % 2) == 1) {
         zeroToOne = 1 - zeroToOne;
     }
+    
     CAMediaTimingFunction *function = _timingFunction;
-
     if(function == nil) {
         function = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionDefault];
     }
-
-    return [function _solveYFor:zeroToOne];
+    
+    _scale = [function _solveYFor:zeroToOne];
 }
 
+-(BOOL)_isFinished
+{
+    return _fillMode == kCAFillModeRemoved;
+}
 @end
