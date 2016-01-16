@@ -664,7 +664,7 @@ NSString * const kCATransition = @"transition";
         }
     }
     
-    NSArray *implicitAnimations = [_implicitAnimations copy];
+    NSArray *implicitAnimations = [NSArray arrayWithArray:_implicitAnimations];
     for(CAAnimation *animation in implicitAnimations) {
         [animation _updateTime:currentTime];
             

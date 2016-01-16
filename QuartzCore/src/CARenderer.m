@@ -306,7 +306,7 @@ static void generateTransparentTexture() {
     glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,1,1,0,GL_RGBA,GL_UNSIGNED_BYTE, componentsByte);
 }
 
--(void)_renderLayer:(CALayer *)layer z:(float)z currentTime:(CFTimeInterval)currentTime transform:(CGAffineTransform)transform {
+-(void)_renderLayer:(CALayer *)layer z:(float)z transform:(CGAffineTransform)transform {
     //NSLog(@"CARenderer: renderLayer %@ b:%@ f:%@ %f", layer, NSStringFromRect(layer.bounds), NSStringFromRect(layer.frame), z);
     if(layer.isHidden) return;
 
@@ -435,7 +435,7 @@ static void generateTransparentTexture() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
     for(CALayer *child in [layer.presentationLayer _zOrderedSublayers]) {
-        [self _renderLayer:child.modelLayer z:z+1 currentTime:currentTime transform:t];
+        [self _renderLayer:child.modelLayer z:z+1 transform:t];
     }
 }
 
@@ -453,10 +453,9 @@ static void generateTransparentTexture() {
 
     // fprintf(stderr, "bounds %f %f\n",_bounds.size.width, _bounds.size.height);
     CGAffineTransform projection = CGAffineTransformMake(2.0/_bounds.size.width, 0, 0, -2.0/_bounds.size.height, -1.0, 1.0);
-    CFTimeInterval currentTime = CACurrentMediaTime();
     [_rootLayer _generatePresentationLayer];
-    [_rootLayer _updateAnimations:currentTime];
-    [self _renderLayer:_rootLayer z:0 currentTime:currentTime transform:projection];
+    [_rootLayer _updateAnimations:CACurrentMediaTime()];
+    [self _renderLayer:_rootLayer z:0 transform:projection];
 
     glUseProgram(0);
 
