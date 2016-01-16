@@ -1,4 +1,6 @@
 #import <QuartzCore/CAAnimation.h>
+#import <QuartzCore/CALayer.h>
+#import "CAAnimation+Private.h"
 
 @implementation CAPropertyAnimation
 

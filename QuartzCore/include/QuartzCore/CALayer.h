@@ -3,6 +3,7 @@
 #import <CoreGraphics/CoreGraphics.h>
 #import <QuartzCore/CATransform3D.h>
 #import <QuartzCore/CAAction.h>
+#import <QuartzCore/CAMediaTiming.h>
 
 @class CAAnimation, CALayerContext;
 
@@ -37,7 +38,7 @@ CA_EXPORT NSString * const kCAOnOrderIn;
 CA_EXPORT NSString * const kCAOnOrderOut;
 CA_EXPORT NSString * const kCATransition;
 
-@interface CALayer : NSObject {
+@interface CALayer : NSObject<NSCoding, CAMediaTiming> {
     CALayerContext *_context;
     CALayer *_superlayer;
     NSArray *_sublayers;
@@ -58,6 +59,7 @@ CA_EXPORT NSString * const kCATransition;
 }
 
 + layer;
++ (id<CAAction>)defaultActionForKey:(NSString *)key;
 
 @property(readonly) CALayer *superlayer;
 @property(copy) NSArray *sublayers;
@@ -88,6 +90,8 @@ CA_EXPORT NSString * const kCATransition;
 @property CGFloat contentsScale;
 @property CGFloat borderWidth;
 @property CGColorRef borderColor;
+@property(copy) NSDictionary *actions;
+@property(copy) NSDictionary *style;
 
 - init;
 
@@ -120,12 +124,13 @@ CA_EXPORT NSString * const kCATransition;
 - (CGAffineTransform)affineTransform;
 - (void)setAffineTransform:(CGAffineTransform)m;
 - (id)presentationLayer;
+- (id)modelLayer;
 
 @end
 
-@interface NSObject (CALayerDelegate)
-
+@protocol CALayerDelegate
 - (void)displayLayer:(CALayer *)layer;
 - (void)drawLayer:(CALayer *)layer inContext:(CGContextRef)context;
-
+- (void)layoutSublayersOfLayer:(CALayer *)layer;
+- (id<CAAction>)actionForLayer:(CALayer *)layer forKey:(NSString *)key;
 @end

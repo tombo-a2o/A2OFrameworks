@@ -9,6 +9,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "CAAnimation+Private.h"
+
 NSString * const kCAFilterLinear=@"linear";
 NSString * const kCAFilterNearest=@"nearest";
 NSString * const kCAFilterTrilinear=@"trilinear";
@@ -34,6 +36,9 @@ NSString * const kCATransition = @"transition";
     CGImageRef _imageRef;
     GLuint _textureId;
     BOOL _flipTexture;
+    NSMutableArray *_implicitAnimations;
+    CALayer *_presentationLayer;
+    CALayer *_modelLayer;
 }
 
 +layer {
@@ -87,13 +92,14 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)setPosition:(CGPoint)value {
-   CAAnimation *animation=[self animationForKey:@"position"];
+   CAAnimation *animation = [self animationForKey:@"position"];
 
-   if(animation==nil && ![CATransaction disableActions]){
-       id action=[self actionForKey:@"position"];
+   if(animation == nil && ![CATransaction disableActions]){
+       id action = [self actionForKey:@"position"];
 
-       if(action!=nil)
-           [self addAnimation:action forKey:@"position"];
+       if(action != nil) {
+           [action runActionForKey:@"position" object:self arguments:nil];
+       }
    }
 
    _position=value;
@@ -104,14 +110,15 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)setBounds:(CGRect)value {
-   CAAnimation *animation=[self animationForKey:@"bounds"];
+   CAAnimation *animation = [self animationForKey:@"bounds"];
 
-   if(animation==nil && ![CATransaction disableActions]){
-       id action=[self actionForKey:@"bounds"];
+   if(animation == nil && ![CATransaction disableActions]){
+       id action = [self actionForKey:@"bounds"];
 
-       if(action!=nil)
-           [self addAnimation:action forKey:@"bounds"];
-   }
+       if(action!=nil) {
+           [action runActionForKey:@"bounds" object:self arguments:nil];
+       }
+   } 
 
    if(_bounds.size.width != value.size.width || _bounds.size.height != value.size.height) {
        [self setNeedsLayout];
@@ -153,13 +160,14 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)setOpacity:(float)value {
-   CAAnimation *animation=[self animationForKey:@"opacity"];
+   CAAnimation *animation = [self animationForKey:@"opacity"];
 
-   if(animation==nil && ![CATransaction disableActions]){
-       id action=[self actionForKey:@"opacity"];
+   if(animation == nil && ![CATransaction disableActions]){
+       id action = [self actionForKey:@"opacity"];
 
-       if(action!=nil)
-           [self addAnimation:action forKey:@"opacity"];
+       if(action != nil) {
+           [action runActionForKey:@"opacity" object:self arguments:nil];
+       }
    }
 
    _opacity=value;
@@ -234,6 +242,7 @@ NSString * const kCATransition = @"transition";
     _minificationFilter=kCAFilterLinear;
     _magnificationFilter=kCAFilterLinear;
     _animations=[[NSMutableDictionary alloc] init];
+    _implicitAnimations = [[NSMutableArray alloc] init];
     _needsDisplay = YES;
     _needsLayout = YES;
     _textureId = 0;
@@ -242,12 +251,52 @@ NSString * const kCATransition = @"transition";
     return self;
 }
 
+-(id)initWithLayer:(id)layer_
+{
+    self = [super init];
+    CALayer *layer = layer_;
+    _superlayer = nil;
+    _sublayers = nil;
+    _delegate = layer.delegate;
+    _anchorPoint = layer.anchorPoint;
+    _position = layer.position;
+    _bounds = layer.bounds;
+    _opacity = layer.opacity;
+    _opaque = layer.opaque;
+    _contents = [layer.contents retain];
+    _transform = layer.transform;
+    _sublayerTransform = layer.sublayerTransform;
+    _minificationFilter = layer.minificationFilter;
+    _magnificationFilter = layer.magnificationFilter;
+    _autoresizingMask = layer.autoresizingMask;
+    _cornerRadius = layer.cornerRadius;
+    _layoutManager = layer.layoutManager;
+    _zPosition = layer.zPosition;
+    _masksToBounds = layer.masksToBounds;
+    _hidden = layer.isHidden;
+    _backgroundColor = layer.backgroundColor;
+    _contentsGravity = layer.contentsGravity;
+    _contentsCenter = layer.contentsCenter;
+    _contentsScale = layer.contentsScale;
+    _borderWidth = layer.borderWidth;
+    _borderColor = layer.borderColor;
+    _animations = [layer->_animations mutableCopy];
+    _implicitAnimations = [layer->_implicitAnimations mutableCopy];
+    _needsDisplay = YES;
+    _needsLayout = YES;
+    _textureId = layer->_textureId;
+    _imageRef = layer->_imageRef;
+    _flipTexture = layer->_flipTexture;
+    return self;
+}
+
 -(void)dealloc {
-    [self _setTextureId:0]; // delete texture
+    if(!_modelLayer) [self _setTextureId:0]; // delete texture unless self is presentationLayer
     [self setContents:nil]; // release contents
     [_sublayers makeObjectsPerformSelector:@selector(_setSuperLayer:) withObject:nil];
     [_sublayers release];
     [_animations release];
+    [_implicitAnimations release];
     [_minificationFilter release];
     [_magnificationFilter release];
     [super dealloc];
@@ -389,9 +438,13 @@ NSString * const kCATransition = @"transition";
     if(_context==nil)
         return;
     
-    key = key ?: [NSNull null];
-
-    [_animations setObject:animation forKey:key];
+    animation.delegate = self;
+    
+    if(key) {
+        [_animations setObject:animation forKey:key];
+    } else {
+        [_implicitAnimations addObject:animation];
+    }
 }
 
 -(CAAnimation *)animationForKey:(NSString *)key {
@@ -400,6 +453,7 @@ NSString * const kCATransition = @"transition";
 
 -(void)removeAllAnimations {
     [_animations removeAllObjects];
+    [_implicitAnimations removeAllObjects];
 }
 
 -(void)removeAnimationForKey:(NSString *)key {
@@ -410,25 +464,58 @@ NSString * const kCATransition = @"transition";
     return [_animations allKeys];
 }
 
--valueForKey:(NSString *)key {
-    // FIXME: KVC appears broken for structs
-
-    if([key isEqualToString:@"bounds"])
-        return [NSValue valueWithRect:_bounds];
-    if([key isEqualToString:@"frame"])
-        return [NSValue valueWithRect:[self frame]];
-    if([key isEqualToString:@"transform"])
-        return [NSValue valueWithCATransform3D:[self transform]];
-
-    return [super valueForKey:key];
-}
+// -valueForKey:(NSString *)key {
+//     // FIXME: KVC appears broken for structs
+// 
+//     if([key isEqualToString:@"bounds"])
+//         return [NSValue valueWithRect:_bounds];
+//     if([key isEqualToString:@"frame"])
+//         return [NSValue valueWithRect:[self frame]];
+//     if([key isEqualToString:@"transform"])
+//         return [NSValue valueWithCATransform3D:[self transform]];
+// 
+//     return [super valueForKey:key];
+// }
 
 -(id <CAAction>)actionForKey:(NSString *)key {
-   CABasicAnimation *basic=[CABasicAnimation animationWithKeyPath:key];
+    id action = nil;
+    if([_delegate respondsToSelector:@selector(actionForLayer:forKey:)]) {
+        action = [_delegate actionForLayer:self forKey:key];
+    }
+    if(action) return [action isEqual:[NSNull null]] ? nil : action;
+    
+    action = [self.actions objectForKey:key];
+    if(action) return [action isEqual:[NSNull null]] ? nil : action;
+    
+    NSDictionary *style = self.style;
+    while(style) {
+        NSDictionary *actions = [style objectForKey:@"actions"];
+        action = [actions objectForKey:key];
+        if(action) return [action isEqual:[NSNull null]] ? nil : action;
+        
+        style = [style objectForKey:@"style"];
+    }
+    
+    CABasicAnimation *basic=[CABasicAnimation animationWithKeyPath:key];
 
-   [basic setFromValue:[self valueForKey:key]];
+    [basic setFromValue:[self valueForKey:key]];
 
-   return basic;
+    return basic;
+}
+
+- (NSDictionary*)actions
+{
+    return nil;
+}
+
++ (id<CAAction>)defaultActionForKey:(NSString *)key
+{
+    return nil;
+}
+
+- (NSDictionary*)style
+{
+    return nil;
 }
 
 -(GLuint)_textureId {
@@ -436,7 +523,6 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)_setTextureId:(GLuint)value {
-	//NSLog(@"%s %d -> %d", __FUNCTION__, _textureId, value);
 	if(_textureId) {
 		glDeleteTextures(1, &_textureId);
 	}
@@ -536,7 +622,11 @@ NSString * const kCATransition = @"transition";
 }
 
 - (id)presentationLayer {
-    assert(0);
+    return _presentationLayer;
+}
+
+- (id)modelLayer {
+    return _modelLayer;
 }
 
 -(NSString*)description {
@@ -547,5 +637,60 @@ NSString * const kCATransition = @"transition";
     return _flipTexture;
 }
 
+-(void)_generatePresentationLayer {
+    [_presentationLayer release];
+    _presentationLayer = [[[self class] alloc] initWithLayer:self];
+    assert(_presentationLayer);
+    _presentationLayer->_modelLayer = self;
+    NSMutableArray *sublayers = [NSMutableArray array];
+    for(CALayer *child in self.sublayers) {
+        [child _generatePresentationLayer];
+        [sublayers addObject:child.presentationLayer];
+    }
+    _presentationLayer.sublayers = sublayers;
+}
+
+-(void)_updateAnimations:(CFTimeInterval)currentTime {
+    if(_modelLayer) return; // return self is presentationLayer
+    
+    for(NSString *key in self.animationKeys){
+        CAAnimation *animation = [self animationForKey:key];
+        
+        [animation _updateTime:currentTime];
+        
+        if([animation _isFinished] && animation.isRemovedOnCompletion){
+            [self removeAnimationForKey:key];
+            [animation.delegate release];
+        }
+    }
+    
+    NSArray *implicitAnimations = [NSArray arrayWithArray:_implicitAnimations];
+    for(CAAnimation *animation in implicitAnimations) {
+        [animation _updateTime:currentTime];
+            
+        if([animation _isFinished] && animation.isRemovedOnCompletion){
+            [_implicitAnimations removeObject:animation];
+            [animation.delegate release];
+        }
+    }
+    
+    for(CALayer *child in self.sublayers) {
+        [child _updateAnimations:currentTime];
+    }
+}
+
+-(NSArray*)_zOrderedSublayers {
+    return [_sublayers sortedArrayUsingComparator:^(CALayer *l1, CALayer *l2) {
+        CGFloat z1 = l1.zPosition;
+        CGFloat z2 = l2.zPosition;
+        if(z1 > z2) {
+            return NSOrderedDescending;
+        } else if(z1 < z2) {
+            return NSOrderedAscending;
+        } else {
+            return NSOrderedSame;
+        }
+    }];
+}
 
 @end
