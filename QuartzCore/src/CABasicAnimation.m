@@ -36,24 +36,21 @@
    _byValue=value;
 }
 
-- (void)runActionForKey:(NSString *)key object:(id)object arguments:(NSDictionary *)dict {
-    [super runActionForKey:key object:object arguments:dict];
-    
-    CALayer *layer = (CALayer*)object;
-    if(!_toValue && !_fromValue) {
-        _fromValue = [layer.presentationLayer valueForKey:_keyPath];
-        _toValue = [layer valueForKey:_keyPath];
-    } else if(!_toValue) {
-        _toValue = [layer valueForKey:_keyPath];
-    } else if(!_fromValue) {
-        _fromValue = [layer valueForKey:_keyPath];
-    }
-}
-
 -(void)_updateTime:(CFTimeInterval)currentTime {
     [super _updateTime:currentTime];
     
     CALayer *layer = (CALayer*)self.delegate;
+
+    if(!_toValue && !_fromValue) {
+        // not correct
+        _fromValue = [[layer.presentationLayer valueForKey:_keyPath] retain];
+        _toValue = [[layer valueForKey:_keyPath] retain];
+    } else if(!_toValue) {
+        _toValue = [[layer valueForKey:_keyPath] retain];
+    } else if(!_fromValue) {
+        _fromValue = [[layer valueForKey:_keyPath] retain];
+    }
+    
     NSValue *currentValue = [layer valueForKeyPath:_keyPath];
     NSValue *newValue = [self _interpolate:[self _scale] withType:currentValue.objCType];
     [layer.presentationLayer setValue:newValue forKeyPath:_keyPath];

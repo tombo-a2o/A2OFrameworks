@@ -307,7 +307,7 @@ static void generateTransparentTexture() {
 }
 
 -(void)_renderLayer:(CALayer *)layer z:(float)z currentTime:(CFTimeInterval)currentTime transform:(CGAffineTransform)transform {
-    NSLog(@"CARenderer: renderLayer %@ b:%@ f:%@ %f", layer, NSStringFromRect(layer.bounds), NSStringFromRect(layer.frame), z);
+    //NSLog(@"CARenderer: renderLayer %@ b:%@ f:%@ %f", layer, NSStringFromRect(layer.bounds), NSStringFromRect(layer.frame), z);
     if(layer.isHidden) return;
 
     [layer displayIfNeeded];
@@ -322,10 +322,10 @@ static void generateTransparentTexture() {
     }
 
     //NSLog(@"texture %d", texture);
-    CGImageRef image = interpolateImageInLayerKey(layer,@"contents",currentTime);
+    CGImageRef image = layer.contents; //interpolateImageInLayerKey(layer,@"contents",currentTime);
 
-    if(loadPixelData || [layer _imageRef] != image){
-        [layer _setImageRef: image];
+    if(loadPixelData /*|| [layer _imageRef] != image*/){
+        //[layer _setImageRef: image];
 
         if(!texture) {
             glGenTextures(1, &texture);
@@ -434,7 +434,6 @@ static void generateTransparentTexture() {
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-    assert(layer.presentationLayer);
     for(CALayer *child in [layer.presentationLayer _zOrderedSublayers]) {
         [self _renderLayer:child.modelLayer z:z+1 currentTime:currentTime transform:t];
     }

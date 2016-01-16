@@ -263,7 +263,7 @@ NSString * const kCATransition = @"transition";
     _bounds = layer.bounds;
     _opacity = layer.opacity;
     _opaque = layer.opaque;
-    _contents = layer.contents;
+    _contents = [layer.contents retain];
     _transform = layer.transform;
     _sublayerTransform = layer.sublayerTransform;
     _minificationFilter = layer.minificationFilter;
@@ -291,7 +291,7 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)dealloc {
-    [self _setTextureId:0]; // delete texture
+    if(!_modelLayer) [self _setTextureId:0]; // delete texture unless self is presentationLayer
     [self setContents:nil]; // release contents
     [_sublayers makeObjectsPerformSelector:@selector(_setSuperLayer:) withObject:nil];
     [_sublayers release];
@@ -464,18 +464,18 @@ NSString * const kCATransition = @"transition";
     return [_animations allKeys];
 }
 
--valueForKey:(NSString *)key {
-    // FIXME: KVC appears broken for structs
-
-    if([key isEqualToString:@"bounds"])
-        return [NSValue valueWithRect:_bounds];
-    if([key isEqualToString:@"frame"])
-        return [NSValue valueWithRect:[self frame]];
-    if([key isEqualToString:@"transform"])
-        return [NSValue valueWithCATransform3D:[self transform]];
-
-    return [super valueForKey:key];
-}
+// -valueForKey:(NSString *)key {
+//     // FIXME: KVC appears broken for structs
+// 
+//     if([key isEqualToString:@"bounds"])
+//         return [NSValue valueWithRect:_bounds];
+//     if([key isEqualToString:@"frame"])
+//         return [NSValue valueWithRect:[self frame]];
+//     if([key isEqualToString:@"transform"])
+//         return [NSValue valueWithCATransform3D:[self transform]];
+// 
+//     return [super valueForKey:key];
+// }
 
 -(id <CAAction>)actionForKey:(NSString *)key {
     id action = nil;
@@ -523,7 +523,6 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)_setTextureId:(GLuint)value {
-	//NSLog(@"%s %d -> %d", __FUNCTION__, _textureId, value);
 	if(_textureId) {
 		glDeleteTextures(1, &_textureId);
 	}
@@ -639,18 +638,16 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)_generatePresentationLayer {
-    if(!_presentationLayer) {
-        _presentationLayer = [[[self class] alloc] initWithLayer:self];
-        assert(_presentationLayer);
-        _presentationLayer->_modelLayer = self;
-    }
+    [_presentationLayer release];
+    _presentationLayer = [[[self class] alloc] initWithLayer:self];
+    assert(_presentationLayer);
+    _presentationLayer->_modelLayer = self;
     NSMutableArray *sublayers = [NSMutableArray array];
     for(CALayer *child in self.sublayers) {
         [child _generatePresentationLayer];
         [sublayers addObject:child.presentationLayer];
     }
     _presentationLayer.sublayers = sublayers;
-//    NSLog(@"%s %@ %@ %@ %@", __FUNCTION__, self, self.sublayers, sublayers, _presentationLayer.sublayers);
 }
 
 -(void)_updateAnimations:(CFTimeInterval)currentTime {
@@ -683,7 +680,7 @@ NSString * const kCATransition = @"transition";
 }
 
 -(NSArray*)_zOrderedSublayers {
-    NSArray *arr = [_sublayers sortedArrayUsingComparator:^(CALayer *l1, CALayer *l2) {
+    return [_sublayers sortedArrayUsingComparator:^(CALayer *l1, CALayer *l2) {
         CGFloat z1 = l1.zPosition;
         CGFloat z2 = l2.zPosition;
         if(z1 > z2) {
@@ -694,8 +691,6 @@ NSString * const kCATransition = @"transition";
             return NSOrderedSame;
         }
     }];
-    //NSLog(@"%s %@ %@", __FUNCTION__, self, arr);
-    return arr;
 }
 
 @end
