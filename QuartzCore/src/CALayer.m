@@ -92,13 +92,14 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)setPosition:(CGPoint)value {
-   CAAnimation *animation=[self animationForKey:@"position"];
+   CAAnimation *animation = [self animationForKey:@"position"];
 
-   if(animation==nil && ![CATransaction disableActions]){
-       id action=[self actionForKey:@"position"];
+   if(animation == nil && ![CATransaction disableActions]){
+       id action = [self actionForKey:@"position"];
 
-       if(action!=nil)
-           [self addAnimation:action forKey:@"position"];
+       if(action != nil) {
+           [action runActionForKey:@"position" object:self arguments:nil];
+       }
    }
 
    _position=value;
@@ -109,14 +110,15 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)setBounds:(CGRect)value {
-   CAAnimation *animation=[self animationForKey:@"bounds"];
+   CAAnimation *animation = [self animationForKey:@"bounds"];
 
-   if(animation==nil && ![CATransaction disableActions]){
-       id action=[self actionForKey:@"bounds"];
+   if(animation == nil && ![CATransaction disableActions]){
+       id action = [self actionForKey:@"bounds"];
 
-       if(action!=nil)
-           [self addAnimation:action forKey:@"bounds"];
-   }
+       if(action!=nil) {
+           [action runActionForKey:@"bounds" object:self arguments:nil];
+       }
+   } 
 
    if(_bounds.size.width != value.size.width || _bounds.size.height != value.size.height) {
        [self setNeedsLayout];
@@ -158,13 +160,14 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)setOpacity:(float)value {
-   CAAnimation *animation=[self animationForKey:@"opacity"];
+   CAAnimation *animation = [self animationForKey:@"opacity"];
 
-   if(animation==nil && ![CATransaction disableActions]){
-       id action=[self actionForKey:@"opacity"];
+   if(animation == nil && ![CATransaction disableActions]){
+       id action = [self actionForKey:@"opacity"];
 
-       if(action!=nil)
-           [self addAnimation:action forKey:@"opacity"];
+       if(action != nil) {
+           [action runActionForKey:@"opacity" object:self arguments:nil];
+       }
    }
 
    _opacity=value;
@@ -422,6 +425,8 @@ NSString * const kCATransition = @"transition";
     if(_context==nil)
         return;
     
+    animation.delegate = self;
+    
     if(key) {
         [_animations setObject:animation forKey:key];
     } else {
@@ -634,50 +639,25 @@ NSString * const kCATransition = @"transition";
     
     for(NSString *key in self.animationKeys){
         CAAnimation *animation = [self animationForKey:key];
-        if([animation beginTime]==0.0) {
-            animation.beginTime = currentTime;
-        }
         
-        [animation _updateCurrentTime:currentTime];
-        
-        if([animation isKindOfClass:[CABasicAnimation class]]) {
-            CABasicAnimation *basicAnim = (CABasicAnimation*)animation;
-            if(!basicAnim.toValue) basicAnim.toValue = [self valueForKey:basicAnim.keyPath];
-        }
-        if([animation isKindOfClass:[CAPropertyAnimation class]]) {
-            [(CAPropertyAnimation*)animation _updateProperty:layer];
-        }
+        [animation _updateTime:currentTime];
         
         if([animation _isFinished] && animation.isRemovedOnCompletion){
             [self removeAnimationForKey:key];
+            [animation.delegate release];
         }
     }
     
     NSArray *implicitAnimations = [_implicitAnimations copy];
     for(CAAnimation *animation in implicitAnimations) {
-        if([animation beginTime]==0.0)
-            [animation setBeginTime:currentTime];
-
-        [animation _updateCurrentTime:currentTime];
+        [animation _updateTime:currentTime];
             
-        if([animation isKindOfClass:[CABasicAnimation class]]) {
-            CABasicAnimation *basicAnim = (CABasicAnimation*)animation;
-            if(!basicAnim.toValue) basicAnim.toValue = [self valueForKey:basicAnim.keyPath];
-        }
-        if([animation isKindOfClass:[CAPropertyAnimation class]]) {
-            [(CAPropertyAnimation*)animation _updateProperty:layer];
-        }
-        
         if([animation _isFinished] && animation.isRemovedOnCompletion){
             [_implicitAnimations removeObject:animation];
+            [animation.delegate release];
         }
     }
     
-    // if(_presentationLayer && [_animations count] == 0 && [_implicitAnimations count] == 0) {
-    //     [_presentationLayer release];
-    //     _presentationLayer = nil;
-    // }
-
     for(CALayer *child in self.sublayers) {
         [child _updateAnimations:currentTime];
     }

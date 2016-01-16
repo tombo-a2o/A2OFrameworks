@@ -1,5 +1,8 @@
 #import <QuartzCore/CAAnimation.h>
 #import <QuartzCore/CATransform3D.h>
+#import <QuartzCore/CALayer.h>
+#import "CAAnimation+Private.h"
+#import <UIKit/UIGeometry.h>
 
 @implementation CABasicAnimation
 
@@ -31,6 +34,48 @@
    value=[value retain];
    [_byValue release];
    _byValue=value;
+}
+
+- (void)runActionForKey:(NSString *)key object:(id)object arguments:(NSDictionary *)dict {
+    [super runActionForKey:key object:object arguments:dict];
+    
+    CALayer *layer = (CALayer*)object;
+    if(!_toValue && !_fromValue) {
+        _fromValue = [layer.presentationLayer valueForKey:_keyPath];
+        _toValue = [layer valueForKey:_keyPath];
+    } else if(!_toValue) {
+        _toValue = [layer valueForKey:_keyPath];
+    } else if(!_fromValue) {
+        _fromValue = [layer valueForKey:_keyPath];
+    }
+}
+
+-(void)_updateTime:(CFTimeInterval)currentTime {
+    [super _updateTime:currentTime];
+    
+    CALayer *layer = (CALayer*)self.delegate;
+    NSValue *currentValue = [layer valueForKeyPath:_keyPath];
+    NSValue *newValue = [self _interpolate:[self _scale] withType:currentValue.objCType];
+    [layer.presentationLayer setValue:newValue forKeyPath:_keyPath];
+}
+
+-(NSValue*)_interpolate:(float)scale withType:(const char*)type
+{
+    if(strcmp(type, @encode(CGFloat)) == 0) {
+        return [NSNumber numberWithFloat:[self _interpolateFloat:scale]];
+    } else if(strcmp(type, @encode(CATransform3D)) == 0) {
+        return [NSValue valueWithCATransform3D:[self _interpolateTransform3D:scale]];
+    } else if(strcmp(type, @encode(CGAffineTransform)) == 0) {
+        return [NSValue valueWithCGAffineTransform:[self _interpolateAffineTransform:scale]];
+    } else if(strcmp(type, @encode(CGPoint)) == 0) {
+        return [NSValue valueWithCGPoint:[self _interpolatePoint:scale]];
+    } else if(strcmp(type, @encode(CGSize)) == 0) {
+        return [NSValue valueWithCGSize:[self _interpolateSize:scale]];
+    } else if(strcmp(type, @encode(CGRect)) == 0) {
+        return [NSValue valueWithCGRect:[self _interpolateRect:scale]];
+    } else {
+        NSAssert(0, @"%s unimplemented type: %s", __FUNCTION__, type);
+    }
 }
 
 -(CGFloat)_interpolateFloat:(float)scale

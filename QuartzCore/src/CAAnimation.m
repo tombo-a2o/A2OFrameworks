@@ -1,5 +1,6 @@
 #import <QuartzCore/CAAnimation.h>
 #import <QuartzCore/CATransaction.h>
+#import <QuartzCore/CALayer.h>
 #import <AppKit/NSRaise.h>
 
 #import "CAMediaTimingFunction+Private.h"
@@ -140,7 +141,19 @@ NSString *const kCATransitionFromBottom = @"bottom";
    _timeOffset=value;
 }
 
--(void)_updateCurrentTime:(CFTimeInterval)currentTime {
+- (void)runActionForKey:(NSString *)key object:(id)object arguments:(NSDictionary *)dict {
+    CALayer *layer = (CALayer*)object;
+    
+    [layer addAnimation:self forKey:key];
+}
+
+-(void)_updateTime:(CFTimeInterval)currentTime {
+    assert(_currentTime < currentTime);
+    
+    if(_beginTime == 0.0) {
+        _beginTime = currentTime;
+    }
+    
     _currentTime = currentTime;
     [self _updateScale];
 }
