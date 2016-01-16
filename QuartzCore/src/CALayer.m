@@ -253,9 +253,10 @@ NSString * const kCATransition = @"transition";
 
 -(id)initWithLayer:(id)layer_
 {
+    self = [super init];
     CALayer *layer = layer_;
-    _superlayer = layer.superlayer;
-    _sublayers = [layer.sublayers mutableCopy];
+    _superlayer = nil;
+    _sublayers = nil;
     _delegate = layer.delegate;
     _anchorPoint = layer.anchorPoint;
     _position = layer.position;
@@ -267,6 +268,18 @@ NSString * const kCATransition = @"transition";
     _sublayerTransform = layer.sublayerTransform;
     _minificationFilter = layer.minificationFilter;
     _magnificationFilter = layer.magnificationFilter;
+    _autoresizingMask = layer.autoresizingMask;
+    _cornerRadius = layer.cornerRadius;
+    _layoutManager = layer.layoutManager;
+    _zPosition = layer.zPosition;
+    _masksToBounds = layer.masksToBounds;
+    _hidden = layer.isHidden;
+    _backgroundColor = layer.backgroundColor;
+    _contentsGravity = layer.contentsGravity;
+    _contentsCenter = layer.contentsCenter;
+    _contentsScale = layer.contentsScale;
+    _borderWidth = layer.borderWidth;
+    _borderColor = layer.borderColor;
     _animations = [layer->_animations mutableCopy];
     _implicitAnimations = [layer->_implicitAnimations mutableCopy];
     _needsDisplay = YES;
@@ -613,6 +626,10 @@ NSString * const kCATransition = @"transition";
     return _presentationLayer;
 }
 
+- (id)modelLayer {
+    return _modelLayer;
+}
+
 -(NSString*)description {
     return [NSString stringWithFormat:@"<%@: %p>", [self class], self];
 }
@@ -621,21 +638,23 @@ NSString * const kCATransition = @"transition";
     return _flipTexture;
 }
 
--(id)_generatePresentationLayer {
+-(void)_generatePresentationLayer {
     if(!_presentationLayer) {
         _presentationLayer = [[[self class] alloc] initWithLayer:self];
-        //_presentationLayer.sublayers = 
-        //_presentationLayer.mask = 
-        _presentationLayer->_superlayer = self.superlayer.presentationLayer;
+        assert(_presentationLayer);
         _presentationLayer->_modelLayer = self;
     }
-    return _presentationLayer;
+    NSMutableArray *sublayers = [NSMutableArray array];
+    for(CALayer *child in self.sublayers) {
+        [child _generatePresentationLayer];
+        [sublayers addObject:child.presentationLayer];
+    }
+    _presentationLayer.sublayers = sublayers;
+//    NSLog(@"%s %@ %@ %@ %@", __FUNCTION__, self, self.sublayers, sublayers, _presentationLayer.sublayers);
 }
 
 -(void)_updateAnimations:(CFTimeInterval)currentTime {
     if(_modelLayer) return; // return self is presentationLayer
-    
-    CALayer *layer = [self _generatePresentationLayer];
     
     for(NSString *key in self.animationKeys){
         CAAnimation *animation = [self animationForKey:key];
@@ -662,4 +681,21 @@ NSString * const kCATransition = @"transition";
         [child _updateAnimations:currentTime];
     }
 }
+
+-(NSArray*)_zOrderedSublayers {
+    NSArray *arr = [_sublayers sortedArrayUsingComparator:^(CALayer *l1, CALayer *l2) {
+        CGFloat z1 = l1.zPosition;
+        CGFloat z2 = l2.zPosition;
+        if(z1 > z2) {
+            return NSOrderedDescending;
+        } else if(z1 < z2) {
+            return NSOrderedAscending;
+        } else {
+            return NSOrderedSame;
+        }
+    }];
+    //NSLog(@"%s %@ %@", __FUNCTION__, self, arr);
+    return arr;
+}
+
 @end

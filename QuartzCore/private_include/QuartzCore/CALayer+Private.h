@@ -11,4 +11,6 @@
 -(CGFloat)textureSize;
 -(BOOL)_flipTexture;
 -(void)_updateAnimations:(CFTimeInterval)currentTime;
+-(void)_generatePresentationLayer;
+-(NSArray*)_zOrderedSublayers;
 @end
