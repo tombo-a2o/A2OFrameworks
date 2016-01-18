@@ -139,55 +139,6 @@ static const char *fragmentShaderSource =
    return [[[self alloc] initWithEAGLContext:eaglContext options:options] autorelease];
 }
 
-static float mediaTimingScale(CAAnimation *animation,CFTimeInterval currentTime){
-    CFTimeInterval begin=[animation beginTime];
-    CFTimeInterval duration=[animation duration];
-    CFTimeInterval delta=currentTime-begin;
-    BOOL autoreverses = [animation autoreverses];
-    
-    double zeroToOne=delta/duration;
-    int count = (int)zeroToOne;
-    zeroToOne -= count;
-    if(autoreverses && (count % 2) == 1) {
-        zeroToOne = 1 - zeroToOne;
-    }
-    CAMediaTimingFunction *function=[animation timingFunction];
-
-    if(function==nil)
-        function=[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionDefault];
-
-    return [function _solveYFor:zeroToOne];
-}
-
-static CGImageRef interpolateImageInLayerKey(CALayer *layer,NSString *key,CFTimeInterval currentTime){
-    CAAnimation *animation=[layer animationForKey:key];
-
-    if(animation==nil){
-        return [layer valueForKey:key];
-    }
-
-    if([animation isKindOfClass:[CAKeyframeAnimation class]]){
-        CAKeyframeAnimation *basic=(CAKeyframeAnimation *)animation;
-        NSMutableArray* images = basic.values;
-
-        int fromValue=0;
-        int toValue=[images count];
-
-		float fromFloat=0;
-		float toFloat=(float)toValue;
-
-		float        resultFloat;
-		double timingScale=mediaTimingScale(animation,currentTime);
-
-		resultFloat=fromFloat+(toFloat-fromFloat)*timingScale;
-        int resultInt = resultFloat;
-
-		return [images objectAtIndex: resultInt];
-    }
-
-    return nil;
-}
-
 static GLint interpolationFromName(NSString *name){
     if(name==kCAFilterLinear)
         return GL_LINEAR;
@@ -320,7 +271,7 @@ static void generateTransparentTexture() {
     }
 
     //NSLog(@"texture %d", texture);
-    CGImageRef image = layer.contents;
+    id image = layer.contents;
 
     if(loadPixelData){
         if(!texture) {
@@ -331,9 +282,9 @@ static void generateTransparentTexture() {
 
         if(image) {
             if([image isKindOfClass: NSClassFromString(@"O2BitmapContext")]) {
-                CATexImage2DCGBitmapContext(image);
+                CATexImage2DCGBitmapContext((CGContextRef)image);
             } else if([image isKindOfClass: NSClassFromString(@"O2Image")]){
-                CATexImage2DCGImage(image);
+                CATexImage2DCGImage((CGImageRef)image);
             }
 #warning TODO use POT texture
             // Force linear interpolation due to WebGL npot texture limitation

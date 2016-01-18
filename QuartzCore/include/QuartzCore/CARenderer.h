@@ -16,8 +16,6 @@
 
 + (CARenderer *)rendererWithEAGLContext:(void *)eaglContext options:(NSDictionary *)options;
 
-- (void)beginFrameAtTime:(CFTimeInterval)currentTime timeStamp:(/*CVTimeStamp*/void *)timeStamp;
-
 - (void)render;
 
 - (void)endFrame;
