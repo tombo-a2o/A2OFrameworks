@@ -6,8 +6,6 @@
 -(void)_setContext:(CALayerContext *)context;
 -(void)_setTextureId:(GLuint)value;
 -(GLuint)_textureId;
--(void)_setImageRef:(CGImageRef)value;
--(CGImageRef)_imageRef;
 -(CGFloat)textureSize;
 -(BOOL)_flipTexture;
 -(void)_updateAnimations:(CFTimeInterval)currentTime;

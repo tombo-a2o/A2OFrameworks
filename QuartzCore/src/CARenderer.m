@@ -320,11 +320,9 @@ static void generateTransparentTexture() {
     }
 
     //NSLog(@"texture %d", texture);
-    CGImageRef image = layer.contents; //interpolateImageInLayerKey(layer,@"contents",currentTime);
+    CGImageRef image = layer.contents;
 
-    if(loadPixelData /*|| [layer _imageRef] != image*/){
-        //[layer _setImageRef: image];
-
+    if(loadPixelData){
         if(!texture) {
             glGenTextures(1, &texture);
             [layer _setTextureId:texture];

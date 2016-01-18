@@ -33,7 +33,6 @@ NSString * const kCAOnOrderOut = @"onOrderOut";
 NSString * const kCATransition = @"transition";
 
 @implementation CALayer {
-    CGImageRef _imageRef;
     GLuint _textureId;
     BOOL _flipTexture;
     NSMutableArray *_implicitAnimations;
@@ -249,7 +248,6 @@ NSString * const kCATransition = @"transition";
     _needsDisplay = YES;
     _needsLayout = YES;
     _textureId = 0;
-    _imageRef = nil;
     _flipTexture = NO;
     return self;
 }
@@ -288,7 +286,6 @@ NSString * const kCATransition = @"transition";
     _needsDisplay = YES;
     _needsLayout = YES;
     _textureId = layer->_textureId;
-    _imageRef = layer->_imageRef;
     _flipTexture = layer->_flipTexture;
     return self;
 }
@@ -530,14 +527,6 @@ NSString * const kCATransition = @"transition";
 		glDeleteTextures(1, &_textureId);
 	}
 	_textureId = value;
-}
-
--(CGImageRef)_imageRef{
-    return _imageRef;
-}
-
--(void)_setImageRef:(CGImageRef)value {
-    _imageRef = value;
 }
 
 - (BOOL)needsLayout {
