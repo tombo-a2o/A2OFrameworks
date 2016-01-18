@@ -310,8 +310,6 @@ static void generateTransparentTexture() {
     //NSLog(@"CARenderer: renderLayer %@ b:%@ f:%@ %f", layer, NSStringFromRect(layer.bounds), NSStringFromRect(layer.frame), z);
     if(layer.isHidden) return;
 
-    [layer displayIfNeeded];
-
     GLuint texture = [layer _textureId];
     GLboolean loadPixelData = GL_FALSE;
 
@@ -363,7 +361,7 @@ static void generateTransparentTexture() {
         }
     }
 
-    CALayer *l = layer.presentationLayer;
+    CALayer *l = layer;
     
     CGPoint anchorPoint = l.anchorPoint;
     CGPoint position = l.position;
@@ -434,8 +432,15 @@ static void generateTransparentTexture() {
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-    for(CALayer *child in [layer.presentationLayer _zOrderedSublayers]) {
-        [self _renderLayer:child.modelLayer z:z+1 transform:t];
+    for(CALayer *child in [layer _zOrderedSublayers]) {
+        [self _renderLayer:child z:z+1 transform:t];
+    }
+}
+
+static void displayTree(CALayer *layer) {
+    [layer displayIfNeeded];
+    for(CALayer *child in layer.sublayers) {
+        displayTree(child);
     }
 }
 
@@ -453,9 +458,10 @@ static void generateTransparentTexture() {
 
     // fprintf(stderr, "bounds %f %f\n",_bounds.size.width, _bounds.size.height);
     CGAffineTransform projection = CGAffineTransformMake(2.0/_bounds.size.width, 0, 0, -2.0/_bounds.size.height, -1.0, 1.0);
+    displayTree(_rootLayer);
     [_rootLayer _generatePresentationLayer];
     [_rootLayer _updateAnimations:CACurrentMediaTime()];
-    [self _renderLayer:_rootLayer z:0 transform:projection];
+    [self _renderLayer:_rootLayer.presentationLayer z:0 transform:projection];
 
     glUseProgram(0);
 

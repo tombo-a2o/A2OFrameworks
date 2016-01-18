@@ -186,9 +186,12 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)setContents:(id)value {
-    value=[value retain];
-    [_contents release];
-    _contents=value;
+    if(_contents != value) {
+        value = [value retain];
+        [_contents release];
+        _contents=value;
+        [self _setTextureId:0];
+    }
 }
 
 -(CATransform3D)transform {
@@ -523,7 +526,7 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)_setTextureId:(GLuint)value {
-	if(_textureId) {
+	if(_textureId && _modelLayer._textureId != _textureId) {
 		glDeleteTextures(1, &_textureId);
 	}
 	_textureId = value;

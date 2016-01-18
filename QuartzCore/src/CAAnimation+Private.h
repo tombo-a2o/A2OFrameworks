@@ -7,6 +7,8 @@
 @end
 
 @interface CAPropertyAnimation(Rendering)
+-(NSValue*)_interpolate:(NSValue*)x with:(NSValue*)y ratio:(float)ratio;
+-(void)_updateProperty:(id)value;
 @end
 
 @interface CABasicAnimation(Rendering)
