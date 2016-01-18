@@ -438,8 +438,6 @@ NSString * const kCATransition = @"transition";
     if(_context==nil)
         return;
     
-    animation.delegate = self;
-    
     if(key) {
         [_animations setObject:animation forKey:key];
     } else {
@@ -648,7 +646,7 @@ NSString * const kCATransition = @"transition";
     for(NSString *key in self.animationKeys){
         CAAnimation *animation = [self animationForKey:key];
         
-        [animation _updateTime:currentTime];
+        [animation _updateLayer:self currentTime:currentTime];
         
         if([animation _isFinished] && animation.isRemovedOnCompletion){
             [self removeAnimationForKey:key];
@@ -658,7 +656,7 @@ NSString * const kCATransition = @"transition";
     
     NSArray *implicitAnimations = [NSArray arrayWithArray:_implicitAnimations];
     for(CAAnimation *animation in implicitAnimations) {
-        [animation _updateTime:currentTime];
+        [animation _updateLayer:self currentTime:currentTime];
             
         if([animation _isFinished] && animation.isRemovedOnCompletion){
             [_implicitAnimations removeObject:animation];

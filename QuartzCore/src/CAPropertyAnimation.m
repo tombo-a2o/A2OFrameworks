@@ -137,11 +137,7 @@ static CGRect _interpolateRect(CGRect r1, CGRect r2, float ratio)
 }
 
 // calcluate x * (1-ratio) + y * ratio
--(NSValue*)_interpolate:(NSValue*)x with:(NSValue*)y ratio:(float)ratio {
-    CALayer *layer = (CALayer*)self.delegate;
-    NSValue *currentValue = [layer valueForKeyPath:_keyPath];
-    const char* type = currentValue.objCType;
-    
+-(NSValue*)_interpolate:(NSValue*)x with:(NSValue*)y ratio:(float)ratio type:(const char*)type {
     if(strcmp(type, @encode(CGFloat)) == 0) {
         return [NSNumber numberWithFloat:_interpolateFloat([x floatValue], [y floatValue], ratio)];
     } else if(strcmp(type, @encode(CATransform3D)) == 0) {
@@ -158,9 +154,8 @@ static CGRect _interpolateRect(CGRect r1, CGRect r2, float ratio)
     }
 }
 
--(void)_updateProperty:(id)value
+-(void)_updateProperty:(CALayer*)layer withValue:(id)value
 {
-    CALayer *layer = (CALayer*)self.delegate;
     [layer.presentationLayer setValue:value forKeyPath:_keyPath];
 }
 

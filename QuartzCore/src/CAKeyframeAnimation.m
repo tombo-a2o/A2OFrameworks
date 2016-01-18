@@ -12,10 +12,8 @@ NSString * const kCAAnimationCubicPaced = @"kCAAnimationCubicPaced";
 
 @implementation CAKeyframeAnimation
 
--(void)_updateTime:(CFTimeInterval)currentTime {
-    [super _updateTime:currentTime];
-    
-    CALayer *layer = (CALayer*)self.delegate;
+-(void)_updateLayer:(CALayer*)layer currentTime:(CFTimeInterval)currentTime {
+    [super _updateLayer:layer currentTime:currentTime];
     
     if(_path) {
         NSAssert(0, @"path is not implemented");
@@ -46,9 +44,10 @@ NSString * const kCAAnimationCubicPaced = @"kCAAnimationCubicPaced";
                 break;
             }
         }
+        if(!value) value = [_values lastObject];
     }
 
-    [self _updateProperty:value];
+    [self _updateProperty:layer withValue:value];
 }
 
 @end

@@ -35,11 +35,9 @@
    _byValue=value;
 }
 
--(void)_updateTime:(CFTimeInterval)currentTime {
-    [super _updateTime:currentTime];
+-(void)_updateLayer:(CALayer*)layer currentTime:(CFTimeInterval)currentTime {
+    [super _updateLayer:layer currentTime:currentTime];
     
-    CALayer *layer = (CALayer*)self.delegate;
-
     if(!_toValue && !_fromValue) {
         // not correct
         _fromValue = [[layer.presentationLayer valueForKey:_keyPath] retain];
@@ -53,7 +51,10 @@
         NSAssert(0, @"byValue is not implemented");
     }
     
-    [self _updateProperty:[self _interpolate:_fromValue with:_toValue ratio:[self _scale]]];
+    NSValue *currentValue = [layer valueForKeyPath:self.keyPath];
+    const char* type = currentValue.objCType;
+
+    [self _updateProperty:layer withValue:[self _interpolate:_fromValue with:_toValue ratio:[self _scale] type:type]];
 }
 
 @end

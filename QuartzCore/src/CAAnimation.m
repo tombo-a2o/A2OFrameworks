@@ -19,6 +19,7 @@ NSString *const kCATransitionFromBottom = @"bottom";
     float _scale;
     CFTimeInterval _currentTime;
     CFTimeInterval _totalDuration;
+    BOOL _started;
 }
 
 +animation {
@@ -29,6 +30,7 @@ NSString *const kCATransitionFromBottom = @"bottom";
    _duration = [CATransaction animationDuration];
    _timingFunction = [[CATransaction animationTimingFunction] retain];
    _removedOnCompletion = YES;
+   _started = NO;
    [self _updateTotalDuration];
    return self;
 }
@@ -147,7 +149,7 @@ NSString *const kCATransitionFromBottom = @"bottom";
     [layer addAnimation:self forKey:key];
 }
 
--(void)_updateTime:(CFTimeInterval)currentTime {
+-(void)_updateLayer:(CALayer*)layer currentTime:(CFTimeInterval)currentTime {
     assert(_currentTime < currentTime);
     
     if(_beginTime == 0.0) {
@@ -182,9 +184,19 @@ NSString *const kCATransitionFromBottom = @"bottom";
 {
     CFTimeInterval delta = _currentTime - _beginTime;
     
+    if(!_started) {
+        _started = YES;
+        if([self.delegate respondsToSelector:@selector(animationDidStart:)]) {
+            [self.delegate animationDidStart:self];
+        }
+    }
+    
     if(delta > _totalDuration) {
         _scale = 1.0;
         _fillMode = kCAFillModeRemoved;
+        if([self.delegate respondsToSelector:@selector(animationDidStop:finished:)]) {
+            [self.delegate animationDidStop:self finished:YES];
+        }
         return;
     }
     
