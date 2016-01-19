@@ -128,7 +128,7 @@ CA_EXPORT NSString * const kCATransition;
 
 @end
 
-@protocol CALayerDelegate
+@interface NSObject(CALayerDelegate)
 - (void)displayLayer:(CALayer *)layer;
 - (void)drawLayer:(CALayer *)layer inContext:(CGContextRef)context;
 - (void)layoutSublayersOfLayer:(CALayer *)layer;

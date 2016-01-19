@@ -198,6 +198,16 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)setTransform:(CATransform3D)value {
+    CAAnimation *animation = [self animationForKey:@"transform"];
+
+    if(animation == nil && ![CATransaction disableActions]){
+        id action = [self actionForKey:@"transform"];
+
+        if(action != nil) {
+            [action runActionForKey:@"transform" object:self arguments:nil];
+        }
+    }
+
     _transform=value;
 }
 
@@ -206,6 +216,16 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)setSublayerTransform:(CATransform3D)value {
+    CAAnimation *animation = [self animationForKey:@"sublayerTransform"];
+
+    if(animation == nil && ![CATransaction disableActions]){
+        id action = [self actionForKey:@"sublayerTransform"];
+
+        if(action != nil) {
+            [action runActionForKey:@"sublayerTransform" object:self arguments:nil];
+        }
+    }
+
     _sublayerTransform=value;
 }
 
@@ -604,11 +624,11 @@ NSString * const kCATransition = @"transition";
 }
 
 - (CGAffineTransform)affineTransform {
-    return CATransform3DGetAffineTransform(_transform);
+    return CATransform3DGetAffineTransform(self.transform);
 }
 
 - (void)setAffineTransform:(CGAffineTransform)m {
-    _transform = CATransform3DMakeAffineTransform(m);
+    self.transform = CATransform3DMakeAffineTransform(m);
 }
 
 - (id)presentationLayer {
