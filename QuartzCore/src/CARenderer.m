@@ -267,7 +267,6 @@ static void generateTransparentTexture() {
         glBindTexture(GL_TEXTURE_2D, texture);
     } else {
         // Load pixel data to texture
-        NSLog(@"load pixel data %@", layer);
         id image = layer.contents;
         
         if(!texture) {
