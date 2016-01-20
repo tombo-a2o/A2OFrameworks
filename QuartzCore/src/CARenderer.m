@@ -273,6 +273,11 @@ static void generateTransparentTexture() {
         if(!texture) {
             glGenTextures(1, &texture);
             [layer _setTextureId:texture];
+            
+            CALayer *modelLayer = (CALayer*)layer.modelLayer;
+            if(image == modelLayer.contents) {
+                [layer.modelLayer _setTextureId:texture];
+            }
         }
         glBindTexture(GL_TEXTURE_2D, texture);
 
