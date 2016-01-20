@@ -262,18 +262,14 @@ static void generateTransparentTexture() {
     if(layer.isHidden) return;
 
     GLuint texture = [layer _textureId];
-    GLboolean loadPixelData = GL_FALSE;
-
-    if(texture==0 || glIsTexture(texture)==GL_FALSE) {
-        loadPixelData=GL_TRUE;
-    } else {
+    if(texture != 0 && glIsTexture(texture)==GL_TRUE) {
+        // Texture is available. Just bind and use.
         glBindTexture(GL_TEXTURE_2D, texture);
-    }
-
-    //NSLog(@"texture %d", texture);
-    id image = layer.contents;
-
-    if(loadPixelData){
+    } else {
+        // Load pixel data to texture
+        NSLog(@"load pixel data %@", layer);
+        id image = layer.contents;
+        
         if(!texture) {
             glGenTextures(1, &texture);
             [layer _setTextureId:texture];
