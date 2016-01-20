@@ -670,7 +670,6 @@ NSString * const kCATransition = @"transition";
         
         if([animation _isFinished] && animation.isRemovedOnCompletion){
             [self removeAnimationForKey:key];
-            [animation.delegate release];
         }
     }
     
@@ -680,11 +679,10 @@ NSString * const kCATransition = @"transition";
             
         if([animation _isFinished] && animation.isRemovedOnCompletion){
             [_implicitAnimations removeObject:animation];
-            [animation.delegate release];
         }
     }
     
-    for(CALayer *child in self.sublayers) {
+    for(CALayer *child in _sublayers) {
         [child _updateAnimations:currentTime];
     }
 }

@@ -37,6 +37,7 @@ NSString *const kCATransitionFromBottom = @"bottom";
 
 -(void)dealloc {
    [_timingFunction release];
+   [_delegate release];
    [super dealloc];
 }
 
@@ -187,7 +188,9 @@ NSString *const kCATransitionFromBottom = @"bottom";
     if(!_started) {
         _started = YES;
         if([self.delegate respondsToSelector:@selector(animationDidStart:)]) {
-            [self.delegate animationDidStart:self];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.delegate animationDidStart:self];
+            });
         }
     }
     
@@ -195,7 +198,10 @@ NSString *const kCATransitionFromBottom = @"bottom";
         _scale = 1.0;
         _fillMode = kCAFillModeRemoved;
         if([self.delegate respondsToSelector:@selector(animationDidStop:finished:)]) {
-            [self.delegate animationDidStop:self finished:YES];
+            CALayer *layer = [self retain];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                    [layer.delegate animationDidStop:layer finished:YES];
+            });
         }
         return;
     }
