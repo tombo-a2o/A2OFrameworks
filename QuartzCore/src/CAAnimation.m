@@ -198,9 +198,10 @@ NSString *const kCATransitionFromBottom = @"bottom";
         _scale = 1.0;
         _fillMode = kCAFillModeRemoved;
         if([self.delegate respondsToSelector:@selector(animationDidStop:finished:)]) {
-            CALayer *layer = [self retain];
+            __block CALayer *layer = [self retain];
             dispatch_async(dispatch_get_main_queue(), ^{
                     [layer.delegate animationDidStop:layer finished:YES];
+                    [layer release];
             });
         }
         return;
