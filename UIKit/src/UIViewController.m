@@ -305,8 +305,6 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
 
 - (void)dismissViewControllerAnimated:(BOOL)animated completion:(void (^)(void))completion
 {
-    NSLog(@"%s %@ %@ %@ %@", __FUNCTION__, self, _presentedViewController, _presentingViewController, self.parentViewController);
-    
     if (_presentedViewController) {
 
         // if the modalViewController being dismissed has a modalViewController of its own, then we need to go dismiss that, too.

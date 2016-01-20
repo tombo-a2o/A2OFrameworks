@@ -86,6 +86,11 @@ static inline UIViewAnimationOptions UIViewAnimationOptionTransition(UIViewAnima
     }
 }
 
+- (void)setCompletionBlock:(void (^)(BOOL finished))completionBlock
+{
+    _completionBlock = [completionBlock copy];
+}
+
 - (id)initWithAnimationOptions:(UIViewAnimationOptions)options
 {
     if ((self=[super init])) {
