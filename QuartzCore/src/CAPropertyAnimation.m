@@ -57,7 +57,8 @@ static CATransform3D _interpolateTransform3D(CATransform3D t1, CATransform3D t2,
     det1 = t1.m11*t1.m22 - t1.m12*t1.m21;
     det2 = t2.m11*t2.m22 - t2.m12*t2.m21;
     
-    if(det1 == 0.0 || det2 == 0.0) {
+#define EPS 1e-5
+    if(abs(det1) < EPS || abs(det2) < EPS) {
         // linear
         resultTransform.m11 = t1.m11 + (t2.m11-t1.m11) * ratio;
         resultTransform.m21 = t1.m21 + (t2.m21-t1.m21) * ratio;
