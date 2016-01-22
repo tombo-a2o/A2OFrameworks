@@ -257,7 +257,7 @@ static void generateTransparentTexture() {
     glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,1,1,0,GL_RGBA,GL_UNSIGNED_BYTE, componentsByte);
 }
 
--(void)_renderLayer:(CALayer *)layer z:(float)z transform:(CGAffineTransform)transform {
+-(void)_renderLayer:(CALayer *)layer z:(float)z transform:(CATransform3D)transform {
     //NSLog(@"CARenderer: renderLayer %@ b:%@ f:%@ %f", layer, NSStringFromRect(layer.bounds), NSStringFromRect(layer.frame), z);
     if(layer.isHidden) return;
 
@@ -317,7 +317,7 @@ static void generateTransparentTexture() {
     CGRect  bounds = l.bounds;
     float   cornerRadius = l.cornerRadius;
     float   borderWidth = l.borderWidth;
-    CGAffineTransform layerTransform = CATransform3DGetAffineTransform(l.transform);
+    CATransform3D layerTransform = l.transform;
 
     CGFloat w = bounds.size.width;
     CGFloat h = bounds.size.height;
@@ -340,14 +340,14 @@ static void generateTransparentTexture() {
         }
     }
 
-    CGAffineTransform t1 = CGAffineTransformMakeTranslation(-(bounds.size.width*anchorPoint.x),-(bounds.size.height*anchorPoint.y));
-    CGAffineTransform t2 = CGAffineTransformConcat(t1, layerTransform);
-    CGAffineTransform t3 = CGAffineTransformConcat(t2, CGAffineTransformMakeTranslation(position.x, position.y));
-    CGAffineTransform t  = CGAffineTransformConcat(t3, transform);
+    CATransform3D t1 = CATransform3DMakeTranslation(-(bounds.size.width*anchorPoint.x),-(bounds.size.height*anchorPoint.y), 0);
+    CATransform3D t2 = CATransform3DConcat(t1, layerTransform);
+    CATransform3D t3 = CATransform3DConcat(t2, CATransform3DMakeTranslation(position.x, position.y, 0));
+    CATransform3D t  = CATransform3DConcat(t3, transform);
     // fprintf(stderr, "transform(original) %f %f %f %f %f %f\n", transform.a, transform.b, transform.tx, transform.c, transform.d, transform.ty);
     // fprintf(stderr, "transform(local) %f %f %f %f %f %f\n", local.a, local.b, local.tx, local.c, local.d, local.ty);
     // fprintf(stderr, "transform(total) %f %f %f %f %f %f\n", t.a, t.b, t.tx, t.c, t.d, t.ty);
-    GLfloat transformArray[9] = {t.a, t.b, 0.0, t.c, t.d, 0.0, t.tx, t.ty, 1.0};
+    GLfloat transformArray[9] = {t.m11, t.m12, 0.0, t.m21, t.m22, 0.0, t.m41, t.m42, 1.0};
 
     glEnableVertexAttribArray(_attrPosition);
     glEnableVertexAttribArray(_attrTexCoord);
@@ -406,7 +406,14 @@ static void displayTree(CALayer *layer) {
     glUseProgram(_program);
 
     // fprintf(stderr, "bounds %f %f\n",_bounds.size.width, _bounds.size.height);
-    CGAffineTransform projection = CGAffineTransformMake(2.0/_bounds.size.width, 0, 0, -2.0/_bounds.size.height, -1.0, 1.0);
+    CATransform3D projection = CATransform3DIdentity;
+    projection.m11 = 2.0/_bounds.size.width;
+    projection.m12 = 0.0;
+    projection.m21 = 0.0;
+    projection.m22 = -2.0/_bounds.size.height;
+    projection.m41 = -1.0;
+    projection.m42 = 1.0;
+    
     displayTree(_rootLayer);
     [_rootLayer _generatePresentationLayer];
     [_rootLayer _updateAnimations:CACurrentMediaTime()];

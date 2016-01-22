@@ -50,7 +50,7 @@ static CGFloat _interpolateFloat(float x, float y, float ratio)
 
 static CATransform3D _interpolateTransform3D(CATransform3D t1, CATransform3D t2, float ratio)
 {
-    CATransform3D resultTransform;
+    CATransform3D resultTransform = CATransform3DIdentity;
     
     CGFloat det1, det2;
     
