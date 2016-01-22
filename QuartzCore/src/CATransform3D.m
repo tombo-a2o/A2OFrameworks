@@ -86,10 +86,8 @@ CATransform3D CATransform3DMakeRotation(CGFloat angle, CGFloat x, CGFloat y, CGF
 }
 
 CATransform3D CATransform3DTranslate(CATransform3D t, CGFloat tx, CGFloat ty, CGFloat tz) {
-    t.m41 += tx;
-    t.m42 += ty;
-    t.m43 += tz;
-    return t;
+    CATransform3D other = CATransform3DMakeTranslation(tx, ty, tz);
+    return CATransform3DConcat(other, t);
 }
 
 CATransform3D CATransform3DScale(CATransform3D t, CGFloat sx, CGFloat sy, CGFloat sz) {

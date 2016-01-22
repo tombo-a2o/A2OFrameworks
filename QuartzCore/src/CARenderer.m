@@ -65,14 +65,15 @@
 
 static const char *vertexShaderSource =
     "precision mediump float;\n"
-    "attribute vec3 position;\n"
+    "attribute vec2 position;\n"
     "attribute vec2 texcoord;\n"
     "attribute vec2 distance;\n"
-    "uniform mat3 transform;\n"
+    "uniform mat4 transform;\n"
     "varying vec2 texcoordVarying;\n"
     "varying vec2 distanceVarying;\n"
     "void main() { \n"
-    "   gl_Position = vec4((transform * vec3(position.xy, 1.0)).xy, position.z, 1.0);\n"
+    "   vec4 pos = transform * vec4(position, 0.0, 1.0);\n"
+    "   gl_Position = vec4(pos.xy, 0.0, pos.w);\n"
     "   texcoordVarying = texcoord;\n"
     "   distanceVarying = distance;\n"
     "}\n";
@@ -223,6 +224,15 @@ void CATexImage2DCGImage(CGImageRef image){
     glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,imageWidth,imageHeight,0,glFormat,glType,pixelBytes);
 }
 
+static void dumpTransform3D(CATransform3D t3) {
+    printf("%f %f %f %f\n", t3.m11, t3.m12, t3.m13, t3.m14);
+    printf("%f %f %f %f\n", t3.m21, t3.m22, t3.m23, t3.m24);
+    printf("%f %f %f %f\n", t3.m31, t3.m32, t3.m33, t3.m34);
+    printf("%f %f %f %f\n", t3.m41, t3.m42, t3.m43, t3.m44);
+    puts("");
+}
+
+
 static void getColorComponents(CGColorRef cgColor, CGFloat components[4]) {
     if(cgColor) {
         CGColorSpaceRef colorSpace = CGColorGetColorSpace(cgColor);
@@ -318,6 +328,7 @@ static void generateTransparentTexture() {
     float   cornerRadius = l.cornerRadius;
     float   borderWidth = l.borderWidth;
     CATransform3D layerTransform = l.transform;
+    CGFloat anchorPointZ = l.anchorPointZ;
 
     CGFloat w = bounds.size.width;
     CGFloat h = bounds.size.height;
@@ -340,15 +351,11 @@ static void generateTransparentTexture() {
         }
     }
 
-    CATransform3D t1 = CATransform3DMakeTranslation(-(bounds.size.width*anchorPoint.x),-(bounds.size.height*anchorPoint.y), 0);
+    CATransform3D t1 = CATransform3DMakeTranslation(-anchorPoint.x * w, -anchorPoint.y * h, -anchorPointZ);
     CATransform3D t2 = CATransform3DConcat(t1, layerTransform);
     CATransform3D t3 = CATransform3DConcat(t2, CATransform3DMakeTranslation(position.x, position.y, 0));
     CATransform3D t  = CATransform3DConcat(t3, transform);
-    // fprintf(stderr, "transform(original) %f %f %f %f %f %f\n", transform.a, transform.b, transform.tx, transform.c, transform.d, transform.ty);
-    // fprintf(stderr, "transform(local) %f %f %f %f %f %f\n", local.a, local.b, local.tx, local.c, local.d, local.ty);
-    // fprintf(stderr, "transform(total) %f %f %f %f %f %f\n", t.a, t.b, t.tx, t.c, t.d, t.ty);
-    GLfloat transformArray[9] = {t.m11, t.m12, 0.0, t.m21, t.m22, 0.0, t.m41, t.m42, 1.0};
-
+    GLfloat transformArray[16] = {t.m11, t.m12, t.m13, t.m14, t.m21, t.m22, t.m23, t.m24, t.m31, t.m32, t.m33, t.m34, t.m41, t.m42, t.m43, t.m44};
     glEnableVertexAttribArray(_attrPosition);
     glEnableVertexAttribArray(_attrTexCoord);
     glEnableVertexAttribArray(_attrDistance);
@@ -363,7 +370,7 @@ static void generateTransparentTexture() {
     glVertexAttribPointer(_attrDistance, 2, GL_FLOAT, GL_FALSE, 8*sizeof(GLfloat), (GLfloat*)NULL + 6);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    glUniformMatrix3fv(_unifTransform, 1, GL_FALSE, transformArray);
+    glUniformMatrix4fv(_unifTransform, 1, GL_FALSE, transformArray);
     glUniform1f(_unifOpacity, l.opacity);
     glUniform1f(_unifCornerRadius, cornerRadius);
     // glUniform1f(_unifBorderWidth, borderWidth);
@@ -381,8 +388,14 @@ static void generateTransparentTexture() {
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
+    CATransform3D sublayerTransform = l.sublayerTransform;
+    
+    CATransform3D ts3 = CATransform3DConcat(t2, sublayerTransform);
+    CATransform3D ts4 = CATransform3DConcat(ts3, CATransform3DMakeTranslation(position.x, position.y, 0));
+    CATransform3D ts  = CATransform3DConcat(ts4, transform);
+
     for(CALayer *child in [layer _zOrderedSublayers]) {
-        [self _renderLayer:child z:z+1 transform:t];
+        [self _renderLayer:child z:z+1 transform:ts];
     }
 }
 
@@ -397,8 +410,8 @@ static void displayTree(CALayer *layer) {
     glClearColor(1.0, 1.0, 1.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL);
+    // glEnable(GL_DEPTH_TEST);
+    // glDepthFunc(GL_LEQUAL);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
@@ -408,8 +421,6 @@ static void displayTree(CALayer *layer) {
     // fprintf(stderr, "bounds %f %f\n",_bounds.size.width, _bounds.size.height);
     CATransform3D projection = CATransform3DIdentity;
     projection.m11 = 2.0/_bounds.size.width;
-    projection.m12 = 0.0;
-    projection.m21 = 0.0;
     projection.m22 = -2.0/_bounds.size.height;
     projection.m41 = -1.0;
     projection.m42 = 1.0;

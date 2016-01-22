@@ -81,6 +81,7 @@ CA_EXPORT NSString * const kCATransition;
 @property CGFloat cornerRadius;
 @property(strong) id layoutManager;
 @property CGFloat zPosition;
+@property CGFloat anchorPointZ;
 @property BOOL masksToBounds;
 @property(getter=isHidden) BOOL hidden;
 @property CGColorRef backgroundColor;

@@ -269,6 +269,8 @@ NSString * const kCATransition = @"transition";
     _needsLayout = YES;
     _textureId = 0;
     _flipTexture = NO;
+    _zPosition = 0;
+    _anchorPointZ = 0.0;
     return self;
 }
 
@@ -293,6 +295,7 @@ NSString * const kCATransition = @"transition";
     _cornerRadius = layer.cornerRadius;
     _layoutManager = layer.layoutManager;
     _zPosition = layer.zPosition;
+    _anchorPointZ = layer.anchorPointZ;
     _masksToBounds = layer.masksToBounds;
     _hidden = layer.isHidden;
     _backgroundColor = layer.backgroundColor;
