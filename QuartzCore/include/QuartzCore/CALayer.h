@@ -93,6 +93,7 @@ CA_EXPORT NSString * const kCATransition;
 @property CGColorRef borderColor;
 @property(copy) NSDictionary *actions;
 @property(copy) NSDictionary *style;
+@property(getter=isDoubleSided) BOOL doubleSided;
 
 - init;
 

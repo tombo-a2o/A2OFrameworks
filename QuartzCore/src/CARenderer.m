@@ -322,6 +322,13 @@ static void generateTransparentTexture() {
 
     CALayer *l = layer;
     
+    if(l.isDoubleSided) {
+        glDisable(GL_CULL_FACE);
+    } else {
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_FRONT);
+    }
+    
     CGPoint anchorPoint = l.anchorPoint;
     CGPoint position = l.position;
     CGRect  bounds = l.bounds;
@@ -410,9 +417,6 @@ static void displayTree(CALayer *layer) {
     glClearColor(1.0, 1.0, 1.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // glEnable(GL_DEPTH_TEST);
-    // glDepthFunc(GL_LEQUAL);
-
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
@@ -431,7 +435,7 @@ static void displayTree(CALayer *layer) {
     [self _renderLayer:_rootLayer.presentationLayer z:0 transform:projection];
 
     glUseProgram(0);
-
+    
     glFlush();
 }
 
