@@ -41,8 +41,16 @@
 -(void)renderLayer:(CALayer *)layer {
     [EAGLContext setCurrentContext:_glContext];
 
-    GLint framebuffer;
+    GLint framebuffer, blendFund, cullFaceMode;
+    GLboolean blend, cullFace;
+    
+    // save state
     glGetIntegerv(GL_FRAMEBUFFER_BINDING, &framebuffer);
+    blend = glIsEnabled(GL_BLEND);
+    glGetIntegerv(GL_BLEND_SRC_ALPHA, &blendFund);
+    cullFace = glIsEnabled(GL_CULL_FACE);
+    glGetIntegerv(GL_CULL_FACE_MODE, &cullFaceMode);
+
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     GLint width=_frame.size.width;
@@ -55,6 +63,19 @@
     [layer layoutIfNeeded];
     [_renderer render];
 
+    // restore state
+    if(blend) {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, blendFund);
+    } else {
+        glDisable(GL_BLEND);
+    }
+    if(cullFace) {
+        glEnable(GL_CULL_FACE);
+        glCullFace(cullFaceMode);
+    } else {
+        glDisable(GL_CULL_FACE);
+    }
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 }
 
