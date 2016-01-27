@@ -1,6 +1,7 @@
 #import <QuartzCore/CAAnimation.h>
 #import <QuartzCore/CATransaction.h>
 #import <QuartzCore/CALayer.h>
+#import <QuartzCore/CALayer+Private.h>
 #import <AppKit/NSRaise.h>
 
 #import "CAMediaTimingFunction+Private.h"
@@ -20,6 +21,8 @@ NSString *const kCATransitionFromBottom = @"bottom";
     CFTimeInterval _currentTime;
     CFTimeInterval _totalDuration;
     BOOL _started;
+    BOOL _finished;
+    void (^_completionBlock)(void);
 }
 
 +animation {
@@ -27,10 +30,9 @@ NSString *const kCATransitionFromBottom = @"bottom";
 }
 
 -init {
-   _duration = [CATransaction animationDuration];
-   _timingFunction = [[CATransaction animationTimingFunction] retain];
    _removedOnCompletion = YES;
    _started = NO;
+   _finished = NO;
    [self _updateTotalDuration];
    return self;
 }
@@ -158,7 +160,50 @@ NSString *const kCATransitionFromBottom = @"bottom";
     }
     
     _currentTime = currentTime;
+    
+    if(!_started) {
+        _started = YES;
+        [self _didStart];
+    }
+    if(_currentTime - _beginTime > _totalDuration) {
+        _finished = YES;
+        [self _didStop];
+        [self _callTransactionCompletionBlockIfNeeded];
+    }
+    
     [self _updateScale];
+    [self _didStop];
+}
+
+-(void)_didStart
+{
+    if([self.delegate respondsToSelector:@selector(animationDidStart:)]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate animationDidStart:self];
+        });
+    }
+}
+
+-(void)_didStop
+{
+    if([self.delegate respondsToSelector:@selector(animationDidStop:finished:)]) {
+        __block CAAnimation *anim = [self retain];
+        dispatch_async(dispatch_get_main_queue(), ^{
+                [anim.delegate animationDidStop:anim finished:YES];
+                [anim release];
+        });
+    }
+}
+
+-(void)_callTransactionCompletionBlockIfNeeded
+{
+    void (^block)(void) = [self _completionBlock];
+    if(block) {
+        int count = [CATransaction _releaseCompletionBlock:block];
+        if(!count) {
+            block();
+        }
+    }
 }
 
 -(void)_updateTotalDuration
@@ -185,25 +230,8 @@ NSString *const kCATransitionFromBottom = @"bottom";
 {
     CFTimeInterval delta = _currentTime - _beginTime;
     
-    if(!_started) {
-        _started = YES;
-        if([self.delegate respondsToSelector:@selector(animationDidStart:)]) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self.delegate animationDidStart:self];
-            });
-        }
-    }
-    
     if(delta > _totalDuration) {
         _scale = 1.0;
-        _fillMode = kCAFillModeRemoved;
-        if([self.delegate respondsToSelector:@selector(animationDidStop:finished:)]) {
-            __block CALayer *layer = [self retain];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                    [layer.delegate animationDidStop:layer finished:YES];
-                    [layer release];
-            });
-        }
         return;
     }
     
@@ -224,6 +252,17 @@ NSString *const kCATransitionFromBottom = @"bottom";
 
 -(BOOL)_isFinished
 {
-    return _fillMode == kCAFillModeRemoved;
+    return _finished;
 }
+
+-(void)_setCompletionBlock:(void (^)(void))block
+{
+    _completionBlock = [block copy];
+}
+
+-(void (^)(void))_completionBlock
+{
+    return _completionBlock;
+}
+
 @end

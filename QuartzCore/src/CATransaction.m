@@ -57,7 +57,9 @@ static CATransactionGroup *createImplicitTransactionGroupIfNeeded(){
    return [self valueForKey:kCATransactionAnimationTimingFunction];
 }
 
-//+(void (^)(void))completionBlock;
++(void (^)(void))completionBlock {
+    return [self valueForKey:kCATransactionCompletionBlock];
+}
 
 +valueForKey:(NSString *)key {
    CATransactionGroup *group=createImplicitTransactionGroupIfNeeded();
@@ -74,7 +76,7 @@ static CATransactionGroup *createImplicitTransactionGroupIfNeeded(){
 }
 
 +(void)setCompletionBlock:(void (^)(void))value {
-    NSLog(@"%s not implemented", __FUNCTION__);
+    [self setValue:[value copy] forKey:kCATransactionCompletionBlock];
 }
 
 +(void)setDisableActions:(BOOL)value {
@@ -95,6 +97,11 @@ static CATransactionGroup *createImplicitTransactionGroupIfNeeded(){
 
 +(void)commit {
    [transactionStack() removeLastObject];
+   
+   void (^block)(void) = [self completionBlock];
+   if(block && ![self _retainCountCompletionBlock:block]) {
+       block();
+   }
 }
 
 +(void)flush {
@@ -104,6 +111,44 @@ static CATransactionGroup *createImplicitTransactionGroupIfNeeded(){
 }
 
 +(void)unlock {
+}
+
+static NSMutableDictionary *dict;
+
++(void)_retainCompletionBlock:(void (^)(void))block {
+    if(!dict) {
+        dict = [[NSMutableDictionary alloc] init];
+    }
+    NSNumber *num = [dict objectForKey:block];
+    if(num) {
+        [dict setObject:[NSNumber numberWithInt:[num intValue]+1] forKey:block];
+    } else {
+        [dict setObject:@1 forKey:block];
+    }
+}
+
++(int)_retainCountCompletionBlock:(void (^)(void))block {
+    NSNumber *num = [dict objectForKey:block];
+    if(num) {
+        return [num intValue];
+    } else {
+        return 0;
+    }
+}
+
++(int)_releaseCompletionBlock:(void (^)(void))block {
+    NSNumber *num = [dict objectForKey:block];
+    if(num) {
+        int number = [num intValue] - 1;
+        if(number) {
+            [dict setObject:[NSNumber numberWithInt:number] forKey:block];
+        } else {
+            [dict removeObjectForKey:block];
+        }
+        return number;
+    } else {
+        return 0;
+    }
 }
 
 @end

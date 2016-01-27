@@ -11,4 +11,5 @@
 -(void)_updateAnimations:(CFTimeInterval)currentTime;
 -(void)_generatePresentationLayer;
 -(NSArray*)_zOrderedSublayers;
+-(void)_dispatchTransactionCompletionBlock:(CAAnimation*)animation;
 @end

@@ -1,9 +1,12 @@
 #import <QuartzCore/CAAnimation.h>
+#import <QuartzCore/CATransaction.h>
 
 @interface CAAnimation(Rendering)
 -(float)_scale;
 -(BOOL)_isFinished;
 -(void)_updateLayer:(CALayer*)layer currentTime:(CFTimeInterval)currentTime;
+-(void)_setCompletionBlock:(void (^)(void))value;
+-(void (^)(void))_completionBlock;
 @end
 
 @interface CAPropertyAnimation(Rendering)
@@ -12,4 +15,9 @@
 @end
 
 @interface CABasicAnimation(Rendering)
+@end
+
+@interface CATransaction(CompletionBlockCounting)
++(void)_retainCompletionBlock:(void (^)(void))block;
++(int)_releaseCompletionBlock:(void (^)(void))block;
 @end

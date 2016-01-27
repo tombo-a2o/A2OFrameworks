@@ -44,7 +44,6 @@ NSString * const kCATransition = @"transition";
     return [[[self alloc] init] autorelease];
 }
 
-
 -(CALayerContext *)_context {
     return _context;
 }
@@ -461,6 +460,18 @@ NSString * const kCATransition = @"transition";
     if(_context==nil)
         return;
     
+    if(animation.duration == 0.0) {
+        animation.duration = [CATransaction animationDuration];
+    }
+    if(!animation.timingFunction) {
+        animation.timingFunction = [CATransaction animationTimingFunction];
+    }
+    void (^block)(void) = [CATransaction completionBlock];
+    if(block) {
+        [animation _setCompletionBlock:block];
+        [CATransaction _retainCompletionBlock:block];
+    }
+    
     if(key) {
         [_animations setObject:animation forKey:key];
     } else {
@@ -703,5 +714,4 @@ NSString * const kCATransition = @"transition";
         }
     }];
 }
-
 @end
