@@ -41,6 +41,8 @@
 #import <UIKit/UIScreen.h>
 #import <UIKit/UITabBarController.h>
 #import <AppKit/NSNib.h>
+#import <QuartzCore/QuartzCore.h>
+#import "UIAnimation.h"
 
 typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
     _UIViewControllerParentageTransitionNone = 0,
@@ -292,14 +294,33 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
         [_presentedViewController viewWillAppear:animated];
 
         [self viewWillDisappear:animated];
-        selfView.hidden = YES;		// I think the real one may actually remove it, which would mean needing to remember the superview, I guess? Not sure...
-        [self viewDidDisappear:animated];
-
-        [_presentedViewController viewDidAppear:animated];
         
-        if(completion) {
-            completion();
+        [CATransaction begin];
+        
+        selfView.layer.doubleSided = NO;
+        newView.layer.doubleSided = NO;
+        
+        [CATransaction setCompletionBlock:^{
+            selfView.hidden = YES;		// I think the real one may actually remove it, which would mean needing to remember the superview, I guess? Not sure...
+            
+            [self viewDidDisappear:animated];
+
+            [_presentedViewController viewDidAppear:animated];
+            
+            if(completion) {
+                completion();
+            }
+        }];
+        
+        UIModalTransitionStyle style = _presentedViewController.modalTransitionStyle;
+        if(!style || style == UIModalTransitionStyleFlipHorizontal) {
+            [selfView.layer addAnimation:[UIAnimation frontToBackClockwise] forKey:nil];
+            [newView.layer addAnimation:[UIAnimation backToFrontClockwise] forKey:nil];
+        } else {
+            NSLog(@"%s Unsupported modalTransitionStyle %d", __FUNCTION__, style);
         }
+        
+        [CATransaction commit];
     }
 }
 
@@ -313,18 +334,39 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
             [_presentedViewController dismissViewControllerAnimated:animated completion:nil];
         }
 
-        self.view.hidden = NO;
         [self viewWillAppear:animated];
-
-        [_presentedViewController.view removeFromSuperview];
-        [_presentedViewController _setPresentedViewController:nil];
-        _presentedViewController = nil;
-
-        [self viewDidAppear:animated];
         
-        if(completion) {
-            completion();
+        UIView *selfView = self.view;
+        UIView *currentView = _presentedViewController.view;
+        
+        [CATransaction begin];
+        
+        selfView.hidden = NO;
+        selfView.layer.doubleSided = NO;
+        currentView.layer.doubleSided = NO;
+        
+        [CATransaction setCompletionBlock:^{
+
+            [_presentedViewController.view removeFromSuperview];
+            [_presentedViewController _setPresentedViewController:nil];
+            _presentedViewController = nil;
+            
+            [self viewDidAppear:animated];
+            
+            if(completion) {
+                completion();
+            }
+        }];
+        
+        UIModalTransitionStyle style = _presentedViewController.modalTransitionStyle;
+        if(!style || style == UIModalTransitionStyleFlipHorizontal) {
+            [selfView.layer addAnimation:[UIAnimation backToFrontCounterClockwise] forKey:nil];
+            [currentView.layer addAnimation:[UIAnimation frontToBackCounterClockwise] forKey:nil];
+        } else {
+            NSLog(@"%s Unsupported modalTransitionStyle %d", __FUNCTION__, style);
         }
+        
+        [CATransaction commit];
     } else if(_presentingViewController) {
         [_presentingViewController dismissViewControllerAnimated:animated completion:completion];
     } else {
