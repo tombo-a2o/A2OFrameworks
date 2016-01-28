@@ -201,7 +201,7 @@ NSString *const kCATransitionFromBottom = @"bottom";
     if(block) {
         int count = [CATransaction _releaseCompletionBlock:block];
         if(!count) {
-            block();
+            dispatch_async(dispatch_get_main_queue(), block);
         }
     }
 }
