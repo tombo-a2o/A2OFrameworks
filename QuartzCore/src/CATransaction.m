@@ -96,12 +96,12 @@ static CATransactionGroup *createImplicitTransactionGroupIfNeeded(){
 }
 
 +(void)commit {
-   [transactionStack() removeLastObject];
-   
    void (^block)(void) = [self completionBlock];
-   if(block && ![self _retainCountCompletionBlock:block]) {
+   if(block && [self _retainCountCompletionBlock:block] == 0) {
        block();
    }
+   
+   [transactionStack() removeLastObject];
 }
 
 +(void)flush {
