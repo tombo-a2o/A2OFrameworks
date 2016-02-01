@@ -325,8 +325,8 @@ static void generateTransparentTexture() {
     if(l.isDoubleSided) {
         glDisable(GL_CULL_FACE);
     } else {
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_FRONT);
+       glEnable(GL_CULL_FACE);
+       glCullFace(GL_BACK);
     }
     
     CGPoint anchorPoint = l.anchorPoint;
@@ -362,7 +362,6 @@ static void generateTransparentTexture() {
     CATransform3D t2 = CATransform3DConcat(t1, layerTransform);
     CATransform3D t3 = CATransform3DConcat(t2, CATransform3DMakeTranslation(position.x, position.y, 0));
     CATransform3D t  = CATransform3DConcat(t3, transform);
-    GLfloat transformArray[16] = {t.m11, t.m12, t.m13, t.m14, t.m21, t.m22, t.m23, t.m24, t.m31, t.m32, t.m33, t.m34, t.m41, t.m42, t.m43, t.m44};
     glEnableVertexAttribArray(_attrPosition);
     glEnableVertexAttribArray(_attrTexCoord);
     glEnableVertexAttribArray(_attrDistance);
@@ -377,7 +376,7 @@ static void generateTransparentTexture() {
     glVertexAttribPointer(_attrDistance, 2, GL_FLOAT, GL_FALSE, 8*sizeof(GLfloat), (GLfloat*)NULL + 6);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    glUniformMatrix4fv(_unifTransform, 1, GL_FALSE, transformArray);
+    glUniformMatrix4fv(_unifTransform, 1, GL_FALSE, &t);
     glUniform1f(_unifOpacity, l.opacity);
     glUniform1f(_unifCornerRadius, cornerRadius);
     // glUniform1f(_unifBorderWidth, borderWidth);
@@ -389,7 +388,7 @@ static void generateTransparentTexture() {
     glUniform4fv(_unifBackgroundColor, 1, backgroundColor);
 
     const GLushort index[] = {
-        0, 4, 1, 5, 2, 6, 3, 7, 7, 11, 6, 10, 5, 9, 4, 8, 8, 12, 9, 13, 10, 14, 11, 15
+        0, 4, 1, 5, 2, 6, 3, 7, 7, 7, 11, 6, 10, 5, 9, 4, 8, 8, 8, 12, 9, 13, 10, 14, 11, 15
     };
     glDrawElements(GL_TRIANGLE_STRIP, sizeof(index)/sizeof(GLushort), GL_UNSIGNED_SHORT, index);
 
