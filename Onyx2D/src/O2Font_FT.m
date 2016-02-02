@@ -144,6 +144,9 @@ FT_Library O2FontSharedFreeTypeLibrary(){
         if(result > width) {
             return i - start;
         }
+        if(codes[i] == '\n') {
+            return i+1 - start;
+        }
     }
     return count - start;
 }
@@ -165,7 +168,9 @@ FT_Library O2FontSharedFreeTypeLibrary(){
     int i;
 
     for(i=0;i<length;i++) {
-        glyphs[i]=FT_Get_Char_Index(_face, codes[i]);
+        unichar c = codes[i];
+        if(c == '\n') c = ' ';
+        glyphs[i]=FT_Get_Char_Index(_face, c);
     }
 }
 
