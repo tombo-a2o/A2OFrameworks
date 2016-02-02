@@ -84,3 +84,7 @@ CFDataRef CGFontCopyTableForTag(CGFontRef self,uint32_t tag) {
 CGFloat CGFontGetTextWidth(CGFontRef self, const unichar *codes, size_t count, CGFloat fontSize) {
     return O2FontGetTextWidth(self, codes, count, fontSize);
 }
+
+size_t CGFontSuggestLineBreak(CGFontRef self, const unichar *codes, size_t count, CGFloat fontSize, CFIndex start, CGFloat width) {
+    return O2FontSuggestLineBreak(self, codes, count, fontSize, start, width);
+}

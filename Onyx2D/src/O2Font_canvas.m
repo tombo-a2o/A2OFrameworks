@@ -20,6 +20,11 @@ O2FontRef O2FontCreateWithFontName_canvas(NSString *name) {
     return a2o_getTextWidth([_name UTF8String], fontSize, [text UTF8String]);
 }
 
+-(int)suggestLineBreak:(const unichar *)codes count:(size_t)count fontSize:(CGFloat)fontSize start:(size_t)start width:(CGFloat)width {
+    NSString *text = [NSString stringWithCharacters:codes length:count];
+    return a2o_suggestLineBreak([_name UTF8String], fontSize, [text UTF8String], start, width);
+}
+
 -(void)getGlyphsForCodePoints:(const unichar *)codes glyphs:(O2Glyph *)glyphs length:(int)length {
     // glyph = code point
     for(int i = 0; i < length; i++) {

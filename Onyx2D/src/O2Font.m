@@ -82,6 +82,10 @@ static NSMutableDictionary *fontDictionary = nil;
     O2InvalidAbstractInvocation();
 }
 
+-(int)suggestLineBreak:(const unichar *)codes count:(size_t)count fontSize:(CGFloat)fontSize start:(size_t)start width:(CGFloat)width {
+    O2InvalidAbstractInvocation();
+}
+
 -(NSCharacterSet *)coveredCharacterSet {
     return _coveredCharSet;
 }
@@ -526,6 +530,11 @@ NSData   *O2FontCopyTableForTag(O2FontRef self,uint32_t tag) {
 
 CGFloat O2FontGetTextWidth(O2FontRef self, const unichar *codes, size_t count, CGFloat fontSize) {
     return [self getTextWidth:codes count:count fontSize:fontSize];
+}
+
+size_t O2FontSuggestLineBreak(O2FontRef self, const unichar *codes, size_t count, CGFloat fontSize, CFIndex start, CGFloat width) {
+    assert(width != 0.0);
+    return [self suggestLineBreak:codes count:count fontSize:fontSize start:start width:width];
 }
 
 uint16_t O2FontUnicodeForGlyphName(CFStringRef name){

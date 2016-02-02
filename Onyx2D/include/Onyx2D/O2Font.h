@@ -115,5 +115,6 @@ NSData *O2FontCopyTableForTag(O2FontRef self, uint32_t tag);
 uint16_t O2FontUnicodeForGlyphName(CFStringRef name);
 
 CGFloat O2FontGetTextWidth(O2FontRef self, const unichar *codes, size_t count, CGFloat fontSize);
+size_t O2FontSuggestLineBreak(O2FontRef self, const unichar *codes, size_t count, CGFloat fontSize, CFIndex start, CGFloat width);
 
 @end

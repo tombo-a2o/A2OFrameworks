@@ -38,3 +38,4 @@ COREGRAPHICS_EXPORT CFStringRef CGFontCopyGlyphNameForGlyph(CGFontRef self, CGGl
 
 COREGRAPHICS_EXPORT CFDataRef CGFontCopyTableForTag(CGFontRef self, uint32_t tag);
 COREGRAPHICS_EXPORT CGFloat CGFontGetTextWidth(CGFontRef self, const unichar *codes, size_t count, CGFloat fontSize);
+COREGRAPHICS_EXPORT size_t CGFontSuggestLineBreak(CGFontRef self, const unichar *codes, size_t count, CGFloat fontSize, CFIndex start, CGFloat width);

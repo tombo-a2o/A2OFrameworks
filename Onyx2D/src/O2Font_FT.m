@@ -129,6 +129,25 @@ FT_Library O2FontSharedFreeTypeLibrary(){
     return result;
 }
 
+-(int)suggestLineBreak:(const unichar *)codes count:(size_t)count fontSize:(CGFloat)fontSize start:(size_t)start width:(CGFloat)width {
+    CGFloat result = 0;
+
+    FT_Set_Char_Size(_face, 0, fontSize * 64, 72, 72);
+    for(int i = start; i < count; i++) {
+        O2Glyph glyph = FT_Get_Char_Index(_face, codes[i]);
+        FT_Error ftError = FT_Load_Glyph(_face, glyph, FT_LOAD_DEFAULT);
+        if(ftError) {
+            continue;
+        }
+        result += _face->glyph->advance.x / 64.0;
+        
+        if(result > width) {
+            return i - start;
+        }
+    }
+    return count - start;
+}
+
 -(O2Encoding *)createEncodingForTextEncoding:(O2TextEncoding)encoding {
     O2Glyph glyphs[256];
     uint16_t unicode[256];
