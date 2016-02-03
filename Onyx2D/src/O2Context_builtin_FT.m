@@ -62,7 +62,7 @@ static void applyCoverageToSpan_lRGBA8888_PRE(O2argb8u *dst,unsigned char *cover
 #define PRINTBUFFER(buffer, length, color)
 #endif
 
-static void drawFreeTypeBitmap(O2Context_builtin_FT *self, O2Surface *surface, uint8_t *coverage, int bitmapWidth, int bitmapHeight, int left, int top, O2Paint *paint) {
+static void drawFreeTypeBitmap(O2Context_builtin_FT *self, O2Surface *surface, uint8_t *bitmap, int bitmapWidth, int bitmapHeight, int left, int top, O2Paint *paint) {
     // FIXME: clipping
     int surfaceWidth = O2ImageGetWidth(surface);
     int surfaceHeight = O2ImageGetHeight(surface);
@@ -72,7 +72,7 @@ static void drawFreeTypeBitmap(O2Context_builtin_FT *self, O2Surface *surface, u
 #if DEBUG_drawFreeTypeBitmap
     for(int j = 0; j < bitmapHeight; j++) {
     for(int i = 0; i < bitmapWidth; i++) {
-        printf("%x", coverage[i + j*bitmapWidth]>>4);
+        printf("%x", bitmap[i + j*bitmapWidth]>>4);
     }
     puts("");
     }
@@ -80,10 +80,15 @@ static void drawFreeTypeBitmap(O2Context_builtin_FT *self, O2Surface *surface, u
 #endif
 
     //NSLog(@"bitmap=(%d,%d), left,top=(%d, %d) surface=(%d,%d)", bitmapWidth, bitmapHeight, left, top, surfaceWidth, surfaceHeight);
+    // surface -> x, y
+    // bitmap -> row, col
     for(int row = MAX(0, -top), y = MAX(0, top); row < bitmapHeight && y < surfaceHeight; row++, y++) {
-        int x = left;
-        int length = MIN(bitmapWidth, surfaceWidth - left);
+        int x = MAX(0, left);
+        int col = MAX(0, -left);
+        int length = MIN(bitmapWidth + left, surfaceWidth) -  x;
         if(length < 0) break;
+
+        uint8_t *b = bitmap + col + row * bitmapWidth;
 
         O2argb8u *dst = dstBuffer;
         O2argb8u *src = srcBuffer;
@@ -112,7 +117,7 @@ static void drawFreeTypeBitmap(O2Context_builtin_FT *self, O2Surface *surface, u
                 PRINTBUFFER(srcBuffer, bitmapWidth, a);
 
                 // dst = src(paint) * c + dst * (1-c)
-                applyCoverageToSpan_lRGBA8888_PRE(dst, coverage, src, chunk);
+                applyCoverageToSpan_lRGBA8888_PRE(dst, b, src, chunk);
 
                 PRINTBUFFER(dstBuffer, bitmapWidth, a);
 
@@ -121,7 +126,7 @@ static void drawFreeTypeBitmap(O2Context_builtin_FT *self, O2Surface *surface, u
                     O2SurfaceWriteSpan_argb8u_PRE(surface, x, y, dst, chunk);
                 }
             }
-            coverage += chunk;
+            b += chunk;
 
             length -= chunk;
             x += chunk;
@@ -158,6 +163,12 @@ static void drawFreeTypeBitmap(O2Context_builtin_FT *self, O2Surface *surface, u
     NSString *fontName = (NSString*)O2FontCopyFullName(font);
     uint8_t *bitmap = a2o_renderFontToBitmapBuffer([fontName UTF8String], gState->_pointSize, [text UTF8String], transform.a, transform.b, transform.c, transform.d, &width, &height, &left, &top);
 
+/*
+    printf("%s %d %d %d %d\n", __FUNCTION__, width, height, (int)(point.x+left), (int)(point.y - top));
+    int surfaceWidth = O2ImageGetWidth(_surface);
+    int surfaceHeight = O2ImageGetHeight(_surface);
+    printf("surface %d %d\n", surfaceWidth, surfaceHeight);
+*/
     drawFreeTypeBitmap(self, _surface, bitmap, width, height, point.x + left, point.y - top, paint);
 
     free(bitmap);
