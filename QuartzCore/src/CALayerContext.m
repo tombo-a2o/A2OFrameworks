@@ -41,10 +41,11 @@
 -(void)renderLayer:(CALayer *)layer {
     [EAGLContext setCurrentContext:_glContext];
 
-    GLint framebuffer, blendFund, cullFaceMode;
+    GLint framebuffer, blendFund, cullFaceMode, program;
     GLboolean blend, cullFace;
     
     // save state
+    glGetIntegerv(GL_CURRENT_PROGRAM, &program);
     glGetIntegerv(GL_FRAMEBUFFER_BINDING, &framebuffer);
     blend = glIsEnabled(GL_BLEND);
     glGetIntegerv(GL_BLEND_SRC_ALPHA, &blendFund);
@@ -77,6 +78,7 @@
         glDisable(GL_CULL_FACE);
     }
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+    glUseProgram(program);
 }
 
 -(void)render {
