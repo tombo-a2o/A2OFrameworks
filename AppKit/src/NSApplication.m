@@ -615,6 +615,7 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
                 if (!_isRunning) {
                     dispatch_source_cancel(source);
                 }
+                EM_ASM({ FS.syncfs(false, function(){}) });
             });
             dispatch_resume(source);
         });
