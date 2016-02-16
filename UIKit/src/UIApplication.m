@@ -498,12 +498,18 @@ static UIApplication *_theApplication = nil;
 
 - (BOOL)openURL:(NSURL *)url
 {
-    return url? [[NSWorkspace sharedWorkspace] openURL:url] : NO;
+    const char* urlString = [url.absoluteString UTF8String];
+    EM_ASM_INT({
+        var url = Pointer_stringify($0);
+        window.open(url, '_blank');
+    }, urlString);
+    return YES;
 }
 
 - (BOOL)canOpenURL:(NSURL *)url
 {
-    return (url? [[NSWorkspace sharedWorkspace] URLForApplicationToOpenURL:url] : nil) != nil;
+    NSString *scheme = url.scheme;
+    return [scheme isEqual:@"http"] || [scheme isEqual:@"https"];
 }
 
 - (void)_applicationWillFinishLaunching:(NSNotification *)note
