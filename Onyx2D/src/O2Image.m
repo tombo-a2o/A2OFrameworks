@@ -55,6 +55,7 @@ ONYX2D_STATIC BOOL initFunctionsForMonochrome(O2Image *self,size_t bitsPerCompon
 
 
 ONYX2D_STATIC BOOL initFunctionsForRGBColorSpace(O2Image *self,size_t bitsPerComponent,size_t bitsPerPixel,O2BitmapInfo bitmapInfo){
+    printf("initFunctionsForRGBColorSpace %d %d %x %x\n", bitsPerComponent, bitsPerPixel, bitmapInfo&kO2BitmapByteOrderMask, bitmapInfo&kO2BitmapAlphaInfoMask);
 
    switch(bitsPerComponent){
 
@@ -269,17 +270,16 @@ ONYX2D_STATIC BOOL initFunctionsForIndexedColorSpace(O2Image *self,size_t bitsPe
 }
 
 ONYX2D_STATIC BOOL initFunctionsForParameters(O2Image *self,size_t bitsPerComponent,size_t bitsPerPixel,O2ColorSpaceRef colorSpace,O2BitmapInfo bitmapInfo){
-
    self->_read_a8u=O2Image_read_a8u_src_argb8u;
    self->_read_a32f=O2ImageRead_ANY_to_A8_to_Af;
    self->_read_argb32f=O2ImageRead_ANY_to_argb8u_to_argb32f;
 
   if((bitmapInfo&kO2BitmapByteOrderMask)==kO2BitmapByteOrderDefault) {
-#ifdef __LITTLE_ENDIAN__
-    bitmapInfo|=kO2BitmapByteOrder32Little;
-#else
+// #ifdef __LITTLE_ENDIAN__
+//     bitmapInfo|=kO2BitmapByteOrder32Little;
+// #else
     bitmapInfo|=kO2BitmapByteOrder32Big;
-#endif
+// #endif
   }
 
    switch([colorSpace type]){

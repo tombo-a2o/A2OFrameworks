@@ -359,12 +359,12 @@ static BOOL initFunctionsForParameters(O2Surface *self,size_t bitsPerComponent,s
        break;
       case 128:
        switch(bitmapInfo&kO2BitmapByteOrderMask){
-        case kO2BitmapByteOrderDefault:
         case kO2BitmapByteOrder16Little:
         case kO2BitmapByteOrder32Little:
          self->_writeargb32f=O2SurfaceWrite_argb32f_to_argb32fLittle;
          return YES;
 
+		case kO2BitmapByteOrderDefault:
         case kO2BitmapByteOrder16Big:
         case kO2BitmapByteOrder32Big:
          self->_writeargb32f=O2SurfaceWrite_argb32f_to_argb32fBig;
@@ -399,13 +399,13 @@ static BOOL initFunctionsForParameters(O2Surface *self,size_t bitsPerComponent,s
          case kO2ImageAlphaLast:
          case kO2ImageAlphaPremultipliedLast:
           switch(bitmapInfo&kO2BitmapByteOrderMask){
-           case kO2BitmapByteOrderDefault:
            case kO2BitmapByteOrder16Little:
            case kO2BitmapByteOrder32Little:
             self->_writeargb32f=O2SurfaceWrite_argb32f_to_ABGR8888;
             self->_writeargb8u=O2SurfaceWrite_argb8u_to_ABGR8888;
             return YES;
 
+		   case kO2BitmapByteOrderDefault:
            case kO2BitmapByteOrder16Big:
            case kO2BitmapByteOrder32Big:
             self->_writeargb32f=O2SurfaceWrite_argb32f_to_argb8u;
@@ -417,7 +417,6 @@ static BOOL initFunctionsForParameters(O2Surface *self,size_t bitsPerComponent,s
 
          case kO2ImageAlphaPremultipliedFirst:
           switch(bitmapInfo&kO2BitmapByteOrderMask){
-           case kO2BitmapByteOrderDefault:
            case kO2BitmapByteOrder16Little:
            case kO2BitmapByteOrder32Little:
             self->_writeargb8u=O2SurfaceWrite_argb8u_to_BGRA8888;
@@ -437,11 +436,11 @@ static BOOL initFunctionsForParameters(O2Surface *self,size_t bitsPerComponent,s
        }
        else if([colorSpace type]==kO2ColorSpaceModelCMYK){
         switch(bitmapInfo&kO2BitmapByteOrderMask){
-         case kO2BitmapByteOrderDefault:
          case kO2BitmapByteOrder16Little:
          case kO2BitmapByteOrder32Little:
           break;
 
+		 case kO2BitmapByteOrderDefault:
          case kO2BitmapByteOrder16Big:
          case kO2BitmapByteOrder32Big:
           self->_writeargb32f=O2SurfaceWrite_argb32f_to_CMYK8888;
@@ -460,12 +459,12 @@ static BOOL initFunctionsForParameters(O2Surface *self,size_t bitsPerComponent,s
        break;
       case 16:
        switch(bitmapInfo&kO2BitmapByteOrderMask){
-        case kO2BitmapByteOrderDefault:
         case kO2BitmapByteOrder16Little:
         case kO2BitmapByteOrder32Little:
          self->_writeargb32f=O2SurfaceWrite_argb32f_to_BARG4444;
          return YES;
 
+		case kO2BitmapByteOrderDefault:
         case kO2BitmapByteOrder16Big:
         case kO2BitmapByteOrder32Big:
          self->_writeargb32f=O2SurfaceWrite_argb32f_to_RGBA4444;
