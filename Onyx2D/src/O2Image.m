@@ -55,7 +55,6 @@ ONYX2D_STATIC BOOL initFunctionsForMonochrome(O2Image *self,size_t bitsPerCompon
 
 
 ONYX2D_STATIC BOOL initFunctionsForRGBColorSpace(O2Image *self,size_t bitsPerComponent,size_t bitsPerPixel,O2BitmapInfo bitmapInfo){
-    printf("initFunctionsForRGBColorSpace %d %d %x %x\n", bitsPerComponent, bitsPerPixel, bitmapInfo&kO2BitmapByteOrderMask, bitmapInfo&kO2BitmapAlphaInfoMask);
 
    switch(bitsPerComponent){
 
