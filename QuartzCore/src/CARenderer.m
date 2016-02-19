@@ -49,6 +49,8 @@
     GLint _unifBorderWidth;
     GLint _unifBorderColor;
     GLint _unifBackgroundColor;
+    GLuint _vertexObject;
+
 }
 
 
@@ -115,6 +117,7 @@ static const char *fragmentShaderSource =
    // _unifBorderWidth = glGetUniformLocation(_program, "borderWidth");
    // _unifBorderColor = glGetUniformLocation(_program, "borderColor");
    _unifBackgroundColor = glGetUniformLocation(_program, "backgroundColor");
+   glGenBuffers(1, &_vertexObject);
    assert(_attrPosition >= 0);
    assert(_attrTexCoord >= 0);
    assert(_attrDistance >= 0);
@@ -124,6 +127,7 @@ static const char *fragmentShaderSource =
    // assert(_unifBorderWidth >= 0);
    // assert(_unifBorderColor >= 0);
    assert(_unifBackgroundColor >= 0);
+   assert(_vertexObject);
 
    return self;
 }
@@ -131,6 +135,9 @@ static const char *fragmentShaderSource =
 - (void)dealloc {
     if(_program) {
         glDeleteProgram(_program);
+    }
+    if(_vertexObject) {
+        glDeleteBuffers(1, &_vertexObject);
     }
     [_rootLayer release];
     [super dealloc];
@@ -366,9 +373,7 @@ static void generateTransparentTexture() {
     glEnableVertexAttribArray(_attrTexCoord);
     glEnableVertexAttribArray(_attrDistance);
 
-    GLuint vertexObject;
-    glGenBuffers(1, &vertexObject);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexObject);
+    glBindBuffer(GL_ARRAY_BUFFER, _vertexObject);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     glVertexAttribPointer(_attrPosition, 2, GL_FLOAT, GL_FALSE, 8*sizeof(GLfloat), 0);
@@ -391,8 +396,6 @@ static void generateTransparentTexture() {
         0, 4, 1, 5, 2, 6, 3, 7, 7, 7, 11, 6, 10, 5, 9, 4, 8, 8, 8, 12, 9, 13, 10, 14, 11, 15
     };
     glDrawElements(GL_TRIANGLE_STRIP, sizeof(index)/sizeof(GLushort), GL_UNSIGNED_SHORT, index);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
     CATransform3D sublayerTransform = l.sublayerTransform;
     
