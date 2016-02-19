@@ -3,7 +3,9 @@
 #import <QuartzCore/CALayer+Private.h>
 #import <QuartzCore/CARenderer.h>
 #import <Foundation/NSString.h>
+#define GL_GLEXT_PROTOTYPES
 #import <OpenGLES/ES2/gl.h>
+#import <OpenGLES/ES2/glext.h>
 #import <emscripten.h>
 
 @implementation CALayerContext
@@ -51,6 +53,7 @@
     glGetIntegerv(GL_BLEND_SRC_ALPHA, &blendFund);
     cullFace = glIsEnabled(GL_CULL_FACE);
     glGetIntegerv(GL_CULL_FACE_MODE, &cullFaceMode);
+    glBindVertexArrayOES(0);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
