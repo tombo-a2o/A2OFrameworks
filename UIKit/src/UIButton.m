@@ -43,6 +43,7 @@ static NSString *UIButtonContentTypeImage = @"UIButtonContentTypeImage";
 
 @interface UIButtonContent : NSObject
 @property(nonatomic, retain) UIImage *image;
+@property(nonatomic, retain) UIImage *backgroundImage;
 @property(nonatomic, retain) UIColor *shadowColor;
 -(id)initWithCoder:(NSCoder*)coder;
 @end
@@ -52,6 +53,7 @@ static NSString *UIButtonContentTypeImage = @"UIButtonContentTypeImage";
 {
     self = [super init];
     self.image = [coder decodeObjectForKey:@"UIImage"];
+    self.backgroundImage = [coder decodeObjectForKey:@"UIBackgroundImage"];
     self.shadowColor = [coder decodeObjectForKey:@"UIShadowColor"];
     return self;
 }
@@ -131,6 +133,7 @@ static NSString *UIButtonContentTypeImage = @"UIButtonContentTypeImage";
             UIButtonContent *content = [dict valueForKey:key];
             
             [self setImage:content.image forState:state];
+            [self setBackgroundImage:content.backgroundImage forState:state];
             [self setTitleShadowColor:content.shadowColor forState:state];
         }
     }
