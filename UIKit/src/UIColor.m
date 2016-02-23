@@ -148,7 +148,7 @@ static UIColor *LightTextColor = nil;
 {
     float red = [coder decodeFloatForKey:@"UIRed"];
     float green  = [coder decodeFloatForKey:@"UIGreen"];
-    float blue = [coder decodeFloatForKey:@"UIGreen"];
+    float blue = [coder decodeFloatForKey:@"UIBlue"];
     float alpha = [coder decodeFloatForKey:@"UIAlpha"];
     return [self initWithRed:red green:green blue:blue alpha:alpha];
 }
