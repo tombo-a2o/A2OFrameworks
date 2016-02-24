@@ -351,17 +351,16 @@ static void generateTransparentTexture() {
     GLfloat y[] = {0, cornerRadius, h-cornerRadius, h};
     GLfloat r[] = {cornerRadius, 0, 0, cornerRadius};
     GLfloat vertices[4*4*8];
+    BOOL flipTexture = [layer _flipTexture];
     for(int j = 0; j < 4; j++) {
         for(int i = 0; i < 4; i++) {
             int idx = j*4+i;
-            vertices[idx*8  ] = x[i];   // coordinate
-            vertices[idx*8+1] = y[j];
-            vertices[idx*8+2] = x[i]/w; // texture coord
-            vertices[idx*8+3] = y[j]/h;
-            vertices[idx*8+4] = x[i]/w; // texture coord(flip)
-            vertices[idx*8+5] = 1.0-y[j]/h;
-            vertices[idx*8+6] = r[i];  // corner radius
-            vertices[idx*8+7] = r[j];
+            vertices[idx*6  ] = x[i];   // coordinate
+            vertices[idx*6+1] = y[j];
+            vertices[idx*6+2] = x[i]/w; // texture coord
+            vertices[idx*6+3] = flipTexture ? 1.0-y[j]/h : y[j]/h;
+            vertices[idx*6+4] = r[i];  // corner radius
+            vertices[idx*6+5] = r[j];
         }
     }
 
@@ -376,9 +375,9 @@ static void generateTransparentTexture() {
     glBindBuffer(GL_ARRAY_BUFFER, _vertexObject);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(_attrPosition, 2, GL_FLOAT, GL_FALSE, 8*sizeof(GLfloat), 0);
-    glVertexAttribPointer(_attrTexCoord, 2, GL_FLOAT, GL_FALSE, 8*sizeof(GLfloat), (GLfloat*)NULL + ([layer _flipTexture] ? 4 : 2));
-    glVertexAttribPointer(_attrDistance, 2, GL_FLOAT, GL_FALSE, 8*sizeof(GLfloat), (GLfloat*)NULL + 6);
+    glVertexAttribPointer(_attrPosition, 2, GL_FLOAT, GL_FALSE, 6*sizeof(GLfloat), 0);
+    glVertexAttribPointer(_attrTexCoord, 2, GL_FLOAT, GL_FALSE, 6*sizeof(GLfloat), (GLfloat*)NULL + 2);
+    glVertexAttribPointer(_attrDistance, 2, GL_FLOAT, GL_FALSE, 6*sizeof(GLfloat), (GLfloat*)NULL + 4);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     glUniformMatrix4fv(_unifTransform, 1, GL_FALSE, &t);
