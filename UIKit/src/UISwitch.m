@@ -28,20 +28,90 @@
  */
 
 #import <UIKit/UISwitch.h>
+#import <QuartzCore/QuartzCore.h>
 
-@implementation UISwitch
+#define SWITCH_WIDTH 51
+#define SWITCH_HEIGHT 31
+
+@implementation UISwitch {
+    CALayer *_knob;
+    CALayer *_dimple;
+}
 
 - (id)initWithFrame:(CGRect)frame
 {
     if ((self=[super initWithFrame:frame])) {
         // UIView's initWithFrame: calls setFrame:, so we'll enforce UISwitch's size invariant down there (see below)
+        [self _initializeSwitch];
     }
     return self;
+}
+
+- (id)initWithCoder:(NSCoder*)coder
+{
+    self = [super initWithCoder:coder];
+    if(self) {
+        _on = [coder decodeBoolForKey:@"UISwitchOn"];
+        [self _initializeSwitch];
+    }
+    return self;
+}
+
+- (void)_initializeSwitch
+{
+    _knob = [CALayer layer];
+    _knob.bounds = CGRectMake(0, 0, SWITCH_HEIGHT-3, SWITCH_HEIGHT-3);
+    _knob.borderWidth = 0.5;
+    _knob.borderColor = CGColorCreateGenericGray(0.5, 0.8);
+    _knob.backgroundColor = CGColorCreateGenericGray(1.0, 1.0);
+    _knob.cornerRadius = SWITCH_HEIGHT/2-2;
+    _knob.zPosition = 1;
+    _dimple = [CALayer layer];
+    _dimple.borderWidth = 1.5;
+    _dimple.frame = CGRectMake(0, 0, SWITCH_WIDTH, SWITCH_HEIGHT);
+    _dimple.cornerRadius = SWITCH_HEIGHT/2;
+    _dimple.zPosition = 0;
+    [self.layer addSublayer:_knob];
+    [self.layer addSublayer:_dimple];
+    
+    [self addTarget:self action:@selector(_toggleSwitch) forControlEvents:UIControlEventTouchUpInside];
+    
+    [self _updateLayer:NO];
+}
+
+- (void)_updateLayer:(BOOL)animated
+{
+    [CATransaction begin];
+
+    [CATransaction setDisableActions:!animated];
+    
+    if(_on) {
+        _knob.position = CGPointMake(SWITCH_WIDTH - SWITCH_HEIGHT/2-1, SWITCH_HEIGHT/2+0.5);
+        _dimple.borderColor = CGColorCreateGenericRGB(0.30, 0.85, 0.38, 1.0);
+        _dimple.backgroundColor = CGColorCreateGenericRGB(0.30, 0.85, 0.38, 1.0);
+    } else {
+        _knob.position = CGPointMake(SWITCH_HEIGHT/2, SWITCH_HEIGHT/2+0.5);
+        _dimple.borderColor = CGColorCreateGenericGray(0.9, 1.0);
+        _dimple.backgroundColor = CGColorCreateGenericGray(0.0, 0.0);
+    }
+    
+    [CATransaction commit];
+}
+
+- (void)_toggleSwitch
+{
+    if(self.on) {
+        _on = NO;
+    } else {
+        _on = YES;
+    }
+    [self _updateLayer:YES];
 }
 
 - (void)setOn:(BOOL)on animated:(BOOL)animated
 {
     _on = on;
+    [self _updateLayer:animated];
 }
 
 - (void)setOn:(BOOL)on
