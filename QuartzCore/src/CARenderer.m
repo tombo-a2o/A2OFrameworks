@@ -86,18 +86,21 @@ static const char *fragmentShaderSource =
     "uniform sampler2D texture;\n"
     "uniform float opacity;\n"
     "uniform float cornerRadius;\n"
-//    "uniform float borderWidth;\n"
-//    "uniform vec4 borderColor;\n"
+    "uniform float borderWidth;\n"
+    "uniform vec4 borderColor;\n"
     "uniform vec4 backgroundColor;\n"
     "void main() {\n"
     "    vec4 texColor = texture2D(texture, texcoordVarying);\n"
     "    float alpha = texColor.a + backgroundColor.a * (1.0-texColor.a);\n"
     "    vec3 color = alpha > 0.0 ? (texColor.rgb + backgroundColor.rgb * backgroundColor.a * (1.0-texColor.a)) / alpha : vec3(0.0);\n"
-    "    float distance = length(distanceVarying) - cornerRadius;\n"
-    "    float cornerMask = distance > 0.0 ? 0.0 : 1.0; //clamp(-distance, 0.0, 1.0);\n"
-//    "    float borderMask = clamp(borderWidth/2.0-abs(distance), 0.0, 1.0);\n"
-//"    gl_FragColor = vec4(texColor.rgb, texColor.a * cornerMask * opacity) * (1.0-borderMask) + borderColor * borderMask;\n"
-    "    gl_FragColor = vec4(color.rgb, alpha * cornerMask * opacity);\n"
+    "    float d1 = cornerRadius - length(vec2(min(distanceVarying.x - cornerRadius, 0.0), min(distanceVarying.y - cornerRadius, 0.0)));\n"
+    "    float d2 = min(max(distanceVarying.x - cornerRadius, 0.0), max(distanceVarying.y - cornerRadius, 0.0));\n"
+    "    float distance = d1 + d2;\n"
+    // "    float cornerMask = clamp(distance - borderWidth, 0.0, 1.0);\n"
+    // "    float borderMask = clamp(distance, 0.0, 1.0) - cornerMask;\n"
+    "    float cornerMask = distance > borderWidth ? 1.0 : 0.0;\n"
+    "    float borderMask = distance >= 0.0 && distance <= borderWidth ? 1.0 : 0.0;\n"
+    "    gl_FragColor = mix(vec4(color.rgb, alpha * cornerMask * opacity), borderColor, borderMask);\n"
     "}\n";
 
 
@@ -114,8 +117,8 @@ static const char *fragmentShaderSource =
    _unifTransform = glGetUniformLocation(_program, "transform");
    _unifOpacity = glGetUniformLocation(_program, "opacity");
    _unifCornerRadius = glGetUniformLocation(_program, "cornerRadius");
-   // _unifBorderWidth = glGetUniformLocation(_program, "borderWidth");
-   // _unifBorderColor = glGetUniformLocation(_program, "borderColor");
+   _unifBorderWidth = glGetUniformLocation(_program, "borderWidth");
+   _unifBorderColor = glGetUniformLocation(_program, "borderColor");
    _unifBackgroundColor = glGetUniformLocation(_program, "backgroundColor");
    glGenBuffers(1, &_vertexObject);
    assert(_attrPosition >= 0);
@@ -124,8 +127,8 @@ static const char *fragmentShaderSource =
    assert(_unifTransform >= 0);
    assert(_unifOpacity >= 0);
    assert(_unifCornerRadius >= 0);
-   // assert(_unifBorderWidth >= 0);
-   // assert(_unifBorderColor >= 0);
+   assert(_unifBorderWidth >= 0);
+   assert(_unifBorderColor >= 0);
    assert(_unifBackgroundColor >= 0);
    assert(_vertexObject);
 
@@ -346,21 +349,22 @@ static void generateTransparentTexture() {
 
     CGFloat w = bounds.size.width;
     CGFloat h = bounds.size.height;
+    CGFloat mid = MIN(w, h) / 2;
 
-    GLfloat x[] = {0, cornerRadius, w-cornerRadius, w};
-    GLfloat y[] = {0, cornerRadius, h-cornerRadius, h};
-    GLfloat r[] = {cornerRadius, 0, 0, cornerRadius};
-    GLfloat vertices[4*4*8];
+    GLfloat x[] = {0, mid, w-mid, w};
+    GLfloat y[] = {0, mid, h-mid, h};
+    GLfloat d[] = {0, mid, mid, 0};
+    GLfloat vertices[4*4*6];
     BOOL flipTexture = [layer _flipTexture];
+    int idx = 0;
     for(int j = 0; j < 4; j++) {
         for(int i = 0; i < 4; i++) {
-            int idx = j*4+i;
-            vertices[idx*6  ] = x[i];   // coordinate
-            vertices[idx*6+1] = y[j];
-            vertices[idx*6+2] = x[i]/w; // texture coord
-            vertices[idx*6+3] = flipTexture ? 1.0-y[j]/h : y[j]/h;
-            vertices[idx*6+4] = r[i];  // corner radius
-            vertices[idx*6+5] = r[j];
+            vertices[idx++] = x[i];   // coordinate
+            vertices[idx++] = y[j];
+            vertices[idx++] = x[i]/w; // texture coord
+            vertices[idx++] = flipTexture ? 1.0-y[j]/h : y[j]/h;
+            vertices[idx++] = d[i];  // distance to edge
+            vertices[idx++] = d[j];
         }
     }
 
@@ -383,18 +387,33 @@ static void generateTransparentTexture() {
     glUniformMatrix4fv(_unifTransform, 1, GL_FALSE, &t);
     glUniform1f(_unifOpacity, l.opacity);
     glUniform1f(_unifCornerRadius, cornerRadius);
-    // glUniform1f(_unifBorderWidth, borderWidth);
+    glUniform1f(_unifBorderWidth, borderWidth);
     GLfloat borderColor[4];
     getColorComponents(l.borderColor, borderColor);
-    // glUniform4fv(_unifBorderColor, 1, borderColor);
+    glUniform4fv(_unifBorderColor, 1, borderColor);
     GLfloat backgroundColor[4];
     getColorComponents(l.backgroundColor, backgroundColor);
     glUniform4fv(_unifBackgroundColor, 1, backgroundColor);
 
     const GLushort index[] = {
-        0, 4, 1, 5, 2, 6, 3, 7, 7, 7, 11, 6, 10, 5, 9, 4, 8, 8, 8, 12, 9, 13, 10, 14, 11, 15
+        0, 4, 1,
+        1, 4, 5,
+        1, 5, 2,
+        2, 5, 6,
+        2, 6, 3,
+        3, 6, 7,
+        4, 8, 5,
+        5, 8, 9,
+        6, 10, 7,
+        7, 10, 11,
+        8, 12, 9,
+        9, 12, 13,
+        9, 13, 10,
+        10, 13, 14,
+        10, 14, 11,
+        11, 14, 15,
     };
-    glDrawElements(GL_TRIANGLE_STRIP, sizeof(index)/sizeof(GLushort), GL_UNSIGNED_SHORT, index);
+    glDrawElements(GL_TRIANGLES, sizeof(index)/sizeof(GLushort), GL_UNSIGNED_SHORT, index);
 
     CATransform3D sublayerTransform = l.sublayerTransform;
     

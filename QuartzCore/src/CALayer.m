@@ -270,6 +270,7 @@ NSString * const kCATransition = @"transition";
     _flipTexture = NO;
     _zPosition = 0;
     _anchorPointZ = 0.0;
+    _borderColor = CGColorCreateGenericGray(0.0, 1.0);
     return self;
 }
 
