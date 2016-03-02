@@ -28,7 +28,7 @@
  */
 
 #import <UIKit/UILongPressGestureRecognizer.h>
-#import "UIGestureRecognizerSubclass.h"
+#import <UIKit/UIGestureRecognizerSubclass.h>
 #import "UITouchEvent.h"
 #import <UIKit/UITouch.h>
 #import "UIApplicationAppKitIntegration.h"

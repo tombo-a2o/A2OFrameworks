@@ -28,7 +28,7 @@
  */
 
 #import <UIKit/UIRotationGestureRecognizer.h>
-#import "UIGestureRecognizerSubclass.h"
+#import <UIKit/UIGestureRecognizerSubclass.h>
 
 @implementation UIRotationGestureRecognizer
 

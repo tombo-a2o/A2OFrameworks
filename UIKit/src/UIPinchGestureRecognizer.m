@@ -28,7 +28,7 @@
  */
 
 #import <UIKit/UIPinchGestureRecognizer.h>
-#import "UIGestureRecognizerSubclass.h"
+#import <UIKit/UIGestureRecognizerSubclass.h>
 #import "UITouchEvent.h"
 
 @implementation UIPinchGestureRecognizer

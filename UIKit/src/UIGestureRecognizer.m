@@ -28,7 +28,7 @@
  */
 
 #import <UIKit/UIGestureRecognizer.h>
-#import "UIGestureRecognizerSubclass.h"
+#import <UIKit/UIGestureRecognizerSubclass.h>
 #import "UITouch+UIPrivate.h"
 #import "UIAction.h"
 #import <UIKit/UIApplication.h>

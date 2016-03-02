@@ -28,7 +28,7 @@
  */
 
 #import <UIKit/UITapGestureRecognizer.h>
-#import "UIGestureRecognizerSubclass.h"
+#import <UIKit/UIGestureRecognizerSubclass.h>
 #import <UIKit/UITouch.h>
 
 @implementation UITapGestureRecognizer
