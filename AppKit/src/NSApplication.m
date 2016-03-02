@@ -110,6 +110,8 @@ id NSApp=nil;
 }
 #endif
 
+static dispatch_queue_t eventQueue;
+
 static EM_BOOL sendTouchEvnetToApp(int eventType, const EmscriptenTouchEvent *touchEvent, void *userData) {
     NSLog(@"event %d", eventType);
 
@@ -140,10 +142,12 @@ static EM_BOOL sendTouchEvnetToApp(int eventType, const EmscriptenTouchEvent *to
 
     NSTimeInterval timestamp = touchEvent->touches[0].identifier;
 
-    dispatch_async(dispatch_get_main_queue(), ^{
-        NSWindow* window = [NSApp mainWindow];
-        NSEvent *event = [NSEvent mouseEventWithType:type location:location modifierFlags:flags timestamp:timestamp windowNumber:window.windowNumber context:NULL eventNumber:0 clickCount:1 pressure:0];
-        [NSApp sendEvent:event];
+    dispatch_async(eventQueue, ^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSWindow* window = [NSApp mainWindow];
+            NSEvent *event = [NSEvent mouseEventWithType:type location:location modifierFlags:flags timestamp:timestamp windowNumber:window.windowNumber context:NULL eventNumber:0 clickCount:1 pressure:0];
+            [NSApp sendEvent:event];
+        });
     });
     return YES;
 }
@@ -164,7 +168,8 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
             type = NSLeftMouseDragged;
             break;
         } else {
-            return NO;
+            type = NSMouseMoved;
+            break;
         }
     default:
         return NO;
@@ -177,10 +182,12 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
 
     NSTimeInterval timestamp = mouseEvent->timestamp;
 
-    dispatch_async(dispatch_get_main_queue(), ^{
-        NSWindow* window = [NSApp mainWindow];
-        NSEvent *event = [NSEvent mouseEventWithType:type location:location modifierFlags:flags timestamp:timestamp windowNumber:window.windowNumber context:NULL eventNumber:0 clickCount:1 pressure:0];
-        [NSApp sendEvent:event];
+    dispatch_async(eventQueue, ^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSWindow* window = [NSApp mainWindow];
+            NSEvent *event = [NSEvent mouseEventWithType:type location:location modifierFlags:flags timestamp:timestamp windowNumber:window.windowNumber context:NULL eventNumber:0 clickCount:1 pressure:0];
+            [NSApp sendEvent:event];
+        });
     });
     return YES;
 }
@@ -201,6 +208,8 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
     pthread_mutex_init(_lock,NULL);
 
 //    [self _showSplashImage];
+
+    eventQueue = dispatch_queue_create("eventQueue", NULL);
 
     emscripten_set_touchstart_callback(NULL, NULL, TRUE, sendTouchEvnetToApp);
     emscripten_set_touchend_callback(NULL, NULL, TRUE, sendTouchEvnetToApp);
