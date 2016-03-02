@@ -35,6 +35,7 @@
 @implementation UIPanGestureRecognizer {
     CGPoint _translation;
     CGPoint _velocity;
+    CGPoint _prev;
     NSTimeInterval _lastMovementTime;
 }
 
@@ -94,11 +95,23 @@
         if ([event isKindOfClass:[UITouchEvent class]]) {
             UITouchEvent *touchEvent = (UITouchEvent *)event;
             
-            if (touchEvent.touchEventGesture != UITouchEventGestureBegin) {
+            if (touchEvent.touchEventGesture == UITouchEventGestureNone) {
+                // OK. Do nothing
+            } else if(touchEvent.touchEventGesture != UITouchEventGestureBegin) {
                 self.state = UIGestureRecognizerStateFailed;
             }
         }
     }
+}
+
+- (CGPoint)calcDelta:(UITouch*)touch
+{
+    CGPoint delta;
+    CGPoint prev = [touch previousLocationInView:self.view];
+    CGPoint current = [touch locationInView:self.view];
+    delta.x = current.x - prev.x;
+    delta.y = current.y - prev.y;
+    return delta;
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
@@ -106,12 +119,19 @@
     if ([event isKindOfClass:[UITouchEvent class]]) {
         UITouchEvent *touchEvent = (UITouchEvent *)event;
         
-        if (touchEvent.touchEventGesture == UITouchEventGesturePan) {
+        CGPoint delta;
+        if (touchEvent.touchEventGesture == UITouchEventGestureNone || touchEvent.touchEventGesture == UITouchEventGesturePan) {
+            if(touchEvent.touchEventGesture == UITouchEventGestureNone) {
+                delta = [self calcDelta:[touches anyObject]];
+            } else {
+                delta = touchEvent.translation;
+            }
+            
             if (self.state == UIGestureRecognizerStatePossible) {
                 _lastMovementTime = touchEvent.timestamp;
-                [self setTranslation:touchEvent.translation inView:touchEvent.touch.view];
+                [self setTranslation:delta inView:touchEvent.touch.view];
                 self.state = UIGestureRecognizerStateBegan;
-            } else if ([self _translate:touchEvent.translation withEvent:event]) {
+            } else if ([self _translate:delta withEvent:event]) {
                 self.state = UIGestureRecognizerStateChanged;
             }
         }
@@ -123,11 +143,18 @@
     if (self.state == UIGestureRecognizerStateBegan || self.state == UIGestureRecognizerStateChanged) {
         if ([event isKindOfClass:[UITouchEvent class]]) {
             UITouchEvent *touchEvent = (UITouchEvent *)event;
-            [self _translate:touchEvent.translation withEvent:touchEvent];
+            
+            if (touchEvent.touchEventGesture == UITouchEventGestureNone) {
+                [self _translate:[self calcDelta:[touches anyObject]] withEvent:touchEvent];
+            } else {
+                [self _translate:touchEvent.translation withEvent:touchEvent];
+            }
             self.state = UIGestureRecognizerStateEnded;
         } else {
             self.state = UIGestureRecognizerStateCancelled;
         }
+    } else if(self.state == UIGestureRecognizerStatePossible) {
+        self.state = UIGestureRecognizerStateFailed;
     }
 }
 
