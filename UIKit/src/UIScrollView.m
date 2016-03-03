@@ -617,7 +617,10 @@ const float UIScrollViewDecelerationRateFast = 0.99;
         if (_panGestureRecognizer.state == UIGestureRecognizerStateBegan) {
             [self _beginDragging];
         } else if (_panGestureRecognizer.state == UIGestureRecognizerStateChanged) {
-            [self _dragBy:[_panGestureRecognizer translationInView:self]];
+            CGPoint delta = [_panGestureRecognizer translationInView:self];
+            delta.x = -delta.x;
+            delta.y = -delta.y;
+            [self _dragBy:delta];
             [_panGestureRecognizer setTranslation:CGPointZero inView:self];
         } else if (_panGestureRecognizer.state == UIGestureRecognizerStateEnded) {
             [self _endDraggingWithDecelerationVelocity:[_panGestureRecognizer velocityInView:self]];
