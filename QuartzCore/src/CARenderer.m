@@ -417,9 +417,10 @@ static void generateTransparentTexture() {
 
     CATransform3D sublayerTransform = l.sublayerTransform;
     
-    CATransform3D ts3 = CATransform3DConcat(t2, sublayerTransform);
-    CATransform3D ts4 = CATransform3DConcat(ts3, CATransform3DMakeTranslation(position.x, position.y, 0));
-    CATransform3D ts  = CATransform3DConcat(ts4, transform);
+    CATransform3D ts3 = CATransform3DConcat(t2, CATransform3DMakeTranslation(-l.bounds.origin.x, -l.bounds.origin.y, 0));
+    CATransform3D ts4 = CATransform3DConcat(ts3, sublayerTransform);
+    CATransform3D ts5 = CATransform3DConcat(ts4, CATransform3DMakeTranslation(position.x, position.y, 0));
+    CATransform3D ts  = CATransform3DConcat(ts5, transform);
 
     for(CALayer *child in [layer _zOrderedSublayers]) {
         [self _renderLayer:child z:z+1 transform:ts];
