@@ -554,8 +554,8 @@ const float UIScrollViewDecelerationRateFast = 0.99;
         const CGPoint originalOffset = self.contentOffset;
         
         CGPoint proposedOffset = originalOffset;
-        proposedOffset.x += delta.x;
-        proposedOffset.y += delta.y;
+        proposedOffset.x -= delta.x;
+        proposedOffset.y -= delta.y;
         
         const CGPoint confinedOffset = [self _confinedContentOffset:proposedOffset];
         
