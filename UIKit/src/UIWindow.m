@@ -446,7 +446,7 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
                 UIScrollView *scrollView = (UIScrollView *)gesture.view;
 
                 if ([gesture isEqual:scrollView.panGestureRecognizer] || [gesture isEqual:scrollView.scrollWheelGestureRecognizer]) {
-                    delaysTouchesBegan |= scrollView.delaysContentTouches;
+                    //delaysTouchesBegan |= scrollView.delaysContentTouches;
                 }
             }
         }
