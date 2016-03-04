@@ -44,6 +44,16 @@
     }
 }
 
+- (void)willMoveToWindow:(UIWindow *)newWindow
+{
+    [super willMoveToWindow:newWindow];
+    if(newWindow) {
+        iframe_attach(_iFrameId);
+    } else {
+        iframe_detach(_iFrameId);
+    }
+}
+
 - (void)didMoveToSuperview
 {
     [super didMoveToSuperview];
