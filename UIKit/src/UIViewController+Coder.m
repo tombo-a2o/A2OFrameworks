@@ -64,10 +64,4 @@
     return self;
 }
 
-- (void)awakeFromNib {
-    if (self.view != nil) {
-        [self viewDidLoad];
-    }
-}
-
 @end
