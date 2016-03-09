@@ -34,6 +34,7 @@
 #import "UIBackgroundTask.h"
 #import "UINSApplicationDelegate.h"
 #import <AppKit/AppKit.h>
+#import <emscripten/html5.h>
 
 NSString *const UIApplicationWillChangeStatusBarOrientationNotification = @"UIApplicationWillChangeStatusBarOrientationNotification";
 NSString *const UIApplicationDidChangeStatusBarOrientationNotification = @"UIApplicationDidChangeStatusBarOrientationNotification";
@@ -81,12 +82,32 @@ static UIApplication *_theApplication = nil;
     return _theApplication;
 }
 
+static const char* beforeunload_callback(int eventType, const void *reserved, void *userData)
+{
+    [[NSNotificationCenter defaultCenter] postNotificationName:NSApplicationWillTerminateNotification object:nil];
+}
+
+static EM_BOOL visibilitychange_callback_func(int eventType, const EmscriptenVisibilityChangeEvent *visibilityChangeEvent, void *userData)
+{
+    if(visibilityChangeEvent->visibilityState == EMSCRIPTEN_VISIBILITY_VISIBLE) {
+        [[[NSWorkspace sharedWorkspace] notificationCenter] postNotificationName:NSWorkspaceDidWakeNotification object:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:NSApplicationDidBecomeActiveNotification object:nil];
+    } else if(visibilityChangeEvent->visibilityState == EMSCRIPTEN_VISIBILITY_HIDDEN) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:NSApplicationWillResignActiveNotification object:nil];
+        [[[NSWorkspace sharedWorkspace] notificationCenter] postNotificationName:NSWorkspaceWillSleepNotification object:nil];
+    }
+}
+
+
 - (id)init
 {
     if ((self=[super init])) {
         _backgroundTasks = [[NSMutableArray alloc] init];
         _applicationState = UIApplicationStateActive;
         _applicationSupportsShakeToEdit = YES;		// yeah... not *really* true, but UIKit defaults to YES :)
+        
+        emscripten_set_visibilitychange_callback(nil, false, visibilitychange_callback_func);
+        emscripten_set_beforeunload_callback(nil, beforeunload_callback);
 
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_applicationWillFinishLaunching:) name:NSApplicationWillFinishLaunchingNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_applicationDidFinishLaunching:) name:NSApplicationDidFinishLaunchingNotification object:nil];
