@@ -31,6 +31,7 @@
 
 @interface UIAlertView()
 - (void)_closeWithResult:(NSInteger)result;
+- (NSArray*)_indexArray;
 @end
 
 @interface _UIAlertWindow : UIWindow
@@ -87,14 +88,28 @@ static void adjustHeight(UIView* view, CGFloat width) {
 
     CGFloat top = CGRectGetMaxY(messageLabel.frame)+20;
 
-    for(int i = 0; i < _alertView.numberOfButtons; i++) {
-        NSString *title = [_alertView buttonTitleAtIndex:i];
+    int numberOfButtons = _alertView.numberOfButtons;
+    BOOL alignHorizontal = numberOfButtons == 2;
+    
+    for(int i = 0; i < numberOfButtons; i++) {
+        int idx = [(NSNumber*)[[_alertView _indexArray] objectAtIndex:i] integerValue];
+        NSString *title = [_alertView buttonTitleAtIndex:idx];
 
-        UIButton *button = [[UIButton alloc] initWithFrame:CGRectMake(0, top, 260, 42)];
-        button.tag = i;
+        CGRect rect;
+        if(alignHorizontal) {
+            if(i == 0) {
+                rect = CGRectMake(0, top, 130, 42);
+            } else {
+                rect = CGRectMake(130, top, 130, 42);
+            }
+        } else {
+            rect = CGRectMake(0, top, 260, 42);
+        }
+        UIButton *button = [[UIButton alloc] initWithFrame:rect];
+        button.tag = idx;
         [button setTitle:title forState:UIControlStateNormal];
         [button setTitleColor:[UIColor colorWithRed:0.0 green:122.0/255.0 blue:1.0 alpha:1.0] forState:UIControlStateNormal];
-        if(i == _alertView.cancelButtonIndex) {
+        if(idx == _alertView.cancelButtonIndex) {
             button.titleLabel.font = [UIFont boldSystemFontOfSize:17];
         } else {
             button.titleLabel.font = [UIFont systemFontOfSize:17];
@@ -102,11 +117,22 @@ static void adjustHeight(UIView* view, CGFloat width) {
         [button addTarget:self action:@selector(close:) forControlEvents:UIControlEventTouchUpInside];
         [rootView addSubview:button];
 
-        UIView *hr = [[UIView alloc] initWithFrame:CGRectMake(0, top, 260, 1)];
+        if(alignHorizontal) {
+            if(i == 0) {
+                rect = CGRectMake(0, top, 260, 1);
+            } else {
+                rect = CGRectMake(130, top, 1, 42);
+            }
+        } else {
+            rect = CGRectMake(0, top, 260, 1);
+        }
+        UIView *hr = [[UIView alloc] initWithFrame:rect];
         hr.backgroundColor = [UIColor colorWithWhite:0.9 alpha:1.0];
         [rootView addSubview:hr];
 
-        top = CGRectGetMaxY(button.frame);
+        if(!alignHorizontal || i == numberOfButtons-1) {
+            top = CGRectGetMaxY(button.frame);
+        }
     }
     CGRect frame = rootView.frame;
     frame.size.height = top;
@@ -148,6 +174,12 @@ static void adjustHeight(UIView* view, CGFloat width) {
         self.delegate = delegate;
         _buttonTitles = [NSMutableArray arrayWithCapacity:1];
 
+        if (cancelButtonTitle) {
+            self.cancelButtonIndex = [self addButtonWithTitle:cancelButtonTitle];
+        } else {
+            self.cancelButtonIndex = -1;
+        }
+        
         if (otherButtonTitles) {
             [self addButtonWithTitle:otherButtonTitles];
 
@@ -160,10 +192,6 @@ static void adjustHeight(UIView* view, CGFloat width) {
             }
 
             va_end(argumentList);
-        }
-
-        if (cancelButtonTitle) {
-            self.cancelButtonIndex = [self addButtonWithTitle:cancelButtonTitle];
         }
     }
     return self;
@@ -212,16 +240,16 @@ static void adjustHeight(UIView* view, CGFloat width) {
 
     [_window makeKeyAndVisible];
 
-    // _controller.view.transform = CGAffineTransformMakeScale(1.1, 1.1);
-    // _window.backgroundColor = [UIColor colorWithWhite:0 alpha:0.0];
-    // [UIView animateWithDuration:0.2f
-    //                       delay:0.0f
-    //                     options:UIViewAnimationOptionCurveEaseOut
-    //                  animations:^{
-    //                      _controller.view.transform = CGAffineTransformMakeScale(1.0, 1.0);
-    //                      _window.backgroundColor = [UIColor colorWithWhite:0 alpha:.4];
-    //                  } completion:^(BOOL finished) {
-    //                  }];
+    _controller.view.transform = CGAffineTransformMakeScale(1.1, 1.1);
+    _window.backgroundColor = [UIColor colorWithWhite:0 alpha:0.0];
+    [UIView animateWithDuration:0.2f
+                          delay:0.0f
+                        options:UIViewAnimationOptionCurveEaseOut
+                     animations:^{
+                         _controller.view.transform = CGAffineTransformMakeScale(1.0, 1.0);
+                         _window.backgroundColor = [UIColor colorWithWhite:0 alpha:.4];
+                     } completion:^(BOOL finished) {
+                     }];
 
 
     if (_delegateHas.didPresentAlertView) {
@@ -254,4 +282,21 @@ static void adjustHeight(UIView* view, CGFloat width) {
 {
 }
 
+- (NSArray*)_indexArray
+{
+    int num = self.numberOfButtons;
+    int cancel = self.cancelButtonIndex;
+    NSMutableArray *ret = [NSMutableArray arrayWithCapacity:num];
+    if(cancel < 0 || cancel >= num || num == 2) {
+        for(int i = 0; i < num; i++) {
+            [ret addObject:[NSNumber numberWithInteger:i]];
+        }
+    } else {
+        for(int i = 0; i < num-1; i++) {
+            [ret addObject:[NSNumber numberWithInteger:i < cancel ? i : i+1]];
+        }
+        [ret addObject:[NSNumber numberWithInteger:cancel]];
+    }
+    return [ret copy];
+}
 @end
