@@ -520,11 +520,11 @@ static EM_BOOL visibilitychange_callback_func(int eventType, const EmscriptenVis
 - (BOOL)openURL:(NSURL *)url
 {
     const char* urlString = [url.absoluteString UTF8String];
-    EM_ASM_INT({
+    int success = EM_ASM_INT({
         var url = Pointer_stringify($0);
-        window.open(url, '_blank');
+        return window.open(url, '_blank') != null ? 1 : 0;
     }, urlString);
-    return YES;
+    return success;
 }
 
 - (BOOL)canOpenURL:(NSURL *)url
