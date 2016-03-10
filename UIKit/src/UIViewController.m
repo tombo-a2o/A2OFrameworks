@@ -301,7 +301,7 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
         newView.layer.doubleSided = NO;
         
         [CATransaction setCompletionBlock:^{
-            selfView.hidden = YES;		// I think the real one may actually remove it, which would mean needing to remember the superview, I guess? Not sure...
+            //selfView.hidden = YES;		// I think the real one may actually remove it, which would mean needing to remember the superview, I guess? Not sure...
             
             [self viewDidDisappear:animated];
 
@@ -313,10 +313,16 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
         }];
         
         UIModalTransitionStyle style = _presentedViewController.modalTransitionStyle;
-        if(!style || style == UIModalTransitionStyleFlipHorizontal) {
+        switch(style) {
+        case UIModalTransitionStyleFlipHorizontal:
             [selfView.layer addAnimation:[UIAnimation frontToBackClockwise] forKey:nil];
             [newView.layer addAnimation:[UIAnimation backToFrontClockwise] forKey:nil];
-        } else {
+            break;
+        case UIModalTransitionStyleCrossDissolve:
+            break;
+        case UIModalTransitionStyleCoverVertical:
+        case UIModalTransitionStylePartialCurl:
+        default:
             NSLog(@"%s Unsupported modalTransitionStyle %d", __FUNCTION__, style);
         }
         

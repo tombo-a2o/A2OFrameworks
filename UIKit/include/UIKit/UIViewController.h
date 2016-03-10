@@ -40,6 +40,11 @@ typedef NS_ENUM(NSInteger, UIModalPresentationStyle) {
     UIModalPresentationPageSheet,
     UIModalPresentationFormSheet,
     UIModalPresentationCurrentContext,
+    UIModalPresentationCustom,
+    UIModalPresentationOverFullScreen,
+    UIModalPresentationOverCurrentContext,
+    UIModalPresentationPopover,
+    UIModalPresentationNone = -1
 };
 
 typedef NS_ENUM(NSInteger, UIModalTransitionStyle) {

@@ -39,6 +39,7 @@
     [super willMoveToSuperview:newSuperview];
     if(newSuperview) {
         iframe_attach(_iFrameId);
+        [self _setFrame];
     } else {
         iframe_detach(_iFrameId);
     }
@@ -49,6 +50,7 @@
     [super willMoveToWindow:newWindow];
     if(newWindow) {
         iframe_attach(_iFrameId);
+        [self _setFrame];
     } else {
         iframe_detach(_iFrameId);
     }
