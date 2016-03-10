@@ -608,6 +608,11 @@ static EM_BOOL visibilitychange_callback_func(int eventType, const EmscriptenVis
     [[NSNotificationCenter defaultCenter] postNotificationName:UIApplicationDidReceiveMemoryWarningNotification object:self];
 }
 
+- (void)scheduleLocalNotification:(UILocalNotification *)notification
+{
+    NSLog(@"%s not implemented", __FUNCTION__);
+}
+
 @end
 
 
