@@ -79,7 +79,7 @@ static UIDevice *theDevice;
 
 - (NSString *)systemVersion
 {
-    return [[NSProcessInfo processInfo] operatingSystemVersionString];
+    return @"8.0";
 }
 
 - (NSString *)model
