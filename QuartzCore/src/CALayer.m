@@ -271,6 +271,7 @@ NSString * const kCATransition = @"transition";
     _zPosition = 0;
     _anchorPointZ = 0.0;
     _borderColor = CGColorCreateGenericGray(0.0, 1.0);
+    _contentsScale = 1.0;
     return self;
 }
 
@@ -409,16 +410,19 @@ NSString * const kCATransition = @"transition";
         _flipTexture = NO;
     } else {
 #warning TODO reuse context
+        CGFloat scale = self.contentsScale;
+        if(scale == 0.0) NSLog(@"scale zero %@", self);
         CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
         CGContextRef context = CGBitmapContextCreate(
                 NULL,
-                _bounds.size.width,
-                _bounds.size.height,
+                _bounds.size.width * scale,
+                _bounds.size.height * scale,
                 8,
                 0,
                 colorSpace,
                 kO2BitmapByteOrder32Big|kO2ImageAlphaLast);
         CGColorSpaceRelease(colorSpace); // colorSpace is retained by context
+        CGContextScaleCTM(context, scale, scale);
         assert(context);
         [self drawInContext:context];
         [self setContents:context];
