@@ -33,10 +33,7 @@ static NSMutableArray *possibleContextClasses=nil;
     if(possibleContextClasses==nil){
         possibleContextClasses=[NSMutableArray new];
 
-        [possibleContextClasses addObject:@"O2Context_gdi"];
         [possibleContextClasses addObject:@"O2Context_builtin"];
-        [possibleContextClasses addObject:@"O2Context_builtin_gdi"];
-        [possibleContextClasses addObject:@"O2Context_cairo"];
         [possibleContextClasses addObject:@"O2Context_builtin_FT"];
 
         NSArray *allPaths=[[NSBundle bundleForClass:self] pathsForResourcesOfType:@"cgContext" inDirectory:nil];
