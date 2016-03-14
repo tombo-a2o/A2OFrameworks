@@ -280,6 +280,21 @@ static void O2SurfaceWrite_argb8u_to_BGRA8888(O2Surface *self,int x,int y,O2argb
    }
 }
 
+static void O2SurfaceWrite_argb8u_to_ARGB8888(O2Surface *self,int x,int y,O2argb8u *span,int length){
+   uint8_t* scanline = self->_pixelBytes + y * self->_bytesPerRow;
+   int i;
+
+   scanline+=x*4;
+   for(i=0;i<length;i++){
+    O2argb8u rgba=*span++;
+
+	*scanline++=rgba.a;
+	*scanline++=rgba.r;
+	*scanline++=rgba.g;
+    *scanline++=rgba.b;
+   }
+}
+
 static void O2SurfaceWrite_argb32f_to_RGBA4444(O2Surface *self,int x,int y,O2argb32f *span,int length){
    uint8_t* scanline = self->_pixelBytes + y * self->_bytesPerRow;
    int i;
@@ -421,6 +436,11 @@ static BOOL initFunctionsForParameters(O2Surface *self,size_t bitsPerComponent,s
            case kO2BitmapByteOrder32Little:
             self->_writeargb8u=O2SurfaceWrite_argb8u_to_BGRA8888;
             return YES;
+		   case kO2BitmapByteOrderDefault:
+	       case kO2BitmapByteOrder16Big:
+	       case kO2BitmapByteOrder32Big:
+			self->_writeargb8u=O2SurfaceWrite_argb8u_to_ARGB8888;
+			return YES;
           }
           break;
 

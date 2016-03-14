@@ -133,6 +133,11 @@ ONYX2D_STATIC BOOL initFunctionsForRGBColorSpace(O2Image *self,size_t bitsPerCom
            case kO2BitmapByteOrder32Little:
             self->_read_argb8u=O2ImageRead_BGRA8888_to_argb8u;
             return YES;
+            
+           case kO2BitmapByteOrder16Big:
+           case kO2BitmapByteOrder32Big:
+            self->_read_argb8u=O2ImageRead_ARGB8888_to_argb8u;
+            return YES;
           }
           break;
 
@@ -906,6 +911,17 @@ O2argb8u *O2ImageRead_BGRA8888_to_argb8u(O2Image *self,int x,int y,O2argb8u *spa
     *span++=result;
    }
    return NULL;
+}
+
+O2argb8u *O2ImageRead_ARGB8888_to_argb8u(O2Image *self,int x,int y,O2argb8u *span,int length) {
+   const uint8_t *scanline = (const uint8_t *)scanlineAtY(self,y);
+   int i;
+
+   if(scanline==NULL)
+    return NULL;
+
+   scanline+=x*4;
+   return (O2argb8u *)scanline;
 }
 
 O2argb8u *O2ImageRead_RGB888_to_argb8u(O2Image *self,int x,int y,O2argb8u *span,int length) {
