@@ -98,8 +98,9 @@ static const char *fragmentShaderSource =
     "    float distance = d1 + d2;\n"
     // "    float cornerMask = clamp(distance - borderWidth, 0.0, 1.0);\n"
     // "    float borderMask = clamp(distance, 0.0, 1.0) - cornerMask;\n"
-    "    float cornerMask = distance > borderWidth ? 1.0 : 0.0;\n"
-    "    float borderMask = distance >= 0.0 && distance <= borderWidth ? 1.0 : 0.0;\n"
+    "    if(distance < 0.0) discard;\n"
+    "    float cornerMask = distance >= borderWidth ? 1.0 : 0.0;\n"
+    "    float borderMask = distance < borderWidth ? 1.0 : 0.0;\n"
     "    gl_FragColor = mix(vec4(color.rgb, alpha * cornerMask * opacity), borderColor, borderMask);\n"
     "}\n";
 
