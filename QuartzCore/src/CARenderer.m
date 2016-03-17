@@ -51,6 +51,7 @@
     GLint _unifBackgroundColor;
     GLuint _vertexObject;
 
+    GLint _stencilBits;
 }
 
 
@@ -132,6 +133,8 @@ static const char *fragmentShaderSource =
    assert(_unifBorderColor >= 0);
    assert(_unifBackgroundColor >= 0);
    assert(_vertexObject);
+   
+   glGetIntegerv(GL_STENCIL_BITS, &_stencilBits);
 
    return self;
 }
@@ -404,6 +407,9 @@ static void generateTransparentTexture() {
     
     if(l.masksToBounds) {
         mask++;
+        if(mask > _stencilBits) {
+            NSLog(@"Too many mask layers");
+        }
         glStencilOp(GL_KEEP, GL_REPLACE, GL_REPLACE);
     } else {
         glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
