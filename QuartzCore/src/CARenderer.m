@@ -278,7 +278,7 @@ static void generateTransparentTexture() {
     glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,1,1,0,GL_RGBA,GL_UNSIGNED_BYTE, componentsByte);
 }
 
--(void)_renderLayer:(CALayer *)layer z:(float)z transform:(CATransform3D)transform {
+-(void)_renderLayer:(CALayer *)layer z:(int)z mask:(int)mask transform:(CATransform3D)transform {
     //NSLog(@"CARenderer: renderLayer %@ b:%@ f:%@ %f", layer, NSStringFromRect(layer.bounds), NSStringFromRect(layer.frame), z);
     if(layer.isHidden) return;
 
@@ -395,6 +395,19 @@ static void generateTransparentTexture() {
     GLfloat backgroundColor[4];
     getColorComponents(l.backgroundColor, backgroundColor);
     glUniform4fv(_unifBackgroundColor, 1, backgroundColor);
+    
+    int mask1000 = 1 << mask;
+    int mask0111 = mask1000 - 1;
+    int mask1111 = mask1000 | mask0111;
+    glStencilMask(mask1000);
+    glStencilFunc(GL_EQUAL, mask1111, mask0111);
+    
+    if(l.masksToBounds) {
+        mask++;
+        glStencilOp(GL_KEEP, GL_REPLACE, GL_REPLACE);
+    } else {
+        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+    }
 
     const GLushort index[] = {
         0, 4, 1,
@@ -424,7 +437,11 @@ static void generateTransparentTexture() {
     CATransform3D ts  = CATransform3DConcat(ts5, transform);
 
     for(CALayer *child in [layer _zOrderedSublayers]) {
-        [self _renderLayer:child z:z+1 transform:ts];
+        [self _renderLayer:child z:z+1 mask:mask transform:ts];
+    }
+    
+    if(l.masksToBounds) {
+        glClear(GL_STENCIL_BUFFER_BIT);
     }
 }
 
@@ -437,9 +454,11 @@ static void displayTree(CALayer *layer) {
 
 -(void)render {
     glClearColor(1.0, 1.0, 1.0, 1.0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glStencilMask(~0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     glEnable(GL_BLEND);
+    glEnable(GL_STENCIL_TEST);
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
     glUseProgram(_program);
@@ -454,7 +473,7 @@ static void displayTree(CALayer *layer) {
     displayTree(_rootLayer);
     [_rootLayer _generatePresentationLayer];
     [_rootLayer _updateAnimations:CACurrentMediaTime()];
-    [self _renderLayer:_rootLayer.presentationLayer z:0 transform:projection];
+    [self _renderLayer:_rootLayer.presentationLayer z:0 mask:0 transform:projection];
 
     glUseProgram(0);
     
