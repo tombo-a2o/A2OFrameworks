@@ -48,7 +48,7 @@
         _entryPoint = [storyInfo objectForKey:@"UIStoryboardDesignatedEntryPointIdentifier"];
         _fileMap = [storyInfo objectForKey:@"UIViewControllerIdentifiersToNibNames"];
     }
-    NSLog(@"%@ %@ %@ %@ %@", _path, storyInfoPath, storyInfo, _entryPoint, _fileMap);
+    DEBUGLOG(@"%@ %@ %@ %@ %@", _path, storyInfoPath, storyInfo, _entryPoint, _fileMap);
 
     return self;
 }
