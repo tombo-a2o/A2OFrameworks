@@ -205,9 +205,6 @@
                          }
                          
                          [self.delegate navigationController:self didShowViewController:newVisibleViewController animated:animated];
-#if DEBUG
-                         [[[UIScreen mainScreen] performSelector:@selector(keyWindow)] performSelector:@selector(dumpViewTree)];
-#endif
                      }];
 
     _isUpdating = NO;

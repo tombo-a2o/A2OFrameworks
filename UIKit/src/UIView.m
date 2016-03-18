@@ -1220,3 +1220,10 @@ static BOOL _animationsEnabled = YES;
 }
 
 @end
+
+#ifdef DEBUG
+void dumpViewTree(void)
+{
+    [[[UIScreen mainScreen] performSelector:@selector(keyWindow)] performSelector:@selector(dumpViewTree)];
+}
+#endif
