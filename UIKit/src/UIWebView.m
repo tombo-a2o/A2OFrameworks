@@ -9,7 +9,6 @@
 {
     if(self.superview) {
         CGRect frame = [self.superview convertRect:self.frame toView:self.window];
-        NSLog(@"frame %@", NSStringFromCGRect(frame));
         iframe_setFrame(_iFrameId, frame.origin.x, frame.origin.y, frame.size.width, frame.size.height);
     }
 }
