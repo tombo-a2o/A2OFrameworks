@@ -74,4 +74,9 @@
     }
 }
 
+- (NSString*)description
+{
+    return [NSString stringWithFormat:@"<%@: %p; touch = %@; touchEventGesture = %d>", [self class], self, _touch, _touchEventGesture];
+}
+
 @end
