@@ -621,7 +621,7 @@ NSString * const kCATransition = @"transition";
     }
 
 #warning TODO affineTransform
-    return CGAffineTransformTranslate(t, self.frame.origin.x, self.frame.origin.y);
+    return CGAffineTransformTranslate(t, self.frame.origin.x-self.bounds.origin.x, self.frame.origin.y-self.bounds.origin.y);
 }
 
 - (CGPoint)convertPoint:(CGPoint)aPoint fromLayer:(CALayer *)layer {
