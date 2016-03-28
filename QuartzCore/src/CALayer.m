@@ -43,6 +43,92 @@ NSString * const kCATransition = @"transition";
     return [[[self alloc] init] autorelease];
 }
 
+// constructor / destructor
+
+-init {
+    _superlayer=nil;
+    _sublayers=[NSArray new];
+    _delegate=nil;
+    _anchorPoint=CGPointMake(0.5,0.5);
+    _position=CGPointZero;
+    _bounds=CGRectZero;
+    _opacity=1.0;
+    _opaque=YES;
+    _contents=nil;
+    _transform=CATransform3DIdentity;
+    _sublayerTransform=CATransform3DIdentity;
+    _minificationFilter=kCAFilterLinear;
+    _magnificationFilter=kCAFilterLinear;
+    _animations=[[NSMutableDictionary alloc] init];
+    _implicitAnimations = [[NSMutableArray alloc] init];
+    _needsDisplay = YES;
+    _needsLayout = YES;
+    _textureId = 0;
+    _flipTexture = NO;
+    _zPosition = 0;
+    _anchorPointZ = 0.0;
+    _borderColor = CGColorCreateGenericGray(0.0, 1.0);
+    _contentsScale = 1.0;
+    return self;
+}
+
+-(id)initWithLayer:(id)layer_
+{
+    self = [super init];
+    CALayer *layer = layer_;
+    _superlayer = nil;
+    _sublayers = nil;
+    _delegate = layer.delegate;
+    _anchorPoint = layer.anchorPoint;
+    _position = layer.position;
+    _bounds = layer.bounds;
+    _opacity = layer.opacity;
+    _opaque = layer.opaque;
+    _contents = [layer.contents retain];
+    _transform = layer.transform;
+    _sublayerTransform = layer.sublayerTransform;
+    _minificationFilter = layer.minificationFilter;
+    _magnificationFilter = layer.magnificationFilter;
+    _autoresizingMask = layer.autoresizingMask;
+    _cornerRadius = layer.cornerRadius;
+    _layoutManager = layer.layoutManager;
+    _zPosition = layer.zPosition;
+    _anchorPointZ = layer.anchorPointZ;
+    _masksToBounds = layer.masksToBounds;
+    _hidden = layer.isHidden;
+    _backgroundColor = CGColorRetain(layer.backgroundColor);
+    _contentsGravity = layer.contentsGravity;
+    _contentsCenter = layer.contentsCenter;
+    _contentsScale = layer.contentsScale;
+    _borderWidth = layer.borderWidth;
+    _borderColor = CGColorRetain(layer.borderColor);
+    _animations = [layer->_animations mutableCopy];
+    _implicitAnimations = [layer->_implicitAnimations mutableCopy];
+    _needsDisplay = YES;
+    _needsLayout = YES;
+    _textureId = layer->_textureId;
+    _flipTexture = layer->_flipTexture;
+    return self;
+}
+
+-(void)dealloc {
+    if(!_modelLayer) [self _setTextureId:0]; // delete texture unless self is presentationLayer
+    [_contents release];
+    _presentationLayer->_modelLayer = nil;
+    [_presentationLayer release];
+    [_sublayers makeObjectsPerformSelector:@selector(_setSuperLayer:) withObject:nil];
+    [_sublayers release];
+    [_animations release];
+    [_implicitAnimations release];
+    [_minificationFilter release];
+    [_magnificationFilter release];
+    CGColorRelease(_backgroundColor);
+    CGColorRelease(_borderColor);
+    [super dealloc];
+}
+
+// properties
+
 -(CALayer *)superlayer {
     return _superlayer;
 }
@@ -237,87 +323,7 @@ NSString * const kCATransition = @"transition";
     _magnificationFilter=value;
 }
 
--init {
-    _superlayer=nil;
-    _sublayers=[NSArray new];
-    _delegate=nil;
-    _anchorPoint=CGPointMake(0.5,0.5);
-    _position=CGPointZero;
-    _bounds=CGRectZero;
-    _opacity=1.0;
-    _opaque=YES;
-    _contents=nil;
-    _transform=CATransform3DIdentity;
-    _sublayerTransform=CATransform3DIdentity;
-    _minificationFilter=kCAFilterLinear;
-    _magnificationFilter=kCAFilterLinear;
-    _animations=[[NSMutableDictionary alloc] init];
-    _implicitAnimations = [[NSMutableArray alloc] init];
-    _needsDisplay = YES;
-    _needsLayout = YES;
-    _textureId = 0;
-    _flipTexture = NO;
-    _zPosition = 0;
-    _anchorPointZ = 0.0;
-    _borderColor = CGColorCreateGenericGray(0.0, 1.0);
-    _contentsScale = 1.0;
-    return self;
-}
-
--(id)initWithLayer:(id)layer_
-{
-    self = [super init];
-    CALayer *layer = layer_;
-    _superlayer = nil;
-    _sublayers = nil;
-    _delegate = layer.delegate;
-    _anchorPoint = layer.anchorPoint;
-    _position = layer.position;
-    _bounds = layer.bounds;
-    _opacity = layer.opacity;
-    _opaque = layer.opaque;
-    _contents = [layer.contents retain];
-    _transform = layer.transform;
-    _sublayerTransform = layer.sublayerTransform;
-    _minificationFilter = layer.minificationFilter;
-    _magnificationFilter = layer.magnificationFilter;
-    _autoresizingMask = layer.autoresizingMask;
-    _cornerRadius = layer.cornerRadius;
-    _layoutManager = layer.layoutManager;
-    _zPosition = layer.zPosition;
-    _anchorPointZ = layer.anchorPointZ;
-    _masksToBounds = layer.masksToBounds;
-    _hidden = layer.isHidden;
-    _backgroundColor = CGColorRetain(layer.backgroundColor);
-    _contentsGravity = layer.contentsGravity;
-    _contentsCenter = layer.contentsCenter;
-    _contentsScale = layer.contentsScale;
-    _borderWidth = layer.borderWidth;
-    _borderColor = CGColorRetain(layer.borderColor);
-    _animations = [layer->_animations mutableCopy];
-    _implicitAnimations = [layer->_implicitAnimations mutableCopy];
-    _needsDisplay = YES;
-    _needsLayout = YES;
-    _textureId = layer->_textureId;
-    _flipTexture = layer->_flipTexture;
-    return self;
-}
-
--(void)dealloc {
-    if(!_modelLayer) [self _setTextureId:0]; // delete texture unless self is presentationLayer
-    [_contents release];
-    _presentationLayer->_modelLayer = nil;
-    [_presentationLayer release];
-    [_sublayers makeObjectsPerformSelector:@selector(_setSuperLayer:) withObject:nil];
-    [_sublayers release];
-    [_animations release];
-    [_implicitAnimations release];
-    [_minificationFilter release];
-    [_magnificationFilter release];
-    CGColorRelease(_backgroundColor);
-    CGColorRelease(_borderColor);
-    [super dealloc];
-}
+// methods
 
 -(void)_setSuperLayer:(CALayer *)parent {
     _superlayer=parent;

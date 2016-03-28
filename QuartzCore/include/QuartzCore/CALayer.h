@@ -94,7 +94,8 @@ CA_EXPORT NSString * const kCATransition;
 @property(copy) NSDictionary *style;
 @property(getter=isDoubleSided) BOOL doubleSided;
 
-- init;
+- (instancetype)init;
+- (instancetype)initWithLayer:(id)layer;
 
 - (void)addSublayer:(CALayer *)layer;
 - (void)replaceSublayer:(CALayer *)layer with:(CALayer *)other;
