@@ -37,6 +37,7 @@ NSString * const kCATransition = @"transition";
     NSMutableArray *_implicitAnimations;
     CALayer *_presentationLayer;
     CALayer *_modelLayer;
+    BOOL _shouldClearPresentationLayer;
 }
 
 +layer {
@@ -69,6 +70,13 @@ NSString * const kCATransition = @"transition";
     _anchorPointZ = 0.0;
     _borderColor = CGColorCreateGenericGray(0.0, 1.0);
     _contentsScale = 1.0;
+    _cornerRadius = 0.0;
+    _masksToBounds = NO;
+    _hidden = NO;
+    _backgroundColor = nil;
+    _contentsCenter = CGRectMake(0.0, 0.0, 1.0, 1.0);
+    _borderWidth = 0.0;
+    _doubleSided = YES;
     return self;
 }
 
@@ -165,6 +173,8 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)setPosition:(CGPoint)value {
+    _shouldClearPresentationLayer = YES;
+    
    CAAnimation *animation = [self animationForKey:@"position"];
 
    if(animation == nil && ![CATransaction disableActions]){
@@ -183,6 +193,8 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)setBounds:(CGRect)value {
+    _shouldClearPresentationLayer = YES;
+    
    CAAnimation *animation = [self animationForKey:@"bounds"];
 
    if(animation == nil && ![CATransaction disableActions]){
@@ -233,6 +245,8 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)setOpacity:(float)value {
+    _shouldClearPresentationLayer = YES;
+    
    CAAnimation *animation = [self animationForKey:@"opacity"];
 
    if(animation == nil && ![CATransaction disableActions]){
@@ -259,6 +273,8 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)setContents:(id)value {
+    _shouldClearPresentationLayer = YES;
+    
     if(_contents != value) {
         value = [value retain];
         [_contents release];
@@ -272,6 +288,8 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)setTransform:(CATransform3D)value {
+    _shouldClearPresentationLayer = YES;
+    
     CAAnimation *animation = [self animationForKey:@"transform"];
 
     if(animation == nil && ![CATransaction disableActions]){
@@ -290,6 +308,8 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)setSublayerTransform:(CATransform3D)value {
+    _shouldClearPresentationLayer = YES;
+    
     CAAnimation *animation = [self animationForKey:@"sublayerTransform"];
 
     if(animation == nil && ![CATransaction disableActions]){
@@ -321,6 +341,106 @@ NSString * const kCATransition = @"transition";
     value=[value copy];
     [_magnificationFilter release];
     _magnificationFilter=value;
+}
+
+-(CGFloat)zPosition {
+    return _zPosition;
+}
+
+-(void)setZPosition:(CGFloat)zPosition {
+    _shouldClearPresentationLayer = YES;
+    
+    _zPosition = zPosition;
+}
+
+-(CGFloat)anchorPointZ {
+    return _anchorPointZ;
+}
+
+-(void)setAnchorPointZ:(CGFloat)anchorPointZ {
+    _shouldClearPresentationLayer = YES;
+
+    _anchorPointZ = anchorPointZ;
+}
+
+-(BOOL)masksToBounds {
+    return _masksToBounds;
+}
+
+-(void)setMasksToBounds:(BOOL)mask {
+    _shouldClearPresentationLayer = YES;
+
+    _masksToBounds = mask;
+}
+
+-(BOOL)isHidden {
+    return _hidden;
+}
+
+-(void)setHidden:(BOOL)hidden {
+    _shouldClearPresentationLayer = YES;
+    
+    _hidden = hidden;
+}
+
+-(CGColorRef)backgroundColor {
+    return _backgroundColor;
+}
+
+-(void)setBackgroundColor:(CGColorRef)color {
+    _shouldClearPresentationLayer = YES;
+    
+    _backgroundColor = CGColorRetain(color);
+}
+
+-(CGRect)contentsCenter {
+    return _contentsCenter;
+}
+
+-(void)setContentsCenter:(CGRect)center {
+    _shouldClearPresentationLayer = YES;
+
+    _contentsCenter = center;
+}
+
+-(CGFloat)contentsScale {
+    return _contentsScale;
+}
+
+-(void)setContentsScale:(CGFloat)scale {
+    _shouldClearPresentationLayer = YES;
+    
+    _contentsScale = scale;
+}
+
+-(CGFloat)borderWidth {
+    return _borderWidth;
+}
+
+-(void)setBorderWidth:(CGFloat)width {
+    _shouldClearPresentationLayer = YES;
+    
+    _borderWidth = width;
+}
+
+-(CGColorRef)borderColor {
+    return _borderColor;
+}
+
+-(void)setBorderColor:(CGColorRef)color {
+    _shouldClearPresentationLayer = YES;
+    
+    _borderColor = CGColorRetain(color);
+}
+
+-(BOOL)isDoubleSided {
+    return _doubleSided;
+}
+
+-(void)setDoubleSided:(BOOL)doubleSided {
+    _shouldClearPresentationLayer = YES;
+    
+    _doubleSided = doubleSided;
 }
 
 // methods
@@ -662,10 +782,15 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)_generatePresentationLayer {
-    [_presentationLayer release];
-    _presentationLayer = [[[self class] alloc] initWithLayer:self];
+    if(_shouldClearPresentationLayer) {
+        [_presentationLayer release];
+        _presentationLayer = nil;
+    }
+    if(!_presentationLayer) {
+        _presentationLayer = [[[self class] alloc] initWithLayer:self];
+        _presentationLayer->_modelLayer = self;
+    }
     assert(_presentationLayer);
-    _presentationLayer->_modelLayer = self;
     NSMutableArray *sublayers = [NSMutableArray array];
     for(CALayer *child in self.sublayers) {
         [child _generatePresentationLayer];
@@ -675,7 +800,7 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)_updateAnimations:(CFTimeInterval)currentTime {
-    if(_modelLayer) return; // return self is presentationLayer
+    assert(!_modelLayer && _presentationLayer); // self should be modelLayer
     
     for(NSString *key in self.animationKeys){
         CAAnimation *animation = [self animationForKey:key];
@@ -684,6 +809,7 @@ NSString * const kCATransition = @"transition";
         
         if([animation _isFinished] && animation.isRemovedOnCompletion){
             [self removeAnimationForKey:key];
+            _shouldClearPresentationLayer = YES;
         }
     }
     
@@ -693,6 +819,7 @@ NSString * const kCATransition = @"transition";
             
         if([animation _isFinished] && animation.isRemovedOnCompletion){
             [_implicitAnimations removeObject:animation];
+            _shouldClearPresentationLayer = YES;
         }
     }
     
