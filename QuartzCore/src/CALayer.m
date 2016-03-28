@@ -316,7 +316,7 @@ NSString * const kCATransition = @"transition";
 
 -(void)dealloc {
     if(!_modelLayer) [self _setTextureId:0]; // delete texture unless self is presentationLayer
-    [self setContents:nil]; // release contents
+    [_contents release];
     _presentationLayer->_modelLayer = nil;
     [_presentationLayer release];
     [_sublayers makeObjectsPerformSelector:@selector(_setSuperLayer:) withObject:nil];
