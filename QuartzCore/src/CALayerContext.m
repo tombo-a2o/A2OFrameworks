@@ -33,7 +33,6 @@
    [_layer release];
    _layer=layer;
 
-   [_layer _setContext:self];
    [_renderer setLayer:layer];
 }
 

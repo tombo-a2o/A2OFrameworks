@@ -1,6 +1,5 @@
 #import <QuartzCore/CALayer.h>
 #import <QuartzCore/CAAnimation.h>
-#import <QuartzCore/CALayerContext.h>
 #import <QuartzCore/CATransaction.h>
 #import <Foundation/NSDictionary.h>
 
@@ -44,15 +43,6 @@ NSString * const kCATransition = @"transition";
     return [[[self alloc] init] autorelease];
 }
 
--(CALayerContext *)_context {
-    return _context;
-}
-
--(void)_setContext:(CALayerContext *)context {
-    _context=context;
-    [_sublayers makeObjectsPerformSelector:@selector(_setContext:) withObject:context];
-}
-
 -(CALayer *)superlayer {
     return _superlayer;
 }
@@ -66,7 +56,6 @@ NSString * const kCATransition = @"transition";
     [_sublayers release];
     _sublayers=sublayers;
     [_sublayers makeObjectsPerformSelector:@selector(_setSuperLayer:) withObject:self];
-    [_sublayers makeObjectsPerformSelector:@selector(_setContext:) withObject:_context];
 }
 
 -(id)delegate {
@@ -454,7 +443,6 @@ NSString * const kCATransition = @"transition";
 -(void)removeFromSuperlayer {
     [_superlayer _removeSublayer:self];
     _superlayer=nil;
-    //[self _setContext:nil];
 }
 
 -(void)setNeedsDisplay {
@@ -466,9 +454,6 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)addAnimation:(CAAnimation *)animation forKey:(NSString *)key {
-    if(_context==nil)
-        return;
-    
     if(animation.duration == 0.0) {
         animation.duration = [CATransaction animationDuration];
     }
