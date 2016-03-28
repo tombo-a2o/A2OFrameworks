@@ -299,12 +299,12 @@ NSString * const kCATransition = @"transition";
     _anchorPointZ = layer.anchorPointZ;
     _masksToBounds = layer.masksToBounds;
     _hidden = layer.isHidden;
-    _backgroundColor = layer.backgroundColor;
+    _backgroundColor = CGColorRetain(layer.backgroundColor);
     _contentsGravity = layer.contentsGravity;
     _contentsCenter = layer.contentsCenter;
     _contentsScale = layer.contentsScale;
     _borderWidth = layer.borderWidth;
-    _borderColor = layer.borderColor;
+    _borderColor = CGColorRetain(layer.borderColor);
     _animations = [layer->_animations mutableCopy];
     _implicitAnimations = [layer->_implicitAnimations mutableCopy];
     _needsDisplay = YES;
@@ -325,6 +325,8 @@ NSString * const kCATransition = @"transition";
     [_implicitAnimations release];
     [_minificationFilter release];
     [_magnificationFilter release];
+    CGColorRelease(_backgroundColor);
+    CGColorRelease(_borderColor);
     [super dealloc];
 }
 
