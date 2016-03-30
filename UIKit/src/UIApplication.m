@@ -64,7 +64,7 @@ const NSTimeInterval UIMinimumKeepAliveTimeout = 0;
 static UIApplication *_theApplication = nil;
 
 @interface UIApplication()
-@property (nonatomic, retain) UIViewController *sceneViewController;
+@property (nonatomic, assign) UIViewController *sceneViewController;
 @end
 
 @implementation UIApplication {
