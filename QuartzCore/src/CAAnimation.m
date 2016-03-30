@@ -172,7 +172,6 @@ NSString *const kCATransitionFromBottom = @"bottom";
     }
     
     [self _updateScale];
-    [self _didStop];
 }
 
 -(void)_didStart
