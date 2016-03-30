@@ -354,7 +354,7 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
         [CATransaction setCompletionBlock:^{
 
             [_presentedViewController.view removeFromSuperview];
-            [_presentedViewController _setPresentedViewController:nil];
+            [_presentedViewController _setPresentingViewController:nil];
             _presentedViewController = nil;
             
             [self viewDidAppear:animated];
