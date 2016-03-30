@@ -50,7 +50,7 @@
 - (void)setTitleVerticalPositionAdjustment:(CGFloat)adjustment forBarMetrics:(UIBarMetrics)barMetrics;
 - (CGFloat)titleVerticalPositionAdjustmentForBarMetrics:(UIBarMetrics)barMetrics;
 
-@property (nonatomic, assign) id delegate;
+@property (nonatomic, weak) id delegate;
 @property (nonatomic, copy) NSArray *items;
 @property (nonatomic, assign) UIBarStyle barStyle;
 @property (nonatomic, readonly, strong) UINavigationItem *topItem;
