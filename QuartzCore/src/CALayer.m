@@ -785,6 +785,7 @@ NSString * const kCATransition = @"transition";
     if(_shouldClearPresentationLayer) {
         [_presentationLayer release];
         _presentationLayer = nil;
+        _shouldClearPresentationLayer = NO;
     }
     if(!_presentationLayer) {
         _presentationLayer = [[[self class] alloc] initWithLayer:self];
