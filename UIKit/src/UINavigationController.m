@@ -61,6 +61,7 @@
 
 - (void)dealloc
 {
+    NSLog(@"%s %@", __FUNCTION__, self);
     _navigationBar.delegate = nil;
 }
 
@@ -177,6 +178,9 @@
     [self.view insertSubview:newVisibleViewController.view atIndex:0];
     newVisibleViewController.view.transform = inStartTransform;    
         
+    BOOL wereAnimated = [UIView areAnimationsEnabled];
+    [UIView setAnimationsEnabled:animated];
+    
     NSLog(@"----------- run animateWithDuration");
     [UIView animateWithDuration:animated? 0.33 : 0
                      animations:^{
@@ -206,6 +210,8 @@
                          
                          [self.delegate navigationController:self didShowViewController:newVisibleViewController animated:animated];
                      }];
+                     
+    [UIView setAnimationsEnabled:wereAnimated];
 
     _isUpdating = NO;
 }
