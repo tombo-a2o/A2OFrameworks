@@ -545,6 +545,7 @@ NSString * const kCATransition = @"transition";
         assert(context);
         [self drawInContext:context];
         [self setContents:context];
+        CGContextRelease(context);
         _flipTexture = YES;
     }
 }
