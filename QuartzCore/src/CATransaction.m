@@ -38,6 +38,7 @@ static CATransactionGroup *createImplicitTransactionGroupIfNeeded(){
     check=[[CATransactionGroup alloc] init];
    
     [transactionStack() addObject:check];
+    [check release];
     [[NSRunLoop currentRunLoop] performSelector:@selector(commit) target:[CATransaction class] argument:nil order:0 modes:[NSArray arrayWithObject:NSDefaultRunLoopMode]];
    }
    
@@ -93,6 +94,7 @@ static CATransactionGroup *createImplicitTransactionGroupIfNeeded(){
    CATransactionGroup *group=[[CATransactionGroup alloc] init];
    
    [transactionStack() addObject:group];
+   [group release];
 }
 
 +(void)commit {
