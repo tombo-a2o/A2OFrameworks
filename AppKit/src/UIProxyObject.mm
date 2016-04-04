@@ -27,17 +27,18 @@
 id proxyObjects;
 
 @implementation UIProxyObject : NSObject
-+ (void)addProxyObject:(id)proxyObject withName:(id)objectName forCoder:(id)coder {
++ (void)addProxyObject:(id)proxyObject withName:(NSObject*)objectName forCoder:(NSCoder*)coder {
     if (proxyObjects == 0) {
         proxyObjects = [[NSMutableArray alloc] initWithCapacity:64];
     }
 
-    UIProxyObjectPair* newPair = [UIProxyObjectPair alloc];
-    newPair->proxiedObject = proxyObject;
-    newPair->proxiedObjectCoder = coder;
-    newPair->proxiedObjectName = objectName;
+    UIProxyObjectPair* newPair = [[UIProxyObjectPair alloc] init];
+    newPair.proxiedObject = proxyObject;
+    newPair.proxiedObjectCoder = coder;
+    newPair.proxiedObjectName = objectName;
 
     [proxyObjects addObject:newPair];
+    [newPair release];
 }
 
 + (void)clearProxyObjects:(id)coder {
@@ -46,7 +47,7 @@ id proxyObjects;
     for (int i = count - 1; i >= 0; i--) {
         UIProxyObjectPair* curObj = [proxyObjects objectAtIndex:i];
 
-        if (curObj->proxiedObjectCoder == coder) {
+        if (curObj.proxiedObjectCoder == coder) {
             [proxyObjects removeObjectAtIndex:i];
         }
     }
@@ -60,10 +61,11 @@ id proxyObjects;
     for (int i = 0; i < count; i++) {
         UIProxyObjectPair* curObj = [proxyObjects objectAtIndex:i];
 
-        if (curObj->proxiedObjectCoder == coder && [curObj->proxiedObjectName isEqual:proxiedObjectIdentifier]) {
-            _obj = curObj->proxiedObject;
+        if (curObj.proxiedObjectCoder == coder && [curObj.proxiedObjectName isEqual:proxiedObjectIdentifier]) {
+            _obj = curObj.proxiedObject;
             EbrDebugLog("Proxied object found: %s", [proxiedObjectIdentifier UTF8String]);
-            return curObj->proxiedObject;
+            [self autorelease];
+            return curObj.proxiedObject;
         }
     }
 

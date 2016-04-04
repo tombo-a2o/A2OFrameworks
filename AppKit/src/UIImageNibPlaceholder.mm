@@ -42,6 +42,7 @@
             }
         }
         result = ret;
+        [self autorelease];
     }
 
     return result;

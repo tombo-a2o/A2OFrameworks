@@ -20,7 +20,6 @@
 }
 -(instancetype) initWithCoder:(NSCoder*)coder;
 -(id) _getObject;
-+(void) addProxyObject:(id)proxyObject withName:(id)objectName forCoder:(id)coder;
++ (void)addProxyObject:(id)proxyObject withName:(NSObject*)objectName forCoder:(NSCoder*)coder;
 +(void) clearProxyObjects:(id)coder;
 @end
-

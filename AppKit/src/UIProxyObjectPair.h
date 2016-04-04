@@ -14,10 +14,8 @@
 //
 //******************************************************************************
 
-@interface UIProxyObjectPair : NSObject {
-@public
-    id  proxiedObject;
-    id  proxiedObjectCoder;
-    id  proxiedObjectName;
-}
+@interface UIProxyObjectPair : NSObject
+@property(nonatomic, retain) id proxiedObject;
+@property(nonatomic, assign) NSCoder* proxiedObjectCoder;
+@property(nonatomic, copy) NSString* proxiedObjectName;
 @end
