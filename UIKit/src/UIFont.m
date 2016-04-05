@@ -79,7 +79,7 @@ NSString *const UIFontTextStyleCallout = @"callout";
         return nil;
     }
     self = [super init];
-    _cgFont = CFRetain(cgFont);
+    _cgFont = cgFont;
     _pointSize = fontSize;
     return self;
 }
