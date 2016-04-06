@@ -236,6 +236,7 @@ void CATexImage2DCGImage(CGImageRef image){
     glType = GL_UNSIGNED_BYTE;
 
     glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,imageWidth,imageHeight,0,glFormat,glType,pixelBytes);
+    CFRelease(data);
 }
 
 static void dumpTransform3D(CATransform3D t3) {
