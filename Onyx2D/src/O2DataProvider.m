@@ -47,6 +47,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 -initWithURL:(NSURL *)url {
    NSData *data=[[NSData alloc] initWithContentsOfURL:url];
    if(!data) {
+       [self release];
        return nil;
    }
    id      result=[self initWithData:data];
