@@ -206,7 +206,6 @@ static UIColor *LightTextColor = nil;
 {
     CGColorRef newColor = CGColorCreateCopyWithAlpha(self.CGColor, alpha);
     UIColor *resultingUIColor = [UIColor colorWithCGColor:newColor];
-    CGColorRelease(newColor);
     return resultingUIColor;
 }
 
