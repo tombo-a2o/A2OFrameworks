@@ -73,7 +73,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     O2ColorRelease(_shadowColor);
     O2GaussianKernelRelease((O2GaussianKernelRef)_shadowKernel);
     NSDeallocateObject(self);
-    return;
     [super dealloc];
 }
 
