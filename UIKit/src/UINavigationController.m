@@ -61,7 +61,6 @@
 
 - (void)dealloc
 {
-    NSLog(@"%s %@", __FUNCTION__, self);
     _navigationBar.delegate = nil;
 }
 
