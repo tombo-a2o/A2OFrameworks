@@ -358,6 +358,8 @@ renderingIntent:(O2ColorRenderingIntent)renderingIntent {
            interpolate:interpolate
        renderingIntent:renderingIntent
    ];
+   [image release];
+   [jpeg release];
 
    return self;
 }
@@ -378,6 +380,8 @@ renderingIntent:(O2ColorRenderingIntent)renderingIntent {
            interpolate:interpolate
        renderingIntent:renderingIntent
    ];
+   [image release];
+   [png release];
 
    return self;
 }

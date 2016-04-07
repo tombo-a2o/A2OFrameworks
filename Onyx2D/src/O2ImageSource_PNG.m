@@ -131,35 +131,37 @@ bool load_png_image(const unsigned char *buffer, int length, int *outWidth, int 
     int width = png_get_image_width(png_ptr, info_ptr);
     int height = png_get_image_height(png_ptr, info_ptr);
 
-	// Adjust the size to adding the alpha if needed
-    unsigned int row_bytes = png_get_rowbytes(png_ptr, info_ptr);
-	if (nb_comp == 3) {
-		row_bytes += width; // Add some room for the alpha
-	}
-    *outData = (unsigned char*) malloc(row_bytes * height);
-    if (*outData == NULL) {
-        NSLog(@"Can't allocate %d bytes for %dx%d bitmap", row_bytes*height, width, height);
-        png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-        return false;
-    }
+    if(outData) {
+    	// Adjust the size to adding the alpha if needed
+        unsigned int row_bytes = png_get_rowbytes(png_ptr, info_ptr);
+    	if (nb_comp == 3) {
+    		row_bytes += width; // Add some room for the alpha
+    	}
+        *outData = (unsigned char*) malloc(row_bytes * height);
+        if (*outData == NULL) {
+            NSLog(@"Can't allocate %d bytes for %dx%d bitmap", row_bytes*height, width, height);
+            png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+            return false;
+        }
 
-    png_bytepp row_pointers = png_get_rows(png_ptr, info_ptr);
+        png_bytepp row_pointers = png_get_rows(png_ptr, info_ptr);
 
-    for (int i = 0; i < height; i++) {
-		if (nb_comp == 3) {
-			// Add the alpha bytes
-			uint8_t *src = row_pointers[i];
-			uint8_t *dest = *outData+(row_bytes * i);
-			for (int j = 0; j < width; ++j, src += 3, dest += 4) {
-				dest[0]=src[0];
-				dest[1]=src[1];
-				dest[2]=src[2];
-				dest[3]=0xff;
-			}
-		} else {
-			// Just copy the bytes
-			memcpy(*outData+(row_bytes * i), row_pointers[i], row_bytes);
-		}
+        for (int i = 0; i < height; i++) {
+    		if (nb_comp == 3) {
+    			// Add the alpha bytes
+    			uint8_t *src = row_pointers[i];
+    			uint8_t *dest = *outData+(row_bytes * i);
+    			for (int j = 0; j < width; ++j, src += 3, dest += 4) {
+    				dest[0]=src[0];
+    				dest[1]=src[1];
+    				dest[2]=src[2];
+    				dest[3]=0xff;
+    			}
+    		} else {
+    			// Just copy the bytes
+    			memcpy(*outData+(row_bytes * i), row_pointers[i], row_bytes);
+    		}
+        }
     }
 
 	*outWidth = width;
@@ -184,6 +186,14 @@ unsigned char *stbi_png_load_from_memory(const unsigned char *buffer, int len, i
 		result = NULL;
 	}
 	return result;
+}
+
+bool read_png_meta_from_memory(const unsigned char *buffer, int len, int *x, int *y, int *comp)
+{
+    if (comp) {
+		*comp = 4;
+	}
+	return load_png_image(buffer, len, x, y, NULL);
 }
 
 #else
@@ -648,9 +658,7 @@ unsigned char *stbi_png_load_from_memory(const unsigned char *buffer, int len, i
 
 // clang-format on
 
-@implementation O2ImageSource_PNG {
-    O2Image *_image;
-}
+@implementation O2ImageSource_PNG
 
 +(BOOL)isPresentInDataProvider:(O2DataProvider *)provider {
    enum { signatureLength=8 };
@@ -675,8 +683,8 @@ unsigned char *stbi_png_load_from_memory(const unsigned char *buffer, int len, i
 }
 
 -(void)dealloc {
-   [_png release];
-   [super dealloc];
+    [_png release];
+    [super dealloc];
 }
 
 - (CFStringRef)type
@@ -689,8 +697,6 @@ unsigned char *stbi_png_load_from_memory(const unsigned char *buffer, int len, i
 }
 
 -(O2Image *)createImageAtIndex:(unsigned)index options:(NSDictionary *)options {
-    if(_image) return _image;
-
    int            width,height;
    int            comp;
    unsigned char *pixels=stbi_png_load_from_memory([_png bytes],[_png length],&width,&height,&comp,STBI_rgb_alpha);
@@ -720,30 +726,29 @@ unsigned char *stbi_png_load_from_memory(const unsigned char *buffer, int len, i
 
     O2DataProvider *provider=O2DataProviderCreateWithCFData((CFDataRef)bitmap);
    O2ColorSpaceRef colorSpace=O2ColorSpaceCreateDeviceRGB();
-   _image=[[O2Image alloc] initWithWidth:width height:height bitsPerComponent:8 bitsPerPixel:bitsPerPixel bytesPerRow:bytesPerRow
+   O2Image *image=[[O2Image alloc] initWithWidth:width height:height bitsPerComponent:8 bitsPerPixel:bitsPerPixel bytesPerRow:bytesPerRow
       colorSpace:colorSpace bitmapInfo:kO2ImageAlphaPremultipliedLast|kO2BitmapByteOrder32Big decoder:NULL provider:provider decode:NULL interpolate:NO renderingIntent:kO2RenderingIntentDefault];
 
    [colorSpace release];
    [provider release];
    [bitmap release];
 
-   return _image;
+   return image;
 }
 
 -(CFDictionaryRef)copyPropertiesAtIndex:(unsigned)index options:(CFDictionaryRef)options {
     if(index > 0) {
         return nil;
     }
-    if(!_image) {
-        [self createImageAtIndex:index options:(NSDictionary*)options];
-    }
-    int width = O2ImageGetWidth(_image);
-    int height = O2ImageGetHeight(_image);
-    return (CFDictionaryRef)[[NSDictionary dictionaryWithObjectsAndKeys:
+    int width,height;
+    int comp;
+    read_png_meta_from_memory([_png bytes],[_png length],&width,&height,&comp);
+    
+    return (CFDictionaryRef)[[NSDictionary alloc] initWithObjectsAndKeys:
         [NSNumber numberWithInteger:width], kCGImagePropertyPixelWidth,
         [NSNumber numberWithInteger:height], kCGImagePropertyPixelHeight,
-        [NSNumber numberWithBool:YES], kCGImagePropertyHasAlpha,
-        nil] copy];
+        [NSNumber numberWithBool:comp == 4], kCGImagePropertyHasAlpha,
+        nil];
 }
 
 @end
