@@ -389,6 +389,9 @@ NSString * const kCATransition = @"transition";
 
 -(void)setBackgroundColor:(CGColorRef)color {
     _shouldClearPresentationLayer = YES;
+    if(_backgroundColor) {
+        CFRelease(_backgroundColor);
+    }
     
     _backgroundColor = CGColorRetain(color);
 }
@@ -429,6 +432,9 @@ NSString * const kCATransition = @"transition";
 
 -(void)setBorderColor:(CGColorRef)color {
     _shouldClearPresentationLayer = YES;
+    if(_borderColor) {
+        CFRelease(_borderColor);
+    }
     
     _borderColor = CGColorRetain(color);
 }
