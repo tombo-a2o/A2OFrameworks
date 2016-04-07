@@ -31,9 +31,9 @@
 {
     _bundle = bundle ?: [NSBundle mainBundle];
     NSString *path = [[_bundle resourcePath] stringByAppendingPathComponent:nibName];
-    _data = [NSData dataWithContentsOfFile:path];
+    _data = [[NSData alloc] initWithContentsOfFile:path];
     if (_data == nil) {
-        _data = [NSData dataWithContentsOfFile:[path stringByAppendingPathComponent:@"/runtime.nib"]];
+        _data = [[NSData alloc] initWithContentsOfFile:[path stringByAppendingPathComponent:@"/runtime.nib"]];
     }
     return self;
 }
@@ -148,6 +148,7 @@
 }
 
 - (void)dealloc {
+    [_data release];
     _bundle = nil;
     [super dealloc];
 }
