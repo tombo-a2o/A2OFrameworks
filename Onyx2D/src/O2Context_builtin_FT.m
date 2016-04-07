@@ -171,6 +171,7 @@ static void drawFreeTypeBitmap(O2Context_builtin_FT *self, O2Surface *surface, u
 */
     drawFreeTypeBitmap(self, _surface, bitmap, width, height, point.x + left, point.y - top, paint);
 
+    O2PaintRelease(paint);
     free(bitmap);
 }
 
