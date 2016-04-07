@@ -59,11 +59,16 @@
 
 - (void)_initializeSwitch
 {
+    CGColorRef color;
     _knob = [CALayer layer];
     _knob.bounds = CGRectMake(0, 0, SWITCH_HEIGHT-3, SWITCH_HEIGHT-3);
     _knob.borderWidth = 0.5;
-    _knob.borderColor = CGColorCreateGenericGray(0.5, 0.8);
-    _knob.backgroundColor = CGColorCreateGenericGray(1.0, 1.0);
+    color = CGColorCreateGenericGray(0.5, 0.8);
+    _knob.borderColor = color;
+    CFRelease(color);
+    color = CGColorCreateGenericGray(1.0, 1.0);
+    _knob.backgroundColor = color;
+    CFRelease(color);
     _knob.cornerRadius = SWITCH_HEIGHT/2-2;
     _knob.zPosition = 1;
     _dimple = [CALayer layer];
@@ -85,14 +90,23 @@
 
     [CATransaction setDisableActions:!animated];
     
+    CGColorRef color;
     if(_on) {
         _knob.position = CGPointMake(SWITCH_WIDTH - SWITCH_HEIGHT/2-1, SWITCH_HEIGHT/2+0.5);
-        _dimple.borderColor = CGColorCreateGenericRGB(0.30, 0.85, 0.38, 1.0);
-        _dimple.backgroundColor = CGColorCreateGenericRGB(0.30, 0.85, 0.38, 1.0);
+        color = CGColorCreateGenericRGB(0.30, 0.85, 0.38, 1.0);
+        _dimple.borderColor = color;
+        CFRelease(color);
+        color = CGColorCreateGenericRGB(0.30, 0.85, 0.38, 1.0);
+        _dimple.backgroundColor = color;
+        CFRelease(color);
     } else {
         _knob.position = CGPointMake(SWITCH_HEIGHT/2, SWITCH_HEIGHT/2+0.5);
-        _dimple.borderColor = CGColorCreateGenericGray(0.9, 1.0);
-        _dimple.backgroundColor = CGColorCreateGenericGray(0.0, 0.0);
+        color = CGColorCreateGenericGray(0.9, 1.0);
+        _dimple.borderColor = color;
+        CFRelease(color);
+        color = CGColorCreateGenericGray(0.0, 0.0);
+        _dimple.backgroundColor = color;
+        CFRelease(color);
     }
     
     [CATransaction commit];
