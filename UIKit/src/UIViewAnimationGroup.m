@@ -174,6 +174,7 @@ static inline UIViewAnimationOptions UIViewAnimationOptionTransition(UIViewAnima
         
         if (self.completionBlock) {
             self.completionBlock(animationsDidFinish);
+            self.completionBlock = nil;
         }
 
         @synchronized(runningAnimationGroups) {
