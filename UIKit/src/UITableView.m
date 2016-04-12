@@ -828,7 +828,12 @@ const CGFloat _UITableViewDefaultRowHeight = 43;
         const CGPoint location = [touch locationInView:self];
         
         _highlightedRow = [self indexPathForRowAtPoint:location];
-        [self cellForRowAtIndexPath:_highlightedRow].highlighted = YES;
+        UITableViewCell *cell = [self cellForRowAtIndexPath:_highlightedRow];
+        if(!cell.userInteractionEnabled) {
+            _highlightedRow = nil;
+            return;
+        }
+        cell.highlighted = YES;
     }
 
     if (_highlightedRow) {
