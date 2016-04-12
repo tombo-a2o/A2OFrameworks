@@ -83,9 +83,7 @@ static NSArray *CGImagesWithUIImages(NSArray *images)
 - (id)initWithCoder:(NSCoder*)coder
 {
     self = [super initWithCoder:coder];
-    UIImage *image = [coder decodeObjectForKey:@"UIImage"];
-    if(!image) return nil;
-    self.image = image;
+    _image = [coder decodeObjectForKey:@"UIImage"];
     return self;
 }
 
