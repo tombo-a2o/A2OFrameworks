@@ -10,4 +10,5 @@
 -(void)_generatePresentationLayer;
 -(NSArray*)_zOrderedSublayers;
 -(void)_dispatchTransactionCompletionBlock:(CAAnimation*)animation;
+-(CGSize)_contentsSize;
 @end

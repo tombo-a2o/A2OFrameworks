@@ -77,6 +77,7 @@ NSString * const kCATransition = @"transition";
     _contentsCenter = CGRectMake(0.0, 0.0, 1.0, 1.0);
     _borderWidth = 0.0;
     _doubleSided = YES;
+    _contentsGravity = kCAGravityResize;
     return self;
 }
 
@@ -848,5 +849,15 @@ NSString * const kCATransition = @"transition";
             return NSOrderedSame;
         }
     }];
+}
+
+-(CGSize)_contentsSize {
+    if([_contents isKindOfClass: NSClassFromString(@"O2BitmapContext")]) {
+        return CGSizeMake(CGBitmapContextGetWidth(_contents)/_contentsScale, CGBitmapContextGetHeight(_contents)/_contentsScale);
+    } else if([_contents isKindOfClass: NSClassFromString(@"O2Image")]){
+        return CGSizeMake(CGImageGetWidth(_contents)/_contentsScale, CGImageGetHeight(_contents)/_contentsScale);
+    } else {
+        return _bounds.size;
+    }
 }
 @end

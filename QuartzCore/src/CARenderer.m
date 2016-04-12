@@ -90,8 +90,12 @@ static const char *fragmentShaderSource =
     "uniform float borderWidth;\n"
     "uniform vec4 borderColor;\n"
     "uniform vec4 backgroundColor;\n"
+    "float inside(vec2 v) {\n"
+    "    vec2 s = step(vec2(0.0, 0.0), v) - step(vec2(1.0, 1.0), v);\n"
+    "    return s.x * s.y;\n"
+    "}\n"
     "void main() {\n"
-    "    vec4 texColor = texture2D(texture, texcoordVarying);\n"
+    "    vec4 texColor = inside(texcoordVarying) * texture2D(texture, texcoordVarying);\n"
     "    float alpha = texColor.a + backgroundColor.a * (1.0-texColor.a);\n"
     "    vec3 color = alpha > 0.0 ? (texColor.rgb + backgroundColor.rgb * backgroundColor.a * (1.0-texColor.a)) / alpha : vec3(0.0);\n"
     "    float d1 = cornerRadius - length(vec2(min(distanceVarying.x - cornerRadius, 0.0), min(distanceVarying.y - cornerRadius, 0.0)));\n"
@@ -282,6 +286,84 @@ static void generateTransparentTexture() {
     glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,1,1,0,GL_RGBA,GL_UNSIGNED_BYTE, componentsByte);
 }
 
+
+static void calculateTexCoord(GLfloat *x, GLfloat *y, int length, CGFloat dw, CGFloat dh, CGFloat sw, CGFloat sh, NSString *contentsGravity, BOOL flipTexture, GLfloat *s, GLfloat *t) {
+    float ax, ay, bx, by;
+    if(contentsGravity == kCAGravityCenter) {
+        ax = 1.0 / sw;
+        ay = 1.0 / sh;
+        bx = (1.0 - dw * ax) * 0.5;
+        by = (1.0 - dh * ay) * 0.5;
+    } else if(contentsGravity == kCAGravityTop) {
+        ax = 1.0 / sw;
+        ay = 1.0 / sh;
+        bx = (1.0 - dw * ax) * 0.5;
+        by = 0.0;
+    } else if(contentsGravity == kCAGravityBottom) {
+        ax = 1.0 / sw;
+        ay = 1.0 / sh;
+        bx = (1.0 - dw * ax) * 0.5;
+        by = (1.0 - dh * ay) * 0.5;
+    } else if(contentsGravity == kCAGravityLeft) {
+        ax = 1.0 / sw;
+        ay = 1.0 / sh;
+        bx = 0.0;
+        by = (1.0 - dh * ay) * 0.5;
+    } else if(contentsGravity == kCAGravityRight) {
+        ax = 1.0 / sw;
+        ay = 1.0 / sh;
+        bx = 1.0 - dw * ax;
+        by = (1.0 - dh * ay) * 0.5;
+    } else if(contentsGravity == kCAGravityTopLeft) {
+        ax = 1.0 / sw;
+        ay = 1.0 / sh;
+        bx = 0;
+        by = 0;
+    } else if(contentsGravity == kCAGravityTopRight) {
+        ax = 1.0 / sw;
+        ay = 1.0 / sh;
+        bx = 1.0 - dw * ax;
+        by = 0;
+    } else if(contentsGravity == kCAGravityBottomLeft) {
+        ax = 1.0 / sw;
+        ay = 1.0 / sh;
+        bx = 0;
+        by = 1.0 - dh * ay;
+    } else if(contentsGravity == kCAGravityBottomRight) {
+        ax = 1.0 / sw;
+        ay = 1.0 / sh;
+        bx = 1.0 - dw * ax;
+        by = 1.0 - dh * ay;
+    } else if(contentsGravity == kCAGravityResize) {
+        ax = 1.0 / dw;
+        ay = 1.0 / dh;
+        bx = 0;
+        by = 0;
+    } else if(contentsGravity == kCAGravityResizeAspect) {
+        float r = MAX(sw/dw, sh/dh);
+        ax = 1.0 / sw * r;
+        ay = 1.0 / sh * r;
+        bx = (1.0 - dw * ax) * 0.5;
+        by = (1.0 - dh * ay) * 0.5;
+    } else if(contentsGravity == kCAGravityResizeAspectFill) {
+        float r = MIN(sw/dw, sh/dh);
+        ax = 1.0 / sw * r;
+        ay = 1.0 / sh * r;
+        bx = (1.0 - dw * ax) * 0.5;
+        by = (1.0 - dh * ay) * 0.5;
+    } else {
+        NSLog(@"unexpected contentsGravity %@", contentsGravity);
+        assert(0);
+    }
+    
+    for(int i = 0; i < length; i++) {
+        float ss = x[i] * ax + bx;
+        float tt = y[i] * ay + by;
+        s[i] = ss;
+        t[i] = flipTexture ? (1-tt) : tt;
+    }
+}
+
 -(void)_renderLayer:(CALayer *)layer z:(int)z mask:(int)mask transform:(CATransform3D)transform {
     //NSLog(@"CARenderer: renderLayer %@ b:%@ f:%@ %f", layer, NSStringFromRect(layer.bounds), NSStringFromRect(layer.frame), z);
     if(layer.isHidden) return;
@@ -351,6 +433,7 @@ static void generateTransparentTexture() {
     float   borderWidth = l.borderWidth;
     CATransform3D layerTransform = l.transform;
     CGFloat anchorPointZ = l.anchorPointZ;
+    CGSize  contentsSize = [l _contentsSize];
 
     CGFloat w = bounds.size.width;
     CGFloat h = bounds.size.height;
@@ -358,16 +441,17 @@ static void generateTransparentTexture() {
 
     GLfloat x[] = {0, mid, w-mid, w};
     GLfloat y[] = {0, mid, h-mid, h};
+    GLfloat s[4], t[4];
+    calculateTexCoord(x, y, 4, w, h, contentsSize.width, contentsSize.height, l.contentsGravity, [layer _flipTexture], s, t);
     GLfloat d[] = {0, mid, mid, 0};
     GLfloat vertices[4*4*6];
-    BOOL flipTexture = [layer _flipTexture];
     int idx = 0;
     for(int j = 0; j < 4; j++) {
         for(int i = 0; i < 4; i++) {
             vertices[idx++] = x[i];   // coordinate
             vertices[idx++] = y[j];
-            vertices[idx++] = x[i]/w; // texture coord
-            vertices[idx++] = flipTexture ? 1.0-y[j]/h : y[j]/h;
+            vertices[idx++] = s[i]; // texture coord
+            vertices[idx++] = t[j];
             vertices[idx++] = d[i];  // distance to edge
             vertices[idx++] = d[j];
         }
@@ -376,7 +460,7 @@ static void generateTransparentTexture() {
     CATransform3D t1 = CATransform3DMakeTranslation(-anchorPoint.x * w, -anchorPoint.y * h, -anchorPointZ);
     CATransform3D t2 = CATransform3DConcat(t1, layerTransform);
     CATransform3D t3 = CATransform3DConcat(t2, CATransform3DMakeTranslation(position.x, position.y, 0));
-    CATransform3D t  = CATransform3DConcat(t3, transform);
+    CATransform3D t4  = CATransform3DConcat(t3, transform);
     glEnableVertexAttribArray(_attrPosition);
     glEnableVertexAttribArray(_attrTexCoord);
     glEnableVertexAttribArray(_attrDistance);
@@ -389,7 +473,7 @@ static void generateTransparentTexture() {
     glVertexAttribPointer(_attrDistance, 2, GL_FLOAT, GL_FALSE, 6*sizeof(GLfloat), (GLfloat*)NULL + 4);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    glUniformMatrix4fv(_unifTransform, 1, GL_FALSE, &t);
+    glUniformMatrix4fv(_unifTransform, 1, GL_FALSE, &t4);
     glUniform1f(_unifOpacity, l.opacity);
     glUniform1f(_unifCornerRadius, cornerRadius);
     glUniform1f(_unifBorderWidth, borderWidth);
