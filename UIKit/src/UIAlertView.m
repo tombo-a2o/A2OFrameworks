@@ -31,7 +31,7 @@
 
 @interface UIAlertView()
 - (void)_closeWithResult:(NSInteger)result;
-- (NSArray*)_indexArray;
+- (NSArray*)_indexArray:(BOOL)alignHorizontal;
 @end
 
 @interface _UIAlertWindow : UIWindow
@@ -59,6 +59,17 @@ static void adjustHeight(UIView* view, CGFloat width) {
     CGRect rect = view.frame;
     rect.size.height = size.height;
     view.frame = rect;
+}
+
+- (BOOL)_isTitleTooLong {
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0,0,130,42)];
+    for(int i = 0; i < _alertView.numberOfButtons && i < 2; i++) {
+        label.text = [_alertView buttonTitleAtIndex:i];
+        label.font = [UIFont boldSystemFontOfSize:17];
+        CGSize size = [label sizeThatFits:CGSizeMake(1000,1000)];
+        if(size.width > 118.0) return YES;
+    }
+    return NO;
 }
 
 - (void)viewDidLoad {
@@ -89,10 +100,10 @@ static void adjustHeight(UIView* view, CGFloat width) {
     CGFloat top = CGRectGetMaxY(messageLabel.frame)+20;
 
     int numberOfButtons = _alertView.numberOfButtons;
-    BOOL alignHorizontal = numberOfButtons == 2;
+    BOOL alignHorizontal = numberOfButtons == 2 && ![self _isTitleTooLong];
     
     for(int i = 0; i < numberOfButtons; i++) {
-        int idx = [(NSNumber*)[[_alertView _indexArray] objectAtIndex:i] integerValue];
+        int idx = [(NSNumber*)[[_alertView _indexArray:alignHorizontal] objectAtIndex:i] integerValue];
         NSString *title = [_alertView buttonTitleAtIndex:idx];
 
         CGRect rect;
@@ -282,12 +293,12 @@ static void adjustHeight(UIView* view, CGFloat width) {
 {
 }
 
-- (NSArray*)_indexArray
+- (NSArray*)_indexArray:(BOOL)alignHorizontal
 {
     int num = self.numberOfButtons;
     int cancel = self.cancelButtonIndex;
     NSMutableArray *ret = [NSMutableArray arrayWithCapacity:num];
-    if(cancel < 0 || cancel >= num || num == 2) {
+    if(cancel < 0 || cancel >= num || alignHorizontal) {
         for(int i = 0; i < num; i++) {
             [ret addObject:[NSNumber numberWithInteger:i]];
         }
