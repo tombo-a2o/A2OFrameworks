@@ -111,7 +111,7 @@
     for (id curobject in allObjects) {
         if (curobject != ownerObject) {
             if ([curobject respondsToSelector:@selector(awakeFromNib)]) {
-                [curobject performSelector:@selector(awakeFromNib)];
+                [curobject performSelector:@selector(awakeFromNib) withObject:nil afterDelay:0];
             }
         }
     }
