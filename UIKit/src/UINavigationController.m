@@ -41,6 +41,7 @@
 
 @implementation UINavigationController {
     UIViewController *_visibleViewController;
+    BOOL _needsDeferredUpdate;
     BOOL _isUpdating;
     BOOL _toolbarHidden;
 }
@@ -90,6 +91,12 @@
 - (BOOL)shouldAutomaticallyForwardAppearanceMethods
 {
     return NO;
+}
+
+- (void)_setNeedsDeferredUpdate
+{
+    _needsDeferredUpdate = YES;
+    [self.view setNeedsLayout];
 }
 
 - (void)_getNavbarRect:(CGRect *)navbarRect contentRect:(CGRect *)contentRect toolbarRect:(CGRect *)toolbarRect forBounds:(CGRect)bounds
@@ -215,6 +222,14 @@
     _isUpdating = NO;
 }
 
+- (void)viewWillLayoutSubviews
+{
+    if (_needsDeferredUpdate) {
+        _needsDeferredUpdate = NO;
+        [self _updateVisibleViewController:NO];
+    }
+}
+
 - (NSArray *)viewControllers
 {
     return [self.childViewControllers copy];
@@ -278,9 +293,7 @@
     if (animated) {
         [self _updateVisibleViewController:animated];
     } else {
-        dispatch_async(dispatch_get_current_queue(), ^{
-            [self _updateVisibleViewController:NO];
-        });
+        [self _setNeedsDeferredUpdate];
     }
 
     [_navigationBar pushNavigationItem:viewController.navigationItem animated:animated];
@@ -320,9 +333,7 @@
     if (animated) {
         [self _updateVisibleViewController:animated];
     } else {
-        dispatch_async(dispatch_get_current_queue(), ^{
-            [self _updateVisibleViewController:NO];
-        });
+        [self _setNeedsDeferredUpdate];
     }
 
 	return formerTopViewController;
