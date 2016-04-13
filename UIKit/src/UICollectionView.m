@@ -1473,8 +1473,10 @@ static char kUIColletionViewExt;
                     view = [self createPreparedSupplementaryViewForElementOfKind:attrs.representedElementKind
                                                                      atIndexPath:attrs.indexPath
                                                             withLayoutAttributes:attrs];
-                    _allVisibleViewsDict[key] = view;
-                    [self addControlledSubview:view];
+                    if(view) {
+                        _allVisibleViewsDict[key] = view;
+                        [self addControlledSubview:view];
+                    }
                 }
             } else if (key.type == UICollectionViewItemTypeDecorationView) {
                 UICollectionReusableView* view = _allVisibleViewsDict[key];
