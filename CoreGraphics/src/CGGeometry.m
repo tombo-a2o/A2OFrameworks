@@ -30,7 +30,7 @@ CGRect CGRectIntersection(CGRect rect0, CGRect rect1) {
 	
 	if(CGRectGetMaxX(rect0)<=CGRectGetMinX(rect1) || CGRectGetMinX(rect0)>=CGRectGetMaxX(rect1) ||
 	   CGRectGetMaxY(rect0)<=CGRectGetMinY(rect1) || CGRectGetMinY(rect0)>=CGRectGetMaxY(rect1))
-		return CGRectZero;
+		return CGRectNull;
 	
 	result.origin.x=MAX(CGRectGetMinX(rect0), CGRectGetMinX(rect1));
 	result.origin.y=MAX(CGRectGetMinY(rect0), CGRectGetMinY(rect1));
