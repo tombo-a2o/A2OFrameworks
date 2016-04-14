@@ -561,6 +561,7 @@ NSString * const kCATransition = @"transition";
     if(_needsDisplay) {
         [self display];
         [self _setTextureId:0];
+        _shouldClearPresentationLayer = YES;
     }
     _needsDisplay = NO;
 }
