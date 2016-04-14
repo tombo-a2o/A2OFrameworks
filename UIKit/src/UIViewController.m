@@ -686,5 +686,10 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
     _parentageTransition = _UIViewControllerParentageTransitionNone;
 }
 
+- (void)setStoryboard:(UIStoryboard*)storyboard
+{
+    _storyboard = storyboard;
+    [self view]; // hack to load view before calling awakeFromNib
+}
 
 @end
