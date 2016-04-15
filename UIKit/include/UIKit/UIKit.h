@@ -118,6 +118,7 @@
 #import <UIKit/UIStoryboard.h>
 #import <UIKit/UINib.h>
 #import <UIKit/UILocalNotification.h>
+#import <UIKit/UIAlertController.h>
 
 // non-standard imports
 #import <UIKit/UIScrollWheelGestureRecognizer.h>
