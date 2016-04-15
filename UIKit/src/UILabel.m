@@ -66,7 +66,7 @@
     self.backgroundColor = [UIColor clearColor];
     self.enabled = YES;
     self.font = [coder decodeObjectForKey:@"UIFont"];
-    self.numberOfLines = 1;
+    self.numberOfLines = [coder decodeIntForKey:@"UINumberOfLines"];
     self.contentMode = [coder decodeIntForKey:@"UIContentMode"];
     self.clipsToBounds = [coder decodeBoolForKey:@"UIClipsToBounds"];
     //self.shadowOffset = CGSizeMake(0,-1);
