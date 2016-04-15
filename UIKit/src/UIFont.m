@@ -152,7 +152,7 @@ NSString *const UIFontTextStyleCallout = @"callout";
 
 - (UIFont *)fontWithSize:(CGFloat)fontSize
 {
-    assert(0);
+    return [[UIFont alloc] initWithName:self.fontName size:fontSize];
 }
 
 - (CGFontRef)CGFont
