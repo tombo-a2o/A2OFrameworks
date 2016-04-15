@@ -133,7 +133,7 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
         const BOOL wereEnabled = [UIView areAnimationsEnabled];
         [UIView setAnimationsEnabled:NO];
         [self loadView];
-        [self viewDidLoad];
+        [self performSelector:@selector(viewDidLoad) withObject:nil afterDelay:0];
         [UIView setAnimationsEnabled:wereEnabled];
         return _view;
     }
