@@ -33,7 +33,9 @@
 #import <UIKit/UIGraphics.h>
 #import <AppKit/NSApplication.h>
 
-@implementation UILabel
+@implementation UILabel {
+    CGFloat _actualFontScale;
+}
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -50,6 +52,7 @@
         self.clipsToBounds = YES;
         self.shadowOffset = CGSizeMake(0,-1);
         self.baselineAdjustment = UIBaselineAdjustmentAlignBaselines;
+        _actualFontScale = 1.0;
     }
     return self;
 }
@@ -69,8 +72,11 @@
     self.numberOfLines = [coder decodeIntForKey:@"UINumberOfLines"];
     self.contentMode = [coder decodeIntForKey:@"UIContentMode"];
     self.clipsToBounds = [coder decodeBoolForKey:@"UIClipsToBounds"];
+    self.adjustsFontSizeToFitWidth = [coder decodeBoolForKey:@"UIAdjustsFontSizeToFit"];
+    self.minimumScaleFactor = [coder decodeFloatForKey:@"UIMinimumScaleFactor"];
     //self.shadowOffset = CGSizeMake(0,-1);
     self.baselineAdjustment = UIBaselineAdjustmentAlignBaselines;
+    _actualFontScale = 1.0;
     
     return self;
 }
@@ -163,7 +169,12 @@
 
 - (void)drawTextInRect:(CGRect)rect
 {
-    [_text drawInRect:rect withFont:_font lineBreakMode:_lineBreakMode alignment:_textAlignment];
+    if(_adjustsFontSizeToFitWidth) {
+        // TODO assert _actualFontScale is calculated
+        [_text drawInRect:rect withFont:[_font fontWithSize:_font.pointSize*_actualFontScale] lineBreakMode:_lineBreakMode alignment:_textAlignment];
+    } else {
+        [_text drawInRect:rect withFont:_font lineBreakMode:_lineBreakMode alignment:_textAlignment];
+    }
 }
 
 - (void)drawRect:(CGRect)rect
@@ -180,6 +191,10 @@
             maxSize.height = _font.lineHeight * _numberOfLines;
         }
         drawRect.size = [_text sizeWithFont:_font constrainedToSize:maxSize lineBreakMode:_lineBreakMode];
+        if(_adjustsFontSizeToFitWidth && (bounds.size.width < drawRect.size.width || bounds.size.height < drawRect.size.height)) {
+            _actualFontScale = MAX(MIN(bounds.size.width / drawRect.size.width, bounds.size.height / drawRect.size.height), _minimumScaleFactor);
+            drawRect.size = [_text sizeWithFont:[_font fontWithSize:_font.pointSize*_actualFontScale] constrainedToSize:maxSize lineBreakMode:_lineBreakMode];
+        }
 
         // now vertically center it
         drawRect.origin.y = roundf((bounds.size.height - drawRect.size.height) / 2.f);

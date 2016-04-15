@@ -47,7 +47,8 @@
 @property (nonatomic, getter=isEnabled) BOOL enabled;
 @property (nonatomic) NSInteger numberOfLines;					// currently only supports 0 or 1
 @property (nonatomic) UIBaselineAdjustment baselineAdjustment;	// not implemented
-@property (nonatomic) BOOL adjustsFontSizeToFitWidth;			// not implemented
+@property (nonatomic) BOOL adjustsFontSizeToFitWidth;
 @property (nonatomic) CGFloat minimumFontSize;					// not implemented
+@property (nonatomic) CGFloat minimumScaleFactor;
 @property (nonatomic, getter=isHighlighted) BOOL highlighted;
 @end
