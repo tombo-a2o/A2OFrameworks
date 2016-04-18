@@ -254,13 +254,15 @@ static const CGFloat kBarHeight = 28;
 {
     const CGRect bounds = self.bounds;
     
-    UIColor *color = self.tintColor ?: [UIColor colorWithRed:21/255.f green:21/255.f blue:25/255.f alpha:1];
+    UIColor *color = self.barTintColor ?: [UIColor colorWithWhite:248.0/255.0 alpha:1.0];
 
     [color setFill];
     UIRectFill(bounds);
     
-    [[UIColor blackColor] setFill];
-    UIRectFill(CGRectMake(0,0,bounds.size.width,1));
+    // TODO: this edge should be implemented as UIImageView with frame (0, -0.5, width, 0.5),
+    // It can be hidden by masksToBounds = YES
+    // [[UIColor colorWithWhite:178.0/255.0 alpha:1.0] setFill];
+    // UIRectFill(CGRectMake(0,0,bounds.size.width,1));
 }
 
 - (NSString *)description
