@@ -94,6 +94,17 @@ static NSArray* CreateCTLinesForString(NSString *string, CGSize constrainedToSiz
                 // }
                 // line = CTTypesetterCreateLine(typesetter, CFRangeMake(start, usedCharacters));
                 usedCharacters = CGFontSuggestLineBreak(cgFont, text, stringLength, font.pointSize, start, constrainedToSize.width);
+                
+                // TODO re-implement with ICU
+                NSString *prohibitsAtBegin = @"、。）」ぁぃぅぇぉっゃゅょァィゥェォッャュョ";
+                NSString *prohibitsAtLast = @"（「";
+                
+                NSString *lastChar = [string substringWithRange:NSMakeRange(start+usedCharacters-1, 1)];
+                NSString *nextChar = start + usedCharacters < stringLength ? [string substringWithRange:NSMakeRange(start+usedCharacters, 1)] : nil;
+                if([prohibitsAtLast rangeOfString:lastChar options:0].location != NSNotFound || (nextChar && [prohibitsAtBegin rangeOfString:nextChar options:0].location != NSNotFound)) {
+                    usedCharacters--;
+                }
+                
                 line = [string substringWithRange:NSMakeRange(start, usedCharacters)];
             }
 
