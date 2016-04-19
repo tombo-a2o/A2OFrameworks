@@ -57,6 +57,8 @@
     NSArray* viewControllers = [coder decodeObjectForKey:@"UIViewControllers"];
     [self setViewControllers:viewControllers animated:NO];
     //priv->_wantsFullScreenLayout = YES;
+    
+    self.toolbarHidden = YES;
 
     return self;
 }
