@@ -120,12 +120,12 @@ extern CGFloat _UITableViewDefaultRowHeight;
     [self bringSubviewToFront:_accessoryView];
     
     if (showingSeperator) {
-        _seperatorView.frame = CGRectMake(0,bounds.size.height-1,bounds.size.width,1);
+        _seperatorView.frame = CGRectMake(15,bounds.size.height-1,bounds.size.width-15,1);
         [self bringSubviewToFront:_seperatorView];
     }
     
     if (_style == UITableViewCellStyleDefault) {
-        const CGFloat padding = 5;
+        const CGFloat padding = 8;
 
         const BOOL showImage = (_imageView.image != nil);
         const CGFloat imageWidth = (showImage? 30:0);
