@@ -519,10 +519,17 @@ static EM_BOOL visibilitychange_callback_func(int eventType, const EmscriptenVis
 
 - (BOOL)openURL:(NSURL *)url
 {
+    // To avoid link error on emscripten, we need to encode
+    // encodeURI("ポップアップブロックを解除してください")
+    
     const char* urlString = [url.absoluteString UTF8String];
     int success = EM_ASM_INT({
         var url = Pointer_stringify($0);
-        return window.open(url, '_blank') != null ? 1 : 0;
+        var ret = window.open(url, '_blank') != null ? 1 : 0;
+        if(!ret) {
+            alert(decodeURI("%E3%83%9D%E3%83%83%E3%83%97%E3%82%A2%E3%83%83%E3%83%97%E3%83%96%E3%83%AD%E3%83%83%E3%82%AF%E3%82%92%E8%A7%A3%E9%99%A4%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84"));
+        }
+        return ret;
     }, urlString);
     return success;
 }
