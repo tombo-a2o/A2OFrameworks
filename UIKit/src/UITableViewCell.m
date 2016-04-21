@@ -169,7 +169,7 @@ extern CGFloat _UITableViewDefaultRowHeight;
         _textLabel.backgroundColor = [UIColor clearColor];
         _textLabel.textColor = [UIColor blackColor];
         _textLabel.highlightedTextColor = [UIColor whiteColor];
-        _textLabel.font = [UIFont boldSystemFontOfSize:17];
+        _textLabel.font = [UIFont systemFontOfSize:17];
         [self.contentView addSubview:_textLabel];
         [self layoutIfNeeded];
     }
