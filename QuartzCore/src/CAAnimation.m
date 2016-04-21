@@ -243,7 +243,7 @@ NSString *const kCATransitionFromBottom = @"bottom";
     
     CAMediaTimingFunction *function = _timingFunction;
     if(function == nil) {
-        function = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionDefault];
+        function = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
     }
     
     _scale = [function _solveYFor:zeroToOne];
