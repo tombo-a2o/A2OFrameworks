@@ -5,7 +5,7 @@
 +(CAKeyframeAnimation*)baseAnimation
 {
     CAKeyframeAnimation *anim = [CAKeyframeAnimation animationWithKeyPath:@"transform"];
-    anim.duration = 1.0;
+    anim.duration = 0.5;
     anim.calculationMode = kCAAnimationDiscrete;
     return anim;
 }
