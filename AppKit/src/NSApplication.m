@@ -618,6 +618,8 @@ static EM_BOOL sentWheelEventToApp(int eventType, const EmscriptenWheelEvent *wh
             [self finishLaunching];
             emscripten_trace_report_memory_layout();
             [pool release];
+            
+            __block int count = 0;
 
             dispatch_source_t source = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 2<<10, dispatch_get_current_queue());
             dispatch_source_set_timer(source, 0, 0, 0);
@@ -641,7 +643,11 @@ static EM_BOOL sentWheelEventToApp(int eventType, const EmscriptenWheelEvent *wh
                 if (!_isRunning) {
                     dispatch_source_cancel(source);
                 }
-                EM_ASM({ FS.syncfs(false, function(){}) });
+                if(count % 100 == 0) {
+                    EM_ASM({ FS.syncfs(false, function(){}) });
+                }
+                
+                count++;
             });
             dispatch_resume(source);
         });
