@@ -192,6 +192,31 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
     return YES;
 }
 
+static EM_BOOL sentWheelEventToApp(int eventType, const EmscriptenWheelEvent *wheelEvent, void *userData) {
+    assert(eventType == EMSCRIPTEN_EVENT_WHEEL);
+    
+    NSEventType type = NSScrollWheel;
+    EmscriptenMouseEvent *mouseEvent = &(wheelEvent->mouse);
+    
+    NSPoint location;
+    location.x = mouseEvent->canvasX;
+    location.y = 568 - mouseEvent->canvasY;
+    NSUInteger flags = 0;
+
+    NSTimeInterval timestamp = mouseEvent->timestamp;
+    
+    float deltaY = wheelEvent->deltaY;
+
+    dispatch_async(eventQueue, ^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSWindow* window = [NSApp mainWindow];
+            NSEvent *event = [NSEvent mouseEventWithType:type location:location modifierFlags:flags window:window deltaY:deltaY];
+            [NSApp sendEvent:event];
+        });
+    });
+    return YES;
+}
+
 -init {
     if(NSApp)
         NSAssert(!NSApp, @"NSApplication is a singleton");
@@ -222,6 +247,8 @@ static EM_BOOL sentMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
     emscripten_set_mousemove_callback(NULL, NULL, TRUE, sentMouseEventToApp);
     emscripten_set_mouseenter_callback(NULL, NULL, TRUE, sentMouseEventToApp);
     emscripten_set_mouseleave_callback(NULL, NULL, TRUE, sentMouseEventToApp);
+    
+    emscripten_set_wheel_callback(NULL, NULL, TRUE, sentWheelEventToApp);
     return NSApp;
 }
 

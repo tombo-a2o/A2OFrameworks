@@ -27,7 +27,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 -initWithType:(NSEventType)type location:(NSPoint)location modifierFlags:(unsigned)modifierFlags window:(NSWindow *)window deltaY:(float)deltaY {
 	[super initWithType:type location:location modifierFlags:modifierFlags window:window];
-
+	
+	_deltaX = 0.0;
 	_deltaY = deltaY;
 
 	return self;
