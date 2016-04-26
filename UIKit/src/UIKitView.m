@@ -452,28 +452,8 @@
 {
     double dx, dy;
 
-    CGEventRef cgEvent = [theEvent CGEvent];
-    const int64_t isContinious = CGEventGetIntegerValueField(cgEvent, kCGScrollWheelEventIsContinuous);
-
-    if (isContinious == 0) {
-        CGEventSourceRef source = CGEventCreateSourceFromEvent(cgEvent);
-        double pixelsPerLine;
-
-        if (source) {
-            pixelsPerLine = CGEventSourceGetPixelsPerLine(source);
-            //CFRelease(source);
-        } else {
-            // docs often say things like, "the default is near 10" so it seems reasonable that if the source doesn't work
-            // for some reason to fetch the pixels per line, then 10 is probably a decent fallback value. :)
-            pixelsPerLine = 10;
-        }
-
-        dx = CGEventGetDoubleValueField(cgEvent, kCGScrollWheelEventFixedPtDeltaAxis2) * pixelsPerLine;
-        dy = CGEventGetDoubleValueField(cgEvent, kCGScrollWheelEventFixedPtDeltaAxis1) * pixelsPerLine;
-    } else {
-        dx = CGEventGetIntegerValueField(cgEvent, kCGScrollWheelEventPointDeltaAxis2);
-        dy = CGEventGetIntegerValueField(cgEvent, kCGScrollWheelEventPointDeltaAxis1);
-    }
+    dx = theEvent.deltaX;
+    dy = -theEvent.deltaY;
 
     CGPoint translation = CGPointMake(-dx, -dy);
 
