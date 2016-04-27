@@ -364,65 +364,70 @@ static void calculateTexCoord(GLfloat *x, GLfloat *y, int length, CGFloat dw, CG
     }
 }
 
+static void prepareTexture(CALayer *layer) {
+    GLuint texture = [layer _textureId];
+    if(texture) {
+        // Texture is available. Just bind and use.
+        glBindTexture(GL_TEXTURE_2D, texture);
+        return;
+    }
+    
+    // Load pixel data to texture
+    id image = layer.contents;
+    
+    glGenTextures(1, &texture);
+    [layer _setTextureId:texture];
+    
+    CALayer *modelLayer = (CALayer*)layer.modelLayer;
+    if(image == modelLayer.contents) {
+        [modelLayer _setTextureId:texture];
+    }
+    
+    glBindTexture(GL_TEXTURE_2D, texture);
+    GLenum err = glGetError();
+    if(err) {
+        NSLog(@"GL error %d, layer=%@, texture=%d", err, layer, texture);
+        return;
+    }
+
+    if(image) {
+        if([image isKindOfClass: NSClassFromString(@"O2BitmapContext")]) {
+            CATexImage2DCGBitmapContext((CGContextRef)image);
+        } else if([image isKindOfClass: NSClassFromString(@"O2Image")]){
+            CATexImage2DCGImage((CGImageRef)image);
+        }
+    } else {
+        generateTransparentTexture();
+    }
+    
+    // check glTexImage2D error
+    err = glGetError();
+    if(err) {
+        NSLog(@"GL error %d, layer=%@, texture=%d", err, layer, texture);
+        return;
+    }
+    
+    #warning TODO use POT texture
+    // Force linear interpolation due to WebGL npot texture limitation
+
+    // GLint minFilter=interpolationFromName(layer.minificationFilter);
+    // GLint magFilter=interpolationFromName(layer.magnificationFilter);
+    // glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,minFilter);
+    // glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,magFilter);
+
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
+}
+
 -(void)_renderLayer:(CALayer *)layer z:(int)z mask:(int)mask transform:(CATransform3D)transform {
     //NSLog(@"CARenderer: renderLayer %d %@ b:%@ f:%@ %d", z, layer, NSStringFromRect(layer.bounds), NSStringFromRect(layer.frame), [layer _textureId]);
     if(layer.isHidden) return;
 
-    GLuint texture = [layer _textureId];
-    if(texture != 0) {
-        // Texture is available. Just bind and use.
-        glBindTexture(GL_TEXTURE_2D, texture);
-    } else {
-        // Load pixel data to texture
-        id image = layer.contents;
-        
-        glGenTextures(1, &texture);
-        [layer _setTextureId:texture];
-        
-        CALayer *modelLayer = (CALayer*)layer.modelLayer;
-        if(image == modelLayer.contents) {
-            [modelLayer _setTextureId:texture];
-        }
-        
-        glBindTexture(GL_TEXTURE_2D, texture);
-        GLenum err = glGetError();
-        if(err) {
-            NSLog(@"GL error %d, layer=%@, texture=%d", err, layer, texture);
-            return;
-        }
+    prepareTexture(layer);
 
-        if(image) {
-            if([image isKindOfClass: NSClassFromString(@"O2BitmapContext")]) {
-                CATexImage2DCGBitmapContext((CGContextRef)image);
-            } else if([image isKindOfClass: NSClassFromString(@"O2Image")]){
-                CATexImage2DCGImage((CGImageRef)image);
-            }
-        } else {
-            generateTransparentTexture();
-        }
-        
-        // check glTexImage2D error
-        err = glGetError();
-        if(err) {
-            NSLog(@"GL error %d, layer=%@, texture=%d", err, layer, texture);
-            return;
-        }
-        
-        #warning TODO use POT texture
-        // Force linear interpolation due to WebGL npot texture limitation
-
-        // GLint minFilter=interpolationFromName(layer.minificationFilter);
-        // GLint magFilter=interpolationFromName(layer.magnificationFilter);
-        // glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,minFilter);
-        // glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,magFilter);
-
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
-    }
-    
     CALayer *l = layer;
     
     if(l.isDoubleSided) {
