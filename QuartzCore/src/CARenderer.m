@@ -428,23 +428,8 @@ static void prepareTexture(CALayer *layer) {
 
     prepareTexture(layer);
 
-    CALayer *l = layer;
-    
-    if(l.isDoubleSided) {
-        glDisable(GL_CULL_FACE);
-    } else {
-       glEnable(GL_CULL_FACE);
-       glCullFace(GL_BACK);
-    }
-    
-    CGPoint anchorPoint = l.anchorPoint;
-    CGPoint position = l.position;
-    CGRect  bounds = l.bounds;
-    float   cornerRadius = l.cornerRadius;
-    float   borderWidth = l.borderWidth;
-    CATransform3D layerTransform = l.transform;
-    CGFloat anchorPointZ = l.anchorPointZ;
-    CGSize  contentsSize = [l _contentsSize];
+    CGRect  bounds = layer.bounds;
+    CGSize  contentsSize = [layer _contentsSize];
 
     CGFloat w = bounds.size.width;
     CGFloat h = bounds.size.height;
@@ -453,7 +438,7 @@ static void prepareTexture(CALayer *layer) {
     GLfloat x[] = {0, mid, w-mid, w};
     GLfloat y[] = {0, mid, h-mid, h};
     GLfloat s[4], t[4];
-    calculateTexCoord(x, y, 4, w, h, contentsSize.width, contentsSize.height, l.contentsGravity, [layer _flipTexture], s, t);
+    calculateTexCoord(x, y, 4, w, h, contentsSize.width, contentsSize.height, layer.contentsGravity, [layer _flipTexture], s, t);
     GLfloat d[] = {0, mid, mid, 0};
     GLfloat vertices[4*4*6];
     int idx = 0;
@@ -468,32 +453,42 @@ static void prepareTexture(CALayer *layer) {
         }
     }
 
-    CATransform3D t1 = CATransform3DMakeTranslation(-anchorPoint.x * w, -anchorPoint.y * h, -anchorPointZ);
-    CATransform3D t2 = CATransform3DConcat(t1, layerTransform);
-    CATransform3D t3 = CATransform3DConcat(t2, CATransform3DMakeTranslation(position.x, position.y, 0));
-    CATransform3D t4  = CATransform3DConcat(t3, transform);
-    glEnableVertexAttribArray(_attrPosition);
-    glEnableVertexAttribArray(_attrTexCoord);
-    glEnableVertexAttribArray(_attrDistance);
-
     glBindBuffer(GL_ARRAY_BUFFER, _vertexObject);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+    glEnableVertexAttribArray(_attrPosition);
+    glEnableVertexAttribArray(_attrTexCoord);
+    glEnableVertexAttribArray(_attrDistance);
     glVertexAttribPointer(_attrPosition, 2, GL_FLOAT, GL_FALSE, 6*sizeof(GLfloat), 0);
     glVertexAttribPointer(_attrTexCoord, 2, GL_FLOAT, GL_FALSE, 6*sizeof(GLfloat), (GLfloat*)NULL + 2);
     glVertexAttribPointer(_attrDistance, 2, GL_FLOAT, GL_FALSE, 6*sizeof(GLfloat), (GLfloat*)NULL + 4);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+    CGPoint anchorPoint = layer.anchorPoint;
+    CGFloat anchorPointZ = layer.anchorPointZ;
+    CGPoint position = layer.position;
+    CATransform3D t1 = CATransform3DMakeTranslation(-anchorPoint.x * w, -anchorPoint.y * h, -anchorPointZ);
+    CATransform3D t2 = CATransform3DConcat(t1, layer.transform);
+    CATransform3D t3 = CATransform3DConcat(t2, CATransform3DMakeTranslation(position.x, position.y, 0));
+    CATransform3D t4  = CATransform3DConcat(t3, transform);
+    
     glUniformMatrix4fv(_unifTransform, 1, GL_FALSE, &t4);
-    glUniform1f(_unifOpacity, l.opacity);
-    glUniform1f(_unifCornerRadius, cornerRadius);
-    glUniform1f(_unifBorderWidth, borderWidth);
+    glUniform1f(_unifOpacity, layer.opacity);
+    glUniform1f(_unifCornerRadius, layer.cornerRadius);
+    glUniform1f(_unifBorderWidth, layer.borderWidth);
     GLfloat borderColor[4];
-    getColorComponents(l.borderColor, borderColor);
+    getColorComponents(layer.borderColor, borderColor);
     glUniform4fv(_unifBorderColor, 1, borderColor);
     GLfloat backgroundColor[4];
-    getColorComponents(l.backgroundColor, backgroundColor);
+    getColorComponents(layer.backgroundColor, backgroundColor);
     glUniform4fv(_unifBackgroundColor, 1, backgroundColor);
+    
+    if(layer.isDoubleSided) {
+        glDisable(GL_CULL_FACE);
+    } else {
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
+    }
     
     int mask1000 = 1 << mask;
     int mask0111 = mask1000 - 1;
@@ -501,7 +496,7 @@ static void prepareTexture(CALayer *layer) {
     glStencilMask(mask1000);
     glStencilFunc(GL_EQUAL, mask1111, mask0111);
     
-    if(l.masksToBounds) {
+    if(layer.masksToBounds) {
         mask++;
         if(mask > _stencilBits) {
             NSLog(@"Too many mask layers");
@@ -531,10 +526,8 @@ static void prepareTexture(CALayer *layer) {
     };
     glDrawElements(GL_TRIANGLES, sizeof(index)/sizeof(GLushort), GL_UNSIGNED_SHORT, index);
 
-    CATransform3D sublayerTransform = l.sublayerTransform;
-    
-    CATransform3D ts3 = CATransform3DConcat(t2, CATransform3DMakeTranslation(-l.bounds.origin.x, -l.bounds.origin.y, 0));
-    CATransform3D ts4 = CATransform3DConcat(ts3, sublayerTransform);
+    CATransform3D ts3 = CATransform3DConcat(t2, CATransform3DMakeTranslation(-bounds.origin.x, -bounds.origin.y, 0));
+    CATransform3D ts4 = CATransform3DConcat(ts3, layer.sublayerTransform);
     CATransform3D ts5 = CATransform3DConcat(ts4, CATransform3DMakeTranslation(position.x, position.y, 0));
     CATransform3D ts  = CATransform3DConcat(ts5, transform);
 
@@ -542,7 +535,7 @@ static void prepareTexture(CALayer *layer) {
         [self _renderLayer:child z:z+1 mask:mask transform:ts];
     }
     
-    if(l.masksToBounds) {
+    if(layer.masksToBounds) {
         glClear(GL_STENCIL_BUFFER_BIT);
     }
 }
