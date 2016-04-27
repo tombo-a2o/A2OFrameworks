@@ -42,16 +42,24 @@
 -(void)renderLayer:(CALayer *)layer {
     [EAGLContext setCurrentContext:_glContext];
 
-    GLint framebuffer, blendFund, cullFaceMode, program;
-    GLboolean blend, cullFace;
+    GLint framebuffer, cullFaceMode, program;
+    GLint blendSrcRgb, blendSrcAlpha, blendDstRgb, blendDstAlpha;
+    GLboolean blendEnabled, cullFaceEnabled;
     
     // save state
     glGetIntegerv(GL_CURRENT_PROGRAM, &program);
     glGetIntegerv(GL_FRAMEBUFFER_BINDING, &framebuffer);
-    blend = glIsEnabled(GL_BLEND);
-    glGetIntegerv(GL_BLEND_SRC_ALPHA, &blendFund);
-    cullFace = glIsEnabled(GL_CULL_FACE);
-    glGetIntegerv(GL_CULL_FACE_MODE, &cullFaceMode);
+    blendEnabled = glIsEnabled(GL_BLEND);
+    if(blendEnabled) {
+        glGetIntegerv(GL_BLEND_SRC_RGB, &blendSrcRgb);
+        glGetIntegerv(GL_BLEND_SRC_ALPHA, &blendSrcAlpha);
+        glGetIntegerv(GL_BLEND_DST_RGB, &blendDstRgb);
+        glGetIntegerv(GL_BLEND_DST_ALPHA, &blendDstAlpha);
+    }
+    cullFaceEnabled = glIsEnabled(GL_CULL_FACE);
+    if(cullFaceEnabled) {
+        glGetIntegerv(GL_CULL_FACE_MODE, &cullFaceMode);
+    }
     glBindVertexArrayOES(0);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -67,13 +75,13 @@
     [_renderer render];
 
     // restore state
-    if(blend) {
+    if(blendEnabled) {
         glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, blendFund);
+        glBlendFuncSeparate(blendSrcRgb, blendDstRgb, blendSrcAlpha, blendDstAlpha);
     } else {
         glDisable(GL_BLEND);
     }
-    if(cullFace) {
+    if(cullFaceEnabled) {
         glEnable(GL_CULL_FACE);
         glCullFace(cullFaceMode);
     } else {
