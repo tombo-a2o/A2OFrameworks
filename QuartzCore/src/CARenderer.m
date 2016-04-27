@@ -369,22 +369,21 @@ static void calculateTexCoord(GLfloat *x, GLfloat *y, int length, CGFloat dw, CG
     if(layer.isHidden) return;
 
     GLuint texture = [layer _textureId];
-    if(texture != 0 && glIsTexture(texture)==GL_TRUE) {
+    if(texture != 0) {
         // Texture is available. Just bind and use.
         glBindTexture(GL_TEXTURE_2D, texture);
     } else {
         // Load pixel data to texture
         id image = layer.contents;
         
-        if(!texture) {
-            glGenTextures(1, &texture);
-            [layer _setTextureId:texture];
-            
-            CALayer *modelLayer = (CALayer*)layer.modelLayer;
-            if(image == modelLayer.contents) {
-                [layer.modelLayer _setTextureId:texture];
-            }
+        glGenTextures(1, &texture);
+        [layer _setTextureId:texture];
+        
+        CALayer *modelLayer = (CALayer*)layer.modelLayer;
+        if(image == modelLayer.contents) {
+            [modelLayer _setTextureId:texture];
         }
+        
         glBindTexture(GL_TEXTURE_2D, texture);
         GLenum err = glGetError();
         if(err) {
