@@ -4,6 +4,10 @@
 @interface CALayer(private)
 -(void)_setTextureId:(GLuint)value;
 -(GLuint)_textureId;
+-(void)_setVertexObject:(GLuint)value;
+-(GLuint)_vertexObject;
+-(BOOL)_needsUpdateVertexObject;
+-(void)_clearNeedsUpdateVertexObject;
 -(CGFloat)textureSize;
 -(BOOL)_flipTexture;
 -(void)_updateAnimations:(CFTimeInterval)currentTime;

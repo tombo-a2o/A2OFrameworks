@@ -33,6 +33,8 @@ NSString * const kCATransition = @"transition";
 
 @implementation CALayer {
     GLuint _textureId;
+    GLuint _vertexObject;
+    BOOL _needsUpdateVertexObject;
     BOOL _flipTexture;
     NSMutableArray *_implicitAnimations;
     CALayer *_presentationLayer;
@@ -65,6 +67,8 @@ NSString * const kCATransition = @"transition";
     _needsDisplay = YES;
     _needsLayout = YES;
     _textureId = 0;
+    _vertexObject = 0;
+    _needsUpdateVertexObject = YES;
     _flipTexture = NO;
     _zPosition = 0;
     _anchorPointZ = 0.0;
@@ -116,12 +120,15 @@ NSString * const kCATransition = @"transition";
     _needsDisplay = YES;
     _needsLayout = YES;
     _textureId = layer->_textureId;
+    _vertexObject = 0;
+    _needsUpdateVertexObject = YES;
     _flipTexture = layer->_flipTexture;
     return self;
 }
 
 -(void)dealloc {
     if(!_modelLayer) [self _setTextureId:0]; // delete texture unless self is presentationLayer
+    [self _setVertexObject:0];
     [_contents release];
     _presentationLayer->_modelLayer = nil;
     [_presentationLayer release];
@@ -210,6 +217,7 @@ NSString * const kCATransition = @"transition";
        [self setNeedsLayout];
        [self.superlayer setNeedsLayout];
        [self setNeedsDisplay];
+       _needsUpdateVertexObject = YES;
    }
 
    _bounds=value;
@@ -274,9 +282,10 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)setContents:(id)value {
-    _shouldClearPresentationLayer = YES;
-    
     if(_contents != value) {
+        _shouldClearPresentationLayer = YES;
+        _needsUpdateVertexObject = YES;
+        
         value = [value retain];
         [_contents release];
         _contents=value;
@@ -684,10 +693,33 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)_setTextureId:(GLuint)value {
+    if(_textureId == value) return;
+    
 	if(_textureId && _modelLayer._textureId != _textureId) {
 		glDeleteTextures(1, &_textureId);
 	}
 	_textureId = value;
+}
+
+-(GLuint)_vertexObject {
+	return _vertexObject;
+}
+
+-(void)_setVertexObject:(GLuint)value {
+    if(_vertexObject == value) return;
+    
+	if(_vertexObject) { //} && _modelLayer._vertexObject != _vertexObject) {
+		glDeleteBuffers(1, &_vertexObject);
+	}
+	_vertexObject = value;
+}
+
+-(BOOL)_needsUpdateVertexObject {
+    return _needsUpdateVertexObject;
+}
+
+-(void)_clearNeedsUpdateVertexObject {
+    _needsUpdateVertexObject = NO;
 }
 
 - (BOOL)needsLayout {

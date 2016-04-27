@@ -49,8 +49,7 @@
     GLint _unifBorderWidth;
     GLint _unifBorderColor;
     GLint _unifBackgroundColor;
-    GLuint _vertexObject;
-
+    
     GLint _stencilBits;
 }
 
@@ -126,7 +125,6 @@ static const char *fragmentShaderSource =
    _unifBorderWidth = glGetUniformLocation(_program, "borderWidth");
    _unifBorderColor = glGetUniformLocation(_program, "borderColor");
    _unifBackgroundColor = glGetUniformLocation(_program, "backgroundColor");
-   glGenBuffers(1, &_vertexObject);
    assert(_attrPosition >= 0);
    assert(_attrTexCoord >= 0);
    assert(_attrDistance >= 0);
@@ -136,7 +134,6 @@ static const char *fragmentShaderSource =
    assert(_unifBorderWidth >= 0);
    assert(_unifBorderColor >= 0);
    assert(_unifBackgroundColor >= 0);
-   assert(_vertexObject);
    
    glGetIntegerv(GL_STENCIL_BITS, &_stencilBits);
 
@@ -146,9 +143,6 @@ static const char *fragmentShaderSource =
 - (void)dealloc {
     if(_program) {
         glDeleteProgram(_program);
-    }
-    if(_vertexObject) {
-        glDeleteBuffers(1, &_vertexObject);
     }
     [_rootLayer release];
     [super dealloc];
@@ -428,33 +422,42 @@ static void prepareTexture(CALayer *layer) {
 
     prepareTexture(layer);
 
-    CGRect  bounds = layer.bounds;
-    CGSize  contentsSize = [layer _contentsSize];
-
-    CGFloat w = bounds.size.width;
-    CGFloat h = bounds.size.height;
-    CGFloat mid = MIN(w, h) / 2;
-
-    GLfloat x[] = {0, mid, w-mid, w};
-    GLfloat y[] = {0, mid, h-mid, h};
-    GLfloat s[4], t[4];
-    calculateTexCoord(x, y, 4, w, h, contentsSize.width, contentsSize.height, layer.contentsGravity, [layer _flipTexture], s, t);
-    GLfloat d[] = {0, mid, mid, 0};
-    GLfloat vertices[4*4*6];
-    int idx = 0;
-    for(int j = 0; j < 4; j++) {
-        for(int i = 0; i < 4; i++) {
-            vertices[idx++] = x[i];   // coordinate
-            vertices[idx++] = y[j];
-            vertices[idx++] = s[i]; // texture coord
-            vertices[idx++] = t[j];
-            vertices[idx++] = d[i];  // distance to edge
-            vertices[idx++] = d[j];
-        }
+    GLuint vertexObject = layer._vertexObject;
+    if(!vertexObject) {
+        glGenBuffers(1, &vertexObject);
+        [layer _setVertexObject:vertexObject];
     }
+    glBindBuffer(GL_ARRAY_BUFFER, vertexObject);
+    
+    if([layer _needsUpdateVertexObject]) {
+        [layer _clearNeedsUpdateVertexObject];
+        
+        CGSize  layerSize = layer.bounds.size;
+        CGSize  contentsSize = [layer _contentsSize];
 
-    glBindBuffer(GL_ARRAY_BUFFER, _vertexObject);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+        CGFloat w = layerSize.width;
+        CGFloat h = layerSize.height;
+        CGFloat mid = MIN(w, h) / 2;
+
+        GLfloat x[] = {0, mid, w-mid, w};
+        GLfloat y[] = {0, mid, h-mid, h};
+        GLfloat s[4], t[4];
+        calculateTexCoord(x, y, 4, w, h, contentsSize.width, contentsSize.height, layer.contentsGravity, [layer _flipTexture], s, t);
+        GLfloat d[] = {0, mid, mid, 0};
+        GLfloat vertices[4*4*6];
+        int idx = 0;
+        for(int j = 0; j < 4; j++) {
+            for(int i = 0; i < 4; i++) {
+                vertices[idx++] = x[i];  // coordinate
+                vertices[idx++] = y[j];
+                vertices[idx++] = s[i];  // texture coord
+                vertices[idx++] = t[j];
+                vertices[idx++] = d[i];  // distance to edge
+                vertices[idx++] = d[j];
+            }
+        }
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    }
 
     glEnableVertexAttribArray(_attrPosition);
     glEnableVertexAttribArray(_attrTexCoord);
@@ -464,10 +467,11 @@ static void prepareTexture(CALayer *layer) {
     glVertexAttribPointer(_attrDistance, 2, GL_FLOAT, GL_FALSE, 6*sizeof(GLfloat), (GLfloat*)NULL + 4);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+    CGRect  bounds = layer.bounds;
     CGPoint anchorPoint = layer.anchorPoint;
     CGFloat anchorPointZ = layer.anchorPointZ;
     CGPoint position = layer.position;
-    CATransform3D t1 = CATransform3DMakeTranslation(-anchorPoint.x * w, -anchorPoint.y * h, -anchorPointZ);
+    CATransform3D t1 = CATransform3DMakeTranslation(-anchorPoint.x * bounds.size.width, -anchorPoint.y * bounds.size.height, -anchorPointZ);
     CATransform3D t2 = CATransform3DConcat(t1, layer.transform);
     CATransform3D t3 = CATransform3DConcat(t2, CATransform3DMakeTranslation(position.x, position.y, 0));
     CATransform3D t4  = CATransform3DConcat(t3, transform);
