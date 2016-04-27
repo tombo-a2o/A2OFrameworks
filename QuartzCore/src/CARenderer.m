@@ -49,6 +49,7 @@
     GLint _unifBorderWidth;
     GLint _unifBorderColor;
     GLint _unifBackgroundColor;
+    GLuint _ibo;
     
     GLint _stencilBits;
 }
@@ -125,6 +126,29 @@ static const char *fragmentShaderSource =
    _unifBorderWidth = glGetUniformLocation(_program, "borderWidth");
    _unifBorderColor = glGetUniformLocation(_program, "borderColor");
    _unifBackgroundColor = glGetUniformLocation(_program, "backgroundColor");
+   glGenBuffers(1, &_ibo);
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ibo);
+   const GLushort index[] = {
+       0, 4, 1,
+       1, 4, 5,
+       1, 5, 2,
+       2, 5, 6,
+       2, 6, 3,
+       3, 6, 7,
+       4, 8, 5,
+       5, 8, 9,
+       6, 10, 7,
+       7, 10, 11,
+       8, 12, 9,
+       9, 12, 13,
+       9, 13, 10,
+       10, 13, 14,
+       10, 14, 11,
+       11, 14, 15,
+   };
+   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(index), index, GL_STATIC_DRAW);
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
    assert(_attrPosition >= 0);
    assert(_attrTexCoord >= 0);
    assert(_attrDistance >= 0);
@@ -143,6 +167,9 @@ static const char *fragmentShaderSource =
 - (void)dealloc {
     if(_program) {
         glDeleteProgram(_program);
+    }
+    if(_ibo) {
+        glDeleteBuffers(1, &_ibo);
     }
     [_rootLayer release];
     [super dealloc];
@@ -510,25 +537,9 @@ static void prepareTexture(CALayer *layer) {
         glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
     }
 
-    const GLushort index[] = {
-        0, 4, 1,
-        1, 4, 5,
-        1, 5, 2,
-        2, 5, 6,
-        2, 6, 3,
-        3, 6, 7,
-        4, 8, 5,
-        5, 8, 9,
-        6, 10, 7,
-        7, 10, 11,
-        8, 12, 9,
-        9, 12, 13,
-        9, 13, 10,
-        10, 13, 14,
-        10, 14, 11,
-        11, 14, 15,
-    };
-    glDrawElements(GL_TRIANGLES, sizeof(index)/sizeof(GLushort), GL_UNSIGNED_SHORT, index);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ibo);
+    
+    glDrawElements(GL_TRIANGLES, 48, GL_UNSIGNED_SHORT, 0);
 
     CATransform3D ts3 = CATransform3DConcat(t2, CATransform3DMakeTranslation(-bounds.origin.x, -bounds.origin.y, 0));
     CATransform3D ts4 = CATransform3DConcat(ts3, layer.sublayerTransform);
