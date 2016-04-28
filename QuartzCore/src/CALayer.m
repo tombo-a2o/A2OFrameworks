@@ -36,7 +36,7 @@ NSString * const kCATransition = @"transition";
     GLuint _vertexObject;
     BOOL _needsUpdateVertexObject;
     BOOL _flipTexture;
-    NSMutableArray *_implicitAnimations;
+    NSMutableSet *_implicitAnimations;
     CALayer *_presentationLayer;
     CALayer *_modelLayer;
     BOOL _shouldClearPresentationLayer;
@@ -63,7 +63,7 @@ NSString * const kCATransition = @"transition";
     _minificationFilter=kCAFilterLinear;
     _magnificationFilter=kCAFilterLinear;
     _animations=[[NSMutableDictionary alloc] init];
-    _implicitAnimations = [[NSMutableArray alloc] init];
+    _implicitAnimations = [[NSMutableSet alloc] init];
     _needsDisplay = YES;
     _needsLayout = YES;
     _textureId = 0;
@@ -839,7 +839,7 @@ NSString * const kCATransition = @"transition";
     }
     assert(_presentationLayer);
     
-    for(CALayer *child in self.sublayers) {
+    for(CALayer *child in _sublayers) {
         changed = [child _generatePresentationLayer] || changed;
     }
     
@@ -857,25 +857,32 @@ NSString * const kCATransition = @"transition";
 -(void)_updateAnimations:(CFTimeInterval)currentTime {
     assert(!_modelLayer && _presentationLayer); // self should be modelLayer
     
-    for(NSString *key in self.animationKeys){
-        CAAnimation *animation = [self animationForKey:key];
-        
-        [animation _updateLayer:self currentTime:currentTime];
-        
-        if([animation _isFinished] && animation.isRemovedOnCompletion){
-            [self removeAnimationForKey:key];
-            _shouldClearPresentationLayer = YES;
+    if([_animations count]) {
+        NSMutableArray *toBeRemoved = [NSMutableArray array];
+        for(NSString *key in _animations){
+            CAAnimation *animation = [self animationForKey:key];
+            
+            [animation _updateLayer:self currentTime:currentTime];
+            
+            if([animation _isFinished] && animation.isRemovedOnCompletion){
+                [toBeRemoved addObject:key];
+                _shouldClearPresentationLayer = YES;
+            }
         }
+        [_animations removeObjectsForKeys:toBeRemoved];
     }
     
-    NSArray *implicitAnimations = [NSArray arrayWithArray:_implicitAnimations];
-    for(CAAnimation *animation in implicitAnimations) {
-        [animation _updateLayer:self currentTime:currentTime];
-            
-        if([animation _isFinished] && animation.isRemovedOnCompletion){
-            [_implicitAnimations removeObject:animation];
-            _shouldClearPresentationLayer = YES;
+    if([_implicitAnimations count]) {
+        NSMutableSet *toBeRemoved2 = [NSMutableSet set];
+        for(CAAnimation *animation in _implicitAnimations) {
+            [animation _updateLayer:self currentTime:currentTime];
+                
+            if([animation _isFinished] && animation.isRemovedOnCompletion){
+                [toBeRemoved2 addObject:animation];
+                _shouldClearPresentationLayer = YES;
+            }
         }
+        [_implicitAnimations minusSet:toBeRemoved2];
     }
     
     for(CALayer *child in _sublayers) {
