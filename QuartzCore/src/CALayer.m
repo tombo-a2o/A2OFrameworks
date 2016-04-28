@@ -154,6 +154,8 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)setSublayers:(NSArray *)sublayers {
+    _shouldClearPresentationLayer = YES;
+    
     sublayers=[sublayers copy];
     [_sublayers release];
     _sublayers=sublayers;
@@ -822,7 +824,9 @@ NSString * const kCATransition = @"transition";
     return _flipTexture;
 }
 
--(void)_generatePresentationLayer {
+-(BOOL)_generatePresentationLayer {
+    BOOL changed = NO;
+    
     if(_shouldClearPresentationLayer) {
         [_presentationLayer release];
         _presentationLayer = nil;
@@ -831,14 +835,23 @@ NSString * const kCATransition = @"transition";
     if(!_presentationLayer) {
         _presentationLayer = [[[self class] alloc] initWithLayer:self];
         _presentationLayer->_modelLayer = self;
+        changed = YES;
     }
     assert(_presentationLayer);
-    NSMutableArray *sublayers = [NSMutableArray array];
+    
     for(CALayer *child in self.sublayers) {
-        [child _generatePresentationLayer];
-        [sublayers addObject:child.presentationLayer];
+        changed = [child _generatePresentationLayer] || changed;
     }
-    _presentationLayer.sublayers = sublayers;
+    
+    if(changed) {
+        NSMutableArray *sublayers = [NSMutableArray array];
+        for(CALayer *child in self.sublayers) {
+            [sublayers addObject:child.presentationLayer];
+        }
+        _presentationLayer.sublayers = sublayers;
+    }
+    
+    return changed;
 }
 
 -(void)_updateAnimations:(CFTimeInterval)currentTime {
