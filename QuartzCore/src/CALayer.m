@@ -33,11 +33,14 @@ NSString * const kCATransition = @"transition";
 
 @implementation CALayer {
     GLuint _textureId;
+    GLuint _vertexObject;
+    BOOL _needsUpdateVertexObject;
     BOOL _flipTexture;
-    NSMutableArray *_implicitAnimations;
+    NSMutableSet *_implicitAnimations;
     CALayer *_presentationLayer;
     CALayer *_modelLayer;
     BOOL _shouldClearPresentationLayer;
+    NSArray *_zOrderedSublayers;
 }
 
 +layer {
@@ -49,6 +52,7 @@ NSString * const kCATransition = @"transition";
 -init {
     _superlayer=nil;
     _sublayers=[NSArray new];
+    _zOrderedSublayers=nil;
     _delegate=nil;
     _anchorPoint=CGPointMake(0.5,0.5);
     _position=CGPointZero;
@@ -61,10 +65,12 @@ NSString * const kCATransition = @"transition";
     _minificationFilter=kCAFilterLinear;
     _magnificationFilter=kCAFilterLinear;
     _animations=[[NSMutableDictionary alloc] init];
-    _implicitAnimations = [[NSMutableArray alloc] init];
+    _implicitAnimations = [[NSMutableSet alloc] init];
     _needsDisplay = YES;
     _needsLayout = YES;
     _textureId = 0;
+    _vertexObject = 0;
+    _needsUpdateVertexObject = YES;
     _flipTexture = NO;
     _zPosition = 0;
     _anchorPointZ = 0.0;
@@ -87,6 +93,7 @@ NSString * const kCATransition = @"transition";
     CALayer *layer = layer_;
     _superlayer = nil;
     _sublayers = nil;
+    _zOrderedSublayers = nil;
     _delegate = layer.delegate;
     _anchorPoint = layer.anchorPoint;
     _position = layer.position;
@@ -116,17 +123,21 @@ NSString * const kCATransition = @"transition";
     _needsDisplay = YES;
     _needsLayout = YES;
     _textureId = layer->_textureId;
+    _vertexObject = 0;
+    _needsUpdateVertexObject = YES;
     _flipTexture = layer->_flipTexture;
     return self;
 }
 
 -(void)dealloc {
     if(!_modelLayer) [self _setTextureId:0]; // delete texture unless self is presentationLayer
+    [self _setVertexObject:0];
     [_contents release];
     _presentationLayer->_modelLayer = nil;
     [_presentationLayer release];
     [_sublayers makeObjectsPerformSelector:@selector(_setSuperLayer:) withObject:nil];
     [_sublayers release];
+    [_zOrderedSublayers release];
     [_animations release];
     [_implicitAnimations release];
     [_minificationFilter release];
@@ -147,6 +158,9 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)setSublayers:(NSArray *)sublayers {
+    _shouldClearPresentationLayer = YES;
+    [self _clearZOrderedSublayersCache];
+    
     sublayers=[sublayers copy];
     [_sublayers release];
     _sublayers=sublayers;
@@ -210,6 +224,7 @@ NSString * const kCATransition = @"transition";
        [self setNeedsLayout];
        [self.superlayer setNeedsLayout];
        [self setNeedsDisplay];
+       _needsUpdateVertexObject = YES;
    }
 
    _bounds=value;
@@ -274,9 +289,10 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)setContents:(id)value {
-    _shouldClearPresentationLayer = YES;
-    
     if(_contents != value) {
+        _shouldClearPresentationLayer = YES;
+        _needsUpdateVertexObject = YES;
+        
         value = [value retain];
         [_contents release];
         _contents=value;
@@ -350,6 +366,10 @@ NSString * const kCATransition = @"transition";
 
 -(void)setZPosition:(CGFloat)zPosition {
     _shouldClearPresentationLayer = YES;
+    
+    if(_superlayer) {
+        [_superlayer _clearZOrderedSublayersCache];
+    }
     
     _zPosition = zPosition;
 }
@@ -684,10 +704,33 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)_setTextureId:(GLuint)value {
+    if(_textureId == value) return;
+    
 	if(_textureId && _modelLayer._textureId != _textureId) {
 		glDeleteTextures(1, &_textureId);
 	}
 	_textureId = value;
+}
+
+-(GLuint)_vertexObject {
+	return _vertexObject;
+}
+
+-(void)_setVertexObject:(GLuint)value {
+    if(_vertexObject == value) return;
+    
+	if(_vertexObject) { //} && _modelLayer._vertexObject != _vertexObject) {
+		glDeleteBuffers(1, &_vertexObject);
+	}
+	_vertexObject = value;
+}
+
+-(BOOL)_needsUpdateVertexObject {
+    return _needsUpdateVertexObject;
+}
+
+-(void)_clearNeedsUpdateVertexObject {
+    _needsUpdateVertexObject = NO;
 }
 
 - (BOOL)needsLayout {
@@ -790,7 +833,9 @@ NSString * const kCATransition = @"transition";
     return _flipTexture;
 }
 
--(void)_generatePresentationLayer {
+-(BOOL)_generatePresentationLayer {
+    BOOL changed = NO;
+    
     if(_shouldClearPresentationLayer) {
         [_presentationLayer release];
         _presentationLayer = nil;
@@ -799,38 +844,54 @@ NSString * const kCATransition = @"transition";
     if(!_presentationLayer) {
         _presentationLayer = [[[self class] alloc] initWithLayer:self];
         _presentationLayer->_modelLayer = self;
+        changed = YES;
     }
     assert(_presentationLayer);
-    NSMutableArray *sublayers = [NSMutableArray array];
-    for(CALayer *child in self.sublayers) {
-        [child _generatePresentationLayer];
-        [sublayers addObject:child.presentationLayer];
+    
+    for(CALayer *child in _sublayers) {
+        changed = [child _generatePresentationLayer] || changed;
     }
-    _presentationLayer.sublayers = sublayers;
+    
+    if(changed) {
+        NSMutableArray *sublayers = [NSMutableArray array];
+        for(CALayer *child in self.sublayers) {
+            [sublayers addObject:child.presentationLayer];
+        }
+        _presentationLayer.sublayers = sublayers;
+    }
+    
+    return changed;
 }
 
 -(void)_updateAnimations:(CFTimeInterval)currentTime {
     assert(!_modelLayer && _presentationLayer); // self should be modelLayer
     
-    for(NSString *key in self.animationKeys){
-        CAAnimation *animation = [self animationForKey:key];
-        
-        [animation _updateLayer:self currentTime:currentTime];
-        
-        if([animation _isFinished] && animation.isRemovedOnCompletion){
-            [self removeAnimationForKey:key];
-            _shouldClearPresentationLayer = YES;
+    if([_animations count]) {
+        NSMutableArray *toBeRemoved = [NSMutableArray array];
+        for(NSString *key in _animations){
+            CAAnimation *animation = [self animationForKey:key];
+            
+            [animation _updateLayer:self currentTime:currentTime];
+            
+            if([animation _isFinished] && animation.isRemovedOnCompletion){
+                [toBeRemoved addObject:key];
+                _shouldClearPresentationLayer = YES;
+            }
         }
+        [_animations removeObjectsForKeys:toBeRemoved];
     }
     
-    NSArray *implicitAnimations = [NSArray arrayWithArray:_implicitAnimations];
-    for(CAAnimation *animation in implicitAnimations) {
-        [animation _updateLayer:self currentTime:currentTime];
-            
-        if([animation _isFinished] && animation.isRemovedOnCompletion){
-            [_implicitAnimations removeObject:animation];
-            _shouldClearPresentationLayer = YES;
+    if([_implicitAnimations count]) {
+        NSMutableSet *toBeRemoved2 = [NSMutableSet set];
+        for(CAAnimation *animation in _implicitAnimations) {
+            [animation _updateLayer:self currentTime:currentTime];
+                
+            if([animation _isFinished] && animation.isRemovedOnCompletion){
+                [toBeRemoved2 addObject:animation];
+                _shouldClearPresentationLayer = YES;
+            }
         }
+        [_implicitAnimations minusSet:toBeRemoved2];
     }
     
     for(CALayer *child in _sublayers) {
@@ -839,17 +900,25 @@ NSString * const kCATransition = @"transition";
 }
 
 -(NSArray*)_zOrderedSublayers {
-    return [_sublayers sortedArrayUsingComparator:^(CALayer *l1, CALayer *l2) {
-        CGFloat z1 = l1.zPosition;
-        CGFloat z2 = l2.zPosition;
-        if(z1 > z2) {
-            return NSOrderedDescending;
-        } else if(z1 < z2) {
-            return NSOrderedAscending;
-        } else {
-            return NSOrderedSame;
-        }
-    }];
+    if(!_zOrderedSublayers) {
+        _zOrderedSublayers = [[_sublayers sortedArrayUsingComparator:^(CALayer *l1, CALayer *l2) {
+            CGFloat z1 = l1.zPosition;
+            CGFloat z2 = l2.zPosition;
+            if(z1 > z2) {
+                return NSOrderedDescending;
+            } else if(z1 < z2) {
+                return NSOrderedAscending;
+            } else {
+                return NSOrderedSame;
+            }
+        }] retain];
+    }
+    return _zOrderedSublayers;
+}
+
+-(void)_clearZOrderedSublayersCache {
+    [_zOrderedSublayers release];
+    _zOrderedSublayers = nil;
 }
 
 -(CGSize)_contentsSize {

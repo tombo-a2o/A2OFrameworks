@@ -49,8 +49,8 @@
     GLint _unifBorderWidth;
     GLint _unifBorderColor;
     GLint _unifBackgroundColor;
-    GLuint _vertexObject;
-
+    GLuint _ibo;
+    
     GLint _stencilBits;
 }
 
@@ -126,7 +126,29 @@ static const char *fragmentShaderSource =
    _unifBorderWidth = glGetUniformLocation(_program, "borderWidth");
    _unifBorderColor = glGetUniformLocation(_program, "borderColor");
    _unifBackgroundColor = glGetUniformLocation(_program, "backgroundColor");
-   glGenBuffers(1, &_vertexObject);
+   glGenBuffers(1, &_ibo);
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ibo);
+   const GLushort index[] = {
+       0, 4, 1,
+       1, 4, 5,
+       1, 5, 2,
+       2, 5, 6,
+       2, 6, 3,
+       3, 6, 7,
+       4, 8, 5,
+       5, 8, 9,
+       6, 10, 7,
+       7, 10, 11,
+       8, 12, 9,
+       9, 12, 13,
+       9, 13, 10,
+       10, 13, 14,
+       10, 14, 11,
+       11, 14, 15,
+   };
+   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(index), index, GL_STATIC_DRAW);
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
    assert(_attrPosition >= 0);
    assert(_attrTexCoord >= 0);
    assert(_attrDistance >= 0);
@@ -136,7 +158,6 @@ static const char *fragmentShaderSource =
    assert(_unifBorderWidth >= 0);
    assert(_unifBorderColor >= 0);
    assert(_unifBackgroundColor >= 0);
-   assert(_vertexObject);
    
    glGetIntegerv(GL_STENCIL_BITS, &_stencilBits);
 
@@ -147,8 +168,8 @@ static const char *fragmentShaderSource =
     if(_program) {
         glDeleteProgram(_program);
     }
-    if(_vertexObject) {
-        glDeleteBuffers(1, &_vertexObject);
+    if(_ibo) {
+        glDeleteBuffers(1, &_ibo);
     }
     [_rootLayer release];
     [super dealloc];
@@ -364,131 +385,141 @@ static void calculateTexCoord(GLfloat *x, GLfloat *y, int length, CGFloat dw, CG
     }
 }
 
+static void prepareTexture(CALayer *layer) {
+    GLuint texture = [layer _textureId];
+    if(texture) {
+        // Texture is available. Just bind and use.
+        glBindTexture(GL_TEXTURE_2D, texture);
+        return;
+    }
+    
+    // Load pixel data to texture
+    id image = layer.contents;
+    
+    glGenTextures(1, &texture);
+    [layer _setTextureId:texture];
+    
+    CALayer *modelLayer = (CALayer*)layer.modelLayer;
+    if(image == modelLayer.contents) {
+        [modelLayer _setTextureId:texture];
+    }
+    
+    glBindTexture(GL_TEXTURE_2D, texture);
+    GLenum err = glGetError();
+    if(err) {
+        NSLog(@"GL error %d, layer=%@, texture=%d", err, layer, texture);
+        return;
+    }
+
+    if(image) {
+        if([image isKindOfClass: NSClassFromString(@"O2BitmapContext")]) {
+            CATexImage2DCGBitmapContext((CGContextRef)image);
+        } else if([image isKindOfClass: NSClassFromString(@"O2Image")]){
+            CATexImage2DCGImage((CGImageRef)image);
+        }
+    } else {
+        generateTransparentTexture();
+    }
+    
+    // check glTexImage2D error
+    err = glGetError();
+    if(err) {
+        NSLog(@"GL error %d, layer=%@, texture=%d", err, layer, texture);
+        return;
+    }
+    
+    #warning TODO use POT texture
+    // Force linear interpolation due to WebGL npot texture limitation
+
+    // GLint minFilter=interpolationFromName(layer.minificationFilter);
+    // GLint magFilter=interpolationFromName(layer.magnificationFilter);
+    // glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,minFilter);
+    // glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,magFilter);
+
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
+}
+
 -(void)_renderLayer:(CALayer *)layer z:(int)z mask:(int)mask transform:(CATransform3D)transform {
     //NSLog(@"CARenderer: renderLayer %d %@ b:%@ f:%@ %d", z, layer, NSStringFromRect(layer.bounds), NSStringFromRect(layer.frame), [layer _textureId]);
     if(layer.isHidden) return;
 
-    GLuint texture = [layer _textureId];
-    if(texture != 0) {
-        // Texture is available. Just bind and use.
-        glBindTexture(GL_TEXTURE_2D, texture);
-    } else {
-        // Load pixel data to texture
-        id image = layer.contents;
-        
-        glGenTextures(1, &texture);
-        [layer _setTextureId:texture];
-        
-        CALayer *modelLayer = (CALayer*)layer.modelLayer;
-        if(image == modelLayer.contents) {
-            [modelLayer _setTextureId:texture];
-        }
-        
-        glBindTexture(GL_TEXTURE_2D, texture);
-        GLenum err = glGetError();
-        if(err) {
-            NSLog(@"GL error %d, layer=%@, texture=%d", err, layer, texture);
-            return;
-        }
+    prepareTexture(layer);
 
-        if(image) {
-            if([image isKindOfClass: NSClassFromString(@"O2BitmapContext")]) {
-                CATexImage2DCGBitmapContext((CGContextRef)image);
-            } else if([image isKindOfClass: NSClassFromString(@"O2Image")]){
-                CATexImage2DCGImage((CGImageRef)image);
+    GLuint vertexObject = layer._vertexObject;
+    if(!vertexObject) {
+        glGenBuffers(1, &vertexObject);
+        [layer _setVertexObject:vertexObject];
+    }
+    glBindBuffer(GL_ARRAY_BUFFER, vertexObject);
+    
+    if([layer _needsUpdateVertexObject]) {
+        [layer _clearNeedsUpdateVertexObject];
+        
+        CGSize  layerSize = layer.bounds.size;
+        CGSize  contentsSize = [layer _contentsSize];
+
+        CGFloat w = layerSize.width;
+        CGFloat h = layerSize.height;
+        CGFloat mid = MIN(w, h) / 2;
+
+        GLfloat x[] = {0, mid, w-mid, w};
+        GLfloat y[] = {0, mid, h-mid, h};
+        GLfloat s[4], t[4];
+        calculateTexCoord(x, y, 4, w, h, contentsSize.width, contentsSize.height, layer.contentsGravity, [layer _flipTexture], s, t);
+        GLfloat d[] = {0, mid, mid, 0};
+        GLfloat vertices[4*4*6];
+        int idx = 0;
+        for(int j = 0; j < 4; j++) {
+            for(int i = 0; i < 4; i++) {
+                vertices[idx++] = x[i];  // coordinate
+                vertices[idx++] = y[j];
+                vertices[idx++] = s[i];  // texture coord
+                vertices[idx++] = t[j];
+                vertices[idx++] = d[i];  // distance to edge
+                vertices[idx++] = d[j];
             }
-        } else {
-            generateTransparentTexture();
         }
-        
-        // check glTexImage2D error
-        err = glGetError();
-        if(err) {
-            NSLog(@"GL error %d, layer=%@, texture=%d", err, layer, texture);
-            return;
-        }
-        
-        #warning TODO use POT texture
-        // Force linear interpolation due to WebGL npot texture limitation
-
-        // GLint minFilter=interpolationFromName(layer.minificationFilter);
-        // GLint magFilter=interpolationFromName(layer.magnificationFilter);
-        // glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,minFilter);
-        // glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,magFilter);
-
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
-    }
-    
-    CALayer *l = layer;
-    
-    if(l.isDoubleSided) {
-        glDisable(GL_CULL_FACE);
-    } else {
-       glEnable(GL_CULL_FACE);
-       glCullFace(GL_BACK);
-    }
-    
-    CGPoint anchorPoint = l.anchorPoint;
-    CGPoint position = l.position;
-    CGRect  bounds = l.bounds;
-    float   cornerRadius = l.cornerRadius;
-    float   borderWidth = l.borderWidth;
-    CATransform3D layerTransform = l.transform;
-    CGFloat anchorPointZ = l.anchorPointZ;
-    CGSize  contentsSize = [l _contentsSize];
-
-    CGFloat w = bounds.size.width;
-    CGFloat h = bounds.size.height;
-    CGFloat mid = MIN(w, h) / 2;
-
-    GLfloat x[] = {0, mid, w-mid, w};
-    GLfloat y[] = {0, mid, h-mid, h};
-    GLfloat s[4], t[4];
-    calculateTexCoord(x, y, 4, w, h, contentsSize.width, contentsSize.height, l.contentsGravity, [layer _flipTexture], s, t);
-    GLfloat d[] = {0, mid, mid, 0};
-    GLfloat vertices[4*4*6];
-    int idx = 0;
-    for(int j = 0; j < 4; j++) {
-        for(int i = 0; i < 4; i++) {
-            vertices[idx++] = x[i];   // coordinate
-            vertices[idx++] = y[j];
-            vertices[idx++] = s[i]; // texture coord
-            vertices[idx++] = t[j];
-            vertices[idx++] = d[i];  // distance to edge
-            vertices[idx++] = d[j];
-        }
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
     }
 
-    CATransform3D t1 = CATransform3DMakeTranslation(-anchorPoint.x * w, -anchorPoint.y * h, -anchorPointZ);
-    CATransform3D t2 = CATransform3DConcat(t1, layerTransform);
-    CATransform3D t3 = CATransform3DConcat(t2, CATransform3DMakeTranslation(position.x, position.y, 0));
-    CATransform3D t4  = CATransform3DConcat(t3, transform);
     glEnableVertexAttribArray(_attrPosition);
     glEnableVertexAttribArray(_attrTexCoord);
     glEnableVertexAttribArray(_attrDistance);
-
-    glBindBuffer(GL_ARRAY_BUFFER, _vertexObject);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
     glVertexAttribPointer(_attrPosition, 2, GL_FLOAT, GL_FALSE, 6*sizeof(GLfloat), 0);
     glVertexAttribPointer(_attrTexCoord, 2, GL_FLOAT, GL_FALSE, 6*sizeof(GLfloat), (GLfloat*)NULL + 2);
     glVertexAttribPointer(_attrDistance, 2, GL_FLOAT, GL_FALSE, 6*sizeof(GLfloat), (GLfloat*)NULL + 4);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+    CGRect  bounds = layer.bounds;
+    CGPoint anchorPoint = layer.anchorPoint;
+    CGFloat anchorPointZ = layer.anchorPointZ;
+    CGPoint position = layer.position;
+    CATransform3D t1 = CATransform3DMakeTranslation(-anchorPoint.x * bounds.size.width, -anchorPoint.y * bounds.size.height, -anchorPointZ);
+    CATransform3D t2 = CATransform3DConcat(t1, layer.transform);
+    CATransform3D t3 = CATransform3DConcat(t2, CATransform3DMakeTranslation(position.x, position.y, 0));
+    CATransform3D t4  = CATransform3DConcat(t3, transform);
+    
     glUniformMatrix4fv(_unifTransform, 1, GL_FALSE, &t4);
-    glUniform1f(_unifOpacity, l.opacity);
-    glUniform1f(_unifCornerRadius, cornerRadius);
-    glUniform1f(_unifBorderWidth, borderWidth);
+    glUniform1f(_unifOpacity, layer.opacity);
+    glUniform1f(_unifCornerRadius, layer.cornerRadius);
+    glUniform1f(_unifBorderWidth, layer.borderWidth);
     GLfloat borderColor[4];
-    getColorComponents(l.borderColor, borderColor);
+    getColorComponents(layer.borderColor, borderColor);
     glUniform4fv(_unifBorderColor, 1, borderColor);
     GLfloat backgroundColor[4];
-    getColorComponents(l.backgroundColor, backgroundColor);
+    getColorComponents(layer.backgroundColor, backgroundColor);
     glUniform4fv(_unifBackgroundColor, 1, backgroundColor);
+    
+    if(layer.isDoubleSided) {
+        glDisable(GL_CULL_FACE);
+    } else {
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
+    }
     
     int mask1000 = 1 << mask;
     int mask0111 = mask1000 - 1;
@@ -496,7 +527,7 @@ static void calculateTexCoord(GLfloat *x, GLfloat *y, int length, CGFloat dw, CG
     glStencilMask(mask1000);
     glStencilFunc(GL_EQUAL, mask1111, mask0111);
     
-    if(l.masksToBounds) {
+    if(layer.masksToBounds) {
         mask++;
         if(mask > _stencilBits) {
             NSLog(@"Too many mask layers");
@@ -506,30 +537,12 @@ static void calculateTexCoord(GLfloat *x, GLfloat *y, int length, CGFloat dw, CG
         glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
     }
 
-    const GLushort index[] = {
-        0, 4, 1,
-        1, 4, 5,
-        1, 5, 2,
-        2, 5, 6,
-        2, 6, 3,
-        3, 6, 7,
-        4, 8, 5,
-        5, 8, 9,
-        6, 10, 7,
-        7, 10, 11,
-        8, 12, 9,
-        9, 12, 13,
-        9, 13, 10,
-        10, 13, 14,
-        10, 14, 11,
-        11, 14, 15,
-    };
-    glDrawElements(GL_TRIANGLES, sizeof(index)/sizeof(GLushort), GL_UNSIGNED_SHORT, index);
-
-    CATransform3D sublayerTransform = l.sublayerTransform;
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ibo);
     
-    CATransform3D ts3 = CATransform3DConcat(t2, CATransform3DMakeTranslation(-l.bounds.origin.x, -l.bounds.origin.y, 0));
-    CATransform3D ts4 = CATransform3DConcat(ts3, sublayerTransform);
+    glDrawElements(GL_TRIANGLES, 48, GL_UNSIGNED_SHORT, 0);
+
+    CATransform3D ts3 = CATransform3DConcat(t2, CATransform3DMakeTranslation(-bounds.origin.x, -bounds.origin.y, 0));
+    CATransform3D ts4 = CATransform3DConcat(ts3, layer.sublayerTransform);
     CATransform3D ts5 = CATransform3DConcat(ts4, CATransform3DMakeTranslation(position.x, position.y, 0));
     CATransform3D ts  = CATransform3DConcat(ts5, transform);
 
@@ -537,7 +550,7 @@ static void calculateTexCoord(GLfloat *x, GLfloat *y, int length, CGFloat dw, CG
         [self _renderLayer:child z:z+1 mask:mask transform:ts];
     }
     
-    if(l.masksToBounds) {
+    if(layer.masksToBounds) {
         glClear(GL_STENCIL_BUFFER_BIT);
     }
 }
