@@ -40,6 +40,7 @@ NSString * const kCATransition = @"transition";
     CALayer *_presentationLayer;
     CALayer *_modelLayer;
     BOOL _shouldClearPresentationLayer;
+    NSArray *_zOrderedSublayers;
 }
 
 +layer {
@@ -51,6 +52,7 @@ NSString * const kCATransition = @"transition";
 -init {
     _superlayer=nil;
     _sublayers=[NSArray new];
+    _zOrderedSublayers=nil;
     _delegate=nil;
     _anchorPoint=CGPointMake(0.5,0.5);
     _position=CGPointZero;
@@ -91,6 +93,7 @@ NSString * const kCATransition = @"transition";
     CALayer *layer = layer_;
     _superlayer = nil;
     _sublayers = nil;
+    _zOrderedSublayers = nil;
     _delegate = layer.delegate;
     _anchorPoint = layer.anchorPoint;
     _position = layer.position;
@@ -134,6 +137,7 @@ NSString * const kCATransition = @"transition";
     [_presentationLayer release];
     [_sublayers makeObjectsPerformSelector:@selector(_setSuperLayer:) withObject:nil];
     [_sublayers release];
+    [_zOrderedSublayers release];
     [_animations release];
     [_implicitAnimations release];
     [_minificationFilter release];
@@ -155,6 +159,7 @@ NSString * const kCATransition = @"transition";
 
 -(void)setSublayers:(NSArray *)sublayers {
     _shouldClearPresentationLayer = YES;
+    [self _clearZOrderedSublayersCache];
     
     sublayers=[sublayers copy];
     [_sublayers release];
@@ -361,6 +366,10 @@ NSString * const kCATransition = @"transition";
 
 -(void)setZPosition:(CGFloat)zPosition {
     _shouldClearPresentationLayer = YES;
+    
+    if(_superlayer) {
+        [_superlayer _clearZOrderedSublayersCache];
+    }
     
     _zPosition = zPosition;
 }
@@ -891,17 +900,25 @@ NSString * const kCATransition = @"transition";
 }
 
 -(NSArray*)_zOrderedSublayers {
-    return [_sublayers sortedArrayUsingComparator:^(CALayer *l1, CALayer *l2) {
-        CGFloat z1 = l1.zPosition;
-        CGFloat z2 = l2.zPosition;
-        if(z1 > z2) {
-            return NSOrderedDescending;
-        } else if(z1 < z2) {
-            return NSOrderedAscending;
-        } else {
-            return NSOrderedSame;
-        }
-    }];
+    if(!_zOrderedSublayers) {
+        _zOrderedSublayers = [[_sublayers sortedArrayUsingComparator:^(CALayer *l1, CALayer *l2) {
+            CGFloat z1 = l1.zPosition;
+            CGFloat z2 = l2.zPosition;
+            if(z1 > z2) {
+                return NSOrderedDescending;
+            } else if(z1 < z2) {
+                return NSOrderedAscending;
+            } else {
+                return NSOrderedSame;
+            }
+        }] retain];
+    }
+    return _zOrderedSublayers;
+}
+
+-(void)_clearZOrderedSublayersCache {
+    [_zOrderedSublayers release];
+    _zOrderedSublayers = nil;
 }
 
 -(CGSize)_contentsSize {
