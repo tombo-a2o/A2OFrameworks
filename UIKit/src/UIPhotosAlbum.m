@@ -27,7 +27,12 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#if 0
+#if 1
+
+@implementation UIPhotosAlbum
+@end
+
+#else
 
 #import "UIPhotosAlbum.h"
 #import <UIKit/UIImage.h>
