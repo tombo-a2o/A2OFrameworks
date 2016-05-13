@@ -30,8 +30,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 - (void)_setSheetContext:(NSSheetContext *)sheetContext;
 - (NSSheetContext *)_sheetContext;
 - (void)_detachSheetContextAnimateAndOrderOut;
-- (void)_attachDrawer:(NSDrawer *)drawer;
-- (void)_detachDrawer:(NSDrawer *)drawer;
 - (NSView *)_backgroundView;
 - (void)_hideMenuViewIfNeeded;
 - (void)_showMenuViewIfNeeded;

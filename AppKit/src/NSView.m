@@ -386,16 +386,6 @@ static inline void buildTransformsIfNeeded(NSView *self) {
    return nil;
 }
 
--(NSScrollView *)enclosingScrollView {
-   id result=[self superview];
-
-   for(;result!=nil;result=[result superview])
-    if([result isKindOfClass:[NSScrollView class]])
-     return result;
-
-   return nil;
-}
-
 -(NSRect)adjustScroll:(NSRect)toRect {
    NSUnimplementedMethod();
    return NSZeroRect;
@@ -1305,16 +1295,6 @@ static inline void buildTransformsIfNeeded(NSView *self) {
    NSUnimplementedMethod();
 }
 
--(NSClipView *)_enclosingClipView {
-   id result=[self superview];
-
-   for(;result!=nil;result=[result superview])
-    if([result isKindOfClass:[NSClipView class]])
-     return result;
-
-   return nil;
-}
-
 -(void)scrollPoint:(NSPoint)point {
    // NSClipView *clipView=[self _enclosingClipView];
    //
@@ -1381,16 +1361,8 @@ static inline void buildTransformsIfNeeded(NSView *self) {
 }
 #endif
 
--(void)scrollClipView:(NSClipView *)clipView toPoint:(NSPoint)newOrigin {
-   NSUnimplementedMethod();
-}
-
 -(BOOL)mouse:(NSPoint)point inRect:(NSRect)rect {
    return NSMouseInRect(point, rect, [self isFlipped]);
-}
-
--(void)reflectScrolledClipView:(NSClipView *)view {
-   NSUnimplementedMethod();
 }
 
 -(void)allocateGState {

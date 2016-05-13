@@ -16,7 +16,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <CoreGraphics/CoreGraphics.h>
 //#import <CoreGraphics/CoreGraphics.h>
 
-@class NSWindow, NSMenu, NSMenuItem, NSCursor, NSClipView, NSPasteboard, NSTextInputContext, NSImage, NSBitmapImageRep, NSScrollView, NSTrackingArea, NSShadow, NSScreen, CALayer, CIFilter, CALayerContext;
+@class NSWindow, NSMenu, NSMenuItem, NSCursor, NSPasteboard, NSTextInputContext, NSImage, NSBitmapImageRep, NSTrackingArea, NSShadow, NSScreen, CALayer, CIFilter, CALayerContext;
 
 // See Cocoa Event Handling Guide : Using Tracking-Area Objects : Compatibility Issues
 typedef NSTrackingArea *NSTrackingRectTag;
@@ -136,7 +136,6 @@ APPKIT_EXPORT NSString *const NSViewFocusDidChangeNotification;
 - (NSView *)superview;
 - (BOOL)isDescendantOf:(NSView *)other;
 - (NSView *)ancestorSharedWithView:(NSView *)view;
-- (NSScrollView *)enclosingScrollView;
 - (NSRect)adjustScroll:(NSRect)toRect;
 
 - (NSArray *)subviews;
@@ -274,9 +273,7 @@ APPKIT_EXPORT NSString *const NSViewFocusDidChangeNotification;
 
 - (void)scrollPoint:(NSPoint)point;
 - (BOOL)scrollRectToVisible:(NSRect)rect;
-- (void)scrollClipView:(NSClipView *)clipView toPoint:(NSPoint)newOrigin;
 - (BOOL)mouse:(NSPoint)point inRect:(NSRect)rect;
-- (void)reflectScrolledClipView:(NSClipView *)view;
 
 - (void)allocateGState;
 - (void)releaseGState;

@@ -1128,10 +1128,7 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
 }
 
 -(NSResponder *)firstResponder {
-   if ([_firstResponder isKindOfClass:[NSDrawer class]])
-    return [_firstResponder nextResponder];
-   else
-    return _firstResponder;
+   return _firstResponder;
 }
 
 -(NSButton *)standardWindowButton:(NSWindowButton)value {
@@ -2702,17 +2699,6 @@ NSString * const NSWindowDidChangeScreenNotification=@"NSWindowDidChangeScreenNo
         return [[self undoManager] canRedo];
 
     return YES;
-}
-
--(void)_attachDrawer:(NSDrawer *)drawer {
-    if (_drawers == nil)
-        _drawers = [[NSMutableArray alloc] init];
-
-    [_drawers addObject:drawer];
-}
-
--(void)_detachDrawer:(NSDrawer *)drawer {
-    [_drawers removeObject:drawer];
 }
 
 -(NSView *)_backgroundView {
