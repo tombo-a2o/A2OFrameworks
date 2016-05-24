@@ -1,4 +1,4 @@
-include ../Makefile.template
+include ../../Foundation/System/Makefile.template
 
 CC				= emcc
 STYLE_CPPFLAGS ?= -DDEBUG -O0 -g
