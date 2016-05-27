@@ -187,7 +187,7 @@
     BOOL wereAnimated = [UIView areAnimationsEnabled];
     [UIView setAnimationsEnabled:animated];
     
-    NSLog(@"----------- run animateWithDuration");
+    DEBUGLOG(@"----------- run animateWithDuration");
     [UIView animateWithDuration:animated? 0.33 : 0
                      animations:^{
                          oldVisibleViewController.view.transform = outEndTransform;
@@ -196,7 +196,7 @@
                          _navigationBar.transform = navbarEndTransform;
                      }
                      completion:^(BOOL finished) {
-                         NSLog(@"----------- animateWithDuration completed!!!");
+                         DEBUGLOG(@"----------- animateWithDuration completed!!!");
                          [oldVisibleViewController.view removeFromSuperview];
                          
                          _toolbar.hidden = _toolbarHidden;
