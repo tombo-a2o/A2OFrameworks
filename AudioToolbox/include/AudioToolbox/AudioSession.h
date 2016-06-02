@@ -2,6 +2,7 @@
 #define __AudioSession__
 
 #include <Foundation/NSString.h>
+#include <CoreFoundation/CoreFoundation.h>
 
 extern NSString *const AVAudioSessionCategoryAmbient;
 extern NSString *const AVAudioSessionCategorySoloAmbient;
@@ -45,8 +46,20 @@ enum {
 enum {
     kAudioSessionProperty_AudioRoute  = 'rout'
 };
+enum {
+    kAudioSessionCategory_AmbientSound              = 'ambi',
+    kAudioSessionCategory_SoloAmbientSound          = 'solo',
+    kAudioSessionCategory_MediaPlayback             = 'medi',
+    kAudioSessionCategory_RecordAudio               = 'reca',
+    kAudioSessionCategory_PlayAndRecord             = 'plar',
+    kAudioSessionCategory_AudioProcessing           = 'proc'
+};
+
 typedef UInt32 AudioSessionPropertyID;
+typedef void (*AudioSessionInterruptionListener)( void *inClientData, UInt32 inInterruptionState );
 
 OSStatus AudioSessionGetProperty ( AudioSessionPropertyID inID, UInt32 *ioDataSize, void *outData );
+OSStatus AudioSessionSetProperty ( AudioSessionPropertyID inID, UInt32 inDataSize, const void *inData );
+OSStatus AudioSessionInitialize ( CFRunLoopRef inRunLoop, CFStringRef inRunLoopMode, AudioSessionInterruptionListener inInterruptionListener, void *inClientData );
 
 #endif
