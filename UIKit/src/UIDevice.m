@@ -87,6 +87,11 @@ static UIDevice *theDevice;
     return @"Mac";
 }
 
+- (NSString*)uniqueIdentifier
+{
+    return @"";
+}
+
 - (BOOL)isGeneratingDeviceOrientationNotifications
 {
     return NO;
