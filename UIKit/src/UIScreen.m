@@ -78,6 +78,18 @@ static inline CGFloat get_device_pixel_ratio(void) {
     int h = 568;
     emscripten_set_canvas_size(w * get_device_pixel_ratio(), h * get_device_pixel_ratio());
     emscripten_set_element_css_size(NULL, w, h);
+    EmscriptenWebGLContextAttributes attr;
+    emscripten_webgl_init_context_attributes(&attr);
+    attr.enableExtensionsByDefault = 1;
+    attr.premultipliedAlpha = 0;
+    attr.alpha = 0;
+    attr.stencil = 1;
+    EMSCRIPTEN_WEBGL_CONTEXT_HANDLE webglContext = emscripten_webgl_create_context(0, &attr);
+    emscripten_webgl_make_context_current(webglContext);
+    EM_ASM({
+        Module.useWebGL = true;
+        Browser.moduleContextCreatedCallbacks.forEach(function(callback) { callback() });
+    });
 }
 
 + (UIScreen *)mainScreen
