@@ -1,17 +1,7 @@
 #ifndef __AudioSession__
 #define __AudioSession__
 
-#include <Foundation/NSString.h>
 #include <CoreFoundation/CoreFoundation.h>
-
-extern NSString *const AVAudioSessionCategoryAmbient;
-extern NSString *const AVAudioSessionCategorySoloAmbient;
-extern NSString *const AVAudioSessionCategoryPlayback;
-extern NSString *const AVAudioSessionCategoryRecord;
-extern NSString *const AVAudioSessionCategoryPlayAndRecord;
-extern NSString *const AVAudioSessionCategoryAudioProcessing;
-extern NSString *const AVAudioSessionCategoryMultiRoute;
-
 
 enum {
     kAudioSessionProperty_PreferredHardwareSampleRate          = 'hwsr',
