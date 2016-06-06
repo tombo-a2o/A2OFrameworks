@@ -4,6 +4,7 @@
 #import <QuartzCore/CARenderer.h>
 #import <Foundation/NSString.h>
 #define GL_GLEXT_PROTOTYPES
+#import <OpenGLES/ES1/gl.h>
 #import <OpenGLES/ES2/gl.h>
 #import <OpenGLES/ES2/glext.h>
 #import <emscripten.h>
@@ -39,12 +40,15 @@
 -(void)invalidate {
 }
 
+extern int _legacyGLEmulationEnabled(void);
+
 -(void)renderLayer:(CALayer *)layer {
     [EAGLContext setCurrentContext:_glContext];
 
     GLint framebuffer, cullFaceMode, program;
     GLint blendSrcRgb, blendSrcAlpha, blendDstRgb, blendDstAlpha;
     GLboolean blendEnabled, cullFaceEnabled;
+    GLboolean vertexArray, textureCoordArray;
     
     // save state
     glGetIntegerv(GL_CURRENT_PROGRAM, &program);
@@ -59,6 +63,10 @@
     cullFaceEnabled = glIsEnabled(GL_CULL_FACE);
     if(cullFaceEnabled) {
         glGetIntegerv(GL_CULL_FACE_MODE, &cullFaceMode);
+    }
+    if(_legacyGLEmulationEnabled()) {
+        glGetBooleanv(GL_VERTEX_ARRAY, &vertexArray);
+        glGetBooleanv(GL_TEXTURE_COORD_ARRAY, &textureCoordArray);
     }
     glBindVertexArrayOES(0);
 
@@ -75,6 +83,14 @@
     [_renderer render];
 
     // restore state
+    if(_legacyGLEmulationEnabled()) {
+        if(vertexArray) {
+            glEnableClientState(GL_VERTEX_ARRAY);
+        }
+        if(textureCoordArray) {
+            glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        }
+    }
     if(blendEnabled) {
         glEnable(GL_BLEND);
         glBlendFuncSeparate(blendSrcRgb, blendDstRgb, blendSrcAlpha, blendDstAlpha);

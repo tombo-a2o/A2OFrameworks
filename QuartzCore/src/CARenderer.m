@@ -538,8 +538,8 @@ static void prepareTexture(CALayer *layer) {
     }
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ibo);
-    
     glDrawElements(GL_TRIANGLES, 48, GL_UNSIGNED_SHORT, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
     CATransform3D ts3 = CATransform3DConcat(t2, CATransform3DMakeTranslation(-bounds.origin.x, -bounds.origin.y, 0));
     CATransform3D ts4 = CATransform3DConcat(ts3, layer.sublayerTransform);
