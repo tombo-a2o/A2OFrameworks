@@ -7,32 +7,31 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
 #import <Foundation/Foundation.h>
-#import <AppKit/AppKitExport.h>
 
-APPKIT_EXPORT NSString *const NSFontAttributeName;
-APPKIT_EXPORT NSString *const NSParagraphStyleAttributeName;
-APPKIT_EXPORT NSString *const NSForegroundColorAttributeName;
-APPKIT_EXPORT NSString *const NSBackgroundColorAttributeName;
-APPKIT_EXPORT NSString *const NSUnderlineStyleAttributeName;
-APPKIT_EXPORT NSString *const NSUnderlineColorAttributeName;
-APPKIT_EXPORT NSString *const NSAttachmentAttributeName;
-APPKIT_EXPORT NSString *const NSKernAttributeName;
-APPKIT_EXPORT NSString *const NSLigatureAttributeName;
-APPKIT_EXPORT NSString *const NSStrikethroughStyleAttributeName;
-APPKIT_EXPORT NSString *const NSStrikethroughColorAttributeName;
-APPKIT_EXPORT NSString *const NSObliquenessAttributeName;
-APPKIT_EXPORT NSString *const NSStrokeWidthAttributeName;
-APPKIT_EXPORT NSString *const NSStrokeColorAttributeName;
-APPKIT_EXPORT NSString *const NSBaselineOffsetAttributeName;
-APPKIT_EXPORT NSString *const NSSuperscriptAttributeName;
-APPKIT_EXPORT NSString *const NSLinkAttributeName;
-APPKIT_EXPORT NSString *const NSShadowAttributeName;
-APPKIT_EXPORT NSString *const NSExpansionAttributeName;
-APPKIT_EXPORT NSString *const NSCursorAttributeName;
-APPKIT_EXPORT NSString *const NSToolTipAttributeName;
-APPKIT_EXPORT NSString *const NSBackgroundColorDocumentAttribute;
+extern NSString *const NSFontAttributeName;
+extern NSString *const NSParagraphStyleAttributeName;
+extern NSString *const NSForegroundColorAttributeName;
+extern NSString *const NSBackgroundColorAttributeName;
+extern NSString *const NSUnderlineStyleAttributeName;
+extern NSString *const NSUnderlineColorAttributeName;
+extern NSString *const NSAttachmentAttributeName;
+extern NSString *const NSKernAttributeName;
+extern NSString *const NSLigatureAttributeName;
+extern NSString *const NSStrikethroughStyleAttributeName;
+extern NSString *const NSStrikethroughColorAttributeName;
+extern NSString *const NSObliquenessAttributeName;
+extern NSString *const NSStrokeWidthAttributeName;
+extern NSString *const NSStrokeColorAttributeName;
+extern NSString *const NSBaselineOffsetAttributeName;
+extern NSString *const NSSuperscriptAttributeName;
+extern NSString *const NSLinkAttributeName;
+extern NSString *const NSShadowAttributeName;
+extern NSString *const NSExpansionAttributeName;
+extern NSString *const NSCursorAttributeName;
+extern NSString *const NSToolTipAttributeName;
+extern NSString *const NSBackgroundColorDocumentAttribute;
 
-APPKIT_EXPORT NSString *const NSSpellingStateAttributeName;
+extern NSString *const NSSpellingStateAttributeName;
 
 enum {
     NSSpellingStateSpellingFlag = 0x01,
