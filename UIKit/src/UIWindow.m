@@ -39,7 +39,6 @@
 #import "UIGestureRecognizer+UIPrivate.h"
 #import "UITouchEvent.h"
 #import "UIKitView.h"
-#import <AppKit/NSCursor.h>
 #import <QuartzCore/QuartzCore.h>
 
 const UIWindowLevel UIWindowLevelNormal = 0;
@@ -529,12 +528,6 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
             }
         }
     }
-
-    // NSCursor *newCursor = [view mouseCursorForEvent:event] ?: [NSCursor arrowCursor];
-    //
-    // if ([NSCursor currentCursor] != newCursor) {
-    //     [newCursor set];
-    // }
 }
 
 @end
