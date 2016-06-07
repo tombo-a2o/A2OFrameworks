@@ -45,38 +45,76 @@ NSString *const UIScreenDidConnectNotification = @"UIScreenDidConnectNotificatio
 NSString *const UIScreenDidDisconnectNotification = @"UIScreenDidDisconnectNotification";
 NSString *const UIScreenModeDidChangeNotification = @"UIScreenModeDidChangeNotification";
 
-NSMutableArray *_allScreens = nil;
-
-#if 1
-static inline CGFloat get_device_pixel_ratio(void) {
-    return 2.0;
-}
-#else
-static inline CGFloat get_device_pixel_ratio(void) {
-    return emscripten_get_device_pixel_ratio();
-}
-#endif
-
 @interface UIScreenMode(Private)
 + (id)screenModeIphone5;
++ (NSArray*)_userDefinedModes;
+@end
+
+@interface UIScreen()
+@property (nonatomic, readwrite) CGRect bounds;
+@property (nonatomic, readwrite) CGFloat scale;
+@property (nonatomic, readwrite) NSArray *availableModes;
 @end
 
 @implementation UIScreen {
-    CALayer *_layer;
     NSMutableArray *_windows;
-    __weak UIKitView *_UIKitView;
-    __weak UIWindow *_keyWindow;
+     __weak UIWindow *_keyWindow;
 }
 
-+ (void)initialize
++ (UIScreen *)mainScreen
 {
-    if (self == [UIScreen class]) {
-        _allScreens = [[NSMutableArray alloc] init];
+    static UIScreen *screen = nil;
+    if(screen) {
+        screen = [[UIScreen alloc] init];
     }
-    int w = 320;
-    int h = 568;
-    emscripten_set_canvas_size(w * get_device_pixel_ratio(), h * get_device_pixel_ratio());
-    emscripten_set_element_css_size(NULL, w, h);
+    return screen;
+}
+
++ (NSArray *)screens
+{
+    return @[[UIScreen mainScreen]];
+}
+
+- (id)init
+{
+    if ((self = [super init])) {
+        _windows = [[NSMutableArray alloc] init];
+        _brightness = 1;
+
+        NSArray* userModes = [UIScreenMode _userDefinedModes];
+        if(userModes) {
+            _preferredMode = userModes[0];
+            _availableModes = userModes;
+        } else {
+            UIScreenMode *defaultMode = [UIScreenMode screenModeIphone5];
+            _preferredMode = defaultMode;
+            _availableModes = @[defaultMode];
+        }
+        self.currentMode = _preferredMode;
+    }
+    return self;
+}
+
+- (void)setCurrentMode:(UIScreenMode*)mode
+{
+    CGSize rawSize = mode.size;
+    float scale = mode.pixelAspectRatio;
+    CGSize size = CGSizeMake(rawSize.width / scale, rawSize.height / scale);
+
+    if(CGSizeEqualToSize(_bounds.size, size) && _scale == scale) {
+        return;
+    }
+
+    NSDictionary *userInfo = (self.currentMode)? [NSDictionary dictionaryWithObject:self.currentMode forKey:@"_previousMode"] : nil;
+
+    _currentMode = mode;
+    _bounds.size = mode.size;
+    _scale = scale;
+
+    emscripten_set_canvas_size(rawSize.width, rawSize.height);
+    emscripten_set_element_css_size(NULL, size.width, size.height);
+
+    // should not here?
     EmscriptenWebGLContextAttributes attr;
     emscripten_webgl_init_context_attributes(&attr);
     attr.enableExtensionsByDefault = 1;
@@ -89,82 +127,8 @@ static inline CGFloat get_device_pixel_ratio(void) {
         Module.useWebGL = true;
         Browser.moduleContextCreatedCallbacks.forEach(function(callback) { callback() });
     });
-}
-
-+ (UIScreen *)mainScreen
-{
-    return ([_allScreens count] > 0)? [[_allScreens objectAtIndex:0] nonretainedObjectValue] : nil;
-}
-
-+ (NSArray *)screens
-{
-    NSMutableArray *screens = [NSMutableArray arrayWithCapacity:[_allScreens count]];
-
-    for (NSValue *v in _allScreens) {
-        [screens addObject:[v nonretainedObjectValue]];
-    }
-
-    return screens;
-}
-
-- (id)init
-{
-    if ((self = [super init])) {
-        _layer = [CALayer layer];
-        _layer.delegate = self;		// required to get the magic of the UIViewLayoutManager...
-        _layer.layoutManager = [UIViewLayoutManager layoutManager];
-
-        _windows = [[NSMutableArray alloc] init];
-        _brightness = 1;
-
-        _preferredMode = [UIScreenMode screenModeIphone5];
-    }
-    return self;
-}
-
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [_allScreens removeObject:[NSValue valueWithNonretainedObject:self]];
-
-    _layer.layoutManager = nil;
-    _layer.delegate = nil;
-
-    [_layer removeFromSuperlayer];
-}
-
-- (CGFloat)scale
-{
-    return get_device_pixel_ratio();
-}
-
-- (BOOL)_hasResizeIndicator
-{
-    NSWindow *realWindow = [_UIKitView window];
-    NSView *contentView = [realWindow contentView];
-
-    if (_UIKitView && realWindow && contentView && ([realWindow styleMask] & NSResizableWindowMask) && [realWindow showsResizeIndicator] && !NSEqualSizes([realWindow minSize], [realWindow maxSize])) {
-        const CGRect myBounds = NSRectToCGRect([_UIKitView bounds]);
-        const CGPoint myLowerRight = CGPointMake(CGRectGetMaxX(myBounds),CGRectGetMaxY(myBounds));
-        const CGRect contentViewBounds = NSRectToCGRect([contentView frame]);
-        const CGPoint contentViewLowerRight = CGPointMake(CGRectGetMaxX(contentViewBounds),0);
-        const CGPoint convertedPoint = NSPointToCGPoint([_UIKitView convertPoint:NSPointFromCGPoint(myLowerRight) toView:contentView]);
-
-        if (CGPointEqualToPoint(convertedPoint,contentViewLowerRight) && [realWindow showsResizeIndicator]) {
-            return YES;
-        }
-    }
-
-    return NO;
-}
-
-- (void)_layoutSubviews
-{
-}
-
-- (id)actionForLayer:(CALayer *)layer forKey:(NSString *)event
-{
-    return [NSNull null];
+ 
+    [[NSNotificationCenter defaultCenter] postNotificationName:UIScreenModeDidChangeNotification object:self userInfo:userInfo];
 }
 
 - (CGRect)applicationFrame
@@ -174,58 +138,13 @@ static inline CGFloat get_device_pixel_ratio(void) {
     return CGRectMake(0,statusBarHeight,size.width,size.height-statusBarHeight);
 }
 
-- (CGRect)bounds
-{
-    return _layer.bounds;
-}
-
-- (CALayer *)_layer
-{
-    return _layer;
-}
-
-- (void)_UIKitViewFrameDidChange
-{
-    NSDictionary *userInfo = (self.currentMode)? [NSDictionary dictionaryWithObject:self.currentMode forKey:@"_previousMode"] : nil;
-    self.currentMode = [UIScreenMode screenModeWithNSView:_UIKitView];
-    [[NSNotificationCenter defaultCenter] postNotificationName:UIScreenModeDidChangeNotification object:self userInfo:userInfo];
-}
-
 - (void)_NSScreenDidChange
 {
     [self.windows makeObjectsPerformSelector:@selector(_didMoveToScreen)];
 }
 
-- (void)_setUIKitView:(id)theView
-{
-    if (_UIKitView != theView) {
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:NSViewFrameDidChangeNotification object:_UIKitView];
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:NSWindowDidChangeScreenNotification object:nil];
-
-        if ((_UIKitView = theView)) {
-            [_allScreens addObject:[NSValue valueWithNonretainedObject:self]];
-            self.currentMode = [UIScreenMode screenModeWithNSView:_UIKitView];
-            [[NSNotificationCenter defaultCenter] postNotificationName:UIScreenDidConnectNotification object:self];
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_UIKitViewFrameDidChange) name:NSViewFrameDidChangeNotification object:_UIKitView];
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_NSScreenDidChange) name:NSWindowDidChangeScreenNotification object:[_UIKitView window]];
-            [self _NSScreenDidChange];
-        } else {
-            self.currentMode = nil;
-            [_allScreens removeObject:[NSValue valueWithNonretainedObject:self]];
-            [[NSNotificationCenter defaultCenter] postNotificationName:UIScreenDidDisconnectNotification object:self];
-        }
-    }
-}
-
-- (UIKitView *)UIKitView
-{
-    return _UIKitView;
-}
-
-- (NSArray *)availableModes
-{
-    return (self.currentMode)? [NSArray arrayWithObject:self.currentMode] : nil;
-}
+// [[NSNotificationCenter defaultCenter] postNotificationName:UIScreenDidConnectNotification object:self];
+// [[NSNotificationCenter defaultCenter] postNotificationName:UIScreenDidDisconnectNotification object:self];
 
 - (void)_addWindow:(UIWindow *)window
 {

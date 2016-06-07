@@ -36,6 +36,4 @@
 - (void)_setKeyWindow:(UIWindow *)window;
 - (void)_addWindow:(UIWindow *)window;
 - (void)_removeWindow:(UIWindow *)window;
-- (CALayer *)_layer;
-- (BOOL)_hasResizeIndicator;
 @end

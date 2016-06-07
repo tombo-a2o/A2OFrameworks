@@ -40,6 +40,33 @@
     return mode;
 }
 
++ (NSArray*)_userDefinedModes
+{
+    int num = EM_ASM_INT({
+        return Module['screenModes'] ? Module['screenModes'].length : 0;
+    });
+
+    if(!num) return nil;
+
+    NSMutableArray *ret = [NSMutableArray arrayWithCapacity:num];
+    for(int i = 0; i < num; i++) {
+        UISceenMode *mode = [[UISceenMode alloc] init];
+        int width = EM_ASM_INT({
+            return Module['screenModes'][$0].width;
+        }, i);
+        int height = EM_ASM_INT({
+            return Module['screenModes'][$0].height;
+        }, i);
+        float scale = EM_ASM_DOUBLE({
+            return Module['screenModes'][$0].scale;
+        }, i);
+        mode->_size = CGSizeMake(width, height);
+        mode->_pixelAspectRatio = scale;
+        [ret addObject:mode];
+    }
+    return ret;
+}
+
 - (NSString *)description
 {
     return [NSString stringWithFormat:@"<%@: %p; size = %@>", [self class], self, NSStringFromCGSize(self.size)];
