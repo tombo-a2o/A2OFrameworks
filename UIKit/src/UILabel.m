@@ -31,7 +31,6 @@
 #import <UIKit/UIColor.h>
 #import <UIKit/UIFont.h>
 #import <UIKit/UIGraphics.h>
-#import <AppKit/NSApplication.h>
 
 @implementation UILabel {
     CGFloat _actualFontScale;
@@ -207,13 +206,6 @@
         
         // if there's a shadow, let's set that up
         CGSize offset = _shadowOffset;
-
-        // stupid version compatibilities..
-        /*
-        if (floorf(NSAppKitVersionNumber) <= NSAppKitVersionNumber10_6) {
-            offset.height *= -1;
-        }
-        */
 
         CGContextSetShadowWithColor(UIGraphicsGetCurrentContext(), offset, 0, _shadowColor.CGColor);
         
