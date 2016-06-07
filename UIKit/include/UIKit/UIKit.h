@@ -123,8 +123,8 @@
 // non-standard imports
 #import <UIKit/UIScrollWheelGestureRecognizer.h>
 
-#import <AppKit/NSParagraphStyle.h>
-#import <AppKit/NSAttributedString.h>
+#import <UIKit/NSParagraphStyle.h>
+#import <UIKit/NSAttributedString.h>
 
 // SystemConfiguration-Helper
 #define kSCNetworkReachabilityFlagsIsWWAN kSCNetworkReachabilityFlagsConnectionOnDemand
