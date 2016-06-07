@@ -29,21 +29,8 @@
 
 #import <UIKit/UIScreenMode.h>
 #import <UIKit/UIGeometry.h>
-#import <AppKit/AppKit.h>
 
 @implementation UIScreenMode
-
-+ (id)screenModeWithNSView:(NSView *)theNSView
-{
-    if (theNSView) {
-        UIScreenMode *mode = [[self alloc] init];
-        mode->_size = NSSizeToCGSize([theNSView bounds].size);
-        mode->_pixelAspectRatio = 1;
-        return mode;
-    } else {
-        return nil;
-    }
-}
 
 + (id)screenModeIphone5
 {
