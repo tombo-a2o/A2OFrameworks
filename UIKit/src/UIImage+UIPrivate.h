@@ -45,7 +45,6 @@
 + (UIImage *)_popoverBackgroundImage;
 + (UIImage *)_roundedRectButtonImage;
 + (UIImage *)_highlightedRoundedRectButtonImage;
-+ (UIImage *)_windowResizeGrabberImage;
 + (UIImage *)_buttonBarSystemItemAdd;
 + (UIImage *)_buttonBarSystemItemReply;
 + (UIImage *)_tabBarBackgroundImage;

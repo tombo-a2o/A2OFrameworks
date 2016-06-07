@@ -123,11 +123,6 @@ NSMutableDictionary *imageCache = nil;
     return [self _frameworkImageWithName:@"UIRoundedRectButton-highlighted.png" leftCapWidth:12 topCapHeight:9];
 }
 
-+ (UIImage *)_windowResizeGrabberImage
-{
-    return [self _frameworkImageWithName:@"UIScreen-grabber.png" leftCapWidth:0 topCapHeight:0];
-}
-
 + (UIImage *)_buttonBarSystemItemAdd
 {
     return [self _frameworkImageWithName:@"UIBarButtonSystemItem-add.png" leftCapWidth:0 topCapHeight:0];

@@ -62,7 +62,6 @@ static inline CGFloat get_device_pixel_ratio(void) {
 @end
 
 @implementation UIScreen {
-    UIImageView *_grabber;
     CALayer *_layer;
     NSMutableArray *_windows;
     __weak UIKitView *_UIKitView;
@@ -118,10 +117,6 @@ static inline CGFloat get_device_pixel_ratio(void) {
         _windows = [[NSMutableArray alloc] init];
         _brightness = 1;
 
-        _grabber = nil; //[[UIImageView alloc] initWithImage:[UIImage _windowResizeGrabberImage]];
-        // _grabber.layer.zPosition = 10000;
-        // [_layer addSublayer:_grabber.layer];
-
         _preferredMode = [UIScreenMode screenModeIphone5];
     }
     return self;
@@ -135,7 +130,6 @@ static inline CGFloat get_device_pixel_ratio(void) {
     _layer.layoutManager = nil;
     _layer.delegate = nil;
 
-    [_grabber.layer removeFromSuperlayer];
     [_layer removeFromSuperlayer];
 }
 
@@ -166,16 +160,6 @@ static inline CGFloat get_device_pixel_ratio(void) {
 
 - (void)_layoutSubviews
 {
-    if ([self _hasResizeIndicator]) {
-        const CGSize grabberSize = _grabber.frame.size;
-        const CGSize layerSize = _layer.bounds.size;
-        CGRect grabberRect = _grabber.frame;
-        grabberRect.origin = CGPointMake(layerSize.width-grabberSize.width,layerSize.height-grabberSize.height);
-        _grabber.frame = grabberRect;
-        _grabber.hidden = NO;
-    } else if (!_grabber.hidden) {
-        _grabber.hidden = YES;
-    }
 }
 
 - (id)actionForLayer:(CALayer *)layer forKey:(NSString *)event
