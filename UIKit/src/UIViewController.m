@@ -40,7 +40,7 @@
 #import <UIKit/UIToolbar.h>
 #import <UIKit/UIScreen.h>
 #import <UIKit/UITabBarController.h>
-#import <AppKit/NSNib.h>
+#import <UIKit/NSNib.h>
 #import <QuartzCore/QuartzCore.h>
 #import "UIAnimation.h"
 

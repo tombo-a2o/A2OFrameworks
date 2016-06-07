@@ -14,7 +14,7 @@
 //
 //******************************************************************************
 
-#import <AppKit/NSNib.h>
+#import <UIKit/NSNib.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIView.h>
 #import <UIKit/UIWindow.h>

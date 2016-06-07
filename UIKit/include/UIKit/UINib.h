@@ -1,4 +1,4 @@
-#import <AppKit/NSNib.h>
+#import <UIKit/NSNib.h>
 
 extern NSString * const UINibProxiedObjectsKey;
 extern NSString * const UINibExternalObjects;

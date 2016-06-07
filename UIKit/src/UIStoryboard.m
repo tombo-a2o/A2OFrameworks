@@ -17,7 +17,7 @@
 #import <Foundation/NSString.h>
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSBundle.h>
-#import <AppKit/NSNib.h>
+#import <UIKit/NSNib.h>
 #import <UIKit/UIViewController.h>
 #import <UIKit/UIApplication.h>
 #import <UIKit/UIStoryboard.h>
