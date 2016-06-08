@@ -106,7 +106,7 @@ static EM_BOOL sendMouseEventToApp(int eventType, const EmscriptenMouseEvent *mo
         sel = @selector(mouseUp:);
         break;
     case EMSCRIPTEN_EVENT_MOUSEMOVE:
-        sel = @selector(mouseMove:);
+        sel = @selector(mouseMoved:);
         break;
     case EMSCRIPTEN_EVENT_MOUSEENTER:
         sel = @selector(mouseEntered:);
@@ -158,7 +158,7 @@ static EM_BOOL sendWheelEventToApp(int eventType, const EmscriptenWheelEvent *wh
 
 - (UIView *)hitTestUIView:(CGPoint)point
 {
-    NSMutableArray *sortedWindows = [_UIScreen.windows mutableCopy];
+    NSMutableArray *sortedWindows = [_screen.windows mutableCopy];
     [sortedWindows sortUsingDescriptors:@[[[NSSortDescriptor alloc] initWithKey:@"windowLevel" ascending:NO]]];
 
     for (UIWindow *window in sortedWindows) {
@@ -237,6 +237,8 @@ static EM_BOOL sendWheelEventToApp(int eventType, const EmscriptenWheelEvent *wh
         _touchEvent = [[UITouchEvent alloc] initWithTouch:[self touchForEvent:theEvent]];
         _touchEvent.touchEventGesture = UITouchEventGestureNone;
         _touchEvent.touch.tapCount = 1;
+
+NSLog(@"%@", _touchEvent);        
 
         [[UIApplication sharedApplication] sendEvent:_touchEvent];
     }

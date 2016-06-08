@@ -109,6 +109,8 @@ NSString *const UIScreenModeDidChangeNotification = @"UIScreenModeDidChangeNotif
 
         _rootLayer = [CALayer layer];
         _rootLayer.frame = self.bounds;
+        _rootLayer.contentsScale = self.scale;
+        NSLog(@"%f %f", self.bounds.size.width, self.bounds.size.height);
         
         _layerContext = [[CALayerContext alloc] initWithFrame:self.bounds];
         _layerContext.layer = _rootLayer;
@@ -130,14 +132,16 @@ NSString *const UIScreenModeDidChangeNotification = @"UIScreenModeDidChangeNotif
 
     _currentMode = mode;
     CGRect bounds = _bounds;
-    bounds.size = mode.size;
+    bounds.size = size;
     _bounds = bounds;
     _scale = scale;
 
     emscripten_set_canvas_size(rawSize.width, rawSize.height);
     emscripten_set_element_css_size(NULL, size.width, size.height);
 
-    _rootLayer.frame = _bounds;
+    _rootLayer.frame = bounds;
+    _rootLayer.contentsScale = self.scale;
+    _layerContext.frame = bounds;
  
     [[NSNotificationCenter defaultCenter] postNotificationName:UIScreenModeDidChangeNotification object:self userInfo:userInfo];
 }
@@ -197,5 +201,13 @@ NSString *const UIScreenModeDidChangeNotification = @"UIScreenModeDidChangeNotif
 - (void)_display
 {
     [_layerContext render];
+}
+
+- (CGPoint)_convertCanvasLocation:(long)x y:(long)y
+{
+    CGPoint ret;
+    ret.x = x;
+    ret.y = y;
+    return ret;
 }
 @end

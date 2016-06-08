@@ -105,7 +105,7 @@ static EM_BOOL visibilitychangeCallback(int eventType, const EmscriptenVisibilit
         _applicationState = UIApplicationStateActive;
         _applicationSupportsShakeToEdit = YES;		// yeah... not *really* true, but UIKit defaults to YES :)
 
-        _eventHandler = [[UIEventHandler alloc] init];
+        _eventHandler = [[UIEventHandler alloc] initWithScreen:[UIScreen mainScreen]];
 
         emscripten_set_visibilitychange_callback(nil, false, visibilitychangeCallback);
         emscripten_set_beforeunload_callback(nil, beforeunloadCallback);
