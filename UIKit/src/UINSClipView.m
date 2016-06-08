@@ -30,10 +30,7 @@
 #import "UINSClipView.h"
 #import "UIScrollView+UIPrivate.h"
 #import <UIKit/UIWindow.h>
-#import "UIScreenAppKitIntegration.h"
-#import "UIKitView.h"
-#import <AppKit/NSEvent.h>
-
+ 
 
 @implementation UINSClipView {
     UIScrollView *_parentView;

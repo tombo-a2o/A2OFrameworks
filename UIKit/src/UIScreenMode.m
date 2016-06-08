@@ -29,6 +29,7 @@
 
 #import <UIKit/UIScreenMode.h>
 #import <UIKit/UIGeometry.h>
+#import <emscripten.h>
 
 @implementation UIScreenMode
 
@@ -42,7 +43,7 @@
 
 + (NSArray*)_userDefinedModes
 {
-    int num = EM_ASM_INT({
+    int num = EM_ASM_INT_V({
         return Module['screenModes'] ? Module['screenModes'].length : 0;
     });
 
@@ -50,7 +51,7 @@
 
     NSMutableArray *ret = [NSMutableArray arrayWithCapacity:num];
     for(int i = 0; i < num; i++) {
-        UISceenMode *mode = [[UISceenMode alloc] init];
+        UIScreenMode *mode = [[UIScreenMode alloc] init];
         int width = EM_ASM_INT({
             return Module['screenModes'][$0].width;
         }, i);

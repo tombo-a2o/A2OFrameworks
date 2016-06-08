@@ -27,14 +27,13 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIApplicationAppKitIntegration.h"
-#import "UIScreenAppKitIntegration.h"
+#import <UIKit/UIKit.h>
+#import "UIScreen+UIPrivate.h"
 #import "UIWindow+UIPrivate.h"
-#import "UIKitView.h"
 #import "UIBackgroundTask.h"
-#import "UINSApplicationDelegate.h"
-#import <AppKit/AppKit.h>
+#import "UIEventHandler.h"
 #import <emscripten/html5.h>
+#import <emscripten/trace.h>
 
 NSString *const UIApplicationWillChangeStatusBarOrientationNotification = @"UIApplicationWillChangeStatusBarOrientationNotification";
 NSString *const UIApplicationDidChangeStatusBarOrientationNotification = @"UIApplicationDidChangeStatusBarOrientationNotification";
@@ -71,6 +70,7 @@ static UIApplication *_theApplication = nil;
     NSUInteger _ignoringInteractionEvents;
     NSDate *_backgroundTasksExpirationDate;
     NSMutableArray *_backgroundTasks;
+    UIEventHandler *_eventHandler;
 }
 
 + (UIApplication *)sharedApplication
@@ -82,22 +82,21 @@ static UIApplication *_theApplication = nil;
     return _theApplication;
 }
 
-static const char* beforeunload_callback(int eventType, const void *reserved, void *userData)
+static const char* beforeunloadCallback(int eventType, const void *reserved, void *userData)
 {
-    [[NSNotificationCenter defaultCenter] postNotificationName:NSApplicationWillTerminateNotification object:nil];
+    [[UIApplication sharedApplication] _applicationWillTerminate:nil];
 }
 
-static EM_BOOL visibilitychange_callback_func(int eventType, const EmscriptenVisibilityChangeEvent *visibilityChangeEvent, void *userData)
+static EM_BOOL visibilitychangeCallback(int eventType, const EmscriptenVisibilityChangeEvent *visibilityChangeEvent, void *userData)
 {
     if(visibilityChangeEvent->visibilityState == EMSCRIPTEN_VISIBILITY_VISIBLE) {
-        [[[NSWorkspace sharedWorkspace] notificationCenter] postNotificationName:NSWorkspaceDidWakeNotification object:nil];
-        [[NSNotificationCenter defaultCenter] postNotificationName:NSApplicationDidBecomeActiveNotification object:nil];
+        [[UIApplication sharedApplication] _computerDidWakeUp:nil];
+        [[UIApplication sharedApplication] _applicationDidBecomeActive:nil];
     } else if(visibilityChangeEvent->visibilityState == EMSCRIPTEN_VISIBILITY_HIDDEN) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:NSApplicationWillResignActiveNotification object:nil];
-        [[[NSWorkspace sharedWorkspace] notificationCenter] postNotificationName:NSWorkspaceWillSleepNotification object:nil];
+        [[UIApplication sharedApplication] _applicationWillResignActive:nil];
+        [[UIApplication sharedApplication] _computerWillSleep:nil];
     }
 }
-
 
 - (id)init
 {
@@ -105,31 +104,13 @@ static EM_BOOL visibilitychange_callback_func(int eventType, const EmscriptenVis
         _backgroundTasks = [[NSMutableArray alloc] init];
         _applicationState = UIApplicationStateActive;
         _applicationSupportsShakeToEdit = YES;		// yeah... not *really* true, but UIKit defaults to YES :)
-        
-        emscripten_set_visibilitychange_callback(nil, false, visibilitychange_callback_func);
-        emscripten_set_beforeunload_callback(nil, beforeunload_callback);
 
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_applicationWillFinishLaunching:) name:NSApplicationWillFinishLaunchingNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_applicationDidFinishLaunching:) name:NSApplicationDidFinishLaunchingNotification object:nil];
+        _eventHandler = [[UIEventHandler alloc] init];
 
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_applicationWillTerminate:) name:NSApplicationWillTerminateNotification object:nil];
-
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_applicationWillResignActive:) name:NSApplicationWillResignActiveNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_applicationDidBecomeActive:) name:NSApplicationDidBecomeActiveNotification object:nil];
-
-        [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(_applicationWillResignActive:) name:NSWorkspaceScreensDidSleepNotification object:nil];
-        [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(_applicationDidBecomeActive:) name:NSWorkspaceScreensDidWakeNotification object:nil];
-
-        [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(_computerWillSleep:) name:NSWorkspaceWillSleepNotification object:nil];
-        [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(_computerDidWakeUp:) name:NSWorkspaceDidWakeNotification object:nil];
+        emscripten_set_visibilitychange_callback(nil, false, visibilitychangeCallback);
+        emscripten_set_beforeunload_callback(nil, beforeunloadCallback);
     }
     return self;
-}
-
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [[[NSWorkspace sharedWorkspace] notificationCenter] removeObserver:self];
 }
 
 - (NSTimeInterval)statusBarOrientationAnimationDuration
@@ -321,98 +302,98 @@ static EM_BOOL visibilitychange_callback_func(int eventType, const EmscriptenVis
     run_tasks();
 }
 
-- (NSApplicationTerminateReply)terminateApplicationBeforeDate:(NSDate *)timeoutDate
-{
-    [self _enterBackground];
-
-    _backgroundTasksExpirationDate = timeoutDate;
-
-    // we will briefly block here for a short time and run the runloop in an attempt to let the background tasks finish up before
-    // actually prompting the user with an annoying alert. users are much more used to an app hanging for a brief moment while
-    // quitting than they are with an alert appearing/disappearing suddenly that they might have had trouble reading and processing
-    // before it's gone. that sort of thing creates anxiety.
-    NSDate *blockingBackgroundExpiration = [NSDate dateWithTimeIntervalSinceNow:1.33];
-
-    for (;;) {
-        if (![self _runRunLoopForBackgroundTasksBeforeDate:blockingBackgroundExpiration] || [NSDate timeIntervalSinceReferenceDate] >= [blockingBackgroundExpiration timeIntervalSinceReferenceDate]) {
-            break;
-        }
-    }
-
-    // if it turns out we're all done with tasks (or maybe had none to begin with), we'll clean up the structures
-    // and tell our app we can terminate immediately now.
-    if ([_backgroundTasks count] == 0) {
-        [self _cancelBackgroundTasks];
-
-        // and reset our timer since we're done
-        _backgroundTasksExpirationDate = nil;
-
-        // and return
-        return NSTerminateNow;
-    }
-
-    // otherwise... we have to do a deferred thing so we can show an alert while we wait for background tasks to finish...
-
-    void (^taskFinisher)(void) = ^{
-#if 1        
-        NSLog(@"%s fix me", __FUNCTION__);
-#else
-        NSAlert *alert = [[NSAlert alloc] init];
-        [alert setAlertStyle:NSInformationalAlertStyle];
-        [alert setShowsSuppressionButton:NO];
-        [alert setMessageText:@"Quitting"];
-        [alert setInformativeText:@"Finishing some tasks..."];
-        [alert addButtonWithTitle:@"Quit Now"];
-        [alert layout];
-
-        // to avoid upsetting the user with an alert that flashes too quickly to read, we'll later artifically ensure that
-        // the alert has been visible for at least some small amount of time to give them a chance to see and understand it.
-        NSDate *minimumDisplayTime = [NSDate dateWithTimeIntervalSinceNow:2.33];
-
-        NSModalSession session = [NSApp beginModalSessionForWindow:alert.window];
-
-        // run the runloop and wait for tasks to finish
-        while ([NSApp runModalSession:session] == NSRunContinuesResponse) {
-            if (![self _runRunLoopForBackgroundTasksBeforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]]) {
-                break;
-            }
-        }
-
-        // when we exit the runloop loop, then we're done with the tasks. either they are all finished or the time has run out
-        // so we need to clean things up here as if we're all finished. if there's any remaining tasks, run their expiration handlers
-        [self _cancelBackgroundTasks];
-
-        // and reset our timer since we're done
-        _backgroundTasksExpirationDate = nil;
-
-        // now just in case all of this happened too quickly and the user might not have had time to read and understand the alert,
-        // we will kill some time for a bit as long as the alert is still visible. runModalSession: will not return NSRunContinuesResponse
-        // if the user closed the alert, so in that case then this delay won't happen at all. however if the tasks finished too quickly
-        // then what this does is kill time until the user clicks the quit button or the timer expires.
-        while ([NSApp runModalSession:session] == NSRunContinuesResponse) {
-            if ([NSDate timeIntervalSinceReferenceDate] >= [minimumDisplayTime timeIntervalSinceReferenceDate]) {
-                break;
-            }
-        }
-
-
-        [NSApp endModalSession:session];
-
-        // tell the real NSApp we're all done here
-        [NSApp replyToApplicationShouldTerminate:YES];
-#endif
-    };
-
-    // I need to delay this but run it on the main thread and also be able to run it in the panel run loop mode
-    // because we're probably in that run loop mode due to how -applicationShouldTerminate: does things. I don't
-    // know if I could do this same thing with a couple of simple GCD calls, but whatever, this works too. :)
-    [self performSelectorOnMainThread:@selector(_runBackgroundTasks:)
-                           withObject:[taskFinisher copy]
-                        waitUntilDone:NO
-                                modes:[NSArray arrayWithObjects:NSModalPanelRunLoopMode, NSRunLoopCommonModes, nil]];
-
-    return NSTerminateLater;
-}
+// - (NSApplicationTerminateReply)terminateApplicationBeforeDate:(NSDate *)timeoutDate
+// {
+//     [self _enterBackground];
+// 
+//     _backgroundTasksExpirationDate = timeoutDate;
+// 
+//     // we will briefly block here for a short time and run the runloop in an attempt to let the background tasks finish up before
+//     // actually prompting the user with an annoying alert. users are much more used to an app hanging for a brief moment while
+//     // quitting than they are with an alert appearing/disappearing suddenly that they might have had trouble reading and processing
+//     // before it's gone. that sort of thing creates anxiety.
+//     NSDate *blockingBackgroundExpiration = [NSDate dateWithTimeIntervalSinceNow:1.33];
+// 
+//     for (;;) {
+//         if (![self _runRunLoopForBackgroundTasksBeforeDate:blockingBackgroundExpiration] || [NSDate timeIntervalSinceReferenceDate] >= [blockingBackgroundExpiration timeIntervalSinceReferenceDate]) {
+//             break;
+//         }
+//     }
+// 
+//     // if it turns out we're all done with tasks (or maybe had none to begin with), we'll clean up the structures
+//     // and tell our app we can terminate immediately now.
+//     if ([_backgroundTasks count] == 0) {
+//         [self _cancelBackgroundTasks];
+// 
+//         // and reset our timer since we're done
+//         _backgroundTasksExpirationDate = nil;
+// 
+//         // and return
+//         return NSTerminateNow;
+//     }
+// 
+//     // otherwise... we have to do a deferred thing so we can show an alert while we wait for background tasks to finish...
+// 
+//     void (^taskFinisher)(void) = ^{
+// #if 1        
+//         NSLog(@"%s fix me", __FUNCTION__);
+// #else
+//         NSAlert *alert = [[NSAlert alloc] init];
+//         [alert setAlertStyle:NSInformationalAlertStyle];
+//         [alert setShowsSuppressionButton:NO];
+//         [alert setMessageText:@"Quitting"];
+//         [alert setInformativeText:@"Finishing some tasks..."];
+//         [alert addButtonWithTitle:@"Quit Now"];
+//         [alert layout];
+// 
+//         // to avoid upsetting the user with an alert that flashes too quickly to read, we'll later artifically ensure that
+//         // the alert has been visible for at least some small amount of time to give them a chance to see and understand it.
+//         NSDate *minimumDisplayTime = [NSDate dateWithTimeIntervalSinceNow:2.33];
+// 
+//         NSModalSession session = [NSApp beginModalSessionForWindow:alert.window];
+// 
+//         // run the runloop and wait for tasks to finish
+//         while ([NSApp runModalSession:session] == NSRunContinuesResponse) {
+//             if (![self _runRunLoopForBackgroundTasksBeforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]]) {
+//                 break;
+//             }
+//         }
+// 
+//         // when we exit the runloop loop, then we're done with the tasks. either they are all finished or the time has run out
+//         // so we need to clean things up here as if we're all finished. if there's any remaining tasks, run their expiration handlers
+//         [self _cancelBackgroundTasks];
+// 
+//         // and reset our timer since we're done
+//         _backgroundTasksExpirationDate = nil;
+// 
+//         // now just in case all of this happened too quickly and the user might not have had time to read and understand the alert,
+//         // we will kill some time for a bit as long as the alert is still visible. runModalSession: will not return NSRunContinuesResponse
+//         // if the user closed the alert, so in that case then this delay won't happen at all. however if the tasks finished too quickly
+//         // then what this does is kill time until the user clicks the quit button or the timer expires.
+//         while ([NSApp runModalSession:session] == NSRunContinuesResponse) {
+//             if ([NSDate timeIntervalSinceReferenceDate] >= [minimumDisplayTime timeIntervalSinceReferenceDate]) {
+//                 break;
+//             }
+//         }
+// 
+// 
+//         [NSApp endModalSession:session];
+// 
+//         // tell the real NSApp we're all done here
+//         [NSApp replyToApplicationShouldTerminate:YES];
+// #endif
+//     };
+// 
+//     // I need to delay this but run it on the main thread and also be able to run it in the panel run loop mode
+//     // because we're probably in that run loop mode due to how -applicationShouldTerminate: does things. I don't
+//     // know if I could do this same thing with a couple of simple GCD calls, but whatever, this works too. :)
+//     [self performSelectorOnMainThread:@selector(_runBackgroundTasks:)
+//                            withObject:[taskFinisher copy]
+//                         waitUntilDone:NO
+//                                 modes:[NSArray arrayWithObjects:NSModalPanelRunLoopMode, NSRunLoopCommonModes, nil]];
+// 
+//     return NSTerminateLater;
+// }
 
 - (void)_computerWillSleep:(NSNotification *)note
 {
@@ -540,32 +521,32 @@ static EM_BOOL visibilitychange_callback_func(int eventType, const EmscriptenVis
     return [scheme isEqual:@"http"] || [scheme isEqual:@"https"];
 }
 
-- (void)_applicationWillFinishLaunching:(NSNotification *)note
+- (void)_applicationWillFinishLaunching
 {
-    NSDictionary *options = nil;
+    emscripten_trace_report_memory_layout();
 
-    if ([_delegate respondsToSelector:@selector(application:willFinishLaunchingOnDesktopWithOptions:)]) {
-        [_delegate application:self willFinishLaunchingOnDesktopWithOptions:options];
-    }
+    NSDictionary *options = nil;
 
     if ([_delegate respondsToSelector:@selector(application:willFinishLaunchingWithOptions:)]) {
         [_delegate application:self willFinishLaunchingWithOptions:options];
     }
+
+    emscripten_trace_report_memory_layout();
 }
 
-- (void)_applicationDidFinishLaunching:(NSNotification *)note
+- (void)_applicationDidFinishLaunching
 {
-    NSDictionary *options = nil;
+    emscripten_trace_report_memory_layout();
 
-    if ([_delegate respondsToSelector:@selector(application:didFinishLaunchingOnDesktopWithOptions:)]) {
-        [_delegate application:self didFinishLaunchingOnDesktopWithOptions:options];
-    }
+    NSDictionary *options = nil;
 
     if ([_delegate respondsToSelector:@selector(application:didFinishLaunchingWithOptions:)]) {
         [_delegate application:self didFinishLaunchingWithOptions:options];
     } else if ([_delegate respondsToSelector:@selector(applicationDidFinishLaunching:)]) {
         [_delegate applicationDidFinishLaunching:self];
     }
+
+    emscripten_trace_report_memory_layout();
 
     [[NSNotificationCenter defaultCenter] postNotificationName:UIApplicationDidFinishLaunchingNotification object:self];
 }
@@ -620,6 +601,73 @@ static EM_BOOL visibilitychange_callback_func(int eventType, const EmscriptenVis
     NSLog(@"%s not implemented", __FUNCTION__);
 }
 
+-(void)_displayAllWindowsIfNeeded {
+    [self.windows makeObjectsPerformSelector:@selector(displayIfNeeded)];
+}
+
+ -(void)_setupScreen {
+    UIScreen *screen = [UIScreen mainScreen];
+
+    NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
+    NSString *mainStoryboardName = [infoDictionary objectForKey:@"UIMainStoryboardFile"];
+    if(mainStoryboardName) {
+        NSLog(@"main storyboard %@", mainStoryboardName);
+        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:mainStoryboardName bundle:nil];
+        NSLog(@"storyboard %@", storyboard);
+        UIViewController *rootVC = [storyboard instantiateInitialViewController];
+        NSLog(@"rootVC %@", rootVC);
+        UIWindow *window = [[UIWindow alloc] initWithFrame:screen.bounds];
+        window.screen = screen;
+        [window makeKeyAndVisible];
+        assert(window);
+
+        id<UIApplicationDelegate> delegate = self.delegate;
+        if([delegate respondsToSelector:@selector(setWindow:)]) {
+            [delegate performSelector:@selector(setWindow:) withObject:window];
+        }
+        window.rootViewController = rootVC;
+    }
+
+    emscripten_trace_report_memory_layout();
+}
+
+-(void)finishLaunching {
+    @autoreleasepool {
+        [self _applicationWillFinishLaunching];
+
+        [self _setupScreen];
+
+        [self _applicationDidFinishLaunching];
+    }
+}
+
+- (void)run
+{
+    emscripten_trace_report_memory_layout();
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self finishLaunching];
+        
+        __block int count = 0;
+
+        dispatch_source_t source = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 2<<10, dispatch_get_current_queue());
+        dispatch_source_set_timer(source, 0, 0, 0);
+        dispatch_source_set_event_handler(source, ^{
+            @autoreleasepool {
+                [self _displayAllWindowsIfNeeded];
+            }
+
+            if(count % 100 == 0) {
+                EM_ASM({ FS.syncfs(false, function(){}) });
+            }
+            
+            count++;
+        });
+        dispatch_resume(source);
+    });
+    dispatch_main();
+}
+
 @end
 
 
@@ -648,9 +696,7 @@ int UIApplicationMain(int argc, char *argv[], NSString *principalClassName, NSSt
         }
 #endif
 
-        id<NSApplicationDelegate> backgroundTaskCatchingDelegate = [UINSApplicationDelegate new];
-        [[NSApplication sharedApplication] setDelegate:backgroundTaskCatchingDelegate];
-        [[NSApplication sharedApplication] run];
+        [app run];
 
         // the only purpose of this is to confuse ARC. I'm not sure how else to do it.
         // without this here, ARC thinks it can dealloc some stuff before we're really done
@@ -658,7 +704,7 @@ int UIApplicationMain(int argc, char *argv[], NSString *principalClassName, NSSt
         // be kept around as long as the app runs, but since the app never actually gets here
         // it will never be executed but this prevents ARC from preemptively releasing things.
         // meh.
-        [@[app, delegate, backgroundTaskCatchingDelegate] count];
+        [@[app, delegate] count];
     }
 
     // this never happens
@@ -667,9 +713,9 @@ int UIApplicationMain(int argc, char *argv[], NSString *principalClassName, NSSt
 
 void UIApplicationSendStationaryTouches(void)
 {
-    for (UIScreen *screen in [UIScreen screens]) {
-        [screen.UIKitView sendStationaryTouches];
-    }
+    // for (UIScreen *screen in [UIScreen screens]) {
+    //     [screen.UIKitView sendStationaryTouches];
+    // }
 }
 
 void UIApplicationInterruptTouchesInView(UIView *view)
@@ -686,11 +732,11 @@ void UIApplicationInterruptTouchesInView(UIView *view)
     // by deferring the cancel, it would then be able to take the right action if the touch phase was something *other*
     // than ended or cancelled by the time it attemped cancellation.
 
-    if (!view) {
-        for (UIScreen *screen in [UIScreen screens]) {
-            [screen.UIKitView performSelector:@selector(cancelTouchesInView:) withObject:nil afterDelay:0];
-        }
-    } else {
-        [view.window.screen.UIKitView performSelector:@selector(cancelTouchesInView:) withObject:view afterDelay:0];
-    }
+    // if (!view) {
+    //     for (UIScreen *screen in [UIScreen screens]) {
+    //         [screen.UIKitView performSelector:@selector(cancelTouchesInView:) withObject:nil afterDelay:0];
+    //     }
+    // } else {
+    //     [view.window.screen.UIKitView performSelector:@selector(cancelTouchesInView:) withObject:view afterDelay:0];
+    // }
 }

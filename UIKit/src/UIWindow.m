@@ -261,8 +261,8 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
         if (self.isKeyWindow) {
             [self becomeKeyWindow];
         } else {
-            [[self.screen.UIKitView window] makeFirstResponder:self.screen.UIKitView];
-            [[self.screen.UIKitView window] makeKeyWindow];
+            // [[self.screen.UIKitView window] makeFirstResponder:self.screen.UIKitView];
+            // [[self.screen.UIKitView window] makeKeyWindow];
         }
     }
 }
@@ -272,7 +272,7 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
     // only return YES if we have a screen and our screen's UIKitView is on the AppKit key window
 
     if (self.screen.keyWindow == self) {
-        return [[self.screen.UIKitView window] isKeyWindow];
+        // return [[self.screen.UIKitView window] isKeyWindow];
     }
 
     return NO;
@@ -297,32 +297,32 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
 
 - (void)_NSWindowDidBecomeKeyNotification:(NSNotification *)note
 {
-    NSWindow *nativeWindow = [note object];
-
-    // when the underlying screen's NSWindow becomes key, we can use the keyWindow property the screen itself
-    // to know if this UIWindow should become key again now or not. If things match up, we fire off -becomeKeyWindow
-    // again to let the app know this happened. Normally iOS doesn't run into situations where the user can change
-    // the key window out from under the app, so this is going to be somewhat unusual UIKit behavior...
-    if ([[self.screen.UIKitView window] isEqual:nativeWindow]) {
-        if (self.screen.keyWindow == self) {
-            [self becomeKeyWindow];
-        }
-    }
+    // NSWindow *nativeWindow = [note object];
+    // 
+    // // when the underlying screen's NSWindow becomes key, we can use the keyWindow property the screen itself
+    // // to know if this UIWindow should become key again now or not. If things match up, we fire off -becomeKeyWindow
+    // // again to let the app know this happened. Normally iOS doesn't run into situations where the user can change
+    // // the key window out from under the app, so this is going to be somewhat unusual UIKit behavior...
+    // if ([[self.screen.UIKitView window] isEqual:nativeWindow]) {
+    //     if (self.screen.keyWindow == self) {
+    //         [self becomeKeyWindow];
+    //     }
+    // }
 }
 
 - (void)_NSWindowDidResignKeyNotification:(NSNotification *)note
 {
-    NSWindow *nativeWindow = [note object];
-
-    // if the resigned key window is the same window that hosts our underlying screen, then we need to resign
-    // this UIWindow, too. note that it does NOT actually unset the keyWindow property for the UIScreen!
-    // this is because if the user clicks back in the screen's window, we need a way to reconnect this UIWindow
-    // as the key window, too, so that's how that is done.
-    if ([[self.screen.UIKitView window] isEqual:nativeWindow]) {
-        if (self.screen.keyWindow == self) {
-            [self resignKeyWindow];
-        }
-    }
+    // NSWindow *nativeWindow = [note object];
+    // 
+    // // if the resigned key window is the same window that hosts our underlying screen, then we need to resign
+    // // this UIWindow, too. note that it does NOT actually unset the keyWindow property for the UIScreen!
+    // // this is because if the user clicks back in the screen's window, we need a way to reconnect this UIWindow
+    // // as the key window, too, so that's how that is done.
+    // if ([[self.screen.UIKitView window] isEqual:nativeWindow]) {
+    //     if (self.screen.keyWindow == self) {
+    //         [self resignKeyWindow];
+    //     }
+    // }
 }
 
 - (void)_makeHidden
@@ -346,7 +346,6 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
         [super setHidden:NO];
 
         if (self.screen) {
-            [[self.screen _layer] addSublayer:self.layer];
             [self.screen _addWindow:self];
             [[NSNotificationCenter defaultCenter] postNotificationName:UIWindowDidBecomeVisibleNotification object:self];
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_screenModeChangedNotification:) name:UIScreenModeDidChangeNotification object:_screen];

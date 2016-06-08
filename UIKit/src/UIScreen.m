@@ -34,9 +34,7 @@
 #import "UIViewLayoutManager.h"
 #import "UIScreenMode+UIPrivate.h"
 #import <UIKit/UIWindow.h>
-#import "UIKitView.h"
 #import "UIView+UIPrivate.h"
-#import <AppKit/AppKit.h>
 #import <QuartzCore/QuartzCore.h>
 #import <emscripten.h>
 #import <emscripten/html5.h>

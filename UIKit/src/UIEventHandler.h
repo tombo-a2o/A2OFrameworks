@@ -27,12 +27,11 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import <AppKit/AppKit.h>
 #import <UIKit/UIApplicationDelegate.h>
 #import <UIKit/UIScreen.h>
 #import <UIKit/UIWindow.h>
 
-@interface UIKitView : NSView
+@interface UIEventHandler : NSObject
 
 // returns the UIView (or nil) that successfully responds to a -hitTest:withEvent: at the given point.
 // the point is specified in this view's coordinate system (unlike NSView's hitTest method).
