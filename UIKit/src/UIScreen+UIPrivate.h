@@ -38,4 +38,5 @@
 - (void)_addWindow:(UIWindow *)window;
 - (void)_removeWindow:(UIWindow *)window;
 - (CGPoint)_convertCanvasLocation:(long)x y:(long)y;
+- (void)_display;
 @end

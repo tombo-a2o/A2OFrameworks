@@ -28,8 +28,7 @@
  */
 
 #import "UITableViewSectionLabel.h"
-#import <UIKit/UIGraphics.h>
-#import "AppKitIntegration.h"
+#import <UIKit/UIKit.h>
 #import <CoreGraphics/CGGradient.h>
 
 @implementation UITableViewSectionLabel

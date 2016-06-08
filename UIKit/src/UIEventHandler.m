@@ -40,7 +40,6 @@
 #import "UITouch+UIPrivate.h"
 #import "UIKey.h"
 #import "UINSResponderShim.h"
-#import "UIViewControllerAppKitIntegration.h"
 #import <QuartzCore/CALayer.h>
 #import <emscripten/html5.h>
 

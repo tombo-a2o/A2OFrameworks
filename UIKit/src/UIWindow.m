@@ -30,15 +30,12 @@
 #import "UIWindow+UIPrivate.h"
 #import "UIView+UIPrivate.h"
 #import "UIScreen+UIPrivate.h"
-#import "UIScreenAppKitIntegration.h"
 #import <UIKit/UIApplication.h>
 #import "UITouch+UIPrivate.h"
 #import <UIKit/UIScreenMode.h>
-#import "UIResponderAppKitIntegration.h"
 #import <UIKit/UIViewController.h>
 #import "UIGestureRecognizer+UIPrivate.h"
 #import "UITouchEvent.h"
-#import "UIKitView.h"
 #import <QuartzCore/QuartzCore.h>
 
 const UIWindowLevel UIWindowLevelNormal = 0;
@@ -79,9 +76,6 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
         assert([UIScreen mainScreen]);
         self.screen = [UIScreen mainScreen];
         self.opaque = NO;
-
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_NSWindowDidBecomeKeyNotification:) name:NSWindowDidBecomeKeyNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_NSWindowDidResignKeyNotification:) name:NSWindowDidResignKeyNotification object:nil];
     }
     return self;
 }
@@ -194,8 +188,8 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
         toConvert.y += self.frame.origin.y;
 
         if (toWindow) {
-            // Now convert the screen coords into the other screen's coordinate space
-            toConvert = [self.screen convertPoint:toConvert toScreen:toWindow.screen];
+            // // Now convert the screen coords into the other screen's coordinate space
+            // toConvert = [self.screen convertPoint:toConvert toScreen:toWindow.screen];
 
             // And now convert it from the new screen's space into the window's space
             toConvert.x -= toWindow.frame.origin.x;
@@ -216,8 +210,8 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
             toConvert.x += fromWindow.frame.origin.x;
             toConvert.y += fromWindow.frame.origin.y;
 
-            // Change to this screen.
-            toConvert = [self.screen convertPoint:toConvert fromScreen:fromWindow.screen];
+            // // Change to this screen.
+            // toConvert = [self.screen convertPoint:toConvert fromScreen:fromWindow.screen];
         }
 
         // Convert to window coordinates
@@ -293,36 +287,6 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
     }
 
     [[NSNotificationCenter defaultCenter] postNotificationName:UIWindowDidResignKeyNotification object:self];
-}
-
-- (void)_NSWindowDidBecomeKeyNotification:(NSNotification *)note
-{
-    // NSWindow *nativeWindow = [note object];
-    // 
-    // // when the underlying screen's NSWindow becomes key, we can use the keyWindow property the screen itself
-    // // to know if this UIWindow should become key again now or not. If things match up, we fire off -becomeKeyWindow
-    // // again to let the app know this happened. Normally iOS doesn't run into situations where the user can change
-    // // the key window out from under the app, so this is going to be somewhat unusual UIKit behavior...
-    // if ([[self.screen.UIKitView window] isEqual:nativeWindow]) {
-    //     if (self.screen.keyWindow == self) {
-    //         [self becomeKeyWindow];
-    //     }
-    // }
-}
-
-- (void)_NSWindowDidResignKeyNotification:(NSNotification *)note
-{
-    // NSWindow *nativeWindow = [note object];
-    // 
-    // // if the resigned key window is the same window that hosts our underlying screen, then we need to resign
-    // // this UIWindow, too. note that it does NOT actually unset the keyWindow property for the UIScreen!
-    // // this is because if the user clicks back in the screen's window, we need a way to reconnect this UIWindow
-    // // as the key window, too, so that's how that is done.
-    // if ([[self.screen.UIKitView window] isEqual:nativeWindow]) {
-    //     if (self.screen.keyWindow == self) {
-    //         [self resignKeyWindow];
-    //     }
-    // }
 }
 
 - (void)_makeHidden
@@ -459,17 +423,18 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
         // this should prevent delivery of the "touches" down the responder chain in roughly the same way a normal non-
         // discrete gesture would based on the settings of the in-play gesture recognizers.
         if (!gestureRecognized || (gestureRecognized && !cancelsTouches && !delaysTouchesBegan)) {
-            if (event.touchEventGesture == UITouchEventGestureRightClick) {
-                [view rightClick:event.touch withEvent:event];
-            } else if (event.touchEventGesture == UITouchEventGestureScrollWheel) {
-                [view scrollWheelMoved:event.translation withEvent:event];
-            } else if (event.touchEventGesture == UITouchEventGestureMouseMove) {
-                [view mouseMoved:event.touch withEvent:event];
-            } else if (event.touchEventGesture == UITouchEventGestureMouseEntered) {
-                [view mouseEntered:event.touch.view withEvent:event];
-            } else if (event.touchEventGesture == UITouchEventGestureMouseExited) {
-                [view mouseExited:event.touch.view withEvent:event];
-            }
+            NSLog(@"%s FIXME", __FUNCTION__);
+            // if (event.touchEventGesture == UITouchEventGestureRightClick) {
+            //     [view rightClick:event.touch withEvent:event];
+            // } else if (event.touchEventGesture == UITouchEventGestureScrollWheel) {
+            //     [view scrollWheelMoved:event.translation withEvent:event];
+            // } else if (event.touchEventGesture == UITouchEventGestureMouseMove) {
+            //     [view mouseMoved:event.touch withEvent:event];
+            // } else if (event.touchEventGesture == UITouchEventGestureMouseEntered) {
+            //     [view mouseEntered:event.touch.view withEvent:event];
+            // } else if (event.touchEventGesture == UITouchEventGestureMouseExited) {
+            //     [view mouseExited:event.touch.view withEvent:event];
+            // }
         }
     } else {
         if (event.touch.phase == UITouchPhaseBegan) {

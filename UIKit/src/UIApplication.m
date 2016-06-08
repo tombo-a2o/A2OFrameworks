@@ -601,8 +601,8 @@ static EM_BOOL visibilitychangeCallback(int eventType, const EmscriptenVisibilit
     NSLog(@"%s not implemented", __FUNCTION__);
 }
 
--(void)_displayAllWindowsIfNeeded {
-    [self.windows makeObjectsPerformSelector:@selector(displayIfNeeded)];
+-(void)_display {
+    [[UIScreen screens] makeObjectsPerformSelector:@selector(_display)];
 }
 
  -(void)_setupScreen {
@@ -654,7 +654,7 @@ static EM_BOOL visibilitychangeCallback(int eventType, const EmscriptenVisibilit
         dispatch_source_set_timer(source, 0, 0, 0);
         dispatch_source_set_event_handler(source, ^{
             @autoreleasepool {
-                [self _displayAllWindowsIfNeeded];
+                [self _display];
             }
 
             if(count % 100 == 0) {

@@ -31,8 +31,6 @@
 #import <UIKit/UIView.h>
 #import <UIKit/UITouch.h>
 #import <UIKit/UIColor.h>
-#import "UIResponderAppKitIntegration.h"
-#import <AppKit/NSCursor.h>
 
 static const CGFloat SplitterPadding = 3;
 
@@ -150,18 +148,19 @@ static const CGFloat SplitterPadding = 3;
 
 - (id)mouseCursorForEvent:(UIEvent *)event
 {
-    CGRect splitterRect = [self splitterHitRect];
-    CGPoint point = [[[event allTouches] anyObject] locationInView:self];
-
-    if (dragging && point.x < splitterRect.origin.x) {
-        return [NSCursor resizeLeftCursor];
-    } else if (dragging && point.x > splitterRect.origin.x+splitterRect.size.width) {
-        return [NSCursor resizeRightCursor];
-    } else if (dragging || CGRectContainsPoint(splitterRect, point)) {
-        return [NSCursor resizeLeftRightCursor];
-    } else {
-        return [super mouseCursorForEvent:event];
-    }
+    NSLog(@"%s FIX ME", __FUNCTION__);
+    // CGRect splitterRect = [self splitterHitRect];
+    // CGPoint point = [[[event allTouches] anyObject] locationInView:self];
+    // 
+    // if (dragging && point.x < splitterRect.origin.x) {
+    //     return [NSCursor resizeLeftCursor];
+    // } else if (dragging && point.x > splitterRect.origin.x+splitterRect.size.width) {
+    //     return [NSCursor resizeRightCursor];
+    // } else if (dragging || CGRectContainsPoint(splitterRect, point)) {
+    //     return [NSCursor resizeLeftRightCursor];
+    // } else {
+    //     return [super mouseCursorForEvent:event];
+    // }
 }
 
 @end

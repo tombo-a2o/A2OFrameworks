@@ -30,8 +30,6 @@
 #if 0
 
 #import <UIKit/UIPasteboard.h>
-#import "UIImageAppKitIntegration.h"
-#import "UIColorAppKitIntegration.h"
 #import <AppKit/AppKit.h>
 
 static id FirstObjectOrNil(NSArray *items)

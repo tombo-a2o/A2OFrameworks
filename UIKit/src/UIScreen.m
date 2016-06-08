@@ -36,6 +36,7 @@
 #import <UIKit/UIWindow.h>
 #import "UIView+UIPrivate.h"
 #import <QuartzCore/QuartzCore.h>
+#import <QuartzCore/CALayerContext.h>
 #import <emscripten.h>
 #import <emscripten/html5.h>
 
@@ -57,12 +58,14 @@ NSString *const UIScreenModeDidChangeNotification = @"UIScreenModeDidChangeNotif
 @implementation UIScreen {
     NSMutableArray *_windows;
      __weak UIWindow *_keyWindow;
+    CALayerContext *_layerContext;
+    CALayer *_rootLayer;
 }
 
 + (UIScreen *)mainScreen
 {
     static UIScreen *screen = nil;
-    if(screen) {
+    if(!screen) {
         screen = [[UIScreen alloc] init];
     }
     return screen;
@@ -89,6 +92,26 @@ NSString *const UIScreenModeDidChangeNotification = @"UIScreenModeDidChangeNotif
             _availableModes = @[defaultMode];
         }
         self.currentMode = _preferredMode;
+
+        // should not here?
+        EmscriptenWebGLContextAttributes attr;
+        emscripten_webgl_init_context_attributes(&attr);
+        attr.enableExtensionsByDefault = 1;
+        attr.premultipliedAlpha = 0;
+        attr.alpha = 0;
+        attr.stencil = 1;
+        EMSCRIPTEN_WEBGL_CONTEXT_HANDLE webglContext = emscripten_webgl_create_context(0, &attr);
+        emscripten_webgl_make_context_current(webglContext);
+        EM_ASM({
+            Module.useWebGL = true;
+            Browser.moduleContextCreatedCallbacks.forEach(function(callback) { callback() });
+        });
+
+        _rootLayer = [CALayer layer];
+        _rootLayer.frame = self.bounds;
+        
+        _layerContext = [[CALayerContext alloc] initWithFrame:self.bounds];
+        _layerContext.layer = _rootLayer;
     }
     return self;
 }
@@ -106,25 +129,15 @@ NSString *const UIScreenModeDidChangeNotification = @"UIScreenModeDidChangeNotif
     NSDictionary *userInfo = (self.currentMode)? [NSDictionary dictionaryWithObject:self.currentMode forKey:@"_previousMode"] : nil;
 
     _currentMode = mode;
-    _bounds.size = mode.size;
+    CGRect bounds = _bounds;
+    bounds.size = mode.size;
+    _bounds = bounds;
     _scale = scale;
 
     emscripten_set_canvas_size(rawSize.width, rawSize.height);
     emscripten_set_element_css_size(NULL, size.width, size.height);
 
-    // should not here?
-    EmscriptenWebGLContextAttributes attr;
-    emscripten_webgl_init_context_attributes(&attr);
-    attr.enableExtensionsByDefault = 1;
-    attr.premultipliedAlpha = 0;
-    attr.alpha = 0;
-    attr.stencil = 1;
-    EMSCRIPTEN_WEBGL_CONTEXT_HANDLE webglContext = emscripten_webgl_create_context(0, &attr);
-    emscripten_webgl_make_context_current(webglContext);
-    EM_ASM({
-        Module.useWebGL = true;
-        Browser.moduleContextCreatedCallbacks.forEach(function(callback) { callback() });
-    });
+    _rootLayer.frame = _bounds;
  
     [[NSNotificationCenter defaultCenter] postNotificationName:UIScreenModeDidChangeNotification object:self userInfo:userInfo];
 }
@@ -147,6 +160,7 @@ NSString *const UIScreenModeDidChangeNotification = @"UIScreenModeDidChangeNotif
 - (void)_addWindow:(UIWindow *)window
 {
     [_windows addObject:[NSValue valueWithNonretainedObject:window]];
+    [_rootLayer addSublayer:window.layer];
 }
 
 - (void)_removeWindow:(UIWindow *)window
@@ -156,6 +170,7 @@ NSString *const UIScreenModeDidChangeNotification = @"UIScreenModeDidChangeNotif
     }
 
     [_windows removeObject:[NSValue valueWithNonretainedObject:window]];
+    [window.layer removeFromSuperlayer];
 }
 
 - (NSArray *)windows
@@ -179,4 +194,8 @@ NSString *const UIScreenModeDidChangeNotification = @"UIScreenModeDidChangeNotif
     return [NSString stringWithFormat:@"<%@: %p; bounds = %@; mode = %@>", [self class], self, NSStringFromCGRect(self.bounds), self.currentMode];
 }
 
+- (void)_display
+{
+    [_layerContext render];
+}
 @end

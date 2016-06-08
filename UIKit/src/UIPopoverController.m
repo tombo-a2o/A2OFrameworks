@@ -37,10 +37,7 @@
 #import <UIKit/UIViewController.h>
 #import <UIKit/UIWindow.h>
 #import "UIScreen+UIPrivate.h"
-#import "UIScreenAppKitIntegration.h"
-#import "UIKitView.h"
 #import <UIKit/UITouch.h>
-#import "UIApplicationAppKitIntegration.h"
 #import "UIPopoverView.h"
 #import "UIPopoverNSWindow.h"
 #import "UIPopoverOverlayNSView.h"

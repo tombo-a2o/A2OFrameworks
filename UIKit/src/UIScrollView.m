@@ -30,7 +30,6 @@
 #import <UIKit/UIScrollView.h>
 #import "UIScroller.h"
 #import <UIKit/UITouch.h>
-#import "UIResponderAppKitIntegration.h"
 #import "UIScrollViewAnimationScroll.h"
 #import "UIScrollViewAnimationDeceleration.h"
 #import <UIKit/UIPanGestureRecognizer.h>

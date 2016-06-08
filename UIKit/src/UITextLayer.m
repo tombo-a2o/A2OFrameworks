@@ -39,8 +39,6 @@
 #import "UICustomNSTextView.h"
 #import "UICustomNSClipView.h"
 #import <UIKit/UIWindow.h>
-#import "UIKitView.h"
-#import "AppKitIntegration.h"
 #import "UIView+UIPrivate.h"
 #import "UIKey.h"
 #import <AppKit/NSWindow.h>
