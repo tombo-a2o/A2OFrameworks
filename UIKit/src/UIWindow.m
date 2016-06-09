@@ -27,15 +27,14 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#import <UIKit/UIKit.h>
 #import "UIWindow+UIPrivate.h"
 #import "UIView+UIPrivate.h"
 #import "UIScreen+UIPrivate.h"
-#import <UIKit/UIApplication.h>
 #import "UITouch+UIPrivate.h"
-#import <UIKit/UIScreenMode.h>
-#import <UIKit/UIViewController.h>
 #import "UIGestureRecognizer+UIPrivate.h"
 #import "UITouchEvent.h"
+#import "UIResponderAppKitIntegration.h"
 #import <QuartzCore/QuartzCore.h>
 
 const UIWindowLevel UIWindowLevelNormal = 0;
@@ -423,18 +422,18 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
         // this should prevent delivery of the "touches" down the responder chain in roughly the same way a normal non-
         // discrete gesture would based on the settings of the in-play gesture recognizers.
         if (!gestureRecognized || (gestureRecognized && !cancelsTouches && !delaysTouchesBegan)) {
-            NSLog(@"%s FIXME", __FUNCTION__);
-            // if (event.touchEventGesture == UITouchEventGestureRightClick) {
-            //     [view rightClick:event.touch withEvent:event];
-            // } else if (event.touchEventGesture == UITouchEventGestureScrollWheel) {
-            //     [view scrollWheelMoved:event.translation withEvent:event];
-            // } else if (event.touchEventGesture == UITouchEventGestureMouseMove) {
-            //     [view mouseMoved:event.touch withEvent:event];
-            // } else if (event.touchEventGesture == UITouchEventGestureMouseEntered) {
-            //     [view mouseEntered:event.touch.view withEvent:event];
-            // } else if (event.touchEventGesture == UITouchEventGestureMouseExited) {
-            //     [view mouseExited:event.touch.view withEvent:event];
-            // }
+            // NSLog(@"%s FIXME %d", __FUNCTION__, event.touchEventGesture);
+            if (event.touchEventGesture == UITouchEventGestureRightClick) {
+                [view rightClick:event.touch withEvent:event];
+            } else if (event.touchEventGesture == UITouchEventGestureScrollWheel) {
+                [view scrollWheelMoved:event.translation withEvent:event];
+            } else if (event.touchEventGesture == UITouchEventGestureMouseMove) {
+                [view mouseMoved:event.touch withEvent:event];
+            } else if (event.touchEventGesture == UITouchEventGestureMouseEntered) {
+                [view mouseEntered:event.touch.view withEvent:event];
+            } else if (event.touchEventGesture == UITouchEventGestureMouseExited) {
+                [view mouseExited:event.touch.view withEvent:event];
+            }
         }
     } else {
         if (event.touch.phase == UITouchPhaseBegan) {
