@@ -68,28 +68,29 @@
 
 static EM_BOOL sendTouchEvnetToApp(int eventType, const EmscriptenTouchEvent *touchEvent, void *userData) {
     UIEventHandler *handler = (__bridge UIEventHandler*)userData;
-    // NSLog(@"event %d", eventType);
+    // NSLog(@"event %d %d", eventType, touchEvent->numTouches);
 
-    // handle only single touch
-    if(touchEvent->numTouches == 0) return NO;
-
+    __block SEL sel;
     switch(eventType) {
-    // case EMSCRIPTEN_EVENT_TOUCHSTART:
-    //     [handler mouseDown:touchEvent];
-    //     break;
-    // case EMSCRIPTEN_EVENT_TOUCHEND:
-    //     [handler mouseUp:touchEvent];
-    //     break;
-    // case EMSCRIPTEN_EVENT_TOUCHMOVE:
-    //     [handler mouseMoved:touchEvent];
-    //     break;
-    // case EMSCRIPTEN_EVENT_TOUCHCANCEL:
-    //     // FIX ME
-    //     [handler mouseUp:touchEvent];
-    //     break;
+    case EMSCRIPTEN_EVENT_TOUCHSTART:
+        sel = @selector(touchStart:);
+        break;
+    case EMSCRIPTEN_EVENT_TOUCHEND:
+        sel = @selector(touchEnd:);
+        break;
+    case EMSCRIPTEN_EVENT_TOUCHMOVE:
+        sel = @selector(touchMove:);
+        break;
+    case EMSCRIPTEN_EVENT_TOUCHCANCEL:
+        sel = @selector(touchCancel:);
+        break;
     default:
         return NO;
     }
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [handler performSelector:sel withObject:(__bridge id)touchEvent];
+    });
     return YES;
 }
 
@@ -176,7 +177,7 @@ static EM_BOOL sendWheelEventToApp(int eventType, const EmscriptenWheelEvent *wh
 
 #pragma mark touch utilities
 
-- (UITouch *)touchForEvent:(EmscriptenMouseEvent *)theEvent
+- (UITouch *)touchForMouseEvent:(EmscriptenMouseEvent *)theEvent
 {
     const CGPoint location = [_screen _convertCanvasLocation:theEvent->canvasX y:theEvent->canvasY];
 
@@ -188,7 +189,7 @@ static EM_BOOL sendWheelEventToApp(int eventType, const EmscriptenWheelEvent *wh
     return touch;
 }
 
-- (void)updateTouchLocation:(UITouch *)touch withEvent:(EmscriptenMouseEvent *)theEvent
+- (void)updateTouchLocation:(UITouch *)touch withMouseEvent:(EmscriptenMouseEvent *)theEvent
 {
     touch.locationOnScreen = [_screen _convertCanvasLocation:theEvent->canvasX y:theEvent->canvasY];
     touch.timestamp = theEvent->timestamp;
@@ -229,7 +230,7 @@ static EM_BOOL sendWheelEventToApp(int eventType, const EmscriptenWheelEvent *wh
     // are not really supporting anything like that at the moment.
     if (_touchEvent) {
         _touchEvent.touch.phase = UITouchPhaseCancelled;
-        [self updateTouchLocation:_touchEvent.touch withEvent:theEvent];
+        [self updateTouchLocation:_touchEvent.touch withMouseEvent:theEvent];
 
         [[UIApplication sharedApplication] sendEvent:_touchEvent];
 
@@ -238,7 +239,7 @@ static EM_BOOL sendWheelEventToApp(int eventType, const EmscriptenWheelEvent *wh
     }
 
     if (!_touchEvent) {
-        _touchEvent = [[UITouchEvent alloc] initWithTouch:[self touchForEvent:theEvent]];
+        _touchEvent = [[UITouchEvent alloc] initWithTouch:[self touchForMouseEvent:theEvent]];
         _touchEvent.touchEventGesture = UITouchEventGestureNone;
         _touchEvent.touch.tapCount = 1;
 
@@ -250,7 +251,7 @@ static EM_BOOL sendWheelEventToApp(int eventType, const EmscriptenWheelEvent *wh
 {
     if (_touchEvent && _touchEvent.touchEventGesture == UITouchEventGestureNone) {
         _touchEvent.touch.phase = UITouchPhaseEnded;
-        [self updateTouchLocation:_touchEvent.touch withEvent:theEvent];
+        [self updateTouchLocation:_touchEvent.touch withMouseEvent:theEvent];
 
         [[UIApplication sharedApplication] sendEvent:_touchEvent];
 
@@ -263,7 +264,7 @@ static EM_BOOL sendWheelEventToApp(int eventType, const EmscriptenWheelEvent *wh
 {
     if (_touchEvent && _touchEvent.touchEventGesture == UITouchEventGestureNone) {
         _touchEvent.touch.phase = UITouchPhaseMoved;
-        [self updateTouchLocation:_touchEvent.touch withEvent:theEvent];
+        [self updateTouchLocation:_touchEvent.touch withMouseEvent:theEvent];
 
         [[UIApplication sharedApplication] sendEvent:_touchEvent];
     }
@@ -340,7 +341,7 @@ static EM_BOOL sendWheelEventToApp(int eventType, const EmscriptenWheelEvent *wh
 - (void)rightMouseDown:(EmscriptenMouseEvent *)theEvent
 {
     if (!_touchEvent) {
-        UITouchEvent *mouseEvent = [[UITouchEvent alloc] initWithTouch:[self touchForEvent:theEvent]];
+        UITouchEvent *mouseEvent = [[UITouchEvent alloc] initWithTouch:[self touchForMouseEvent:theEvent]];
         mouseEvent.touchEventGesture = UITouchEventGestureRightClick;
         mouseEvent.touch.tapCount = 1;
         [[UIApplication sharedApplication] sendEvent:mouseEvent];
@@ -398,7 +399,7 @@ static EM_BOOL sendWheelEventToApp(int eventType, const EmscriptenWheelEvent *wh
 {
     if (!_touchEvent) {
         _mouseMoveTouch.phase = UITouchPhaseMoved;
-        [self updateTouchLocation:_mouseMoveTouch withEvent:theEvent];
+        [self updateTouchLocation:_mouseMoveTouch withMouseEvent:theEvent];
 
         UITouchEvent *moveEvent = [[UITouchEvent alloc] initWithTouch:_mouseMoveTouch];
         moveEvent.touchEventGesture = UITouchEventGestureMouseMove;
@@ -412,6 +413,47 @@ static EM_BOOL sendWheelEventToApp(int eventType, const EmscriptenWheelEvent *wh
 
         _mouseMoveTouch.view = nil;
     }
+}
+
+- (UITouch *)touchForTouchEvent:(EmscriptenTouchEvent *)theEvent
+{
+    // const CGPoint location = [_screen _convertCanvasLocation:theEvent->canvasX y:theEvent->canvasY];
+    // 
+    // UITouch *touch = [[UITouch alloc] init];
+    // touch.view = [self hitTestUIView:location];
+    // touch.locationOnScreen = location;
+    // touch.timestamp = theEvent->timestamp;
+    // 
+    // return touch;
+}
+
+- (void)updateTouchLocation:(UITouch *)touch withTouchEvent:(EmscriptenTouchPoint *)point
+{
+    // touch.locationOnScreen = [_screen _convertCanvasLocation:point->canvasX y:point->canvasY];
+    // touch.timestamp = theEvent->timestamp;
+}
+
+- (void)touchStart:(EmscriptenTouchEvent *)theEvent
+{
+    // if (!_touchEvent) {
+    //     _touchEvent = [[UITouchEvent alloc] initWithTouch:[self touchForMouseEvent:theEvent]];
+    //     _touchEvent.touchEventGesture = UITouchEventGestureNone;
+    //     _touchEvent.touch.tapCount = 1;
+    // 
+    //     [[UIApplication sharedApplication] sendEvent:_touchEvent];
+    // }
+}
+
+- (void)touchEnd:(EmscriptenTouchEvent *)theEvent
+{
+}
+
+- (void)touchMove:(EmscriptenTouchEvent *)theEvent
+{
+}
+
+- (void)touchCancel:(EmscriptenTouchEvent *)theEvent
+{
 }
 
 #pragma mark scroll/pan gesture
@@ -432,7 +474,7 @@ static EM_BOOL sendWheelEventToApp(int eventType, const EmscriptenWheelEvent *wh
     if (_touchEvent) {
         if (_touchEvent.touchEventGesture == UITouchEventGestureBegin || _touchEvent.touchEventGesture == UITouchEventGesturePan) {
             _touchEvent.touch.phase = UITouchPhaseMoved;
-            [self updateTouchLocation:_touchEvent.touch withEvent:theEvent];
+            [self updateTouchLocation:_touchEvent.touch withMouseEvent:&(theEvent->mouse)];
 
             _touchEvent.touchEventGesture = UITouchEventGesturePan;
             _touchEvent.translation = translation;
@@ -440,7 +482,7 @@ static EM_BOOL sendWheelEventToApp(int eventType, const EmscriptenWheelEvent *wh
             [[UIApplication sharedApplication] sendEvent:_touchEvent];
         }
     } else {
-        UITouchEvent *mouseEvent = [[UITouchEvent alloc] initWithTouch:[self touchForEvent:theEvent]];
+        UITouchEvent *mouseEvent = [[UITouchEvent alloc] initWithTouch:[self touchForMouseEvent:&(theEvent->mouse)]];
         mouseEvent.touchEventGesture = UITouchEventGestureScrollWheel;
         mouseEvent.translation = translation;
         [[UIApplication sharedApplication] sendEvent:mouseEvent];
