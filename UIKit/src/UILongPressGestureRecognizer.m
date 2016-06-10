@@ -61,7 +61,7 @@ static CGFloat DistanceBetweenTwoPoints(CGPoint A, CGPoint B)
     _waiting = NO;
     if (self.state == UIGestureRecognizerStatePossible) {
         self.state = UIGestureRecognizerStateBegan;
-        NSLog(@"%s ???");
+        NSLog(@"%s ???", __FUNCTION__);
         //UIApplicationSendStationaryTouches();
     }
 }
