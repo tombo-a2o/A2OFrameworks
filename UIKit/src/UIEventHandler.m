@@ -39,7 +39,6 @@
 #import "UITouchEvent.h"
 #import "UITouch+UIPrivate.h"
 #import "UIKey.h"
-#import "UINSResponderShim.h"
 #import <QuartzCore/CALayer.h>
 #import <emscripten/html5.h>
 
@@ -56,9 +55,6 @@
  It can be dealt with here and now and life can go on and things don't have to get weirdly complicated deep down the rabbit
  hole. In theory.
  */
-
-@interface UIEventHandler () <UINSResponderShimDelegate>
-@end
 
 @implementation UIEventHandler {
     UITouchEvent *_touchEvent;
@@ -492,18 +488,18 @@ static EM_BOOL sendWheelEventToApp(int eventType, const EmscriptenWheelEvent *wh
 
 #pragma keyboard events
 
-- (void)keyDown:(NSEvent *)theEvent
-{
-    // UIKey *key = [[UIKey alloc] initWithNSEvent:theEvent];
-    // 
-    // // this is not the correct way to handle keys.. iOS 7 finally added a way to handle key commands
-    // // but this was implemented well before that. for now, this gets what we want to happen to happen.
-    // 
-    // if (key.action) {
-    //     [self doCommandBySelector:key.action];
-    // } else {
-    //     [super keyDown:theEvent];
-    // }
-}
+// - (void)keyDown:(NSEvent *)theEvent
+// {
+//     UIKey *key = [[UIKey alloc] initWithNSEvent:theEvent];
+//     
+//     // this is not the correct way to handle keys.. iOS 7 finally added a way to handle key commands
+//     // but this was implemented well before that. for now, this gets what we want to happen to happen.
+//     
+//     if (key.action) {
+//         [self doCommandBySelector:key.action];
+//     } else {
+//         [super keyDown:theEvent];
+//     }
+// }
 
 @end

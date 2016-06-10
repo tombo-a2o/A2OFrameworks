@@ -28,7 +28,6 @@
  */
 
 #import <UIKit/UIApplication.h>
-#import <AppKit/NSApplication.h>
 
 extern NSString *const UIApplicationNetworkActivityIndicatorChangedNotification;
 
@@ -58,5 +57,3 @@ extern NSString *const UIApplicationNetworkActivityIndicatorChangedNotification;
 // these are probably more internal the meant to be used publically, but just in case... here they are.
 extern void UIApplicationInterruptTouchesInView(UIView *view);
 extern void UIApplicationSendStationaryTouches(void);
-
-

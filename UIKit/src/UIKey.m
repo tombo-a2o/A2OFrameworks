@@ -28,12 +28,11 @@
  */
 
 #import "UIKey.h"
-#import <AppKit/NSEvent.h>
 
 @implementation UIKey {
     NSUInteger _modifierFlags;
 }
-
+#if 0
 - (id)initWithNSEvent:(NSEvent *)event
 {
     if ((self=[super init])) {
@@ -110,5 +109,5 @@
     
     return NULL;
 }
-
+#endif
 @end

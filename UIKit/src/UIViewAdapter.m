@@ -34,16 +34,14 @@
 #import "UIScreen+UIPrivate.h"
 #import "UIView+UIPrivate.h"
 #import <UIKit/UIApplication.h>
-#import <AppKit/NSView.h>
-#import <AppKit/NSWindow.h>
 #import <QuartzCore/CALayer.h>
 #import <QuartzCore/CATransaction.h>
 
 
 @implementation UIViewAdapter {
-    UINSClipView *_clipView;
+    // UINSClipView *_clipView;
 }
-@synthesize NSView=_view;
+// @synthesize NSView=_view;
 
 #if 0
 

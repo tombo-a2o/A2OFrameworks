@@ -27,15 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#if 1
-#import <AppKit/NSView.h>
-
-@protocol UICustomNSClipViewBehaviorDelegate
-@end
-
-@interface UICustomNSClipView : NSView
-@end
-#else
+#if 0
 
 #import <AppKit/NSClipView.h>
 
