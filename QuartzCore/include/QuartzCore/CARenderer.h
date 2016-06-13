@@ -5,19 +5,10 @@
 
 @class CALayer, O2Surface;
 
-@interface CARenderer : NSObject {
-    void *_eaglContext;
-    CGRect _bounds;
-    CALayer *_rootLayer;
-}
+@interface CARenderer : NSObject
 
-@property(assign) CGRect bounds;
-@property(retain) CALayer *layer;
++ (CARenderer *)renderer;
 
-+ (CARenderer *)rendererWithEAGLContext:(void *)eaglContext options:(NSDictionary *)options;
-
-- (void)render;
-
-- (void)endFrame;
+- (void)render:(CALayer*)rootLayer;
 
 @end

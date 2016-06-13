@@ -3,7 +3,6 @@
 #import <QuartzCore/CALayer+Private.h>
 #import <QuartzCore/CAAnimation.h>
 #import <QuartzCore/CAMediaTimingFunction.h>
-//#import <CoreVideo/CoreVideo.h>
 #import <OpenGLES/ES2/gl.h>
 #import <OpenGLES/ES2/glext.h>
 #import <Onyx2D/O2Surface.h>
@@ -12,31 +11,6 @@
 #import <CoreGraphics/CGColorSpace.h>
 #import "CAUtil.h"
 #import "CAMediaTimingFunction+Private.h"
-
-@interface CAAnimation(Rendering)
--(CFTimeInterval)computedDuration;
-@end
-
-@implementation CAAnimation(Rendering)
--(CFTimeInterval)computedDuration
-{
-    CFTimeInterval duration = self.duration;
-    float repeatCount = self.repeatCount;
-    CFTimeInterval repeatDuration = self.repeatDuration;
-    BOOL autoreverses = self.autoreverses;
-    
-    if(repeatCount != 0.0) {
-        duration *= repeatCount;
-    }
-    if(repeatDuration != 0.0) {
-        duration = repeatDuration;
-    }
-    if(autoreverses) {
-        duration *= 2;
-    }
-    return duration;
-}
-@end
 
 @implementation CARenderer {
     GLuint _program;
@@ -54,17 +28,9 @@
     GLint _stencilBits;
 }
 
-
-
--(CGRect)bounds {
-   return _bounds;
++(CARenderer *)renderer {
+   return [[[self alloc] init] autorelease];
 }
-
--(void)setBounds:(CGRect)value {
-   _bounds=value;
-}
-
-@synthesize layer=_rootLayer;
 
 static const char *vertexShaderSource =
     "precision mediump float;\n"
@@ -110,11 +76,7 @@ static const char *fragmentShaderSource =
     "}\n";
 
 
--initWithEAGLContext:(void *)eaglContext options:(NSDictionary *)options {
-   _eaglContext=eaglContext;
-   _bounds=CGRectZero;
-   _rootLayer=nil;
-
+-(instancetype)init {
    _program = loadAndLinkShader(vertexShaderSource, fragmentShaderSource);
    assert(_program);
    _attrPosition = glGetAttribLocation(_program, "position");
@@ -171,12 +133,7 @@ static const char *fragmentShaderSource =
     if(_ibo) {
         glDeleteBuffers(1, &_ibo);
     }
-    [_rootLayer release];
     [super dealloc];
-}
-
-+(CARenderer *)rendererWithEAGLContext:(void *)eaglContext options:(NSDictionary *)options {
-   return [[[self alloc] initWithEAGLContext:eaglContext options:options] autorelease];
 }
 
 static GLint interpolationFromName(NSString *name){
@@ -562,7 +519,7 @@ static void displayTree(CALayer *layer) {
     }
 }
 
--(void)render {
+-(void)render:(CALayer*)rootLayer {
     glClearColor(1.0, 1.0, 1.0, 1.0);
     glStencilMask(~0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -575,22 +532,20 @@ static void displayTree(CALayer *layer) {
 
     // fprintf(stderr, "bounds %f %f\n",_bounds.size.width, _bounds.size.height);
     CATransform3D projection = CATransform3DIdentity;
-    projection.m11 = 2.0/_bounds.size.width;
-    projection.m22 = -2.0/_bounds.size.height;
+    CGRect bounds = rootLayer.bounds;
+    projection.m11 = 2.0/bounds.size.width;
+    projection.m22 = -2.0/bounds.size.height;
     projection.m41 = -1.0;
     projection.m42 = 1.0;
     
-    displayTree(_rootLayer);
-    [_rootLayer _generatePresentationLayer];
-    [_rootLayer _updateAnimations:CACurrentMediaTime()];
-    [self _renderLayer:_rootLayer.presentationLayer z:0 mask:0 transform:projection];
+    displayTree(rootLayer);
+    [rootLayer _generatePresentationLayer];
+    [rootLayer _updateAnimations:CACurrentMediaTime()];
+    [self _renderLayer:rootLayer.presentationLayer z:0 mask:0 transform:projection];
 
     glUseProgram(0);
     
     glFlush();
-}
-
--(void)endFrame {
 }
 
 @end
