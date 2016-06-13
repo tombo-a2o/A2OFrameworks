@@ -413,39 +413,54 @@ static EM_BOOL sendWheelEventToApp(int eventType, const EmscriptenWheelEvent *wh
 
 - (UITouch *)touchForTouchEvent:(EmscriptenTouchEvent *)theEvent
 {
-    // const CGPoint location = [_screen _convertCanvasLocation:theEvent->canvasX y:theEvent->canvasY];
-    // 
-    // UITouch *touch = [[UITouch alloc] init];
-    // touch.view = [self hitTestUIView:location];
-    // touch.locationOnScreen = location;
-    // touch.timestamp = theEvent->timestamp;
-    // 
-    // return touch;
+    const CGPoint location = [_screen _convertCanvasLocation:theEvent->touches[0].canvasX y:theEvent->touches[0].canvasY];
+NSLog(@"%d %d %d", theEvent->numTouches, theEvent->touches[0].canvasX, theEvent->touches[0].canvasY);
+    UITouch *touch = [[UITouch alloc] init];
+    touch.view = [self hitTestUIView:location];
+    touch.locationOnScreen = location;
+    touch.timestamp = theEvent->timestamp;
+    
+    return touch;
 }
 
-- (void)updateTouchLocation:(UITouch *)touch withTouchEvent:(EmscriptenTouchPoint *)point
+- (void)updateTouchLocation:(UITouch *)touch withTouchEvent:(EmscriptenTouchEvent *)theEvent
 {
-    // touch.locationOnScreen = [_screen _convertCanvasLocation:point->canvasX y:point->canvasY];
-    // touch.timestamp = theEvent->timestamp;
+    touch.locationOnScreen = [_screen _convertCanvasLocation:theEvent->touches[0].canvasX y:theEvent->touches[0].canvasY];
+    touch.timestamp = theEvent->timestamp;
 }
 
 - (void)touchStart:(EmscriptenTouchEvent *)theEvent
 {
-    // if (!_touchEvent) {
-    //     _touchEvent = [[UITouchEvent alloc] initWithTouch:[self touchForMouseEvent:theEvent]];
-    //     _touchEvent.touchEventGesture = UITouchEventGestureNone;
-    //     _touchEvent.touch.tapCount = 1;
-    // 
-    //     [[UIApplication sharedApplication] sendEvent:_touchEvent];
-    // }
+    if (!_touchEvent) {
+        _touchEvent = [[UITouchEvent alloc] initWithTouch:[self touchForTouchEvent:theEvent]];
+        _touchEvent.touchEventGesture = UITouchEventGestureNone;
+        _touchEvent.touch.tapCount = 1;
+    
+        [[UIApplication sharedApplication] sendEvent:_touchEvent];
+    }
 }
 
 - (void)touchEnd:(EmscriptenTouchEvent *)theEvent
 {
+    if (_touchEvent && _touchEvent.touchEventGesture == UITouchEventGestureNone) {
+        _touchEvent.touch.phase = UITouchPhaseEnded;
+        [self updateTouchLocation:_touchEvent.touch withTouchEvent:theEvent];
+
+        [[UIApplication sharedApplication] sendEvent:_touchEvent];
+
+        [_touchEvent endTouchEvent];
+        _touchEvent = nil;
+    }
 }
 
 - (void)touchMove:(EmscriptenTouchEvent *)theEvent
 {
+    if (_touchEvent && _touchEvent.touchEventGesture == UITouchEventGestureNone) {
+        _touchEvent.touch.phase = UITouchPhaseMoved;
+        [self updateTouchLocation:_touchEvent.touch withTouchEvent:theEvent];
+
+        [[UIApplication sharedApplication] sendEvent:_touchEvent];
+    }
 }
 
 - (void)touchCancel:(EmscriptenTouchEvent *)theEvent
