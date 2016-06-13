@@ -414,7 +414,7 @@ static EM_BOOL sendWheelEventToApp(int eventType, const EmscriptenWheelEvent *wh
 - (UITouch *)touchForTouchEvent:(EmscriptenTouchEvent *)theEvent
 {
     const CGPoint location = [_screen _convertCanvasLocation:theEvent->touches[0].canvasX y:theEvent->touches[0].canvasY];
-NSLog(@"%d %d %d", theEvent->numTouches, theEvent->touches[0].canvasX, theEvent->touches[0].canvasY);
+
     UITouch *touch = [[UITouch alloc] init];
     touch.view = [self hitTestUIView:location];
     touch.locationOnScreen = location;
