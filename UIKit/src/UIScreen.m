@@ -110,10 +110,9 @@ NSString *const UIScreenModeDidChangeNotification = @"UIScreenModeDidChangeNotif
         _rootLayer = [CALayer layer];
         _rootLayer.frame = self.bounds;
         _rootLayer.contentsScale = self.scale;
-        NSLog(@"%f %f", self.bounds.size.width, self.bounds.size.height);
+        //NSLog(@"%f %f", self.bounds.size.width, self.bounds.size.height);
         
-        _layerContext = [[CALayerContext alloc] initWithFrame:self.bounds];
-        _layerContext.layer = _rootLayer;
+        _layerContext = [[CALayerContext alloc] initWithLayer:_rootLayer];
     }
     return self;
 }
@@ -141,7 +140,6 @@ NSString *const UIScreenModeDidChangeNotification = @"UIScreenModeDidChangeNotif
 
     _rootLayer.frame = bounds;
     _rootLayer.contentsScale = self.scale;
-    _layerContext.frame = bounds;
  
     [[NSNotificationCenter defaultCenter] postNotificationName:UIScreenModeDidChangeNotification object:self userInfo:userInfo];
 }
