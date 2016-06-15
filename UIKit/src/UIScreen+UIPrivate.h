@@ -28,6 +28,7 @@
  */
 
 #import <UIKit/UIScreen.h>
+#import <UIKit/UIApplication.h>
 
 @class CALayer;
 
@@ -39,4 +40,5 @@
 - (void)_removeWindow:(UIWindow *)window;
 - (CGPoint)_convertCanvasLocation:(long)x y:(long)y;
 - (void)_display;
+@property (nonatomic) UIInterfaceOrientation orientation;
 @end

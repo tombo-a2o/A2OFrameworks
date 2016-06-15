@@ -34,4 +34,5 @@
 - (void)_setFirstResponder:(UIResponder *)newFirstResponder;
 - (void)_makeHidden;
 - (void)_makeVisible;
+- (void)_updateOrientation;
 @end

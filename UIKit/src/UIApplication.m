@@ -71,6 +71,7 @@ static UIApplication *_theApplication = nil;
     NSDate *_backgroundTasksExpirationDate;
     NSMutableArray *_backgroundTasks;
     UIEventHandler *_eventHandler;
+    UIInterfaceOrientation _interfaceOrientation;
 }
 
 + (UIApplication *)sharedApplication
@@ -104,8 +105,11 @@ static EM_BOOL visibilitychangeCallback(int eventType, const EmscriptenVisibilit
         _backgroundTasks = [[NSMutableArray alloc] init];
         _applicationState = UIApplicationStateActive;
         _applicationSupportsShakeToEdit = YES;		// yeah... not *really* true, but UIKit defaults to YES :)
+        _interfaceOrientation = UIInterfaceOrientationPortrait;
 
         _eventHandler = [[UIEventHandler alloc] initWithScreen:[UIScreen mainScreen]];
+
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_deviceOrientationChanged:) name:UIDeviceOrientationDidChangeNotification object:nil];
 
         emscripten_set_visibilitychange_callback(nil, false, visibilitychangeCallback);
         emscripten_set_beforeunload_callback(nil, beforeunloadCallback);
@@ -158,11 +162,73 @@ static EM_BOOL visibilitychangeCallback(int eventType, const EmscriptenVisibilit
 
 - (UIInterfaceOrientation)statusBarOrientation
 {
-    return UIInterfaceOrientationPortrait;
+    return _interfaceOrientation;
+}
+
+- (UIInterfaceOrientationMask)_supportedInterfaceOrientationsFromInfoPlist
+{
+    
+    NSArray *orientations = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"UISupportedInterfaceOrientations"];
+    if(!orientations) {
+        NSString *orientation = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"UIInterfaceOrientation"];
+        if(!orientation) {
+            orientation = @"UIInterfaceOrientationPortrait";
+        }
+        orientations = @[orientation];
+    }
+    UIInterfaceOrientationMask mask = 0;
+    for(NSString *orientation in orientations) {
+        if([orientation isEqualToString:@"UIInterfaceOrientationPortrait"]) {
+            mask |= UIInterfaceOrientationMaskPortrait;
+        } else if([orientation isEqualToString:@"UIInterfaceOrientationPortraitUpsideDown"]) {
+            mask |= UIInterfaceOrientationMaskPortraitUpsideDown;
+        } else if([orientation isEqualToString:@"UIInterfaceOrientationLandscapeLeft"]) {
+            mask |= UIInterfaceOrientationMaskLandscapeLeft;
+        } else if([orientation isEqualToString:@"UIInterfaceOrientationLandscapeRight"]) {
+            mask |= UIInterfaceOrientationMaskLandscapeRight;
+        }
+    }
+    return mask;
+}
+
+- (UIInterfaceOrientationMask)_supportedInterfaceOrientations
+{
+    if([_delegate respondsToSelector:@selector(application:supportedInterfaceOrientationsForWindow:)]) {
+        return [_delegate application:self supportedInterfaceOrientationsForWindow:[self keyWindow]];
+    } else {
+        return [self _supportedInterfaceOrientationsFromInfoPlist];
+    }
+}
+
+- (void)_deviceOrientationChanged:(NSNotification*)note
+{
+    UIDeviceOrientation deviceOrientation = [UIDevice currentDevice].orientation;
+    switch(deviceOrientation) {
+    case UIDeviceOrientationPortrait:
+    case UIDeviceOrientationPortraitUpsideDown:
+    case UIDeviceOrientationLandscapeLeft:
+    case UIDeviceOrientationLandscapeRight:
+        [UIScreen mainScreen].orientation = deviceOrientation;
+        [self.keyWindow _updateOrientation];
+        self.statusBarOrientation = self.keyWindow.rootViewController.interfaceOrientation;
+        break;
+    case UIDeviceOrientationUnknown:
+    case UIDeviceOrientationFaceUp:
+    case UIDeviceOrientationFaceDown:
+    default:
+        // do nothing for now
+        break;
+    }
+
 }
 
 - (void)setStatusBarOrientation:(UIInterfaceOrientation)orientation
 {
+    NSString *UIApplicationStatusBarOrientationUserInfoKey = @"UIApplicationStatusBarOrientationUserInfoKey";
+    NSDictionary *info = @{ UIApplicationStatusBarOrientationUserInfoKey: [NSNumber numberWithInteger:orientation]};
+    [[NSNotificationCenter defaultCenter] postNotificationName:UIApplicationWillChangeStatusBarOrientationNotification object:info];
+    _interfaceOrientation = orientation;
+    [[NSNotificationCenter defaultCenter] postNotificationName:UIApplicationDidChangeStatusBarOrientationNotification object:info];
 }
 
 - (UIStatusBarStyle)statusBarStyle
@@ -611,11 +677,11 @@ static EM_BOOL visibilitychangeCallback(int eventType, const EmscriptenVisibilit
     NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
     NSString *mainStoryboardName = [infoDictionary objectForKey:@"UIMainStoryboardFile"];
     if(mainStoryboardName) {
-        NSLog(@"main storyboard %@", mainStoryboardName);
+        DEBUGLOG(@"main storyboard %@", mainStoryboardName);
         UIStoryboard *storyboard = [UIStoryboard storyboardWithName:mainStoryboardName bundle:nil];
-        NSLog(@"storyboard %@", storyboard);
+        DEBUGLOG(@"storyboard %@", storyboard);
         UIViewController *rootVC = [storyboard instantiateInitialViewController];
-        NSLog(@"rootVC %@", rootVC);
+        DEBUGLOG(@"rootVC %@", rootVC);
         UIWindow *window = [[UIWindow alloc] initWithFrame:screen.bounds];
         window.screen = screen;
         [window makeKeyAndVisible];

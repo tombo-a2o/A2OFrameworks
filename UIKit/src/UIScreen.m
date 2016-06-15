@@ -60,6 +60,7 @@ NSString *const UIScreenModeDidChangeNotification = @"UIScreenModeDidChangeNotif
      __weak UIWindow *_keyWindow;
     CALayerContext *_layerContext;
     CALayer *_rootLayer;
+    UIInterfaceOrientation _orientation;
 }
 
 + (UIScreen *)mainScreen
@@ -91,6 +92,8 @@ NSString *const UIScreenModeDidChangeNotification = @"UIScreenModeDidChangeNotif
             _preferredMode = defaultMode;
             _availableModes = @[defaultMode];
         }
+        _rootLayer = [CALayer layer];
+        _orientation = UIInterfaceOrientationPortrait;
         self.currentMode = _preferredMode;
 
         // should not here?
@@ -107,7 +110,6 @@ NSString *const UIScreenModeDidChangeNotification = @"UIScreenModeDidChangeNotif
             Browser.moduleContextCreatedCallbacks.forEach(function(callback) { callback() });
         });
 
-        _rootLayer = [CALayer layer];
         _rootLayer.frame = self.bounds;
         _rootLayer.contentsScale = self.scale;
         //NSLog(@"%f %f", self.bounds.size.width, self.bounds.size.height);
@@ -117,19 +119,21 @@ NSString *const UIScreenModeDidChangeNotification = @"UIScreenModeDidChangeNotif
     return self;
 }
 
-- (void)setCurrentMode:(UIScreenMode*)mode
+- (void)_updateScreenSize
 {
-    CGSize rawSize = mode.size;
-    float scale = mode.pixelAspectRatio;
-    CGSize size = CGSizeMake(rawSize.width / scale, rawSize.height / scale);
+    CGSize rawSize;
 
-    if(CGSizeEqualToSize(_bounds.size, size) && _scale == scale) {
-        return;
+    if(_orientation == UIDeviceOrientationPortrait || _orientation == UIDeviceOrientationPortraitUpsideDown) {
+        rawSize.width = _currentMode.size.width;
+        rawSize.height = _currentMode.size.height;
+    } else {
+        rawSize.width = _currentMode.size.height;
+        rawSize.height = _currentMode.size.width;
     }
 
-    NSDictionary *userInfo = (self.currentMode)? [NSDictionary dictionaryWithObject:self.currentMode forKey:@"_previousMode"] : nil;
+    float scale = _currentMode.pixelAspectRatio;
+    CGSize size = CGSizeMake(rawSize.width / scale, rawSize.height / scale);
 
-    _currentMode = mode;
     CGRect bounds = _bounds;
     bounds.size = size;
     _bounds = bounds;
@@ -139,9 +143,33 @@ NSString *const UIScreenModeDidChangeNotification = @"UIScreenModeDidChangeNotif
     emscripten_set_element_css_size(NULL, size.width, size.height);
 
     _rootLayer.frame = bounds;
-    _rootLayer.contentsScale = self.scale;
- 
-    [[NSNotificationCenter defaultCenter] postNotificationName:UIScreenModeDidChangeNotification object:self userInfo:userInfo];
+    _rootLayer.contentsScale = scale;
+}
+
+- (void)setCurrentMode:(UIScreenMode*)mode
+{
+    if(_currentMode != mode) {
+        NSDictionary *userInfo = (self.currentMode)? [NSDictionary dictionaryWithObject:_currentMode forKey:@"_previousMode"] : nil;
+        _currentMode = mode;
+
+        [self _updateScreenSize];
+
+        [[NSNotificationCenter defaultCenter] postNotificationName:UIScreenModeDidChangeNotification object:self userInfo:userInfo];
+    }
+}
+
+- (void)setOrientation:(UIInterfaceOrientation)orientation
+{
+    if(_orientation != orientation) {
+        _orientation = orientation;
+
+        [self _updateScreenSize];
+    }
+}
+
+- (UIInterfaceOrientation)orientation
+{
+    return _orientation;
 }
 
 - (CGRect)applicationFrame
