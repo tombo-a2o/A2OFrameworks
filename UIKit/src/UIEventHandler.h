@@ -27,7 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import <UIKit/UIApplicationDelegate.h>
+#import <UIKit/UIApplication.h>
 #import <UIKit/UIScreen.h>
 #import <UIKit/UIWindow.h>
 

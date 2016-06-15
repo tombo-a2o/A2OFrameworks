@@ -35,7 +35,6 @@
 #define IBOutlet
 #endif
 
-#import <UIKit/UIApplicationDelegate.h>
 #import <UIKit/UIScreen.h>
 #import <UIKit/UIGeometry.h>
 #import <UIKit/UIGraphics.h>
