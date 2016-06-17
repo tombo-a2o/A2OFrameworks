@@ -34,6 +34,7 @@ extern int _legacyGLEmulationEnabled(void);
     GLint blendSrcRgb, blendSrcAlpha, blendDstRgb, blendDstAlpha;
     GLboolean blendEnabled, cullFaceEnabled;
     GLboolean vertexArray, textureCoordArray;
+    GLint viewport[4];
     
     // save state
     glGetIntegerv(GL_CURRENT_PROGRAM, &program);
@@ -53,6 +54,7 @@ extern int _legacyGLEmulationEnabled(void);
         glGetBooleanv(GL_VERTEX_ARRAY, &vertexArray);
         glGetBooleanv(GL_TEXTURE_COORD_ARRAY, &textureCoordArray);
     }
+    glGetIntegerv(GL_VIEWPORT, viewport);
     glBindVertexArrayOES(0);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -76,6 +78,7 @@ extern int _legacyGLEmulationEnabled(void);
             glEnableClientState(GL_TEXTURE_COORD_ARRAY);
         }
     }
+    glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
     if(blendEnabled) {
         glEnable(GL_BLEND);
         glBlendFuncSeparate(blendSrcRgb, blendDstRgb, blendSrcAlpha, blendDstAlpha);
