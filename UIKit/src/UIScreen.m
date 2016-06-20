@@ -232,8 +232,20 @@ NSString *const UIScreenModeDidChangeNotification = @"UIScreenModeDidChangeNotif
 - (CGPoint)_convertCanvasLocation:(long)x y:(long)y
 {
     CGPoint ret;
-    ret.x = x;
-    ret.y = y;
+    float scale = _currentMode.pixelAspectRatio;
+    if(_orientation == UIDeviceOrientationPortrait) {
+        ret.x = y;
+        ret.y = _currentMode.size.width / scale - x;
+    } else if(_orientation == UIDeviceOrientationPortraitUpsideDown) {
+        ret.x = _currentMode.size.height / scale - y;
+        ret.y = x;
+    } else if(_orientation == UIDeviceOrientationLandscapeRight) {
+        ret.x = _currentMode.size.height / scale - x;
+        ret.y = _currentMode.size.width / scale - y;
+    } else {
+        ret.x = x;
+        ret.y = y;
+    }
     return ret;
 }
 @end
