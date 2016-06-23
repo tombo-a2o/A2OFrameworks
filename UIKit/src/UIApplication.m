@@ -28,6 +28,7 @@
  */
 
 #import <UIKit/UIKit.h>
+#import "UIDevice+UIPrivate.h"
 #import "UIScreen+UIPrivate.h"
 #import "UIWindow+UIPrivate.h"
 #import "UIBackgroundTask.h"
@@ -693,6 +694,9 @@ static EM_BOOL visibilitychangeCallback(int eventType, const EmscriptenVisibilit
         }
         window.rootViewController = rootVC;
     }
+
+    // Actually, this should be later than here
+    [UIDevice currentDevice].orientation = UIDeviceOrientationPortrait;
 
     emscripten_trace_report_memory_layout();
 }

@@ -29,6 +29,7 @@
 
 #import <UIKit/UIKit.h>
 #import "UIScreen+UIPrivate.h"
+#import "UIDevice+UIPrivate.h"
 #import <SystemConfiguration/SystemConfiguration.h>
 
 NSString *const UIDeviceOrientationDidChangeNotification = @"UIDeviceOrientationDidChangeNotification";
@@ -38,7 +39,6 @@ static UIDevice *theDevice;
 @interface UIDevice () {
     UIDeviceOrientation _orientation;
 }
-@property (nonatomic, readwrite) UIDeviceOrientation orientation;
 @end
 
 void setDeviceOrientation(UIDeviceOrientation orientation) __attribute__((used))
@@ -64,7 +64,7 @@ void setDeviceOrientation(UIDeviceOrientation orientation) __attribute__((used))
 {
     if ((self=[super init])) {
         _userInterfaceIdiom = UIUserInterfaceIdiomPhone;
-        _orientation = UIDeviceOrientationPortrait;
+        _orientation = UIDeviceOrientationUnknown;
     }
     return self;
 }
