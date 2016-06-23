@@ -220,7 +220,6 @@ static EM_BOOL visibilitychangeCallback(int eventType, const EmscriptenVisibilit
         // do nothing for now
         break;
     }
-
 }
 
 - (void)setStatusBarOrientation:(UIInterfaceOrientation)orientation
@@ -695,9 +694,6 @@ static EM_BOOL visibilitychangeCallback(int eventType, const EmscriptenVisibilit
         window.rootViewController = rootVC;
     }
 
-    // Actually, this should be later than here
-    [UIDevice currentDevice].orientation = UIDeviceOrientationPortrait;
-
     emscripten_trace_report_memory_layout();
 }
 
@@ -708,6 +704,9 @@ static EM_BOOL visibilitychangeCallback(int eventType, const EmscriptenVisibilit
         [self _setupScreen];
 
         [self _applicationDidFinishLaunching];
+
+        // Actually, this should be later than here
+        [UIDevice currentDevice].orientation = UIDeviceOrientationPortrait;
     }
 }
 

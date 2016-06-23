@@ -446,11 +446,6 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
 
     UIDeviceOrientation deviceOrientation = [[UIDevice currentDevice] orientation];
 
-    if(!(deviceOrientation == UIDeviceOrientationPortrait
-        || deviceOrientation == UIDeviceOrientationPortraitUpsideDown
-        || deviceOrientation == UIDeviceOrientationLandscapeLeft
-        || deviceOrientation == UIDeviceOrientationLandscapeRight)) return;
-
     UIInterfaceOrientationMask supportedInterfaceOrientations = [[UIApplication sharedApplication] _supportedInterfaceOrientations] & [self _supportedInterfaceOrientations];
 
     assert(supportedInterfaceOrientations);
