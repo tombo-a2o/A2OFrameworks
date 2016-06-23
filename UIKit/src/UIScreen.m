@@ -231,21 +231,26 @@ NSString *const UIScreenModeDidChangeNotification = @"UIScreenModeDidChangeNotif
 
 - (CGPoint)_convertCanvasLocation:(long)x y:(long)y
 {
+    int angles[5] = {0, 0, 2, 1, 3};
+    UIInterfaceOrientation interfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+    UIDeviceOrientation deviceOrientation = _orientation;
+
+    int angle = (angles[interfaceOrientation]-angles[deviceOrientation]+4) % 4; // normalize between 0 and 3
+
     CGPoint ret;
-    float scale = _currentMode.pixelAspectRatio;
-    if(_orientation == UIDeviceOrientationPortrait) {
-        ret.x = y;
-        ret.y = _currentMode.size.width / scale - x;
-    } else if(_orientation == UIDeviceOrientationPortraitUpsideDown) {
-        ret.x = _currentMode.size.height / scale - y;
-        ret.y = x;
-    } else if(_orientation == UIDeviceOrientationLandscapeRight) {
-        ret.x = _currentMode.size.height / scale - x;
-        ret.y = _currentMode.size.width / scale - y;
-    } else {
+    if(angle == 0) {
         ret.x = x;
         ret.y = y;
-    }
+    } else if(angle == 1) {
+        ret.x = y;
+        ret.y = _bounds.size.width - x;
+    } else if(angle == 2) {
+        ret.x = _bounds.size.width - x;
+        ret.y = _bounds.size.height - y;
+    } else { // angle == 3
+        ret.x = _bounds.size.height - y;
+        ret.y = x;
+     }
     return ret;
 }
 @end
