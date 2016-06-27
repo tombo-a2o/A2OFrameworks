@@ -64,7 +64,7 @@ void setDeviceOrientation(UIDeviceOrientation orientation) __attribute__((used))
 {
     if ((self=[super init])) {
         _userInterfaceIdiom = UIUserInterfaceIdiomPhone;
-        _orientation = UIDeviceOrientationUnknown;
+        _orientation = UIDeviceOrientationPortrait;
     }
     return self;
 }
