@@ -76,10 +76,8 @@ void setDeviceOrientation(UIDeviceOrientation orientation) __attribute__((used))
 
 - (void)setOrientation:(UIDeviceOrientation)orientation
 {
-    if(_orientation != orientation) {
-        _orientation = orientation;
-        [[NSNotificationCenter defaultCenter] postNotificationName:UIDeviceOrientationDidChangeNotification object:self];
-    }
+    _orientation = orientation;
+    [[NSNotificationCenter defaultCenter] postNotificationName:UIDeviceOrientationDidChangeNotification object:self];
 }
 
 - (UIDeviceOrientation)orientation
