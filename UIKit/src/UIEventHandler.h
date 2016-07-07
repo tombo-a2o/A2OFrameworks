@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, The Iconfactory. All rights reserved.
+ * Copyright (c) 2011, The Iconfactory. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -27,11 +27,22 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import <AppKit/NSApplication.h>
+#import <UIKit/UIApplication.h>
+#import <UIKit/UIScreen.h>
+#import <UIKit/UIWindow.h>
 
-@interface UINSApplicationDelegate : NSObject <NSApplicationDelegate> {
-    NSWindow *_window;
-}
-- (void)applicationWillFinishLaunching:(NSNotification *)aNotification;
-- (void)applicationDidFinishLaunching:(NSNotification *)aNotification;
+@interface UIEventHandler : NSObject
+- (id)initWithScreen:(UIScreen*)screen;
+
+// returns the UIView (or nil) that successfully responds to a -hitTest:withEvent: at the given point.
+// the point is specified in this view's coordinate system (unlike NSView's hitTest method).
+- (UIView *)hitTestUIView:(CGPoint)point;
+
+// this is an optional property to make it quick and easy to get a window to start adding views to.
+// created on-demand to be the size of the UIScreen.bounds, flexible width/height, and calls makeKeyAndVisible when it is first created
+@property (nonatomic, strong, readonly) UIWindow *UIWindow;
+
+// a UIKitView owns a single UIScreen. when the UIKitView is part of an NSWindow hierarchy, the UIScreen appears as a connected screen in
+// [UIScreen screens], etc.
+@property (nonatomic, strong, readonly) UIScreen *UIScreen;
 @end

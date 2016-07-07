@@ -27,19 +27,15 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#import <UIKit/UIKit.h>
 #import "UIWindow+UIPrivate.h"
 #import "UIView+UIPrivate.h"
 #import "UIScreen+UIPrivate.h"
-#import "UIScreenAppKitIntegration.h"
-#import <UIKit/UIApplication.h>
 #import "UITouch+UIPrivate.h"
-#import <UIKit/UIScreenMode.h>
-#import "UIResponderAppKitIntegration.h"
-#import <UIKit/UIViewController.h>
+#import "UIViewController+Private.h"
 #import "UIGestureRecognizer+UIPrivate.h"
 #import "UITouchEvent.h"
-#import "UIKitView.h"
-#import <AppKit/NSCursor.h>
+#import "UIResponderAppKitIntegration.h"
 #import <QuartzCore/QuartzCore.h>
 
 const UIWindowLevel UIWindowLevelNormal = 0;
@@ -80,9 +76,6 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
         assert([UIScreen mainScreen]);
         self.screen = [UIScreen mainScreen];
         self.opaque = NO;
-
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_NSWindowDidBecomeKeyNotification:) name:NSWindowDidBecomeKeyNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_NSWindowDidResignKeyNotification:) name:NSWindowDidResignKeyNotification object:nil];
     }
     return self;
 }
@@ -136,6 +129,33 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
     return [UIApplication sharedApplication];
 }
 
+- (void)_updateOrientation
+{
+    [_rootViewController _updateOrientation:NO];
+    [self _updateFrameWithOrientation:_rootViewController.interfaceOrientation];
+}
+
+
+- (void)_updateFrameWithOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+    UIScreen *screen = self.screen;
+    UIDeviceOrientation deviceOrientation = [UIDevice currentDevice].orientation;
+
+    CGRect frame;
+    if(UIDeviceOrientationIsPortrait(interfaceOrientation) == UIDeviceOrientationIsPortrait(deviceOrientation)) {
+        frame = screen.bounds;
+    } else {
+        CGSize size = screen.bounds.size;
+        frame = CGRectMake(0, 0, size.height, size.width);
+    }
+    self.frame = frame;
+    float angle[] = {0, 0, M_PI, M_PI_2, M_PI_2*3};
+    self.transform =
+         CGAffineTransformTranslate(
+            CGAffineTransformMakeRotation(angle[interfaceOrientation]-angle[deviceOrientation]),
+        screen.bounds.size.width/2-frame.size.width/2, screen.bounds.size.height/2-frame.size.height/2);
+}
+
 - (void)setRootViewController:(UIViewController *)rootViewController
 {
     if (rootViewController != _rootViewController) {
@@ -144,6 +164,8 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
         const BOOL was = [UIView areAnimationsEnabled];
         [UIView setAnimationsEnabled:NO];
         _rootViewController = rootViewController;
+        [_rootViewController _updateOrientation:YES];
+        [self _updateFrameWithOrientation:_rootViewController.interfaceOrientation];
         _rootViewController.view.frame = self.bounds;
         [self addSubview:_rootViewController.view];
         [self layoutIfNeeded];
@@ -195,8 +217,8 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
         toConvert.y += self.frame.origin.y;
 
         if (toWindow) {
-            // Now convert the screen coords into the other screen's coordinate space
-            toConvert = [self.screen convertPoint:toConvert toScreen:toWindow.screen];
+            // // Now convert the screen coords into the other screen's coordinate space
+            // toConvert = [self.screen convertPoint:toConvert toScreen:toWindow.screen];
 
             // And now convert it from the new screen's space into the window's space
             toConvert.x -= toWindow.frame.origin.x;
@@ -217,8 +239,8 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
             toConvert.x += fromWindow.frame.origin.x;
             toConvert.y += fromWindow.frame.origin.y;
 
-            // Change to this screen.
-            toConvert = [self.screen convertPoint:toConvert fromScreen:fromWindow.screen];
+            // // Change to this screen.
+            // toConvert = [self.screen convertPoint:toConvert fromScreen:fromWindow.screen];
         }
 
         // Convert to window coordinates
@@ -262,8 +284,8 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
         if (self.isKeyWindow) {
             [self becomeKeyWindow];
         } else {
-            [[self.screen.UIKitView window] makeFirstResponder:self.screen.UIKitView];
-            [[self.screen.UIKitView window] makeKeyWindow];
+            // [[self.screen.UIKitView window] makeFirstResponder:self.screen.UIKitView];
+            // [[self.screen.UIKitView window] makeKeyWindow];
         }
     }
 }
@@ -273,7 +295,8 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
     // only return YES if we have a screen and our screen's UIKitView is on the AppKit key window
 
     if (self.screen.keyWindow == self) {
-        return [[self.screen.UIKitView window] isKeyWindow];
+        // return [[self.screen.UIKitView window] isKeyWindow];
+        return YES;
     }
 
     return NO;
@@ -294,36 +317,6 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
     }
 
     [[NSNotificationCenter defaultCenter] postNotificationName:UIWindowDidResignKeyNotification object:self];
-}
-
-- (void)_NSWindowDidBecomeKeyNotification:(NSNotification *)note
-{
-    NSWindow *nativeWindow = [note object];
-
-    // when the underlying screen's NSWindow becomes key, we can use the keyWindow property the screen itself
-    // to know if this UIWindow should become key again now or not. If things match up, we fire off -becomeKeyWindow
-    // again to let the app know this happened. Normally iOS doesn't run into situations where the user can change
-    // the key window out from under the app, so this is going to be somewhat unusual UIKit behavior...
-    if ([[self.screen.UIKitView window] isEqual:nativeWindow]) {
-        if (self.screen.keyWindow == self) {
-            [self becomeKeyWindow];
-        }
-    }
-}
-
-- (void)_NSWindowDidResignKeyNotification:(NSNotification *)note
-{
-    NSWindow *nativeWindow = [note object];
-
-    // if the resigned key window is the same window that hosts our underlying screen, then we need to resign
-    // this UIWindow, too. note that it does NOT actually unset the keyWindow property for the UIScreen!
-    // this is because if the user clicks back in the screen's window, we need a way to reconnect this UIWindow
-    // as the key window, too, so that's how that is done.
-    if ([[self.screen.UIKitView window] isEqual:nativeWindow]) {
-        if (self.screen.keyWindow == self) {
-            [self resignKeyWindow];
-        }
-    }
 }
 
 - (void)_makeHidden
@@ -347,7 +340,6 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
         [super setHidden:NO];
 
         if (self.screen) {
-            [[self.screen _layer] addSublayer:self.layer];
             [self.screen _addWindow:self];
             [[NSNotificationCenter defaultCenter] postNotificationName:UIWindowDidBecomeVisibleNotification object:self];
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_screenModeChangedNotification:) name:UIScreenModeDidChangeNotification object:_screen];
@@ -461,6 +453,7 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
         // this should prevent delivery of the "touches" down the responder chain in roughly the same way a normal non-
         // discrete gesture would based on the settings of the in-play gesture recognizers.
         if (!gestureRecognized || (gestureRecognized && !cancelsTouches && !delaysTouchesBegan)) {
+            // NSLog(@"%s FIXME %d", __FUNCTION__, event.touchEventGesture);
             if (event.touchEventGesture == UITouchEventGestureRightClick) {
                 [view rightClick:event.touch withEvent:event];
             } else if (event.touchEventGesture == UITouchEventGestureScrollWheel) {
@@ -529,12 +522,6 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
             }
         }
     }
-
-    // NSCursor *newCursor = [view mouseCursorForEvent:event] ?: [NSCursor arrowCursor];
-    //
-    // if ([NSCursor currentCursor] != newCursor) {
-    //     [newCursor set];
-    // }
 }
 
 @end

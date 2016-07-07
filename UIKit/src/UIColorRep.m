@@ -30,7 +30,6 @@
 #import "UIColorRep.h"
 #import "UIImageRep.h"
 #import <UIKit/UIGraphics.h>
-#import <AppKit/NSApplication.h>
 #import <UIKit/UIGeometry.h>
 
 static void drawPatternImage(void *info, CGContextRef ctx)

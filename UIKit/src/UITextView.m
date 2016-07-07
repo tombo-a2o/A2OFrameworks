@@ -32,7 +32,7 @@
 #import <UIKit/UIFont.h>
 #import "UITextLayer.h"
 #import <UIKit/UIScrollView.h>
-#import <AppKit/NSCursor.h>
+// #import <AppKit/NSCursor.h>
 
 NSString *const UITextViewTextDidBeginEditingNotification = @"UITextViewTextDidBeginEditingNotification";
 NSString *const UITextViewTextDidChangeNotification = @"UITextViewTextDidChangeNotification";
@@ -332,7 +332,7 @@ NSString *const UITextViewTextDidEndEditingNotification = @"UITextViewTextDidEnd
 
 - (id)mouseCursorForEvent:(UIEvent *)event
 {
-    return self.editable? [NSCursor IBeamCursor] : nil;
+    // return self.editable? [NSCursor IBeamCursor] : nil;
 }
 
 - (CGSize)sizeThatFits:(CGSize)size

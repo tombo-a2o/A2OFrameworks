@@ -28,14 +28,17 @@
  */
 
 #import <UIKit/UIScreen.h>
+#import <UIKit/UIApplication.h>
 
-@class UIKitView, CALayer;
+@class CALayer;
 
 @interface UIScreen (UIPrivate)
-- (void)_setUIKitView:(UIKitView *)theView;
+@property (nonatomic, readonly, copy) NSArray *windows;
+@property (nonatomic, readonly) UIWindow *keyWindow;
 - (void)_setKeyWindow:(UIWindow *)window;
 - (void)_addWindow:(UIWindow *)window;
 - (void)_removeWindow:(UIWindow *)window;
-- (CALayer *)_layer;
-- (BOOL)_hasResizeIndicator;
+- (CGPoint)_convertCanvasLocation:(long)x y:(long)y;
+- (void)_display;
+@property (nonatomic) UIInterfaceOrientation orientation;
 @end

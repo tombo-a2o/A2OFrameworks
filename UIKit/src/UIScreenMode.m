@@ -29,21 +29,9 @@
 
 #import <UIKit/UIScreenMode.h>
 #import <UIKit/UIGeometry.h>
-#import <AppKit/AppKit.h>
+#import <emscripten.h>
 
 @implementation UIScreenMode
-
-+ (id)screenModeWithNSView:(NSView *)theNSView
-{
-    if (theNSView) {
-        UIScreenMode *mode = [[self alloc] init];
-        mode->_size = NSSizeToCGSize([theNSView bounds].size);
-        mode->_pixelAspectRatio = 1;
-        return mode;
-    } else {
-        return nil;
-    }
-}
 
 + (id)screenModeIphone5
 {
@@ -51,6 +39,33 @@
     mode->_size = CGSizeMake(640, 1136);
     mode->_pixelAspectRatio = 2.0;
     return mode;
+}
+
++ (NSArray*)_userDefinedModes
+{
+    int num = EM_ASM_INT_V({
+        return Module['screenModes'] ? Module['screenModes'].length : 0;
+    });
+
+    if(!num) return nil;
+
+    NSMutableArray *ret = [NSMutableArray arrayWithCapacity:num];
+    for(int i = 0; i < num; i++) {
+        UIScreenMode *mode = [[UIScreenMode alloc] init];
+        int width = EM_ASM_INT({
+            return Module['screenModes'][$0].width;
+        }, i);
+        int height = EM_ASM_INT({
+            return Module['screenModes'][$0].height;
+        }, i);
+        float scale = EM_ASM_DOUBLE({
+            return Module['screenModes'][$0].scale;
+        }, i);
+        mode->_size = CGSizeMake(width, height);
+        mode->_pixelAspectRatio = scale;
+        [ret addObject:mode];
+    }
+    return ret;
 }
 
 - (NSString *)description

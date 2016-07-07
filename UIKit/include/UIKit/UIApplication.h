@@ -29,7 +29,6 @@
 
 #import <UIKit/UIResponder.h>
 #import <UIKit/UIDevice.h>
-#import <UIKit/UIApplicationDelegate.h>
 #import <UIKit/UILocalNotification.h>
 
 extern NSString *const UIApplicationWillChangeStatusBarOrientationNotification;
@@ -98,6 +97,31 @@ typedef NS_OPTIONS(NSUInteger, UIRemoteNotificationType) {
     UIRemoteNotificationTypeAlert   = 1 << 2,
     UIRemoteNotificationTypeNewsstandContentAvailability = 1 << 3
 };
+
+@class UIApplication;
+
+@protocol UIApplicationDelegate <NSObject>
+@optional
+- (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary *)launchOptions;
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions;
+- (void)applicationDidFinishLaunching:(UIApplication *)application;     // not recommended
+- (void)applicationDidBecomeActive:(UIApplication *)application;
+- (void)applicationWillResignActive:(UIApplication *)application;
+- (void)applicationWillTerminate:(UIApplication *)application;
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation;
+- (void)applicationDidEnterBackground:(UIApplication *)application;
+- (void)applicationWillEnterForeground:(UIApplication *)application;
+- (UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window;
+
+// non-standard
+
+// these are all called immediately before the normal delegate methods of similar name
+// these do NOT supercede the normal methods, if the normal ones also exist, they are also called!
+- (void)application:(UIApplication *)application willFinishLaunchingOnDesktopWithOptions:(NSDictionary *)launchOptions;
+- (void)application:(UIApplication *)application didFinishLaunchingOnDesktopWithOptions:(NSDictionary *)launchOptions;
+- (void)applicationWillTerminateOnDesktop:(UIApplication *)application;
+
+@end
 
 // whenever the NSApplication is no longer "active" from OSX's point of view, your UIApplication instance
 // will switch to UIApplicationStateInactive. This happens when the app is no longer in the foreground, for instance.

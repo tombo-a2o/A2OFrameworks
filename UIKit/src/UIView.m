@@ -27,16 +27,12 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#import <UIKit/UIKit.h>
 #import "UIView+UIPrivate.h"
-#import <UIKit/UIWindow.h>
-#import <UIKit/UIGraphics.h>
 #import "UIViewLayoutManager.h"
 #import "UIViewAnimationGroup.h"
-#import <UIKit/UIViewController.h>
 #import "UIAppearanceInstance.h"
 #import "UIGestureRecognizer+UIPrivate.h"
-#import "UIApplicationAppKitIntegration.h"
-#import <UIKit/UIScreen.h>
 #import "UIColor+UIPrivate.h"
 #import "UIColorRep.h"
 #import <QuartzCore/CALayer.h>
@@ -306,7 +302,8 @@ static BOOL _animationsEnabled = YES;
 {
     // note - the real UIKit supports multitouch so it only really interruptes the current touch
     // and not all of them, but this is easier for now since we don't support that anyway.
-    UIApplicationInterruptTouchesInView(self);
+    NSLog(@"%s FIXME", __FUNCTION__);
+    // UIApplicationInterruptTouchesInView(self);
 }
 
 - (void)_removeFromDeallocatedSuperview

@@ -33,13 +33,8 @@
 #import <UIKit/UITouch.h>
 #import "UITableViewSection.h"
 #import "UITableViewSectionLabel.h"
-#import "UIScreenAppKitIntegration.h"
 #import <UIKit/UIWindow.h>
-#import "UIKitView.h"
-#import "UIApplicationAppKitIntegration.h"
-#import <AppKit/NSMenu.h>
-#import <AppKit/NSMenuItem.h>
-#import <AppKit/NSEvent.h>
+#import <UIKit/UIScreen.h>
 #import <UIKit/UINib.h>
 
 // http://stackoverflow.com/questions/235120/whats-the-uitableview-index-magnifying-glass-character
@@ -886,41 +881,42 @@ const CGFloat _UITableViewDefaultRowHeight = 43;
 {
     // re-checking for safety since _showEditMenuForRowAtIndexPath is deferred. this may be overly paranoid.
     if ([self _canEditRowAtIndexPath:indexPath]) {
-        UITableViewCell *cell = [self cellForRowAtIndexPath:indexPath];
-        NSString *menuItemTitle = nil;
-        
-        // fetch the title for the delete menu item
-        if (_delegateHas.titleForDeleteConfirmationButtonForRowAtIndexPath) {
-            menuItemTitle = [self.delegate tableView:self titleForDeleteConfirmationButtonForRowAtIndexPath:indexPath];
-        }
-        if ([menuItemTitle length] == 0) {
-            menuItemTitle = @"Delete";
-        }
-
-        cell.highlighted = YES;
-        
-        NSMenuItem *theItem = [[NSMenuItem alloc] initWithTitle:menuItemTitle action:NULL keyEquivalent:@""];
-
-        NSMenu *menu = [[NSMenu alloc] initWithTitle:@""];
-        [menu setAutoenablesItems:NO];
-        //[menu setAllowsContextMenuPlugIns:NO];
-        [menu addItem:theItem];
-        
-        // calculate the mouse's current position so we can present the menu from there since that's normal OSX behavior
-        NSPoint mouseLocation = [NSEvent mouseLocation];
-        CGPoint screenPoint = [self.window.screen convertPoint:NSPointToCGPoint(mouseLocation) fromScreen:nil];
-
-        // modally present a menu with the single delete option on it, if it was selected, then do the delete, otherwise do nothing
-        const BOOL didSelectItem = NO; //[menu popUpMenuPositioningItem:nil atLocation:NSPointFromCGPoint(screenPoint) inView:self.window.screen.UIKitView];
-        NSLog(@"popUpMenuPositioningItem");
-        
-        UIApplicationInterruptTouchesInView(nil);
-
-        if (didSelectItem) {
-            [_dataSource tableView:self commitEditingStyle:UITableViewCellEditingStyleDelete forRowAtIndexPath:indexPath];
-        }
-
-        cell.highlighted = NO;
+        NSLog(@"%s FIX ME", __FUNCTION__);
+        // UITableViewCell *cell = [self cellForRowAtIndexPath:indexPath];
+        // NSString *menuItemTitle = nil;
+        // 
+        // // fetch the title for the delete menu item
+        // if (_delegateHas.titleForDeleteConfirmationButtonForRowAtIndexPath) {
+        //     menuItemTitle = [self.delegate tableView:self titleForDeleteConfirmationButtonForRowAtIndexPath:indexPath];
+        // }
+        // if ([menuItemTitle length] == 0) {
+        //     menuItemTitle = @"Delete";
+        // }
+        // 
+        // cell.highlighted = YES;
+        // 
+        // NSMenuItem *theItem = [[NSMenuItem alloc] initWithTitle:menuItemTitle action:NULL keyEquivalent:@""];
+        // 
+        // NSMenu *menu = [[NSMenu alloc] initWithTitle:@""];
+        // [menu setAutoenablesItems:NO];
+        // //[menu setAllowsContextMenuPlugIns:NO];
+        // [menu addItem:theItem];
+        // 
+        // // calculate the mouse's current position so we can present the menu from there since that's normal OSX behavior
+        // NSPoint mouseLocation = [NSEvent mouseLocation];
+        // CGPoint screenPoint = [self.window.screen convertPoint:NSPointToCGPoint(mouseLocation) fromScreen:nil];
+        // 
+        // // modally present a menu with the single delete option on it, if it was selected, then do the delete, otherwise do nothing
+        // const BOOL didSelectItem = NO; //[menu popUpMenuPositioningItem:nil atLocation:NSPointFromCGPoint(screenPoint) inView:self.window.screen.UIKitView];
+        // NSLog(@"popUpMenuPositioningItem");
+        // 
+        // UIApplicationInterruptTouchesInView(nil);
+        // 
+        // if (didSelectItem) {
+        //     [_dataSource tableView:self commitEditingStyle:UITableViewCellEditingStyleDelete forRowAtIndexPath:indexPath];
+        // }
+        // 
+        // cell.highlighted = NO;
     }
 
     // all done
@@ -943,66 +939,70 @@ const CGFloat _UITableViewDefaultRowHeight = 43;
 
 - (void)moveUp:(id)sender
 {
-    NSIndexPath *selection = self.indexPathForSelectedRow;
-    
-    if (selection.row > 0) {
-        selection = [NSIndexPath indexPathForRow:selection.row-1 inSection:selection.section];
-    } else if (selection.row == 0 && selection.section > 0) {
-        for (NSInteger section = selection.section - 1; section >= 0; section--) {
-            const NSInteger rows = [self numberOfRowsInSection:section];
-            
-            if (rows > 0) {
-                selection = [NSIndexPath indexPathForRow:rows-1 inSection:section];
-                break;
-            }
-        }
-    }
-    
-    if (![selection isEqual:self.indexPathForSelectedRow]) {
-        [self _setUserSelectedRowAtIndexPath:selection];
-        [NSCursor setHiddenUntilMouseMoves:YES];
-    }
+    NSLog(@"%s FIX ME", __FUNCTION__);
+    // NSIndexPath *selection = self.indexPathForSelectedRow;
+    // 
+    // if (selection.row > 0) {
+    //     selection = [NSIndexPath indexPathForRow:selection.row-1 inSection:selection.section];
+    // } else if (selection.row == 0 && selection.section > 0) {
+    //     for (NSInteger section = selection.section - 1; section >= 0; section--) {
+    //         const NSInteger rows = [self numberOfRowsInSection:section];
+    //         
+    //         if (rows > 0) {
+    //             selection = [NSIndexPath indexPathForRow:rows-1 inSection:section];
+    //             break;
+    //         }
+    //     }
+    // }
+    // 
+    // if (![selection isEqual:self.indexPathForSelectedRow]) {
+    //     [self _setUserSelectedRowAtIndexPath:selection];
+    //     [NSCursor setHiddenUntilMouseMoves:YES];
+    // }
 }
 
 - (void)moveDown:(id)sender
 {
-    NSIndexPath *selection = self.indexPathForSelectedRow;
-    
-    if ((selection.row + 1) < [self numberOfRowsInSection:selection.section]) {
-        selection = [NSIndexPath indexPathForRow:selection.row+1 inSection:selection.section];
-    } else {
-        for (NSInteger section = selection.section + 1; section < self.numberOfSections; section++) {
-            const NSInteger rows = [self numberOfRowsInSection:section];
-            
-            if (rows > 0) {
-                selection = [NSIndexPath indexPathForRow:0 inSection:section];
-                break;
-            }
-        }
-    }
-    
-    if (![selection isEqual:self.indexPathForSelectedRow]) {
-        [self _setUserSelectedRowAtIndexPath:selection];
-        [NSCursor setHiddenUntilMouseMoves:YES];
-    }
+    NSLog(@"%s FIX ME", __FUNCTION__);
+    // NSIndexPath *selection = self.indexPathForSelectedRow;
+    // 
+    // if ((selection.row + 1) < [self numberOfRowsInSection:selection.section]) {
+    //     selection = [NSIndexPath indexPathForRow:selection.row+1 inSection:selection.section];
+    // } else {
+    //     for (NSInteger section = selection.section + 1; section < self.numberOfSections; section++) {
+    //         const NSInteger rows = [self numberOfRowsInSection:section];
+    //         
+    //         if (rows > 0) {
+    //             selection = [NSIndexPath indexPathForRow:0 inSection:section];
+    //             break;
+    //         }
+    //     }
+    // }
+    // 
+    // if (![selection isEqual:self.indexPathForSelectedRow]) {
+    //     [self _setUserSelectedRowAtIndexPath:selection];
+    //     [NSCursor setHiddenUntilMouseMoves:YES];
+    // }
 }
 
 - (void)pageUp:(id)sender
 {
-    NSArray *visibleRows = [self indexPathsForVisibleRows];
-
-    if ([visibleRows count] > 0) {
-        [self scrollToRowAtIndexPath:[visibleRows objectAtIndex:0] atScrollPosition:UITableViewScrollPositionBottom animated:YES];
-        [NSCursor setHiddenUntilMouseMoves:YES];
-        [self flashScrollIndicators];
-    }
+    NSLog(@"%s FIX ME", __FUNCTION__);
+    // NSArray *visibleRows = [self indexPathsForVisibleRows];
+    // 
+    // if ([visibleRows count] > 0) {
+    //     [self scrollToRowAtIndexPath:[visibleRows objectAtIndex:0] atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+    //     [NSCursor setHiddenUntilMouseMoves:YES];
+    //     [self flashScrollIndicators];
+    // }
 }
 
 - (void)pageDown:(id)sender
 {
-	[self scrollToRowAtIndexPath:[[self indexPathsForVisibleRows] lastObject] atScrollPosition:UITableViewScrollPositionTop animated:YES];
-    [NSCursor setHiddenUntilMouseMoves:YES];
-	[self flashScrollIndicators];
+    NSLog(@"%s FIX ME", __FUNCTION__);
+	// [self scrollToRowAtIndexPath:[[self indexPathsForVisibleRows] lastObject] atScrollPosition:UITableViewScrollPositionTop animated:YES];
+    // [NSCursor setHiddenUntilMouseMoves:YES];
+	// [self flashScrollIndicators];
 }
 
 @end

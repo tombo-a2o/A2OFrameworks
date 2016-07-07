@@ -27,13 +27,24 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import <UIKit/UIDevice.h>
-//#import <IOKit/IOKitLib.h>
+#import <UIKit/UIKit.h>
+#import "UIScreen+UIPrivate.h"
+#import "UIDevice+UIPrivate.h"
 #import <SystemConfiguration/SystemConfiguration.h>
 
 NSString *const UIDeviceOrientationDidChangeNotification = @"UIDeviceOrientationDidChangeNotification";
 
 static UIDevice *theDevice;
+
+@interface UIDevice () {
+    UIDeviceOrientation _orientation;
+}
+@end
+
+void setDeviceOrientation(UIDeviceOrientation orientation) __attribute__((used))
+{
+    theDevice.orientation = orientation;
+}
 
 @implementation UIDevice
 
@@ -53,6 +64,7 @@ static UIDevice *theDevice;
 {
     if ((self=[super init])) {
         _userInterfaceIdiom = UIUserInterfaceIdiomPhone;
+        _orientation = UIDeviceOrientationPortrait;
     }
     return self;
 }
@@ -62,9 +74,15 @@ static UIDevice *theDevice;
     return (__bridge_transfer NSString *)SCDynamicStoreCopyComputerName(NULL,NULL);
 }
 
+- (void)setOrientation:(UIDeviceOrientation)orientation
+{
+    _orientation = orientation;
+    [[NSNotificationCenter defaultCenter] postNotificationName:UIDeviceOrientationDidChangeNotification object:self];
+}
+
 - (UIDeviceOrientation)orientation
 {
-    return UIDeviceOrientationPortrait;
+    return _orientation;
 }
 
 - (BOOL)isMultitaskingSupported

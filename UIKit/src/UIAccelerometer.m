@@ -28,12 +28,57 @@
  */
 
 #import <UIKit/UIAccelerometer.h>
+#import "UIAcceleration+UIPrivate.h"
+#import <emscripten/html5.h>
+
+static UIAccelerometer *_theAccelerometer = nil;
 
 @implementation UIAccelerometer
 
 + (UIAccelerometer *)sharedAccelerometer
 {
-    return nil;
+    if(!_theAccelerometer) {
+        _theAccelerometer = [[UIAccelerometer alloc] init];
+    }
+    return _theAccelerometer;
+}
+
+static EM_BOOL motionCallback(int eventType, const EmscriptenDeviceMotionEvent *deviceMotionEvent, void *userData)
+{
+    UIAccelerometer *accelerometer = (__bridge UIAccelerometer*)userData;
+    [accelerometer _motionEvent:deviceMotionEvent];
+    return TRUE;
+}
+
+- (void)setDelegate:(id<UIAccelerometerDelegate>)delegate
+{
+    _delegate = delegate;
+
+    // FIXME: Need to share callback function with motion event listener
+    if(delegate) {
+        emscripten_set_devicemotion_callback((__bridge void *)self, TRUE, motionCallback);
+    } else {
+        emscripten_set_devicemotion_callback((__bridge void *)self, TRUE, NULL);
+    }
+}
+
+- (void)_motionEvent:(EmscriptenDeviceMotionEvent*)deviceMotionEvent
+{
+    UIAcceleration *acceleration = [[UIAcceleration alloc] init];
+    NSString *userAgent = [NSString stringWithUTF8String:emscripten_run_script_string("navigator.userAgent")];
+
+    int sign = -1;
+    if([userAgent containsString:@"iPhone"] || [userAgent containsString:@"iPad"] || [userAgent containsString:@"iPod"]) {
+        sign = 1;
+    }
+
+    // Whereas unit of HTML MotionEvent is m/s^2, one of UIAccelerationValue is "gravity".
+#define GRAVITY 9.80619920
+    acceleration.x = sign * deviceMotionEvent->accelerationIncludingGravityX / GRAVITY;
+    acceleration.y = sign * deviceMotionEvent->accelerationIncludingGravityY / GRAVITY;
+    acceleration.z = sign * deviceMotionEvent->accelerationIncludingGravityZ / GRAVITY;
+    acceleration.timestamp = deviceMotionEvent->timestamp;
+    [_delegate  accelerometer:self didAccelerate:acceleration];
 }
 
 @end

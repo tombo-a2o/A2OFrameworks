@@ -31,7 +31,6 @@
 #import <UIKit/UIGestureRecognizerSubclass.h>
 #import "UITouchEvent.h"
 #import <UIKit/UITouch.h>
-#import "UIApplicationAppKitIntegration.h"
 #import <Foundation/NSRunLoop.h>
 
 static CGFloat DistanceBetweenTwoPoints(CGPoint A, CGPoint B)
@@ -62,7 +61,8 @@ static CGFloat DistanceBetweenTwoPoints(CGPoint A, CGPoint B)
     _waiting = NO;
     if (self.state == UIGestureRecognizerStatePossible) {
         self.state = UIGestureRecognizerStateBegan;
-        UIApplicationSendStationaryTouches();
+        NSLog(@"%s ???", __FUNCTION__);
+        //UIApplicationSendStationaryTouches();
     }
 }
 

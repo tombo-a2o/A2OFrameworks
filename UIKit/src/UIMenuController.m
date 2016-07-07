@@ -30,10 +30,7 @@
 #if 0
 
 #import <UIKit/UIMenuController.h>
-#import "UIApplicationAppKitIntegration.h"
 #import "UIWindow+UIPrivate.h"
-#import "UIScreenAppKitIntegration.h"
-#import "UIKitView.h"
 #import <UIKit/UIMenuItem.h>
 #import <AppKit/NSMenu.h>
 #import <AppKit/NSMenuItem.h>

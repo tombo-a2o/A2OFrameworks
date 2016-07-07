@@ -27,14 +27,14 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#if 0
+
 #import "UICustomNSClipView.h"
 #import <AppKit/NSEvent.h>
 #import <QuartzCore/CALayer.h>
 #import <QuartzCore/CATransaction.h>
 
 @implementation UICustomNSClipView
-
-#if 0
 
 - (id)initWithFrame:(NSRect)frame
 {
@@ -120,5 +120,5 @@
     return hit;
 }
 
-#endif
 @end
+#endif

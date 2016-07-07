@@ -27,12 +27,12 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import <AppKit/NSView.h>
-
-@class UIScrollView;
-
-@interface UINSClipView : NSView
-
-- (id)initWithFrame:(NSRect)frame parentView:(UIScrollView *)aView;
-
-@end
+// #import <AppKit/NSView.h>
+// 
+// @class UIScrollView;
+// 
+// @interface UINSClipView : NSView
+// 
+// - (id)initWithFrame:(NSRect)frame parentView:(UIScrollView *)aView;
+// 
+// @end

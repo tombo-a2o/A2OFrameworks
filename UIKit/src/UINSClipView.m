@@ -27,19 +27,16 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#if 0
+
 #import "UINSClipView.h"
 #import "UIScrollView+UIPrivate.h"
 #import <UIKit/UIWindow.h>
-#import "UIScreenAppKitIntegration.h"
-#import "UIKitView.h"
-#import <AppKit/NSEvent.h>
-
+ 
 
 @implementation UINSClipView {
     UIScrollView *_parentView;
 }
-
-#if 0
 
 - (id)initWithFrame:(NSRect)frame parentView:(UIScrollView *)aView
 {
@@ -118,6 +115,6 @@
     return hitNSView;
 }
 
-#endif
-
 @end
+
+#endif

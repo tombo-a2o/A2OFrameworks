@@ -32,6 +32,6 @@
 @class NSView, UINSClipView;
 
 @interface UIViewAdapter : UIScrollView
-- (id)initWithNSView:(NSView *)aNSView;
-@property (nonatomic, strong) NSView *NSView;
+// - (id)initWithNSView:(NSView *)aNSView;
+// @property (nonatomic, strong) NSView *NSView;
 @end

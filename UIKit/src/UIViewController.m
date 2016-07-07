@@ -27,8 +27,8 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "UIViewControllerAppKitIntegration.h"
 #import "UIViewController+Private.h"
+#import "UIApplication+UIPrivate.h"
 #import "UIView+UIPrivate.h"
 #import <UIKit/UIScreen.h>
 #import <UIKit/UIWindow.h>
@@ -40,7 +40,7 @@
 #import <UIKit/UIToolbar.h>
 #import <UIKit/UIScreen.h>
 #import <UIKit/UITabBarController.h>
-#import <AppKit/NSNib.h>
+#import <UIKit/NSNib.h>
 #import <QuartzCore/QuartzCore.h>
 #import "UIAnimation.h"
 
@@ -67,6 +67,8 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
     
     __weak UIViewController *_presentingViewController;
     UIViewController *_presentedViewController;
+
+    UIInterfaceOrientation _interfaceOrientation;
     
     NSString *_nibName;
     NSBundle *_nibBundle;
@@ -84,6 +86,7 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
         _hidesBottomBarWhenPushed = NO;
         _nibName = nibName;
         _nibBundle = nibBundle ?: [NSBundle mainBundle];
+        _interfaceOrientation = UIInterfaceOrientationPortrait;
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveMemoryWarning) name:UIApplicationDidReceiveMemoryWarningNotification object:[UIApplication sharedApplication]];
     }
     return self;
@@ -224,7 +227,7 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
 
 - (UIInterfaceOrientation)interfaceOrientation
 {
-    return (UIInterfaceOrientation)UIDeviceOrientationPortrait;
+    return _interfaceOrientation;
 }
 
 - (UINavigationItem *)navigationItem
@@ -437,9 +440,69 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
      */
 }
 
+- (void)_updateOrientation:(BOOL)forceUpdate
+{
+     if(!forceUpdate && !self.shouldAutorotate) return;
+
+    UIDeviceOrientation deviceOrientation = [[UIDevice currentDevice] orientation];
+
+    UIInterfaceOrientationMask supportedInterfaceOrientations = [[UIApplication sharedApplication] _supportedInterfaceOrientations] & [self _supportedInterfaceOrientations];
+
+    assert(supportedInterfaceOrientations);
+    
+    if((1<<deviceOrientation) & supportedInterfaceOrientations) {
+        _interfaceOrientation = deviceOrientation;
+    } else if(forceUpdate) {
+        if(UIInterfaceOrientationMaskPortrait & supportedInterfaceOrientations) {
+            _interfaceOrientation = UIInterfaceOrientationPortrait;
+        } else if(UIInterfaceOrientationMaskLandscapeLeft & supportedInterfaceOrientations) {
+            _interfaceOrientation = UIInterfaceOrientationLandscapeLeft;
+        } else if(UIInterfaceOrientationMaskLandscapeRight & supportedInterfaceOrientations) {
+            _interfaceOrientation = UIInterfaceOrientationLandscapeRight;
+        } else if(UIInterfaceOrientationMaskPortraitUpsideDown & supportedInterfaceOrientations) {
+            _interfaceOrientation = UIInterfaceOrientationPortraitUpsideDown;
+        }
+    }
+}
+
++ (BOOL)_implementsShouldAutorotateToInterfaceOrientation
+{
+    return [UIViewController instanceMethodForSelector:@selector(shouldAutorotateToInterfaceOrientation:)]
+        != [self instanceMethodForSelector:@selector(shouldAutorotateToInterfaceOrientation:)];
+}
+
+- (UIInterfaceOrientationMask)_supportedInterfaceOrientations
+{
+    // if subclass dares implementing shouldAutorotateToInterfaceOrientation, it means <iOS6 apps.
+    if([[self class] _implementsShouldAutorotateToInterfaceOrientation]) {
+        UIInterfaceOrientationMask mask = 0;
+        if([self shouldAutorotateToInterfaceOrientation:UIInterfaceOrientationPortrait])
+            mask |= UIInterfaceOrientationMaskPortrait;
+        if([self shouldAutorotateToInterfaceOrientation:UIInterfaceOrientationPortraitUpsideDown])
+            mask |= UIInterfaceOrientationMaskPortraitUpsideDown;
+        if([self shouldAutorotateToInterfaceOrientation:UIInterfaceOrientationLandscapeLeft])
+            mask |= UIInterfaceOrientationMaskLandscapeLeft;
+        if([self shouldAutorotateToInterfaceOrientation:UIInterfaceOrientationLandscapeRight])
+            mask |= UIInterfaceOrientationMaskLandscapeRight;
+        return mask;
+    } else {
+        return [self supportedInterfaceOrientations];
+    }
+}
+
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+    return interfaceOrientation == UIInterfaceOrientationPortrait;
+}
+
+- (BOOL)shouldAutorotate
+{
+    return NO;
+}
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskAll;
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration

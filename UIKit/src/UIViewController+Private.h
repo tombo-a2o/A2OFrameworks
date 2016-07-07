@@ -36,4 +36,5 @@
 @property (nonatomic, readwrite) NSArray *childViewControllers;
 @property (nonatomic, readwrite) UIStoryboard *storyboard;
 @property (nonatomic, readwrite) NSDictionary *externalObjects;
+- (void)_updateOrientation:(BOOL)forceUpdate;
 @end
