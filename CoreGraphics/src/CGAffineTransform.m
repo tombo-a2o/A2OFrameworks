@@ -75,17 +75,17 @@ CGAffineTransform CGAffineTransformInvert(CGAffineTransform xform){
 
 CGAffineTransform CGAffineTransformRotate(CGAffineTransform xform,CGFloat radians){
    CGAffineTransform rotate=CGAffineTransformMakeRotation(radians);
-   return CGAffineTransformConcat(rotate,xform);
+   return CGAffineTransformConcat(xform, rotate);
 }
 
 CGAffineTransform CGAffineTransformScale(CGAffineTransform xform,CGFloat scalex,CGFloat scaley){
    CGAffineTransform scale=CGAffineTransformMakeScale(scalex,scaley);
-   return CGAffineTransformConcat(scale,xform);
+   return CGAffineTransformConcat(xform, scale);
 }
 
 CGAffineTransform CGAffineTransformTranslate(CGAffineTransform xform,CGFloat tx,CGFloat ty){
    CGAffineTransform translate=CGAffineTransformMakeTranslation(tx,ty);
-   return CGAffineTransformConcat(translate,xform);
+   return CGAffineTransformConcat(xform, translate);
 }
 
 CGPoint CGPointApplyAffineTransform(CGPoint point,CGAffineTransform xform){

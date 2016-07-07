@@ -11,10 +11,10 @@
 
 @implementation CALayerContext
 
--initWithFrame:(CGRect)rect {
-    _frame = rect;
+-initWithLayer:(CALayer*)layer {
+    _layer = layer;
     _glContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
-    _renderer = [[CARenderer rendererWithEAGLContext:_glContext options:nil] retain];
+    _renderer = [[CARenderer renderer] retain];
 
    return self;
 }
@@ -25,30 +25,16 @@
     [super dealloc];
 }
 
--(void)setFrame:(CGRect)rect {
-   _frame=rect;
-}
-
--(void)setLayer:(CALayer *)layer {
-   layer=[layer retain];
-   [_layer release];
-   _layer=layer;
-
-   [_renderer setLayer:layer];
-}
-
--(void)invalidate {
-}
-
 extern int _legacyGLEmulationEnabled(void);
 
--(void)renderLayer:(CALayer *)layer {
+-(void)render {
     [EAGLContext setCurrentContext:_glContext];
 
     GLint framebuffer, cullFaceMode, program;
     GLint blendSrcRgb, blendSrcAlpha, blendDstRgb, blendDstAlpha;
     GLboolean blendEnabled, cullFaceEnabled;
     GLboolean vertexArray, textureCoordArray;
+    GLint viewport[4];
     
     // save state
     glGetIntegerv(GL_CURRENT_PROGRAM, &program);
@@ -68,19 +54,20 @@ extern int _legacyGLEmulationEnabled(void);
         glGetBooleanv(GL_VERTEX_ARRAY, &vertexArray);
         glGetBooleanv(GL_TEXTURE_COORD_ARRAY, &textureCoordArray);
     }
+    glGetIntegerv(GL_VIEWPORT, viewport);
     glBindVertexArrayOES(0);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    GLint width=_frame.size.width;
-    GLint height=_frame.size.height;
-    CGFloat contentsScale = layer.contentsScale;
+    CGRect frame = _layer.frame;
+    GLint width = frame.size.width;
+    GLint height = frame.size.height;
+    CGFloat contentsScale = _layer.contentsScale;
 
     glViewport(0, 0, width * contentsScale, height * contentsScale);
 
-    _renderer.bounds = CGRectMake(0, 0, width, height);
-    [layer layoutIfNeeded];
-    [_renderer render];
+    [_layer layoutIfNeeded];
+    [_renderer render:_layer];
 
     // restore state
     if(_legacyGLEmulationEnabled()) {
@@ -91,6 +78,7 @@ extern int _legacyGLEmulationEnabled(void);
             glEnableClientState(GL_TEXTURE_COORD_ARRAY);
         }
     }
+    glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
     if(blendEnabled) {
         glEnable(GL_BLEND);
         glBlendFuncSeparate(blendSrcRgb, blendDstRgb, blendSrcAlpha, blendDstAlpha);
@@ -105,10 +93,6 @@ extern int _legacyGLEmulationEnabled(void);
     }
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
     glUseProgram(program);
-}
-
--(void)render {
-   [self renderLayer:_layer];
 }
 
 @end
