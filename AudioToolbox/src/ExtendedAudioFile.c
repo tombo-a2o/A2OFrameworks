@@ -75,9 +75,10 @@ OSStatus ExtAudioFileRead ( ExtAudioFileRef inExtAudioFile, UInt32 * ioNumberFra
     assert(format->mFramesPerPacket == 1);
     assert(format->mFormatID == kAudioFormatLinearPCM);
     assert(format->mBytesPerPacket == format->mBytesPerFrame);
-    assert(format->mBitsPerChannel == format->mBytesPerPacket * 8);
     
     int bytes = format->mBytesPerFrame / format->mChannelsPerFrame;
+    
+    assert(format->mBitsPerChannel == bytes * 8);
     
     audioBuffer_read(filename, buffer.mNumberChannels, bytes, buffer.mData);
     return 0;
