@@ -8,14 +8,19 @@ NSString *const AVAudioSessionCategoryPlayAndRecord = @"playAndRecord";
 NSString *const AVAudioSessionCategoryAudioProcessing = @"audioProcessing";
 NSString *const AVAudioSessionCategoryMultiRoute = @"multiRoute";
 
+AVAudioSession *_theSession = nil;
+
 @implementation AVAudioSession
 + (AVAudioSession *)sharedInstance {
-    return nil;
+    if(!_theSession) {
+        _theSession = [[AVAudioSession alloc] init];
+    }
+    return _theSession;
 }
 - (BOOL)setActive:(BOOL)beActive error:(NSError **)outError {
-    return NO;
+    return YES;
 }
 - (BOOL)setCategory:(NSString *)theCategory error:(NSError **)outError {
-    return NO;
+    return YES;
 }
 @end
