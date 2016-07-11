@@ -2,7 +2,7 @@ include ../../Foundation/System/Makefile.template
 
 CC				= emcc
 STYLE_CPPFLAGS ?= -DDEBUG -O0 -g
-CPPFLAGS = -v -c -fobjc-arc -pipe -Wmost -Wno-trigraphs -Wreturn-type -fconstant-cfstrings -fno-exceptions -fblocks -D__IPHONE_OS_VERSION_MIN_REQUIRED=70000 -DDEPLOYMENT_TARGET_EMSCRIPTEN=1 -I./include -I./
+CPPFLAGS = -v -c -fobjc-arc -pipe -Wmost -Wno-trigraphs -Wreturn-type -fconstant-cfstrings -fno-exceptions -fblocks -D__IPHONE_OS_VERSION_MIN_REQUIRED=70000 -DDEPLOYMENT_TARGET_EMSCRIPTEN=1 -I./include -I./ -include AVFoundation_Prefix.pch
 CFLAGS = -x objective-c
 STYLE_LFLAGS ?= -O0
 LFLAGS =

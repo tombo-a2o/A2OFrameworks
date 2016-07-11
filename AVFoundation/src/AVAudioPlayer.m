@@ -39,7 +39,7 @@ extern float audioPlayer_getPosition(int playerId);
     _enableRate = NO;
     _numberOfLoops = 0;
     
-    NSLog(@"%s %d %s", __FUNCTION__, _playerId, _url.fileSystemRepresentation);
+    DEBUGLOG(@"%s %d %s", __FUNCTION__, _playerId, _url.fileSystemRepresentation);
     return self;
 }
 
@@ -62,33 +62,28 @@ extern float audioPlayer_getPosition(int playerId);
 - (void)dealloc
 {
     [self stop];
-    NSLog(@"%s %d", __FUNCTION__, _playerId);
     audioPlayer_destroy(_playerId);
 }
 
 - (BOOL)play
 {
-    NSLog(@"%s %d %s", __FUNCTION__, _playerId, _url.fileSystemRepresentation);
     audioPlayer_play(_playerId, 0);
     return YES;
 }
 
 - (BOOL)playAtTime:(NSTimeInterval)time
 {
-    NSLog(@"%s %d %s", __FUNCTION__, _playerId, _url.fileSystemRepresentation);
     audioPlayer_play(_playerId, (float)time);
     return YES;
 }
 
 - (void)pause
 {
-    NSLog(@"%s %d %s", __FUNCTION__, _playerId, _url.fileSystemRepresentation);
     audioPlayer_stop(_playerId);
 }
 
 - (void)stop
 {
-    NSLog(@"%s %d %s", __FUNCTION__, _playerId, _url.fileSystemRepresentation);
     audioPlayer_stop(_playerId);
 }
 
@@ -105,7 +100,6 @@ extern float audioPlayer_getPosition(int playerId);
 
 - (void)setVolume:(float)volume
 {
-    NSLog(@"%s %d %f", __FUNCTION__, _playerId, volume);
     _volume = volume;
     audioPlayer_setVolume(_playerId, volume);
 }
@@ -117,7 +111,7 @@ extern float audioPlayer_getPosition(int playerId);
 
 - (void)setPan:(float)pan
 {
-    NSLog(@"%s not implemented %d %f", __FUNCTION__, _playerId, pan);
+    DEBUGLOG(@"%s not implemented %d %f", __FUNCTION__, _playerId, pan);
     _pan = pan;
 }
 
@@ -128,7 +122,7 @@ extern float audioPlayer_getPosition(int playerId);
 
 - (void)setRate:(float)rate
 {
-    NSLog(@"%s not implemented %d %f", __FUNCTION__, _playerId, rate);
+    DEBUGLOG(@"%s not implemented %d %f", __FUNCTION__, _playerId, rate);
     _rate = rate;
 }
 
@@ -139,7 +133,7 @@ extern float audioPlayer_getPosition(int playerId);
 
 - (void)setEnableRate:(BOOL)enableRate
 {
-    NSLog(@"%s not implemented %d %d", __FUNCTION__, _playerId, enableRate);
+    DEBUGLOG(@"%s not implemented %d %d", __FUNCTION__, _playerId, enableRate);
     _enableRate = enableRate;
 }
 
@@ -150,7 +144,6 @@ extern float audioPlayer_getPosition(int playerId);
 
 - (void)setNumberOfLoops:(NSInteger)numberOfLoops
 {
-    NSLog(@"%s %d %d", __FUNCTION__, _playerId, numberOfLoops);
     _numberOfLoops = numberOfLoops;
     audioPlayer_setNumberOfLoops(_playerId, numberOfLoops);
 }
@@ -162,7 +155,6 @@ extern float audioPlayer_getPosition(int playerId);
 
 - (void)setCurrentTime:(NSTimeInterval)currentTime
 {
-    NSLog(@"%s %d %f", __FUNCTION__, _playerId, currentTime);
     int isPlaying = audioPlayer_isPlaying(_playerId);
 
     if(isPlaying) {
