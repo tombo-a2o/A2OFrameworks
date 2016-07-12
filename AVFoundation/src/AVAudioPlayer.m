@@ -28,11 +28,15 @@ extern float audioPlayer_getPosition(int playerId);
     }
     
     if(!url) {
-        if(outError) *outError = [NSError errorWithDomain:NSCocoaErrorDomain code:0 userInfo:nil];
+        if(outError) *outError = [NSError errorWithDomain:NSCocoaErrorDomain code:1 userInfo:nil];
         return nil;
     }
     _url = url;
     _playerId = audioPlayer_create(url.fileSystemRepresentation);
+    if(!_playerId) {
+        if(outError) *outError = [NSError errorWithDomain:NSCocoaErrorDomain code:2 userInfo:nil];
+        return nil;
+    }
     _volume = 1.0;
     _pan = 0.0;
     _rate = 1.0;
@@ -61,8 +65,10 @@ extern float audioPlayer_getPosition(int playerId);
 
 - (void)dealloc
 {
-    [self stop];
-    audioPlayer_destroy(_playerId);
+    if(_playerId) {
+        [self stop];
+        audioPlayer_destroy(_playerId);
+    }
 }
 
 - (BOOL)play

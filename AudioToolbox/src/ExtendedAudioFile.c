@@ -37,11 +37,13 @@ OSStatus ExtAudioFileGetProperty ( ExtAudioFileRef inExtAudioFile, ExtAudioFileP
         desc->mBytesPerFrame = 0;
         desc->mChannelsPerFrame = audioBuffer_numberOfChannels(filename);
         desc->mBitsPerChannel = 0;
+        if(!desc->mChannelsPerFrame) return 1;
         break;
     case kExtAudioFileProperty_FileLengthFrames:
         assert(*ioPropertyDataSize == sizeof(SInt64));
         SInt64 *length = (SInt64*)outPropertyData;
         *length = audioBuffer_length(filename);
+        if(!length) return 1;
         break;
     default:
         return 1;
