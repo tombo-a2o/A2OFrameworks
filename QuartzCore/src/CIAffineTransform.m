@@ -1,18 +1,18 @@
 #import <QuartzCore/CIAffineTransform.h>
 #import <Foundation/NSKeyedArchiver.h>
 #import <Foundation/NSString.h>
-#import <AppKit/NSRaise.h>
+#import <Foundation/NSException.h>
 
 @implementation CIAffineTransform
 
 -(void)encodeWithCoder:(NSCoder *)coder {
-   NSUnimplementedMethod();
+   [NSException raise:NSGenericException format:@"Unimplemented"];
 }
 
 -initWithCoder:(NSCoder *)coder {
    if([coder allowsKeyedCoding]){
     NSKeyedUnarchiver *keyed=(NSKeyedUnarchiver *)coder;
-    
+
     _transform=[[keyed decodeObjectForKey:@"CI_inputTransform"] copy];
     _ciEnabled=[keyed decodeBoolForKey:@"CIEnabled"];
    }

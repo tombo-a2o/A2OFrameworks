@@ -2,7 +2,6 @@
 #import <QuartzCore/CATransaction.h>
 #import <QuartzCore/CALayer.h>
 #import <QuartzCore/CALayer+Private.h>
-#import <AppKit/NSRaise.h>
 
 #import "CAMediaTimingFunction+Private.h"
 
@@ -44,7 +43,7 @@ NSString *const kCATransitionFromBottom = @"bottom";
 }
 
 -copyWithZone:(NSZone *)zone {
-   NSUnimplementedMethod();
+   [NSException raise:NSGenericException format:@"Unimplemented"];
    return nil;
 }
 
@@ -148,19 +147,19 @@ NSString *const kCATransitionFromBottom = @"bottom";
 
 - (void)runActionForKey:(NSString *)key object:(id)object arguments:(NSDictionary *)dict {
     CALayer *layer = (CALayer*)object;
-    
+
     [layer addAnimation:self forKey:key];
 }
 
 -(void)_updateLayer:(CALayer*)layer currentTime:(CFTimeInterval)currentTime {
     assert(_currentTime < currentTime);
-    
+
     if(_beginTime == 0.0) {
         _beginTime = currentTime;
     }
-    
+
     _currentTime = currentTime;
-    
+
     if(!_started) {
         _started = YES;
         [self _didStart];
@@ -170,7 +169,7 @@ NSString *const kCATransitionFromBottom = @"bottom";
         [self _didStop];
         [self _callTransactionCompletionBlockIfNeeded];
     }
-    
+
     [self _updateScale];
 }
 
@@ -208,7 +207,7 @@ NSString *const kCATransitionFromBottom = @"bottom";
 -(void)_updateTotalDuration
 {
     _totalDuration = _duration;
-    
+
     if(_repeatCount != 0.0) {
         _totalDuration *= _repeatCount;
     }
@@ -228,24 +227,24 @@ NSString *const kCATransitionFromBottom = @"bottom";
 -(void)_updateScale
 {
     CFTimeInterval delta = _currentTime - _beginTime;
-    
+
     if(delta > _totalDuration) {
         _scale = 1.0;
         return;
     }
-    
+
     double zeroToOne = delta / _duration;
     int count = (int)zeroToOne;
     zeroToOne -= count;
     if(_autoreverses && (count % 2) == 1) {
         zeroToOne = 1 - zeroToOne;
     }
-    
+
     CAMediaTimingFunction *function = _timingFunction;
     if(function == nil) {
         function = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
     }
-    
+
     _scale = [function _solveYFor:zeroToOne];
 }
 

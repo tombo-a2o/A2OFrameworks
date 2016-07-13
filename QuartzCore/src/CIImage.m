@@ -1,5 +1,4 @@
 #import <QuartzCore/CIImage.h>
-#import <AppKit/NSRaise.h>
 
 @implementation CIImage
 
@@ -21,7 +20,7 @@
 
 -(CGRect)extent {
    CGRect result;
-   
+
    result.origin.x=0;
    result.origin.y=0;
    result.size.width=CGImageGetWidth(_cgImage);

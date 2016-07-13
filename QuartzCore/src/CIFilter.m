@@ -1,7 +1,7 @@
 #import <QuartzCore/CIFilter.h>
 #import <QuartzCore/CIImage.h>
-#import <AppKit/NSRaise.h>
 #import <Foundation/NSDictionary.h>
+#import <Foundation/NSException.h>
 
 @interface CIImage(private)
 -(void)setFilter:(CIFilter *)filter;
@@ -25,7 +25,7 @@
 }
 
 -(void)setDefaults {
- //  NSUnimplementedMethod();
+   // [NSException raise:NSGenericException format:@"Unimplemented"];
 }
 
 -(void)setValue:value forKey:(NSString *)key {
@@ -38,11 +38,11 @@
 -valueForKey:(NSString *)key {
    if([key isEqual:@"outputImage"]){
     CIImage *image=[CIImage emptyImage];
-    
+
     [image setFilter:self];
     return image;
    }
-   
+
    return [_keyValues objectForKey:key];
 }
 

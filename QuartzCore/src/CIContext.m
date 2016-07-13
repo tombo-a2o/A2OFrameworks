@@ -3,7 +3,6 @@
 #import <QuartzCore/CIFilter.h>
 #import <QuartzCore/CIColor.h>
 #import <QuartzCore/CIVector.h>
-#import <AppKit/NSRaise.h>
 #import <Foundation/NSValue.h>
 
 @interface CIImage(private)
@@ -29,7 +28,7 @@
 
 -(void)drawImage:(CIImage *)image atPoint:(CGPoint)atPoint fromRect:(CGRect)fromRect {
    CGRect inRect={{atPoint.x,atPoint.y},{fromRect.size.width,fromRect.size.height}};
-   
+
    [self drawImage:image inRect:inRect fromRect:fromRect];
 }
 
@@ -42,7 +41,7 @@ static void evaluate(void *info,const float *in, float *output) {
    float         x=in[0];
    CIGradientColors *colors=info;
    int           i;
-   
+
     for(i=0;i<4;i++)
      output[i]=colors->_C0[i]+x*(colors->_C1[i]-colors->_C0[i]);
 }
@@ -50,7 +49,7 @@ static void evaluate(void *info,const float *in, float *output) {
 -(void)drawImage:(CIImage *)image inRect:(CGRect)inRect fromRect:(CGRect)fromRect {
    CIFilter *filter=[image filter];
    NSString *filterName=[filter valueForKey:@"kCIAttributeFilterName"];
-   
+
    if([filterName isEqualToString:@"CILinearGradient"]){
     CIColor *startColor=[filter valueForKey:@"inputColor0"];
     CIColor *endColor=[filter valueForKey:@"inputColor1"];
@@ -62,7 +61,7 @@ static void evaluate(void *info,const float *in, float *output) {
     CIGradientColors colors;
     const CGFloat *startComponents=[startColor components];
     const CGFloat *endComponents=[endColor components];
-        
+
     colors._C0[0]=startComponents[0];
     colors._C0[1]=startComponents[1];
     colors._C0[2]=startComponents[2];
@@ -71,11 +70,11 @@ static void evaluate(void *info,const float *in, float *output) {
     colors._C1[1]=endComponents[1];
     colors._C1[2]=endComponents[2];
     colors._C1[3]=endComponents[3];
-    
+
     CGFunctionRef function=CGFunctionCreate(&colors,1,domain,4,range,&callbacks);
     CGColorSpaceRef colorSpace=CGColorSpaceCreateDeviceRGB();
     CGShadingRef  shading=CGShadingCreateAxial(colorSpace,CGPointMake([startVector X],[startVector Y]),CGPointMake([endVector X],[endVector Y]),function,NO,NO);
-    
+
     CGContextSaveGState(_cgContext);
     CGContextTranslateCTM(_cgContext,inRect.origin.x,inRect.origin.y);
     CGContextDrawShading(_cgContext,shading);
@@ -85,7 +84,7 @@ static void evaluate(void *info,const float *in, float *output) {
     CGColorSpaceRelease(colorSpace);
     CGShadingRelease(shading);
    }
-   
+
    if([filterName isEqualToString:@"CIBoxBlur"]){
     CIImage   *inputImage=[filter valueForKey:@"inputImage"];
     NSNumber  *inputRadius=[filter valueForKey:@"inputRadius"];
@@ -95,7 +94,7 @@ static void evaluate(void *info,const float *in, float *output) {
     if(cgImage!=NULL)
      CGContextDrawImage(_cgContext,inRect,cgImage);
    }
-   
+
 }
 
 @end
