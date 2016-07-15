@@ -119,6 +119,7 @@
     } else {
         _on = YES;
     }
+    [self sendActionsForControlEvents:UIControlEventValueChanged];
     [self _updateLayer:YES];
 }
 
