@@ -1,5 +1,4 @@
 #import <Foundation/NSObject.h>
-#import <OpenGLES/EAGLDrawable.h>
 
 typedef NS_ENUM(NSUInteger, EAGLRenderingAPI) {
     kEAGLRenderingAPIOpenGLES1         = 1,
@@ -15,7 +14,6 @@ typedef NS_ENUM(NSUInteger, EAGLRenderingAPI) {
 +(BOOL)setCurrentContext:(EAGLContext *)context;
 -(instancetype)initWithAPI:(EAGLRenderingAPI)api;
 -(instancetype)initWithAPI:(EAGLRenderingAPI)api sharegroup:(EAGLSharegroup *)sharegroup;
--(BOOL)renderbufferStorage:(NSUInteger)target fromDrawable:(id<EAGLDrawable>)drawable;
 -(BOOL)presentRenderbuffer:(NSUInteger)target;
 @property(readonly) EAGLRenderingAPI API;
 @property(readonly) EAGLSharegroup *sharegroup;
