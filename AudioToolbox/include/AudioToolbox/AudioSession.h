@@ -44,6 +44,10 @@ enum {
     kAudioSessionCategory_PlayAndRecord             = 'plar',
     kAudioSessionCategory_AudioProcessing           = 'proc'
 };
+enum {
+    kAudioSessionBeginInterruption  = 1,
+    kAudioSessionEndInterruption    = 0
+};
 
 typedef UInt32 AudioSessionPropertyID;
 typedef void (*AudioSessionInterruptionListener)( void *inClientData, UInt32 inInterruptionState );
@@ -51,5 +55,6 @@ typedef void (*AudioSessionInterruptionListener)( void *inClientData, UInt32 inI
 OSStatus AudioSessionGetProperty ( AudioSessionPropertyID inID, UInt32 *ioDataSize, void *outData );
 OSStatus AudioSessionSetProperty ( AudioSessionPropertyID inID, UInt32 inDataSize, const void *inData );
 OSStatus AudioSessionInitialize ( CFRunLoopRef inRunLoop, CFStringRef inRunLoopMode, AudioSessionInterruptionListener inInterruptionListener, void *inClientData );
+OSStatus AudioSessionSetActive ( Boolean active );
 
 #endif

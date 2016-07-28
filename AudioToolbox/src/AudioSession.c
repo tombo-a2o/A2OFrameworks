@@ -23,3 +23,8 @@ OSStatus AudioSessionInitialize ( CFRunLoopRef inRunLoop, CFStringRef inRunLoopM
 
     return noErr;
 }
+
+OSStatus AudioSessionSetActive ( Boolean active ) {
+    fprintf(stderr, "AudioSessionSetActive is not implemented\n");
+    return noErr;
+}
