@@ -41,6 +41,7 @@
 @property (nonatomic, copy) NSString *prompt;
 @property (nonatomic, strong) UIBarButtonItem *backBarButtonItem;
 @property (nonatomic, strong) UIBarButtonItem *leftBarButtonItem;
+@property (nonatomic, copy) NSArray *leftBarButtonItems;
 @property (nonatomic, strong) UIBarButtonItem *rightBarButtonItem;
 @property (nonatomic, strong) UIView *titleView;
 @property (nonatomic, assign) BOOL hidesBackButton;
