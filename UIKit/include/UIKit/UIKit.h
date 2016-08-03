@@ -118,12 +118,10 @@
 #import <UIKit/UINib.h>
 #import <UIKit/UILocalNotification.h>
 #import <UIKit/UIAlertController.h>
+#import <UIKit/UIUserNotificationSettings.h>
 
 // non-standard imports
 #import <UIKit/UIScrollWheelGestureRecognizer.h>
 
 #import <UIKit/NSParagraphStyle.h>
 #import <UIKit/NSAttributedString.h>
-
-// SystemConfiguration-Helper
-#define kSCNetworkReachabilityFlagsIsWWAN kSCNetworkReachabilityFlagsConnectionOnDemand
