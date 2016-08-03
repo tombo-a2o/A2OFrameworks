@@ -57,7 +57,7 @@
 //#include <Security/SecCertificateOIDs.h>
 //#include <Security/SecIdentity.h>
 //#include <Security/SecIdentitySearch.h>
-//#include <Security/SecItem.h>
+#include <Security/SecItem.h>
 //#include <Security/SecKey.h>
 //#include <Security/SecKeychain.h>
 //#include <Security/SecKeychainItem.h>
