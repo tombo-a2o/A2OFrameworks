@@ -90,6 +90,7 @@ typedef NS_ENUM(NSInteger, UIModalTransitionStyle) {
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration;
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation duration:(NSTimeInterval)duration;
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation;
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations;
 
 - (BOOL)isMovingFromParentViewController;
 - (BOOL)isMovingToParentViewController;
