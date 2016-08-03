@@ -33,6 +33,7 @@
 
 @interface UIPasteboard : NSObject
 + (UIPasteboard *)generalPasteboard;
++ (UIPasteboard *)pasteboardWithName:(NSString *)pasteboardName create:(BOOL)create;
 
 - (void)addItems:(NSArray *)items;
 - (void)setData:(NSData *)data forPasteboardType:(NSString *)pasteboardType;
