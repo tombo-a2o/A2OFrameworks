@@ -252,8 +252,19 @@ static EM_BOOL visibilitychangeCallback(int eventType, const EmscriptenVisibilit
 {
 }
 
+- (void)registerUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
+{
+    NSLog(@"%s not implemented", __FUNCTION__);
+}
+
+- (void)registerForRemoteNotifications;
+{
+    NSLog(@"%s not implemented", __FUNCTION__);
+}
+
 - (void)unregisterForRemoteNotifications
 {
+    NSLog(@"%s not implemented", __FUNCTION__);
 }
 
 - (UIRemoteNotificationType)enabledRemoteNotificationTypes

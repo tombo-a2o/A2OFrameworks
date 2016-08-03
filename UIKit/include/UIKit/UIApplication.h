@@ -30,6 +30,7 @@
 #import <UIKit/UIResponder.h>
 #import <UIKit/UIDevice.h>
 #import <UIKit/UILocalNotification.h>
+#import <UIKit/UIUserNotificationSettings.h>
 
 extern NSString *const UIApplicationWillChangeStatusBarOrientationNotification;
 extern NSString *const UIApplicationDidChangeStatusBarOrientationNotification;
@@ -185,6 +186,10 @@ extern const NSTimeInterval UIMinimumKeepAliveTimeout;
 - (void)endBackgroundTask:(UIBackgroundTaskIdentifier)identifier;
 
 - (void)scheduleLocalNotification:(UILocalNotification *)notification;
+
+- (void)registerUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings;
+- (void)registerForRemoteNotifications;
+- (void)unregisterForRemoteNotifications;
 
 @property (nonatomic, weak, readonly) UIWindow *keyWindow;
 @property (nonatomic, readonly) NSArray *windows;
