@@ -10,6 +10,7 @@ typedef NSInteger SKPaymentTransactionState;
 @property(nonatomic, readonly) SKPaymentTransactionState transactionState;
 @property(nonatomic, readonly) NSString *transactionIdentifier;
 @property(nonatomic, readonly) NSDate *transactionDate;
+@property(nonatomic, readonly) NSData *transactionReceipt;
 
 // Getting Information about the Transaction's Downloadable Content
 @property(nonatomic, readonly) NSArray *downloads;
