@@ -1,1 +1,2 @@
-#include <Social/SLComposeViewController.h>
+#import <Social/SLComposeViewController.h>
+#import <Social/SLRequest.h>
