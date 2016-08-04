@@ -104,6 +104,11 @@ CA_EXPORT NSString * const kCATransition;
 @property(copy) NSDictionary *actions;
 @property(copy) NSDictionary *style;
 @property(getter=isDoubleSided) BOOL doubleSided;
+@property float shadowOpacity;
+@property CGFloat shadowRadius;
+@property CGSize shadowOffset;
+@property CGColorRef shadowColor;
+@property CGPathRef shadowPath;
 
 - (instancetype)init;
 - (instancetype)initWithLayer:(id)layer;
