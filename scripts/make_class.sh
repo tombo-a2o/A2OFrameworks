@@ -15,9 +15,22 @@ if [ -d $fullpath ]; then
 fi
 
 cat <<EOF > $fullpath 
-#import <Foundation/NSObject.h>
+#import <Foundation/Foundation.h>
 
 @interface $name : NSObject
+@end
+EOF
+
+srcpath=src/$name.m
+if [ -d $srcpath ]; then
+    echo "$srcpath exists!"
+    exit
+fi
+
+cat <<EOF > $srcpath
+#import <$framework/$framework.h>
+
+@implementation $name
 @end
 EOF
 
