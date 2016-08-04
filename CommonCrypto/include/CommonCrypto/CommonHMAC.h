@@ -1,4 +1,5 @@
 #import <CommonCrypto/CommonCryptoExport.h>
+#import <CommonCrypto/CommonDigest.h>
 
 #import <stdlib.h>
 
@@ -6,6 +7,8 @@
 
 typedef enum {
     kCCHmacAlgSHA1,
+    kCCHmacAlgMD5,
+    kCCHmacAlgSHA256,
 } CCHmacAlgorithm;
 
 typedef struct {
