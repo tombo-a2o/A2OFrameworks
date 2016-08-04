@@ -113,6 +113,7 @@ typedef NS_OPTIONS(NSUInteger, UIRemoteNotificationType) {
 - (void)applicationDidEnterBackground:(UIApplication *)application;
 - (void)applicationWillEnterForeground:(UIApplication *)application;
 - (UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window;
+@property(nonatomic, strong) UIWindow *window;
 
 // non-standard
 
