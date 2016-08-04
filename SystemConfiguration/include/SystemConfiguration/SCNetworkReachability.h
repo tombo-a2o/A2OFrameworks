@@ -153,7 +153,7 @@ enum {
 	kSCNetworkReachabilityFlagsConnectionOnDemand	= 1<<5,	// __OSX_AVAILABLE_STARTING(__MAC_10_6,__IPHONE_3_0)
 	kSCNetworkReachabilityFlagsIsLocalAddress	= 1<<16,
 	kSCNetworkReachabilityFlagsIsDirect		= 1<<17,
-#if	TARGET_OS_IPHONE
+#if	TARGET_OS_IPHONE || TARGET_OS_EMSCRIPTEN
 	kSCNetworkReachabilityFlagsIsWWAN		= 1<<18,
 #endif	// TARGET_OS_IPHONE
 
