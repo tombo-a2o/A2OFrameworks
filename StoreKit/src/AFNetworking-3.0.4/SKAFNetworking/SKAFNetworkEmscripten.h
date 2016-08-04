@@ -29,8 +29,6 @@
 #define NS_SWIFT_NOTHROW
 #endif
 
-CFStringRef kUTTagClassFilenameExtension;
-CFStringRef kUTTagClassMIMEType;
 CFStringRef UTTypeCreatePreferredIdentifierForTag(CFStringRef inTagClass, CFStringRef inTag, CFStringRef inConformingToUTI);
 CFStringRef UTTypeCopyPreferredTagWithClass(CFStringRef inUTI, CFStringRef inTagClass);
 uint32_t arc4random(void);
