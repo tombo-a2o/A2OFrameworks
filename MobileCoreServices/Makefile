@@ -10,7 +10,7 @@ LFLAGS =
 BUILD_DIR		?= build/debug
 INSTALL_DIR		= $(EMSCRIPTEN)/system/frameworks
 
-SOURCES			= src/Dummy.m
+SOURCES			= $(wildcard src/*.c)
 PUBLIC_HEADERS	= $(wildcard include/**/*.h)
 PRIVATE_HEADERS	= $(wildcard private_include/**/*.h)
 RESOURCE_DIR	= resource
