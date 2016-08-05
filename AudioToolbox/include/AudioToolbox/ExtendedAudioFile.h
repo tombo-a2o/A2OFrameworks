@@ -4,6 +4,8 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <CoreAudio/CoreAudio.h>
 
+CF_EXTERN_C_BEGIN
+
 enum {
     kExtAudioFileProperty_FileDataFormat       = 'ffmt',
     kExtAudioFileProperty_FileChannelLayout    = 'fclo',
@@ -29,5 +31,7 @@ OSStatus ExtAudioFileGetProperty ( ExtAudioFileRef inExtAudioFile, ExtAudioFileP
 OSStatus ExtAudioFileSetProperty ( ExtAudioFileRef inExtAudioFile, ExtAudioFilePropertyID inPropertyID, UInt32 inPropertyDataSize, const void * inPropertyData );
 OSStatus ExtAudioFileRead ( ExtAudioFileRef inExtAudioFile, UInt32 * ioNumberFrames, AudioBufferList * ioData );
 OSStatus ExtAudioFileDispose ( ExtAudioFileRef inExtAudioFile );
+
+CF_EXTERN_C_END
 
 #endif

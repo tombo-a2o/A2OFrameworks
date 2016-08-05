@@ -3,6 +3,8 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 
+CF_EXTERN_C_BEGIN
+
 enum {
     kAudioSessionProperty_PreferredHardwareSampleRate          = 'hwsr',
     kAudioSessionProperty_PreferredHardwareIOBufferDuration    = 'iobd',
@@ -56,5 +58,7 @@ OSStatus AudioSessionGetProperty ( AudioSessionPropertyID inID, UInt32 *ioDataSi
 OSStatus AudioSessionSetProperty ( AudioSessionPropertyID inID, UInt32 inDataSize, const void *inData );
 OSStatus AudioSessionInitialize ( CFRunLoopRef inRunLoop, CFStringRef inRunLoopMode, AudioSessionInterruptionListener inInterruptionListener, void *inClientData );
 OSStatus AudioSessionSetActive ( Boolean active );
+
+CF_EXTERN_C_END
 
 #endif

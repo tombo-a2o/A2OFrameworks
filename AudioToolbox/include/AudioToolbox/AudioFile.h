@@ -4,6 +4,8 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <CoreAudio/CoreAudio.h>
 
+CF_EXTERN_C_BEGIN
+
 typedef struct OpaqueAudioFileID *AudioFileID;
 
 enum {
@@ -69,5 +71,7 @@ OSStatus AudioFileOpenURL ( CFURLRef inFileRef, AudioFilePermissions inPermissio
 OSStatus AudioFileGetProperty ( AudioFileID inAudioFile, AudioFilePropertyID inPropertyID, UInt32 *ioDataSize, void *outPropertyData );
 OSStatus AudioFileReadBytes ( AudioFileID inAudioFile, Boolean inUseCache, SInt64 inStartingByte, UInt32 * ioNumBytes, void *outBuffer );
 OSStatus AudioFileClose ( AudioFileID inAudioFile );
+
+CF_EXTERN_C_END
 
 #endif
