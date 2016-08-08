@@ -210,24 +210,26 @@ NSString * const kCATransition = @"transition";
 -(void)setBounds:(CGRect)value {
     _shouldClearPresentationLayer = YES;
     
-   CAAnimation *animation = [self animationForKey:@"bounds"];
+    value = CGRectStandardize(value);
 
-   if(animation == nil && ![CATransaction disableActions]){
+    CAAnimation *animation = [self animationForKey:@"bounds"];
+
+    if(animation == nil && ![CATransaction disableActions]){
        id action = [self actionForKey:@"bounds"];
 
        if(action!=nil) {
            [action runActionForKey:@"bounds" object:self arguments:nil];
        }
-   } 
+    } 
 
-   if(_bounds.size.width != value.size.width || _bounds.size.height != value.size.height) {
+    if(_bounds.size.width != value.size.width || _bounds.size.height != value.size.height) {
        [self setNeedsLayout];
        [self.superlayer setNeedsLayout];
        [self setNeedsDisplay];
        _needsUpdateVertexObject = YES;
-   }
+    }
 
-   _bounds=value;
+    _bounds=value;
 }
 
 -(CGRect)frame {
@@ -241,6 +243,8 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)setFrame:(CGRect)value {
+    
+    value = CGRectStandardize(value);
 
     CGPoint position;
 
