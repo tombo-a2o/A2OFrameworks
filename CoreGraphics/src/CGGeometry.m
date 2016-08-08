@@ -69,3 +69,24 @@ CGRect CGRectUnion(CGRect a, CGRect b) {
 	float maxY = MAX(CGRectGetMaxY(a), CGRectGetMaxY(b));
 	return CGRectMake(minX, minY, maxX - minX, maxY - minY);
 }
+
+CGRect CGRectStandardize(CGRect rect) {
+	CGRect result = rect;
+	
+	if(rect.size.width >= 0) {
+		result.size.width  = rect.size.width;
+		result.origin.x    = rect.origin.x;
+	} else {
+		result.size.width  = -rect.size.width;
+		result.origin.x    = rect.origin.x + rect.size.width;
+	}
+	if(rect.size.height >= 0) {
+		result.size.height = rect.size.height;
+		result.origin.y    = rect.origin.y;
+	} else {
+		result.size.height = -rect.size.height;
+		result.origin.y    = rect.origin.y + rect.size.height;
+	}
+	
+	return result;
+}
