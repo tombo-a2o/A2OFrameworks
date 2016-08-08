@@ -32,6 +32,7 @@
 #import "UIToolbarButton.h"
 #import <UIKit/UIColor.h>
 #import <UIKit/UIGraphics.h>
+#import <UIKit/UIScreen.h>
 
 static const CGFloat kBarHeight = 28;
 
@@ -279,7 +280,7 @@ static const CGFloat kBarHeight = 28;
             barStyle = @"Black Translucent (Deprecated)";
             break;
     }
-    return [NSString stringWithFormat:@"<%@: %p; frame = %@; barStyle = %@; tintColor = %@, isTranslucent = %@>", [self class], self, NSStringFromCGRect(self.frame), barStyle, ([self.tintColor description] ?: @"Default"), (self.translucent ? @"YES" : @"NO")];
+    return [NSString stringWithFormat:@"<%@: %p; frame = %@; barStyle = %@; tintColor = %@, isTranslucent = %@; layer = %@>", [self class], self, NSStringFromCGRect(self.frame), barStyle, ([self.tintColor description] ?: @"Default"), (self.translucent ? @"YES" : @"NO"), self.layer];
 }
 
 - (UIImage *)backgroundImageForToolbarPosition:(UIToolbarPosition)topOrBottom barMetrics:(UIBarMetrics)barMetrics
@@ -293,6 +294,7 @@ static const CGFloat kBarHeight = 28;
 
 - (CGSize)sizeThatFits:(CGSize)size
 {
+    size.width = [UIScreen mainScreen].bounds.size.width;
     size.height = kBarHeight;
     return size;
 }
