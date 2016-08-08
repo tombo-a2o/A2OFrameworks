@@ -29,7 +29,43 @@
 
 #if 1
 
+#import "UITextLayer.h"
+
 @implementation UITextLayer
+- (id)initWithContainer:(UIView <UITextLayerContainerViewProtocol,UITextLayerTextDelegate> *)aView isField:(BOOL)isField
+{
+    NSLog(@"%s not implemented", __FUNCTION__);
+    return self;
+}
+
+- (void)setContentOffset:(CGPoint)contentOffset
+{
+    NSLog(@"%s not implemented", __FUNCTION__);
+}
+
+- (void)scrollRangeToVisible:(NSRange)range;
+{
+    NSLog(@"%s not implemented", __FUNCTION__);
+}
+
+- (BOOL)becomeFirstResponder
+{
+    NSLog(@"%s not implemented", __FUNCTION__);
+    return NO;
+}
+
+- (BOOL)resignFirstResponder;
+{
+    NSLog(@"%s not implemented", __FUNCTION__);
+    return NO;
+}
+
+- (CGSize)sizeThatFits:(CGSize)size
+{
+    NSLog(@"%s not implemented", __FUNCTION__);
+    return size;
+}
+
 @end
 
 #else
