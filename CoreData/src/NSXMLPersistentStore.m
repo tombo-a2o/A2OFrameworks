@@ -1,4 +1,9 @@
-#if 0
+#if 1
+
+@implementation NSXMLPersistentStore
+@end
+
+#else
 
 #import "NSXMLPersistentStore.h"
 #import <CoreData/NSPersistentStoreCoordinator.h>
