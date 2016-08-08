@@ -34,7 +34,8 @@
 @implementation UITextLayer
 - (id)initWithContainer:(UIView <UITextLayerContainerViewProtocol,UITextLayerTextDelegate> *)aView isField:(BOOL)isField
 {
-    NSLog(@"%s not implemented", __FUNCTION__);
+    self = [super init];
+    NSLog(@"%s not implemented %p", __FUNCTION__, self);
     return self;
 }
 
