@@ -27,6 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#import <UIKit/UIKitDefines.h>
 #import <UIKit/UIResponder.h>
 #import <UIKit/UIDevice.h>
 #import <UIKit/UILocalNotification.h>
@@ -221,4 +222,4 @@ extern const NSTimeInterval UIMinimumKeepAliveTimeout;
 // attempt to make this as confusing as possible, when the main NIB is loaded, it uses the UIApplication (NOT THE NSApplication!) as the
 // file's owner! Yep. Insane, I know. I generally do not use NIBs myself, but it's nice for the menu bar. So... yeah...
 // NOTE: This does not use NSPrincipalClass from Info.plist since iOS doesn't either, so if that exists in your Info.plist, it is ignored.
-extern int UIApplicationMain(int argc, char *argv[], NSString *principalClassName, NSString *delegateClassName);
+UIKIT_EXPORT int UIApplicationMain(int argc, char *argv[], NSString *principalClassName, NSString *delegateClassName);
