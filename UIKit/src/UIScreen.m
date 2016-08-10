@@ -39,15 +39,11 @@
 #import <QuartzCore/CALayerContext.h>
 #import <emscripten.h>
 #import <emscripten/html5.h>
+#import <QuartzCore/CATransform3D.h>
 
 NSString *const UIScreenDidConnectNotification = @"UIScreenDidConnectNotification";
 NSString *const UIScreenDidDisconnectNotification = @"UIScreenDidDisconnectNotification";
 NSString *const UIScreenModeDidChangeNotification = @"UIScreenModeDidChangeNotification";
-
-@interface UIScreenMode(Private)
-+ (id)screenModeIphone5;
-+ (NSArray*)_userDefinedModes;
-@end
 
 @interface UIScreen()
 @property (nonatomic, readwrite) CGRect bounds;
@@ -61,6 +57,7 @@ NSString *const UIScreenModeDidChangeNotification = @"UIScreenModeDidChangeNotif
     CALayerContext *_layerContext;
     CALayer *_rootLayer;
     UIInterfaceOrientation _orientation;
+    CGAffineTransform _touchTransform;
 }
 
 + (UIScreen *)mainScreen
@@ -112,7 +109,8 @@ NSString *const UIScreenModeDidChangeNotification = @"UIScreenModeDidChangeNotif
 
         _rootLayer.frame = self.bounds;
         _rootLayer.contentsScale = self.scale;
-        //NSLog(@"%f %f", self.bounds.size.width, self.bounds.size.height);
+        _rootLayer.delegate = self;
+        _rootLayer.anchorPoint = CGPointMake(0,0);
         
         _layerContext = [[CALayerContext alloc] initWithLayer:_rootLayer];
     }
@@ -121,29 +119,57 @@ NSString *const UIScreenModeDidChangeNotification = @"UIScreenModeDidChangeNotif
 
 - (void)_updateScreenSize
 {
-    CGSize rawSize;
-
-    if(_orientation == UIDeviceOrientationPortrait || _orientation == UIDeviceOrientationPortraitUpsideDown) {
-        rawSize.width = _currentMode.size.width;
-        rawSize.height = _currentMode.size.height;
+    UIInterfaceOrientation interfaceOrientation = _orientation;
+    UIDeviceOrientation deviceOrientation = [UIDevice currentDevice].orientation;
+    
+    float scale = _currentMode.pixelAspectRatio;
+    CGSize physicalSize = _currentMode.size; // ex. 640x1136 (on iPhone5)
+    CGSize logicalSize = _currentMode.logicalSize; // ex. 320x568 (on iPhone5)
+    CGSize canvasSize; // ex 320x568(portrait), 568x320(landscape)
+    if(UIDeviceOrientationIsPortrait(deviceOrientation)) {
+        emscripten_set_canvas_size(physicalSize.width, physicalSize.height);
+        canvasSize.width = logicalSize.width;
+        canvasSize.height = logicalSize.height;
     } else {
-        rawSize.width = _currentMode.size.height;
-        rawSize.height = _currentMode.size.width;
+        emscripten_set_canvas_size(physicalSize.height, physicalSize.width);
+        canvasSize.width = logicalSize.height;
+        canvasSize.height = logicalSize.width;
+    }
+    emscripten_set_element_css_size(NULL, canvasSize.width, canvasSize.height);
+
+    _scale = scale;
+    if(UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
+        _bounds.size.width = logicalSize.width;
+        _bounds.size.height = logicalSize.height;
+    } else {
+        _bounds.size.width = logicalSize.height;
+        _bounds.size.height = logicalSize.width;
     }
 
-    float scale = _currentMode.pixelAspectRatio;
-    CGSize size = CGSizeMake(rawSize.width / scale, rawSize.height / scale);
-
-    CGRect bounds = _bounds;
-    bounds.size = size;
-    _bounds = bounds;
-    _scale = scale;
-
-    emscripten_set_canvas_size(rawSize.width, rawSize.height);
-    emscripten_set_element_css_size(NULL, size.width, size.height);
-
-    _rootLayer.frame = bounds;
+    _rootLayer.frame = CGRectMake(0, 0, canvasSize.width, canvasSize.height);
     _rootLayer.contentsScale = scale;
+
+    float angles[] = {0, 0, M_PI, M_PI_2*3, M_PI_2};
+    float angle = angles[deviceOrientation] - angles[interfaceOrientation];
+    
+    CGAffineTransform transform =
+        CGAffineTransformTranslate(
+            CGAffineTransformRotate(
+                CGAffineTransformMakeTranslation(
+                     -_bounds.size.width/2, -_bounds.size.height/2
+                ),
+                angle
+            ),
+            canvasSize.width/2, canvasSize.height/2
+        );
+        
+    _rootLayer.sublayerTransform = CATransform3DMakeAffineTransform(transform);
+    _touchTransform = CGAffineTransformInvert(transform);
+}
+
+- (id)actionForLayer:(CALayer *)theLayer forKey:(NSString *)event
+{
+    return [NSNull null];
 }
 
 - (void)setCurrentMode:(UIScreenMode*)mode
@@ -160,11 +186,9 @@ NSString *const UIScreenModeDidChangeNotification = @"UIScreenModeDidChangeNotif
 
 - (void)setOrientation:(UIInterfaceOrientation)orientation
 {
-    if(_orientation != orientation) {
-        _orientation = orientation;
+    _orientation = orientation;
 
-        [self _updateScreenSize];
-    }
+    [self _updateScreenSize];
 }
 
 - (UIInterfaceOrientation)orientation
@@ -231,26 +255,6 @@ NSString *const UIScreenModeDidChangeNotification = @"UIScreenModeDidChangeNotif
 
 - (CGPoint)_convertCanvasLocation:(long)x y:(long)y
 {
-    int angles[5] = {0, 0, 2, 1, 3};
-    UIInterfaceOrientation interfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
-    UIDeviceOrientation deviceOrientation = _orientation;
-
-    int angle = (angles[interfaceOrientation]-angles[deviceOrientation]+4) % 4; // normalize between 0 and 3
-
-    CGPoint ret;
-    if(angle == 0) {
-        ret.x = x;
-        ret.y = y;
-    } else if(angle == 1) {
-        ret.x = y;
-        ret.y = _bounds.size.width - x;
-    } else if(angle == 2) {
-        ret.x = _bounds.size.width - x;
-        ret.y = _bounds.size.height - y;
-    } else { // angle == 3
-        ret.x = _bounds.size.height - y;
-        ret.y = x;
-     }
-    return ret;
+    return CGPointApplyAffineTransform(CGPointMake(x,y), _touchTransform);
 }
 @end

@@ -442,14 +442,14 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
 
 - (void)_updateOrientation:(BOOL)forceUpdate
 {
-     if(!forceUpdate && !self.shouldAutorotate) return;
+    if(!forceUpdate && !self.shouldAutorotate) return;
 
     UIDeviceOrientation deviceOrientation = [[UIDevice currentDevice] orientation];
 
     UIInterfaceOrientationMask supportedInterfaceOrientations = [[UIApplication sharedApplication] _supportedInterfaceOrientations] & [self _supportedInterfaceOrientations];
 
     assert(supportedInterfaceOrientations);
-    
+
     if((1<<deviceOrientation) & supportedInterfaceOrientations) {
         _interfaceOrientation = deviceOrientation;
     } else if(forceUpdate) {
@@ -497,7 +497,7 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
 
 - (BOOL)shouldAutorotate
 {
-    return NO;
+    return YES;
 }
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations

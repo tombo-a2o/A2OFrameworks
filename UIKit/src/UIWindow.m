@@ -132,28 +132,6 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
 - (void)_updateOrientation
 {
     [_rootViewController _updateOrientation:NO];
-    [self _updateFrameWithOrientation:_rootViewController.interfaceOrientation];
-}
-
-
-- (void)_updateFrameWithOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-    UIScreen *screen = self.screen;
-    UIDeviceOrientation deviceOrientation = [UIDevice currentDevice].orientation;
-
-    CGRect frame;
-    if(UIDeviceOrientationIsPortrait(interfaceOrientation) == UIDeviceOrientationIsPortrait(deviceOrientation)) {
-        frame = screen.bounds;
-    } else {
-        CGSize size = screen.bounds.size;
-        frame = CGRectMake(0, 0, size.height, size.width);
-    }
-    self.frame = frame;
-    float angle[] = {0, 0, M_PI, M_PI_2, M_PI_2*3};
-    self.transform =
-         CGAffineTransformTranslate(
-            CGAffineTransformMakeRotation(angle[interfaceOrientation]-angle[deviceOrientation]),
-        screen.bounds.size.width/2-frame.size.width/2, screen.bounds.size.height/2-frame.size.height/2);
 }
 
 - (void)setRootViewController:(UIViewController *)rootViewController
@@ -165,7 +143,7 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
         [UIView setAnimationsEnabled:NO];
         _rootViewController = rootViewController;
         [_rootViewController _updateOrientation:YES];
-        [self _updateFrameWithOrientation:_rootViewController.interfaceOrientation];
+        self.frame = self.screen.bounds;
         _rootViewController.view.frame = self.bounds;
         [self addSubview:_rootViewController.view];
         [self layoutIfNeeded];

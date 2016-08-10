@@ -31,6 +31,8 @@
 
 @class NSView;
 
-@interface UIScreenMode ()
-+ (id)screenModeWithNSView:(NSView *)theNSView;
+@interface UIScreenMode (Private)
++ (id)screenModeIphone5;
++ (NSArray*)_userDefinedModes;
+@property (readonly,nonatomic) CGSize logicalSize;
 @end

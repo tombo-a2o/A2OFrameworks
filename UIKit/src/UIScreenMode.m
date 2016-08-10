@@ -68,6 +68,11 @@
     return ret;
 }
 
+- (CGSize)logicalSize
+{
+    return CGSizeMake(_size.width/_pixelAspectRatio, _size.height/_pixelAspectRatio);
+}
+
 - (NSString *)description
 {
     return [NSString stringWithFormat:@"<%@: %p; size = %@>", [self class], self, NSStringFromCGSize(self.size)];

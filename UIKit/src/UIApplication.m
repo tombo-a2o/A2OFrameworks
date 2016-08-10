@@ -72,7 +72,6 @@ static UIApplication *_theApplication = nil;
     NSDate *_backgroundTasksExpirationDate;
     NSMutableArray *_backgroundTasks;
     UIEventHandler *_eventHandler;
-    UIInterfaceOrientation _interfaceOrientation;
 }
 
 + (UIApplication *)sharedApplication
@@ -106,7 +105,6 @@ static EM_BOOL visibilitychangeCallback(int eventType, const EmscriptenVisibilit
         _backgroundTasks = [[NSMutableArray alloc] init];
         _applicationState = UIApplicationStateActive;
         _applicationSupportsShakeToEdit = YES;		// yeah... not *really* true, but UIKit defaults to YES :)
-        _interfaceOrientation = UIInterfaceOrientationPortrait;
 
         _eventHandler = [[UIEventHandler alloc] initWithScreen:[UIScreen mainScreen]];
 
@@ -163,12 +161,26 @@ static EM_BOOL visibilitychangeCallback(int eventType, const EmscriptenVisibilit
 
 - (UIInterfaceOrientation)statusBarOrientation
 {
-    return _interfaceOrientation;
+    return [UIScreen mainScreen].orientation;
+}
+
+static UIInterfaceOrientation interfaceOrientationFromNSString(NSString *orientationString)
+{
+    if([orientationString isEqualToString:@"UIInterfaceOrientationPortrait"]) {
+        return UIInterfaceOrientationPortrait;
+    } else if([orientationString isEqualToString:@"UIInterfaceOrientationPortraitUpsideDown"]) {
+        return UIInterfaceOrientationPortraitUpsideDown;
+    } else if([orientationString isEqualToString:@"UIInterfaceOrientationLandscapeLeft"]) {
+        return UIInterfaceOrientationLandscapeLeft;
+    } else if([orientationString isEqualToString:@"UIInterfaceOrientationLandscapeRight"]) {
+        return UIInterfaceOrientationLandscapeRight;
+    } else {
+        assert(0);
+    }
 }
 
 - (UIInterfaceOrientationMask)_supportedInterfaceOrientationsFromInfoPlist
 {
-    
     NSArray *orientations = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"UISupportedInterfaceOrientations"];
     if(!orientations) {
         NSString *orientation = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"UIInterfaceOrientation"];
@@ -178,18 +190,24 @@ static EM_BOOL visibilitychangeCallback(int eventType, const EmscriptenVisibilit
         orientations = @[orientation];
     }
     UIInterfaceOrientationMask mask = 0;
-    for(NSString *orientation in orientations) {
-        if([orientation isEqualToString:@"UIInterfaceOrientationPortrait"]) {
-            mask |= UIInterfaceOrientationMaskPortrait;
-        } else if([orientation isEqualToString:@"UIInterfaceOrientationPortraitUpsideDown"]) {
-            mask |= UIInterfaceOrientationMaskPortraitUpsideDown;
-        } else if([orientation isEqualToString:@"UIInterfaceOrientationLandscapeLeft"]) {
-            mask |= UIInterfaceOrientationMaskLandscapeLeft;
-        } else if([orientation isEqualToString:@"UIInterfaceOrientationLandscapeRight"]) {
-            mask |= UIInterfaceOrientationMaskLandscapeRight;
-        }
+    for(NSString *orientationString in orientations) {
+        UIInterfaceOrientation orientation = interfaceOrientationFromNSString(orientationString);
+        mask |= (1 << orientation);
     }
     return mask;
+}
+
+- (UIInterfaceOrientation)_preferredOrientationFromInfoPlist
+{
+    NSArray *orientations = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"UISupportedInterfaceOrientations"];
+    if(orientations) {
+        return interfaceOrientationFromNSString(orientations[0]);
+    }
+    NSString *orientation = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"UIInterfaceOrientation"];
+    if(orientation) {
+        return interfaceOrientationFromNSString(orientation);
+    }
+    return UIInterfaceOrientationPortrait;
 }
 
 - (UIInterfaceOrientationMask)_supportedInterfaceOrientations
@@ -209,7 +227,6 @@ static EM_BOOL visibilitychangeCallback(int eventType, const EmscriptenVisibilit
     case UIDeviceOrientationPortraitUpsideDown:
     case UIDeviceOrientationLandscapeLeft:
     case UIDeviceOrientationLandscapeRight:
-        [UIScreen mainScreen].orientation = deviceOrientation;
         [self.keyWindow _updateOrientation];
         self.statusBarOrientation = self.keyWindow.rootViewController.interfaceOrientation;
         break;
@@ -227,7 +244,8 @@ static EM_BOOL visibilitychangeCallback(int eventType, const EmscriptenVisibilit
     NSString *UIApplicationStatusBarOrientationUserInfoKey = @"UIApplicationStatusBarOrientationUserInfoKey";
     NSDictionary *info = @{ UIApplicationStatusBarOrientationUserInfoKey: [NSNumber numberWithInteger:orientation]};
     [[NSNotificationCenter defaultCenter] postNotificationName:UIApplicationWillChangeStatusBarOrientationNotification object:info];
-    _interfaceOrientation = orientation;
+    [UIScreen mainScreen].orientation = orientation;
+    self.keyWindow.frame = [UIScreen mainScreen].bounds;
     [[NSNotificationCenter defaultCenter] postNotificationName:UIApplicationDidChangeStatusBarOrientationNotification object:info];
 }
 
@@ -684,6 +702,7 @@ static EM_BOOL visibilitychangeCallback(int eventType, const EmscriptenVisibilit
 
  -(void)_setupScreen {
     UIScreen *screen = [UIScreen mainScreen];
+    screen.orientation = [self _preferredOrientationFromInfoPlist];
 
     NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
     NSString *mainStoryboardName = [infoDictionary objectForKey:@"UIMainStoryboardFile"];
