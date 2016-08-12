@@ -736,7 +736,7 @@ static UIInterfaceOrientation interfaceOrientationFromNSString(NSString *orienta
         [self _applicationDidFinishLaunching];
 
         // Actually, this should be later than here
-        [UIDevice currentDevice].orientation = UIDeviceOrientationPortrait;
+        [UIDevice currentDevice].orientation = EM_ASM_INT_V({return Module['initialDeviceOrientation'] || 0;}) ?: UIDeviceOrientationPortrait;
     }
 }
 
