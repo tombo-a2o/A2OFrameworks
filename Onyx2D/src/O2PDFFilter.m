@@ -14,10 +14,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <Foundation/NSData.h>
 #import <Foundation/NSException.h>
 #import <Foundation/NSString.h>
-#import <Onyx2D/O2zlib.h>
 #import <Onyx2D/O2LZW.h>
 #import <string.h>
 #import <Onyx2D/O2ImageSource_JPEG.h>
+#define STBI_ONLY_PNG
+#import "stb_image.h"
 
 NSData *O2PDFFilterWithName(const char *name,NSData *data,O2PDFDictionary *parameters) {
    return [O2PDFFilter decodeWithName:name data:data parameters:parameters];
