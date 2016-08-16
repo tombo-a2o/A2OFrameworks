@@ -327,7 +327,7 @@ NSString *const UITextViewTextDidEndEditingNotification = @"UITextViewTextDidEnd
             textAlignment = @"Right";
             break;
     }
-    return [NSString stringWithFormat:@"<%@: %p; textAlignment = %@; selectedRange = %@; editable = %@; textColor = %@; font = %@; delegate = %@>", [self class], self, textAlignment, NSStringFromRange(self.selectedRange), (self.editable ? @"YES" : @"NO"), self.textColor, self.font, self.delegate];
+    return [NSString stringWithFormat:@"<%@: %p; frame = %@; textAlignment = %@; selectedRange = %@; editable = %@; textColor = %@; font = %@; delegate = %@>", [self class], self, NSStringFromCGRect(self.frame), textAlignment, NSStringFromRange(self.selectedRange), (self.editable ? @"YES" : @"NO"), self.textColor, self.font, self.delegate];
 }
 
 - (id)mouseCursorForEvent:(UIEvent *)event
