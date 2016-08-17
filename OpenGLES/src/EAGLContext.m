@@ -58,9 +58,11 @@ static EAGLContext *_currentContext = nil;
     [_renderBufferEAGLLayer setObject:layer forKey:[NSNumber numberWithInt:renderbuffer]];
 
     NSString *pixelFormat = [layer.drawableProperties objectForKey:kEAGLDrawablePropertyColorFormat];
-    GLenum format = GL_RGBA8_OES; // default but not available
+    GLenum format = GL_RGBA4;
     if([pixelFormat isEqualToString:kEAGLColorFormatRGB565]) {
         format = GL_RGB565;
+    } else if([pixelFormat isEqualToString:kEAGLColorFormatRGBA8]) {
+        format = GL_RGBA4;
     }
 
     NSNumber *ratainedBacking = [layer.drawableProperties objectForKey:kEAGLDrawablePropertyRetainedBacking];
