@@ -162,17 +162,19 @@ static void drawFreeTypeBitmap(O2Context_builtin_FT *self, O2Surface *surface, u
     int width, height, left, top;
     NSString *fontName = (NSString*)O2FontCopyFullName(font);
     uint8_t *bitmap = a2o_renderFontToBitmapBuffer([fontName UTF8String], gState->_pointSize, [text UTF8String], transform.a, transform.b, transform.c, transform.d, &width, &height, &left, &top);
-
+    
+    if(bitmap) {
 /*
-    printf("%s %d %d %d %d\n", __FUNCTION__, width, height, (int)(point.x+left), (int)(point.y - top));
-    int surfaceWidth = O2ImageGetWidth(_surface);
-    int surfaceHeight = O2ImageGetHeight(_surface);
-    printf("surface %d %d\n", surfaceWidth, surfaceHeight);
+        printf("%s %d %d %d %d\n", __FUNCTION__, width, height, (int)(point.x+left), (int)(point.y - top));
+        int surfaceWidth = O2ImageGetWidth(_surface);
+        int surfaceHeight = O2ImageGetHeight(_surface);
+        printf("surface %d %d\n", surfaceWidth, surfaceHeight);
 */
-    drawFreeTypeBitmap(self, _surface, bitmap, width, height, point.x + left, point.y - top, paint);
+        drawFreeTypeBitmap(self, _surface, bitmap, width, height, point.x + left, point.y - top, paint);
 
+        free(bitmap);
+    }
     O2PaintRelease(paint);
-    free(bitmap);
 }
 
 -(void)showGlyphs_FT:(const O2Glyph *)glyphs advances:(const O2Size *)advances count:(unsigned)count {
