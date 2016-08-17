@@ -103,7 +103,7 @@ static EM_BOOL visibilitychangeCallback(int eventType, const EmscriptenVisibilit
 {
     if ((self=[super init])) {
         _backgroundTasks = [[NSMutableArray alloc] init];
-        _applicationState = UIApplicationStateActive;
+        _applicationState = UIApplicationStateInactive;
         _applicationSupportsShakeToEdit = YES;		// yeah... not *really* true, but UIKit defaults to YES :)
 
         _eventHandler = [[UIEventHandler alloc] initWithScreen:[UIScreen mainScreen]];
@@ -737,6 +737,8 @@ static UIInterfaceOrientation interfaceOrientationFromNSString(NSString *orienta
 
         // Actually, this should be later than here
         [UIDevice currentDevice].orientation = EM_ASM_INT_V({return Module['initialDeviceOrientation'] || 0;}) ?: UIDeviceOrientationPortrait;
+        
+        [self _applicationDidBecomeActive:nil];
     }
 }
 
