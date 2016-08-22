@@ -33,7 +33,7 @@ extern int _legacyGLEmulationEnabled(void);
     GLint framebuffer, cullFaceMode, program;
     GLint blendSrcRgb, blendSrcAlpha, blendDstRgb, blendDstAlpha;
     GLboolean blendEnabled, cullFaceEnabled;
-    GLboolean vertexArray, textureCoordArray;
+    GLboolean vertexArray, textureCoordArray, nomarArray, colorArray;
     GLint viewport[4];
     
     // save state
@@ -53,6 +53,8 @@ extern int _legacyGLEmulationEnabled(void);
     if(_legacyGLEmulationEnabled()) {
         glGetBooleanv(GL_VERTEX_ARRAY, &vertexArray);
         glGetBooleanv(GL_TEXTURE_COORD_ARRAY, &textureCoordArray);
+        glGetBooleanv(GL_NORMAL_ARRAY, &nomarArray);
+        glGetBooleanv(GL_COLOR_ARRAY, &colorArray);
     }
     glGetIntegerv(GL_VIEWPORT, viewport);
     glBindVertexArrayOES(0);
@@ -76,6 +78,12 @@ extern int _legacyGLEmulationEnabled(void);
         }
         if(textureCoordArray) {
             glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        }
+        if(nomarArray) {
+            glEnableClientState(GL_NORMAL_ARRAY);
+        }
+        if(colorArray) {
+            glEnableClientState(GL_COLOR_ARRAY);
         }
     }
     glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
