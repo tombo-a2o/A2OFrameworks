@@ -412,9 +412,11 @@ static void prepareTexture(CALayer *layer) {
     GLuint vertexObject = layer._vertexObject;
     if(!vertexObject) {
         glGenBuffers(1, &vertexObject);
+        GL_ASSERT();
         [layer _setVertexObject:vertexObject];
     }
     glBindBuffer(GL_ARRAY_BUFFER, vertexObject);
+    GL_ASSERT();
     
     if([layer _needsUpdateVertexObject]) {
         [layer _clearNeedsUpdateVertexObject];
@@ -444,14 +446,21 @@ static void prepareTexture(CALayer *layer) {
             }
         }
         glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+        GL_ASSERT();
     }
 
     glEnableVertexAttribArray(_attrPosition);
+    GL_ASSERT();
     glEnableVertexAttribArray(_attrTexCoord);
+    GL_ASSERT();
     glEnableVertexAttribArray(_attrDistance);
+    GL_ASSERT();
     glVertexAttribPointer(_attrPosition, 2, GL_FLOAT, GL_FALSE, 6*sizeof(GLfloat), 0);
+    GL_ASSERT();
     glVertexAttribPointer(_attrTexCoord, 2, GL_FLOAT, GL_FALSE, 6*sizeof(GLfloat), (GLfloat*)NULL + 2);
+    GL_ASSERT();
     glVertexAttribPointer(_attrDistance, 2, GL_FLOAT, GL_FALSE, 6*sizeof(GLfloat), (GLfloat*)NULL + 4);
+    GL_ASSERT();
 
     CGRect  bounds = layer.bounds;
     CGPoint anchorPoint = layer.anchorPoint;
@@ -463,29 +472,41 @@ static void prepareTexture(CALayer *layer) {
     CATransform3D t4  = CATransform3DConcat(t3, transform);
     
     glUniformMatrix4fv(_unifTransform, 1, GL_FALSE, &t4);
+    GL_ASSERT();
     glUniform1i(_unifTexture, 0);
+    GL_ASSERT();
     glUniform1f(_unifOpacity, layer.opacity);
+    GL_ASSERT();
     glUniform1f(_unifCornerRadius, layer.cornerRadius);
+    GL_ASSERT();
     glUniform1f(_unifBorderWidth, layer.borderWidth);
+    GL_ASSERT();
     GLfloat borderColor[4];
     getColorComponents(layer.borderColor, borderColor);
     glUniform4fv(_unifBorderColor, 1, borderColor);
+    GL_ASSERT();
     GLfloat backgroundColor[4];
     getColorComponents(layer.backgroundColor, backgroundColor);
     glUniform4fv(_unifBackgroundColor, 1, backgroundColor);
+    GL_ASSERT();
     
     if(layer.isDoubleSided) {
         glDisable(GL_CULL_FACE);
+        GL_ASSERT();
     } else {
         glEnable(GL_CULL_FACE);
+        GL_ASSERT();
         glCullFace(GL_BACK);
+        GL_ASSERT();
     }
     
     int mask1000 = 1 << mask;
     int mask0111 = mask1000 - 1;
     int mask1111 = mask1000 | mask0111;
     glStencilMask(mask1000);
+    GL_ASSERT();
     glStencilFunc(GL_EQUAL, mask1111, mask0111);
+    GL_ASSERT();
     
     if(layer.masksToBounds) {
         mask++;
@@ -493,12 +514,16 @@ static void prepareTexture(CALayer *layer) {
             NSLog(@"Too many mask layers");
         }
         glStencilOp(GL_KEEP, GL_REPLACE, GL_REPLACE);
+        GL_ASSERT();
     } else {
         glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+        GL_ASSERT();
     }
 
     glDrawElements(GL_TRIANGLES, 48, GL_UNSIGNED_SHORT, 0);
+    GL_ASSERT();
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+    GL_ASSERT();
 
     CATransform3D ts3 = CATransform3DConcat(t2, CATransform3DMakeTranslation(-bounds.origin.x, -bounds.origin.y, 0));
     CATransform3D ts4 = CATransform3DConcat(ts3, layer.sublayerTransform);
@@ -511,6 +536,7 @@ static void prepareTexture(CALayer *layer) {
     
     if(layer.masksToBounds) {
         glClear(GL_STENCIL_BUFFER_BIT);
+        GL_ASSERT();
     }
 }
 
@@ -523,16 +549,25 @@ static void displayTree(CALayer *layer) {
 
 -(void)render:(CALayer*)rootLayer {
     glClearColor(1.0, 1.0, 1.0, 1.0);
+    GL_ASSERT();
     glStencilMask(~0);
+    GL_ASSERT();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    GL_ASSERT();
 
     glEnable(GL_BLEND);
+    GL_ASSERT();
     glEnable(GL_STENCIL_TEST);
+    GL_ASSERT();
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+    GL_ASSERT();
     glDisable(GL_DEPTH_TEST);
+    GL_ASSERT();
 
     glUseProgram(_program);
+    GL_ASSERT();
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ibo);
+    GL_ASSERT();
 
     // fprintf(stderr, "bounds %f %f\n",_bounds.size.width, _bounds.size.height);
     CATransform3D projection = CATransform3DIdentity;
@@ -548,9 +583,12 @@ static void displayTree(CALayer *layer) {
     [self _renderLayer:rootLayer.presentationLayer z:0 mask:0 transform:projection];
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    GL_ASSERT();
     glUseProgram(0);
+    GL_ASSERT();
     
     glFlush();
+    GL_ASSERT();
 }
 
 @end
