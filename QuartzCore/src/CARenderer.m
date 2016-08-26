@@ -17,6 +17,7 @@
     GLint _attrPosition;
     GLint _attrTexCoord;
     GLint _attrDistance;
+    GLint _unifTexture;
     GLint _unifTransform;
     GLint _unifOpacity;
     GLint _unifCornerRadius;
@@ -82,6 +83,7 @@ static const char *fragmentShaderSource =
    _attrPosition = glGetAttribLocation(_program, "position");
    _attrTexCoord = glGetAttribLocation(_program, "texcoord");
    _attrDistance = glGetAttribLocation(_program, "distance");
+   _unifTexture = glGetUniformLocation(_program, "texture");
    _unifTransform = glGetUniformLocation(_program, "transform");
    _unifOpacity = glGetUniformLocation(_program, "opacity");
    _unifCornerRadius = glGetUniformLocation(_program, "cornerRadius");
@@ -114,6 +116,7 @@ static const char *fragmentShaderSource =
    assert(_attrPosition >= 0);
    assert(_attrTexCoord >= 0);
    assert(_attrDistance >= 0);
+   assert(_unifTexture >= 0);
    assert(_unifTransform >= 0);
    assert(_unifOpacity >= 0);
    assert(_unifCornerRadius >= 0);
@@ -461,6 +464,7 @@ static void prepareTexture(CALayer *layer) {
     CATransform3D t4  = CATransform3DConcat(t3, transform);
     
     glUniformMatrix4fv(_unifTransform, 1, GL_FALSE, &t4);
+    glUniform1i(_unifTexture, 0);
     glUniform1f(_unifOpacity, layer.opacity);
     glUniform1f(_unifCornerRadius, layer.cornerRadius);
     glUniform1f(_unifBorderWidth, layer.borderWidth);
