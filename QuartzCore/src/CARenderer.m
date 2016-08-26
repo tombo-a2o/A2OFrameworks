@@ -452,7 +452,6 @@ static void prepareTexture(CALayer *layer) {
     glVertexAttribPointer(_attrPosition, 2, GL_FLOAT, GL_FALSE, 6*sizeof(GLfloat), 0);
     glVertexAttribPointer(_attrTexCoord, 2, GL_FLOAT, GL_FALSE, 6*sizeof(GLfloat), (GLfloat*)NULL + 2);
     glVertexAttribPointer(_attrDistance, 2, GL_FLOAT, GL_FALSE, 6*sizeof(GLfloat), (GLfloat*)NULL + 4);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     CGRect  bounds = layer.bounds;
     CGPoint anchorPoint = layer.anchorPoint;
@@ -498,9 +497,8 @@ static void prepareTexture(CALayer *layer) {
         glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
     }
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ibo);
     glDrawElements(GL_TRIANGLES, 48, GL_UNSIGNED_SHORT, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     CATransform3D ts3 = CATransform3DConcat(t2, CATransform3DMakeTranslation(-bounds.origin.x, -bounds.origin.y, 0));
     CATransform3D ts4 = CATransform3DConcat(ts3, layer.sublayerTransform);
@@ -534,6 +532,7 @@ static void displayTree(CALayer *layer) {
     glDisable(GL_DEPTH_TEST);
 
     glUseProgram(_program);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ibo);
 
     // fprintf(stderr, "bounds %f %f\n",_bounds.size.width, _bounds.size.height);
     CATransform3D projection = CATransform3DIdentity;
@@ -548,6 +547,7 @@ static void displayTree(CALayer *layer) {
     [rootLayer _updateAnimations:CACurrentMediaTime()];
     [self _renderLayer:rootLayer.presentationLayer z:0 mask:0 transform:projection];
 
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glUseProgram(0);
     
     glFlush();
