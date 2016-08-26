@@ -30,10 +30,11 @@ extern int _legacyGLEmulationEnabled(void);
 -(void)render {
     [EAGLContext setCurrentContext:_glContext];
 
-    GLint framebuffer, cullFaceMode, program;
+    GLint framebuffer, program;
+    GLboolean blendEnabled, cullFaceEnabled, depthTestEnabled;
     GLint blendSrcRgb, blendSrcAlpha, blendDstRgb, blendDstAlpha;
-    GLboolean blendEnabled, cullFaceEnabled;
-    GLboolean vertexArray, textureCoordArray, nomarArray, colorArray;
+    GLint cullFaceMode, depthFunc;
+    GLboolean vertexArray, textureCoordArray, normalArray, colorArray;
     GLint viewport[4];
     
     // save state
@@ -50,10 +51,14 @@ extern int _legacyGLEmulationEnabled(void);
     if(cullFaceEnabled) {
         glGetIntegerv(GL_CULL_FACE_MODE, &cullFaceMode);
     }
+    depthTestEnabled = glIsEnabled(GL_DEPTH_TEST);
+    if(depthTestEnabled) {
+        glGetIntegerv(GL_DEPTH_FUNC, &depthFunc);
+    }
     if(_legacyGLEmulationEnabled()) {
         glGetBooleanv(GL_VERTEX_ARRAY, &vertexArray);
         glGetBooleanv(GL_TEXTURE_COORD_ARRAY, &textureCoordArray);
-        glGetBooleanv(GL_NORMAL_ARRAY, &nomarArray);
+        glGetBooleanv(GL_NORMAL_ARRAY, &normalArray);
         glGetBooleanv(GL_COLOR_ARRAY, &colorArray);
     }
     glGetIntegerv(GL_VIEWPORT, viewport);
@@ -79,7 +84,7 @@ extern int _legacyGLEmulationEnabled(void);
         if(textureCoordArray) {
             glEnableClientState(GL_TEXTURE_COORD_ARRAY);
         }
-        if(nomarArray) {
+        if(normalArray) {
             glEnableClientState(GL_NORMAL_ARRAY);
         }
         if(colorArray) {
@@ -98,6 +103,12 @@ extern int _legacyGLEmulationEnabled(void);
         glCullFace(cullFaceMode);
     } else {
         glDisable(GL_CULL_FACE);
+    }
+    if(depthTestEnabled) {
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(depthFunc);
+    } else {
+        glDisable(GL_DEPTH_TEST);
     }
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
     glUseProgram(program);
