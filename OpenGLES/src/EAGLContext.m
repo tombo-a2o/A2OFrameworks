@@ -3,6 +3,7 @@
 #import <emscripten/html5.h>
 #import <QuartzCore/CAEAGLLayer.h>
 #import <QuartzCore/CALayer+Private.h>
+#define GL_GLEXT_PROTOTYPES
 #import <OpenGLES/ES2/gl.h>
 #import <OpenGLES/ES2/glext.h>
 #import <emscripten.h>
@@ -109,6 +110,29 @@ static EAGLContext *_currentContext = nil;
     }
 #endif
     //NSLog(@"presentRenderbuffer %d (%d, %d)", texture, width, height);
+
+#if 0
+    static GLuint frame_buffer;
+    static GLuint old_frame_buffer;
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &old_frame_buffer);
+    
+    glGenFramebuffers(1, &frame_buffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
+    printf("framebuffer status is ok %d\n", glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+    GLubyte *pixels = (GLubyte*)malloc(height*width*4);
+    glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+    for(int j = 0; j < height; j+=8) {
+        printf("TEX: ");
+        for(int i = 0; i < width; i+=8) {
+            printf("%01x", pixels[(i+j*width)*4]>>4);
+        }
+        puts("");
+    }
+    free(pixels);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, old_frame_buffer);
+#endif
 
     glBindTexture(GL_TEXTURE_2D, 0);
     [layer _setTextureId:texture];
