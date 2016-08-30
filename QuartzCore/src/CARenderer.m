@@ -162,6 +162,7 @@ void CATexImage2DCGBitmapContext(CGContextRef context) {
     GLenum glFormat = GL_RGBA;
     GLenum glType = GL_UNSIGNED_BYTE;
     glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,imageWidth,imageHeight,0,glFormat,glType,pixelBytes);
+    GL_ASSERT();
 }
 
 void CATexImage2DCGImage(CGImageRef image){
@@ -221,6 +222,7 @@ void CATexImage2DCGImage(CGImageRef image){
     glType = GL_UNSIGNED_BYTE;
 
     glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,imageWidth,imageHeight,0,glFormat,glType,pixelBytes);
+    GL_ASSERT();
     CFRelease(data);
 }
 
@@ -265,6 +267,7 @@ static void generateTransparentTexture() {
     uint8_t componentsByte[4];
     memset(componentsByte, 0, sizeof(componentsByte));
     glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,1,1,0,GL_RGBA,GL_UNSIGNED_BYTE, componentsByte);
+    GL_ASSERT();
 }
 
 
@@ -365,29 +368,31 @@ static void prepareTexture(CALayer *layer) {
     }
     
     glBindTexture(GL_TEXTURE_2D, texture);
-    GLenum err = glGetError();
-    if(err) {
-        NSLog(@"GL error %d, layer=%@, texture=%d", err, layer, texture);
-        return;
-    }
+    GL_ASSERT();
 
     if(image) {
         if([image isKindOfClass: NSClassFromString(@"O2BitmapContext")]) {
             CATexImage2DCGBitmapContext((CGContextRef)image);
         } else if([image isKindOfClass: NSClassFromString(@"O2Image")]){
             CATexImage2DCGImage((CGImageRef)image);
+        } else {
+            NSLog(@"Unsupported image format layer=%@, image=%@", layer, image);
+            assert(0);
         }
     } else {
         generateTransparentTexture();
     }
-    
-    // check glTexImage2D error
-    err = glGetError();
-    if(err) {
-        NSLog(@"GL error %d, layer=%@, texture=%d", err, layer, texture);
-        return;
+
+#if defined(DEBUG)
+    {
+        GLboolean isTexture = glIsTexture(texture);
+        if(!isTexture) {
+            NSLog(@"texture %d is not texture %@", texture, layer);
+            assert(0);
+        }
     }
-    
+#endif
+
     #warning TODO use POT texture
     // Force linear interpolation due to WebGL npot texture limitation
 
@@ -397,10 +402,14 @@ static void prepareTexture(CALayer *layer) {
     // glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,magFilter);
 
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    GL_ASSERT();
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    GL_ASSERT();
 
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
+    GL_ASSERT();
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
+    GL_ASSERT();
 }
 
 -(void)_renderLayer:(CALayer *)layer z:(int)z mask:(int)mask transform:(CATransform3D)transform {
