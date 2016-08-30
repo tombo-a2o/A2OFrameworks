@@ -41,7 +41,7 @@ extern int _legacyGLEmulationEnabled(void);
     displayTree(_layer);
     // NSLog(@"%s begin -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=", __FUNCTION__);
 
-    GLint framebuffer, program;
+    GLint framebuffer, program, texture;
     GLboolean blendEnabled, cullFaceEnabled, depthTestEnabled;
     GLint blendSrcRgb, blendSrcAlpha, blendDstRgb, blendDstAlpha;
     GLint cullFaceMode, depthFunc;
@@ -52,6 +52,8 @@ extern int _legacyGLEmulationEnabled(void);
     glGetIntegerv(GL_CURRENT_PROGRAM, &program);
     GL_ASSERT();
     glGetIntegerv(GL_FRAMEBUFFER_BINDING, &framebuffer);
+    GL_ASSERT();
+    glGetIntegerv(GL_TEXTURE_BINDING_2D, &texture);
     GL_ASSERT();
     blendEnabled = glIsEnabled(GL_BLEND);
     GL_ASSERT();
@@ -156,6 +158,8 @@ extern int _legacyGLEmulationEnabled(void);
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
     GL_ASSERT();
     glUseProgram(program);
+    GL_ASSERT();
+    glBindTexture(GL_TEXTURE_2D, texture);
     GL_ASSERT();
     // NSLog(@"%s end -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=", __FUNCTION__);
 }
