@@ -26,10 +26,19 @@
     [super dealloc];
 }
 
+static void displayTree(CALayer *layer) {
+    [layer displayIfNeeded];
+    for(CALayer *child in layer.sublayers) {
+        displayTree(child);
+    }
+}
+
 extern int _legacyGLEmulationEnabled(void);
 
 -(void)render {
     [EAGLContext setCurrentContext:_glContext];
+    [_layer layoutIfNeeded];
+    displayTree(_layer);
     // NSLog(@"%s begin -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=", __FUNCTION__);
 
     GLint framebuffer, program;
@@ -94,7 +103,6 @@ extern int _legacyGLEmulationEnabled(void);
     glViewport(0, 0, width * contentsScale, height * contentsScale);
     GL_ASSERT();
 
-    [_layer layoutIfNeeded];
     [_renderer render:_layer];
 
     // restore state

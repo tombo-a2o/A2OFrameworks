@@ -549,13 +549,6 @@ static void prepareTexture(CALayer *layer) {
     }
 }
 
-static void displayTree(CALayer *layer) {
-    [layer displayIfNeeded];
-    for(CALayer *child in layer.sublayers) {
-        displayTree(child);
-    }
-}
-
 -(void)render:(CALayer*)rootLayer {
     glClearColor(1.0, 1.0, 1.0, 1.0);
     GL_ASSERT();
@@ -586,7 +579,6 @@ static void displayTree(CALayer *layer) {
     projection.m41 = -1.0;
     projection.m42 = 1.0;
     
-    displayTree(rootLayer);
     [rootLayer _generatePresentationLayer];
     [rootLayer _updateAnimations:CACurrentMediaTime()];
     [self _renderLayer:rootLayer.presentationLayer z:0 mask:0 transform:projection];
