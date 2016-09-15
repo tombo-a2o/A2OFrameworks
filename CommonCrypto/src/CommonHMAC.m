@@ -2,11 +2,24 @@
 //#import <Foundation/NSRaise.h>
 #import <string.h>
 #import <openssl/hmac.h>
+#import <assert.h>
 
 void CCHmacInit(CCHmacContext *context,CCHmacAlgorithm algorithm,const void *key,size_t keyLength) {
-   context->sslContext=malloc(sizeof(HMAC_CTX));
-   HMAC_CTX_init(context->sslContext);
-   HMAC_Init(context->sslContext,key,keyLength,EVP_sha1());
+    context->sslContext=malloc(sizeof(HMAC_CTX));
+    HMAC_CTX_init(context->sslContext);
+    switch(algorithm) {
+    case kCCHmacAlgSHA1:
+        HMAC_Init(context->sslContext,key,keyLength,EVP_sha1());
+        break;
+    case kCCHmacAlgMD5:
+        HMAC_Init(context->sslContext,key,keyLength,EVP_md5());
+        break;
+    case kCCHmacAlgSHA256:
+        HMAC_Init(context->sslContext,key,keyLength,EVP_sha256());
+        break;
+    default:
+        assert(0);
+    }
 }
 
 void CCHmacUpdate(CCHmacContext *context,const void *bytes,size_t len) {
