@@ -5,12 +5,14 @@ typedef NS_ENUM(NSInteger, UIAlertControllerStyle) {
     UIAlertControllerStyleAlert,
 };
 
+@class UIAlertAction;
+
 @interface UIAlertController : UIViewController
 
 + (instancetype)alertControllerWithTitle:(NSString *)title
                                  message:(NSString *)message
                           preferredStyle:(UIAlertControllerStyle)preferredStyle;
-
+- (void)addAction:(UIAlertAction *)action;
 @end
 
 typedef NS_ENUM(NSInteger, UIAlertActionStyle) {

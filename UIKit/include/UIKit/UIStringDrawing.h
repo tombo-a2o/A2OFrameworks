@@ -28,7 +28,6 @@
  */
 
 #import <Foundation/Foundation.h>
-#import <UIKit/NSParagraphStyle.h>
 
 typedef NS_ENUM(NSInteger, UILineBreakMode) {
     UILineBreakModeWordWrap = 0,
@@ -37,6 +36,15 @@ typedef NS_ENUM(NSInteger, UILineBreakMode) {
     UILineBreakModeHeadTruncation,
     UILineBreakModeTailTruncation,
     UILineBreakModeMiddleTruncation,
+};
+
+typedef NS_ENUM(NSInteger, NSLineBreakMode) {
+    NSLineBreakByWordWrapping = 0,
+    NSLineBreakByCharWrapping,
+    NSLineBreakByClipping,
+    NSLineBreakByTruncatingHead,
+    NSLineBreakByTruncatingTail,
+    NSLineBreakByTruncatingMiddle
 };
 
 typedef NS_ENUM(NSInteger, UITextAlignment) {

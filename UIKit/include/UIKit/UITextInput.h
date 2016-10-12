@@ -38,13 +38,48 @@
 @property (nonatomic, readonly, getter=isEmpty) BOOL empty;
 @end
 
+@protocol UITextInputTokenizer
+@end
+
+@protocol UITextInputStringTokenizer <UITextInputTokenizer>
+@end
+
+@protocol UITextInput;
+
+@protocol UITextInputDelegate
+- (void)textWillChange:(id<UITextInput>)textInput;
+- (void)textDidChange:(id<UITextInput>)textInput;
+- (void)selectionWillChange:(id<UITextInput>)textInput;
+- (void)selectionDidChange:(id<UITextInput>)textInput;
+@end
+
 @protocol UIKeyInput <UITextInputTraits>
 @end
+
+typedef NS_ENUM(NSInteger, UITextLayoutDirection) {
+    UITextLayoutDirectionRight = 2,
+    UITextLayoutDirectionLeft,
+    UITextLayoutDirectionUp,
+    UITextLayoutDirectionDown
+};
+
+typedef NS_ENUM(NSInteger, UITextWritingDirection) {
+    UITextWritingDirectionNatural = -1,
+    UITextWritingDirectionLeftToRight = 0,
+    UITextWritingDirectionRightToLeft
+};
+
+typedef NS_ENUM(NSInteger, UITextStorageDirection) {
+    UITextStorageDirectionForward = 0,
+    UITextStorageDirectionBackward
+};
 
 @protocol UITextInput <UIKeyInput>
 @property (readwrite, copy) UITextRange *selectedTextRange;
 @property (nonatomic, readonly) UITextPosition *beginningOfDocument;
 @property (nonatomic, readonly) UITextPosition *endOfDocument;
+@property (nonatomic, weak) id<UITextInputDelegate> inputDelegate;
+@property(nonatomic, readonly) id<UITextInputTokenizer> tokenizer;
 - (NSInteger)offsetFromPosition:(UITextPosition *)fromPosition toPosition:(UITextPosition *)toPosition;
 - (UITextPosition *)positionFromPosition:(UITextPosition *)position offset:(NSInteger)offset;
 - (UITextRange *)textRangeFromPosition:(UITextPosition *)fromPosition toPosition:(UITextPosition *)toPosition;
