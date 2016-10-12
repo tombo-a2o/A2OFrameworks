@@ -111,6 +111,7 @@ COREGRAPHICS_EXPORT void CGContextSetAllowsAntialiasing(CGContextRef context, bo
 // layers
 COREGRAPHICS_EXPORT void CGContextBeginTransparencyLayer(CGContextRef context, CFDictionaryRef unused);
 COREGRAPHICS_EXPORT void CGContextEndTransparencyLayer(CGContextRef context);
+COREGRAPHICS_EXPORT void CGContextBeginTransparencyLayerWithRect(CGContextRef c, CGRect rect, CFDictionaryRef auxInfo);
 
 // path
 COREGRAPHICS_EXPORT bool CGContextIsPathEmpty(CGContextRef context);
