@@ -36,7 +36,7 @@ CCCryptorStatus CCCryptorCreate(CCOperation operation,CCAlgorithm algorithm,CCOp
    }
    
    if(self->cipher==NULL){
-    NSLog(@"%s %d cipher==NULL",__FILE__,__LINE__);
+    printf("%s %d cipher==NULL",__FILE__,__LINE__);
     return kCCUnimplemented;
    }
 
