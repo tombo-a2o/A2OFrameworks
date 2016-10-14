@@ -7,6 +7,8 @@ extern NSString *const AVAudioSessionCategoryRecord;
 extern NSString *const AVAudioSessionCategoryPlayAndRecord;
 extern NSString *const AVAudioSessionCategoryAudioProcessing;
 extern NSString *const AVAudioSessionCategoryMultiRoute;
+extern NSString *const AVAudioSessionInterruptionNotification;
+extern NSString *const AVAudioSessionRouteChangeNotification;
 
 @protocol AVAudioSessionDelegate
 @end
