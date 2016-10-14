@@ -1,11 +1,11 @@
 #import <Foundation/Foundation.h>
 
-typedef enum UIUserNotificationType : NSUInteger {
+typedef NS_OPTIONS(NSUInteger, UIUserNotificationType) {
    UIUserNotificationTypeNone    = 0,
    UIUserNotificationTypeBadge   = 1 << 0,
    UIUserNotificationTypeSound   = 1 << 1,
    UIUserNotificationTypeAlert   = 1 << 2,
-} UIUserNotificationType;
+};
 
 @interface UIUserNotificationSettings : NSObject
 +(instancetype)settingsForTypes:(UIUserNotificationType)allowedUserNotificationTypes categories:(NSSet*)actionSettings;

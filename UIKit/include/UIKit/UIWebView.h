@@ -66,4 +66,6 @@ typedef NS_ENUM(NSInteger, UIWebViewNavigationType) {
 @property (nonatomic, readonly, strong) NSURLRequest *request;
 @property (nonatomic) UIDataDetectorTypes dataDetectorTypes;
 @property (nonatomic, readonly, strong) UIScrollView *scrollView;   // not implemented
+@property (nonatomic) BOOL allowsInlineMediaPlayback;
+@property (nonatomic) BOOL mediaPlaybackRequiresUserAction;
 @end

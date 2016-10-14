@@ -119,6 +119,7 @@
 #import <UIKit/UILocalNotification.h>
 #import <UIKit/UIAlertController.h>
 #import <UIKit/UIUserNotificationSettings.h>
+#import <UIKit/UIActivity.h>
 
 // non-standard imports
 #import <UIKit/UIScrollWheelGestureRecognizer.h>

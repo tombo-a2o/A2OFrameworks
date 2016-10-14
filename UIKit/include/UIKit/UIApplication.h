@@ -100,6 +100,12 @@ typedef NS_OPTIONS(NSUInteger, UIRemoteNotificationType) {
     UIRemoteNotificationTypeNewsstandContentAvailability = 1 << 3
 };
 
+typedef NS_ENUM(NSInteger, UIBackgroundFetchResult) {
+    UIBackgroundFetchResultNewData,
+    UIBackgroundFetchResultNoData,
+    UIBackgroundFetchResultFailed,
+};
+
 @class UIApplication;
 
 @protocol UIApplicationDelegate <NSObject>
