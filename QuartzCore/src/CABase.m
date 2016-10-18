@@ -2,5 +2,5 @@
 #import <emscripten.h>
 
 CFTimeInterval CACurrentMediaTime(void) {
-   return emscripten_get_now()/1000000;
+   return emscripten_get_now()/1000;
 }
