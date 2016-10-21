@@ -484,6 +484,12 @@ CFDataRef CGContextCaptureBitmap(CGContextRef context,CGRect rect) {
 }
 
 void CGContextDrawLinearGradient ( CGContextRef c, CGGradientRef gradient, CGPoint startPoint, CGPoint endPoint, CGGradientDrawingOptions options ) {
+    printf("%s is not implemented\n",__FUNCTION__);
     assert(0);
     //O2ContextDrawLinearGradient(c, gradient, startPoint, endPoint, options);
+}
+
+void CGContextDrawRadialGradient (CGContextRef c, CGGradientRef gradient, CGPoint startCenter, CGFloat startRadius, CGPoint endCenter, CGFloat endRadius, CGGradientDrawingOptions options) {
+    printf("%s is not implemented\n",__FUNCTION__);
+    //O2ContextDrawRadialGradient(c, gradient, startCenter, startRadius, endCenter, endRadius, options);
 }
