@@ -5,6 +5,7 @@ typedef struct O2ImageDestination *CGImageDestinationRef;
 #import <CoreGraphics/CGImageSource.h>
 #import <CoreGraphics/CGDataConsumer.h>
 #import <CoreFoundation/CFURL.h>
+#import <MobileCoreServices/UTType.h>
 
 COREGRAPHICS_EXPORT const CFStringRef kCGImageDestinationLossyCompressionQuality;
 COREGRAPHICS_EXPORT const CFStringRef kCGImageDestinationBackgroundColor;
@@ -24,15 +25,3 @@ COREGRAPHICS_EXPORT void CGImageDestinationAddImage(CGImageDestinationRef self, 
 COREGRAPHICS_EXPORT void CGImageDestinationAddImageFromSource(CGImageDestinationRef self, CGImageSourceRef imageSource, size_t index, CFDictionaryRef properties);
 
 COREGRAPHICS_EXPORT bool CGImageDestinationFinalize(CGImageDestinationRef self);
-
-extern const CFStringRef kUTTypeImage;
-extern const CFStringRef kUTTypeJPEG;
-extern const CFStringRef kUTTypeJPEG2000;
-extern const CFStringRef kUTTypeTIFF;
-extern const CFStringRef kUTTypePICT;
-extern const CFStringRef kUTTypeGIF;
-extern const CFStringRef kUTTypePNG;
-extern const CFStringRef kUTTypeQuickTimeImage;
-extern const CFStringRef kUTTypeAppleICNS;
-extern const CFStringRef kUTTypeBMP;
-extern const CFStringRef kUTTypeICO;
