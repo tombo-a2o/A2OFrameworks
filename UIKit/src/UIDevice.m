@@ -71,7 +71,7 @@ void setDeviceOrientation(UIDeviceOrientation orientation) __attribute__((used))
 
 - (NSString *)name
 {
-    return (__bridge_transfer NSString *)SCDynamicStoreCopyComputerName(NULL,NULL);
+    return @"iOS emulator with emscripten";
 }
 
 - (void)setOrientation:(UIDeviceOrientation)orientation
