@@ -209,7 +209,11 @@ __SCNetworkReachabilityDeallocate(CFTypeRef cf)
 	/* disconnect from the reachability server */
 
 	if (targetPrivate->serverActive) {
+#if 1
+        puts("__SCNetworkReachabilityServer_targetRemove is not implemented\n");
+#else
 		__SCNetworkReachabilityServer_targetRemove(target);
+#endif
 	}
 
 	/* release resources */

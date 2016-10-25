@@ -74,7 +74,9 @@ __SCThreadSpecificDataFinalize(void *arg)
 	__SCThreadSpecificDataRef	tsd = (__SCThreadSpecificDataRef)arg;
 
 	if (tsd != NULL) {
+#if 0
 		if (tsd->_asl != NULL) asl_release(tsd->_asl);
+#endif
 		if (tsd->_sc_store != NULL) CFRelease(tsd->_sc_store);
 		CFAllocatorDeallocate(kCFAllocatorSystemDefault, tsd);
 	}
