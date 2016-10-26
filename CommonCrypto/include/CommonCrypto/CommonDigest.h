@@ -260,6 +260,11 @@ __OSX_AVAILABLE_STARTING(__MAC_10_4, __IPHONE_NA);
  
 #ifdef  COMMON_DIGEST_FOR_OPENSSL
 
+#if defined(EMSCRIPTEN)
+#error COMMON_DIGEST_FOR_OPENSSL is not supported
+
+#else
+
 #define MD2_DIGEST_LENGTH           CC_MD2_DIGEST_LENGTH
 #define MD2_CTX                     CC_MD2_CTX
 #define MD2_Init                    CC_MD2_Init
@@ -306,7 +311,7 @@ __OSX_AVAILABLE_STARTING(__MAC_10_4, __IPHONE_NA);
 #define SHA512_Update               CC_SHA512_Update
 #define SHA512_Final                CC_SHA512_Final
 
-
+#endif /* defined(EMSCRIPTEN) */
 #endif  /* COMMON_DIGEST_FOR_OPENSSL */
 
 /*
