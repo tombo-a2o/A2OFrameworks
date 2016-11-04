@@ -48,6 +48,9 @@ extern int _legacyGLEmulationEnabled(void);
     GLboolean vertexArray, textureCoordArray, normalArray, colorArray;
     GLint viewport[4];
     
+    // clear user error
+    glGetError();
+    
     // save state
     glGetIntegerv(GL_CURRENT_PROGRAM, &program);
     GL_ASSERT();
