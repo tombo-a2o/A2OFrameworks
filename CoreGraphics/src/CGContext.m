@@ -32,6 +32,10 @@ void CGContextEndTransparencyLayer(CGContextRef context) {
    O2ContextEndTransparencyLayer(context);
 }
 
+void CGContextBeginTransparencyLayerWithRect(CGContextRef c, CGRect rect, CFDictionaryRef auxInfo) {
+    printf("%s is not implemented. Ignored.\n",__FUNCTION__);
+}
+
 bool CGContextIsPathEmpty(CGContextRef context) {
    return O2ContextIsPathEmpty(context);
 }
@@ -307,6 +311,15 @@ void CGContextSelectFont(CGContextRef context,const char *name,float size,CGText
 
 void CGContextSetShouldSmoothFonts(CGContextRef context,bool yesOrNo) {
    O2ContextSetShouldSmoothFonts(context,yesOrNo);
+}
+
+void CGContextSetShouldSubpixelPositionFonts(CGContextRef c, bool yesOrNo) {
+    printf("%s is not implemented\n",__FUNCTION__);
+    assert(0);
+}
+
+void CGContextSetShouldSubpixelQuantizeFonts(CGContextRef c, bool yesOrNo) {
+    printf("%s is not implemented. Ignored.\n",__FUNCTION__);
 }
 
 void CGContextSetLineWidth(CGContextRef context,float width) {
