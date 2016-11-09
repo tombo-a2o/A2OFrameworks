@@ -28,7 +28,6 @@
 - (void)dealloc
 {
     if(_iFrameId) {
-        iframe_detach(_iFrameId);
         iframe_destroy(_iFrameId);
     }
 }
@@ -37,10 +36,10 @@
 {
     [super willMoveToSuperview:newSuperview];
     if(newSuperview) {
-        iframe_attach(_iFrameId);
+        iframe_setVisible(_iFrameId, 1);
         [self _setFrame];
     } else {
-        iframe_detach(_iFrameId);
+        iframe_setVisible(_iFrameId, 0);
     }
 }
 
@@ -48,10 +47,10 @@
 {
     [super willMoveToWindow:newWindow];
     if(newWindow) {
-        iframe_attach(_iFrameId);
+        iframe_setVisible(_iFrameId, 1);
         [self _setFrame];
     } else {
-        iframe_detach(_iFrameId);
+        iframe_setVisible(_iFrameId, 0);
     }
 }
 
@@ -111,6 +110,14 @@
 - (void)goForward
 {
     iframe_goForward(_iFrameId);
+}
+
+- (NSString *)stringByEvaluatingJavaScriptFromString:(NSString *)script
+{
+    char *result = iframe_evalJs(_iFrameId, [script UTF8String]);
+    NSString *ret = [NSString stringWithUTF8String:result];
+    free(result);
+    return ret;
 }
 
 @end
