@@ -13,5 +13,9 @@ extern NSString *const MPMusicPlayerControllerPlaybackStateDidChangeNotification
 extern NSString *const MPMusicPlayerControllerNowPlayingItemDidChangeNotification;
 
 @interface MPMusicPlayerController : NSObject
++ (MPMusicPlayerController *)systemMusicPlayer;
++ (MPMusicPlayerController *)iPodMusicPlayer;
+- (void)beginGeneratingPlaybackNotifications;
+- (void)endGeneratingPlaybackNotifications;
 @property(nonatomic, readonly) MPMusicPlaybackState playbackState;
 @end
