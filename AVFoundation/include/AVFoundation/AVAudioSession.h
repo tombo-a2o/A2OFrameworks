@@ -18,4 +18,5 @@ extern NSString *const AVAudioSessionRouteChangeNotification;
 - (BOOL)setActive:(BOOL)beActive error:(NSError **)outError;
 - (BOOL)setCategory:(NSString *)theCategory error:(NSError **)outError;
 @property(assign) id< AVAudioSessionDelegate > delegate;
+@property(readonly, getter=isOtherAudioPlaying) BOOL otherAudioPlaying;
 @end

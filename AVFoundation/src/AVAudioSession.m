@@ -8,6 +8,9 @@ NSString *const AVAudioSessionCategoryPlayAndRecord = @"playAndRecord";
 NSString *const AVAudioSessionCategoryAudioProcessing = @"audioProcessing";
 NSString *const AVAudioSessionCategoryMultiRoute = @"multiRoute";
 
+NSString *const AVAudioSessionInterruptionNotification = @"AVAudioSessionInterruptionNotification";
+NSString *const AVAudioSessionRouteChangeNotification = @"AVAudioSessionRouteChangeNotification";
+
 AVAudioSession *_theSession = nil;
 
 @implementation AVAudioSession
