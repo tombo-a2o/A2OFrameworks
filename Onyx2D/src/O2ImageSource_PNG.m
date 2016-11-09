@@ -17,7 +17,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #import <assert.h>
 
-#define STB_IMAGE_IMPLEMENTATION
 #define STBI_ONLY_PNG
 #import "stb_image.h"
 
