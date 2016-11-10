@@ -81,6 +81,8 @@ static EAGLContext *_currentContext = nil;
 }
 
 -(BOOL)presentRenderbuffer:(NSUInteger)target {
+    glGetError();
+    
     GLint renderbuffer;
     glGetIntegerv(GL_RENDERBUFFER_BINDING, &renderbuffer);
     //NSLog(@"renderbuffer %d", renderbuffer);
