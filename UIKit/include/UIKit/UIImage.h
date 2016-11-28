@@ -28,6 +28,7 @@
  */
 
 #import <UIKit/UIGeometry.h>
+#import <UIKit/UIKitDefines.h>
 
 typedef NS_ENUM(NSInteger, UIImageOrientation) {
     UIImageOrientationUp,
@@ -87,5 +88,5 @@ void UISaveVideoAtPathToSavedPhotosAlbum(NSString *videoPath, id completionTarge
 BOOL UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(NSString *videoPath);
 
 // both of these use .CGImage to generate the image data - note what this means for multi-scale images!
-NSData *UIImageJPEGRepresentation(UIImage *image, CGFloat compressionQuality);
-NSData *UIImagePNGRepresentation(UIImage *image);
+UIKIT_EXPORT NSData *UIImageJPEGRepresentation(UIImage *image, CGFloat compressionQuality);
+UIKIT_EXPORT NSData *UIImagePNGRepresentation(UIImage *image);
