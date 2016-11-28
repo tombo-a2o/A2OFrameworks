@@ -233,4 +233,9 @@ static NSArray* CreateCTLinesForString(NSString *string, CGSize constrainedToSiz
     return [self drawInRect:rect withFont:font lineBreakMode:lineBreakMode alignment:UITextAlignmentLeft];
 }
 
+- (void)drawInRect:(CGRect)rect withAttributes:(NSDictionary<NSString *,id> *)attrs
+{
+    NSLog(@"%s is not implemented", __FUNCTION__);
+}
+
 @end
