@@ -159,4 +159,9 @@ NSString *const UIFontTextStyleCallout = @"callout";
 {
     return _cgFont;
 }
+
+- (NSString*)description
+{
+    return [NSString stringWithFormat:@"<%@: %p; name = %@; pointSize = %f>", [self class], self, CGFontCopyFullName(_cgFont), _pointSize];
+}
 @end
