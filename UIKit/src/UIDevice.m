@@ -107,7 +107,7 @@ void setDeviceOrientation(UIDeviceOrientation orientation) __attribute__((used))
 
 - (NSString*)uniqueIdentifier
 {
-    return @"";
+    return @"FFFFFFFF00000000000000000000000000000000";
 }
 
 - (BOOL)isGeneratingDeviceOrientationNotifications
