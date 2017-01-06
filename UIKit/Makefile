@@ -21,7 +21,7 @@ $(eval $(call framework_build, UIKit, $(BUILD_DIR), $(INSTALL_DIR), $(SOURCES), 
 
 # nib classes created for no-ARC (MRC) 
 
-$(__OBJECTS_DIR__)/src/NSNib.o: src/NSNib.mm
+$(__OBJECTS_DIR__)/src/UINib.o: src/UINib.mm
 	mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS_NOARC) $(STYLE_CPPFLAGS) $(CXXFLAGS) -MMD -MP -MF $(@:%.o=%.d) $< -o $@
 

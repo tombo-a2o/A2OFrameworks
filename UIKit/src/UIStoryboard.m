@@ -17,7 +17,7 @@
 #import <Foundation/NSString.h>
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSBundle.h>
-#import <UIKit/NSNib.h>
+#import <UIKit/UINib.h>
 #import <UIKit/UIViewController.h>
 #import <UIKit/UIApplication.h>
 #import <UIKit/UIStoryboard.h>
@@ -65,7 +65,7 @@
         pathToNib = [[NSBundle mainBundle] pathForResource:fileName ofType:@"nib" inDirectory:_path];
     }
 
-    NSNib *nib = [[NSNib alloc] init];
+    UINib *nib = [[UINib alloc] init];
 
     UIApplication *uiApplication = [UIApplication sharedApplication];
     //NSDictionary *proxies = [NSDiction dictionaryWithObjectsAndKeys:uiApplication,@"UpstreamPlaceholder-1",self,@"UIStoryboardPlaceholder",nil];

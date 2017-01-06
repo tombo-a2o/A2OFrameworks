@@ -40,7 +40,7 @@
 #import <UIKit/UIToolbar.h>
 #import <UIKit/UIScreen.h>
 #import <UIKit/UITabBarController.h>
-#import <UIKit/NSNib.h>
+#import <UIKit/UINib.h>
 #import <QuartzCore/QuartzCore.h>
 #import "UIAnimation.h"
 
@@ -184,7 +184,7 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
     
     NSMutableDictionary *proxies = [NSMutableDictionary dictionaryWithDictionary:@{ @"UIStoryboardPlaceholder": self.storyboard}];
     [proxies addEntriesFromDictionary:self.externalObjects];
-    NSNib *nib = [[NSNib alloc] init];
+    UINib *nib = [[UINib alloc] init];
     [nib loadNib:path withOwner:self proxies:proxies];
     self.externalObjects = nil;
 }
