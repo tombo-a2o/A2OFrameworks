@@ -706,6 +706,7 @@ static UIInterfaceOrientation interfaceOrientationFromNSString(NSString *orienta
 
     NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
     NSString *mainStoryboardName = [infoDictionary objectForKey:@"UIMainStoryboardFile"];
+    NSString *mainNibName = [infoDictionary objectForKey:@"NSMainNibFile"];
     if(mainStoryboardName) {
         DEBUGLOG(@"main storyboard %@", mainStoryboardName);
         UIStoryboard *storyboard = [UIStoryboard storyboardWithName:mainStoryboardName bundle:nil];
@@ -722,8 +723,14 @@ static UIInterfaceOrientation interfaceOrientationFromNSString(NSString *orienta
             [delegate performSelector:@selector(setWindow:) withObject:window];
         }
         window.rootViewController = rootVC;
+    } else if(mainNibName) {
+        // DEBUGLOG(@"main nib name %@", mainNibName);
+        // NSArray *topLevelObjects = nil;
+        // NSNib *mainNib = [[NSNib alloc] initWithNibNamed:mainNibName bundle:[NSBundle mainBundle]];
+        // NSArray *objects = [mainNib loadNib:mainNibName withOwner:self];
+        // DEBUGLOG(@"main nib %@", objects);
     }
-
+        
     emscripten_trace_report_memory_layout();
 }
 
@@ -787,15 +794,6 @@ int UIApplicationMain(int argc, char *argv[], NSString *principalClassName, NSSt
         id<UIApplicationDelegate> delegate = delegateClassName? [NSClassFromString(delegateClassName) new] : nil;
 
         [app setDelegate:delegate];
-
-#if 0
-        NSString *mainNibName = [infoDictionary objectForKey:@"NSMainNibFile"];
-        NSArray *topLevelObjects = nil;
-        if(mainNibName) {
-            NSNib *mainNib = [[NSNib alloc] initWithNibNamed:mainNibName bundle:[NSBundle mainBundle]];
-            [mainNib instantiateWithOwner:app topLevelObjects:&topLevelObjects];
-        }
-#endif
 
         [app run];
 
