@@ -24,6 +24,16 @@
 #endif
 
 @implementation UIClassSwapper : NSObject
+- (id)initWithCoder:(id)coder {
+    self = [self instantiateWithCoder:coder];
+    if([self respondsToSelector:@selector(initWithCoder:)]) {
+        self = [self initWithCoder:coder];
+    } else {
+        self = [self init];
+    }
+    return self;
+}
+
 - (id)instantiateWithCoder:(id)coder {
     className = [coder decodeObjectForKey:@"UIClassName"];
     originalClassName = [coder decodeObjectForKey:@"UIOriginalClassName"];
