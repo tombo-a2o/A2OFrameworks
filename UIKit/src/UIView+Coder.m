@@ -133,12 +133,12 @@ static double x,y,width,height;
 
     [self setHidden:[coder decodeInt32ForKey:@"UIHidden"]];
 
-    self.autoresizesSubviews = [coder decodeInt32ForKey:@"UIAutoresizeSubviews"];
+    self.autoresizesSubviews = [coder decodeBoolForKey:@"UIAutoresizeSubviews"];
     self.autoresizingMask = (UIViewAutoresizing)[coder decodeInt32ForKey:@"UIAutoresizingMask"];
     self.tag = [coder decodeInt32ForKey:@"UITag"];
-    self.multipleTouchEnabled = [coder decodeInt32ForKey:@"UIMultipleTouchEnabled"];
+    self.multipleTouchEnabled = [coder decodeBoolForKey:@"UIMultipleTouchEnabled"];
 
-    [self setOpaque:[coder decodeInt32ForKey:@"UIOpaque"]];
+    [self setOpaque:[coder decodeBoolForKey:@"UIOpaque"]];
     [self setClipsToBounds:[coder decodeInt32ForKey:@"UIClipsToBounds"]];
 
     UIColor* backgroundColor = [coder decodeObjectForKey:@"UIBackgroundColor"];
