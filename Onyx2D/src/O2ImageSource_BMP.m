@@ -50,7 +50,7 @@ static int e(const char *str)
 }
 
    #define e(x,y)  e(x)
-#define ep(x,y)   (e(x,y),NULL)   
+#define ep(x,y)   (e(x,y),NULL)
 
 static void start_mem(const uint8 *buffer, int len)
 {
@@ -216,7 +216,6 @@ static stbi_uc *bmp_load(int *x, int *y, int *comp, int req_comp)
    }
    if (get16le() != 1) return 0;
    bpp = get16le();
-   if (bpp == 1) return (stbi_uc *)ep("monochrome", "BMP type not supported: 1-bit");
    flip_vertically = img_y > 0;
    img_y = abs(img_y);
    if (hsz == 12) {
@@ -293,29 +292,49 @@ static stbi_uc *bmp_load(int *x, int *y, int *comp, int req_comp)
          pal[i][3] = 255;
       }
       skip(offset - 14 - hsz - psize * (hsz == 12 ? 3 : 4));
-      if (bpp == 4) width = (img_x + 1) >> 1;
+      if (bpp == 1) width = (img_x + 7) >> 3;
+      else if (bpp == 4) width = (img_x + 1) >> 1;
       else if (bpp == 8) width = img_x;
       else return (stbi_uc *)ep("bad bpp", "Corrupt BMP");
       pad = (-width)&3;
-      for (j=0; j < (int) img_y; ++j) {
-         for (i=0; i < (int) img_x; i += 2) {
-            int v=get8(),v2=0;
-            if (bpp == 4) {
-               v2 = v & 15;
-               v >>= 4;
+      if (bpp == 1) {
+         for (j=0; j < (int) img_y; ++j) {
+            int b;
+            for (i=0; i < (int) img_x; ++i) {
+               int pos = i % 8;
+               if(pos == 0) {
+                  b = get8();
+               }
+               int v = (b >> (7-pos)) & 1;
+
+               out[z++] = pal[v][0];
+               out[z++] = pal[v][1];
+               out[z++] = pal[v][2];
+               if (target == 4) out[z++] = 255;
             }
-            out[z++] = pal[v][0];
-            out[z++] = pal[v][1];
-            out[z++] = pal[v][2];
-            if (target == 4) out[z++] = 255;
-            if (i+1 == (int) img_x) break;
-            v = (bpp == 8) ? get8() : v2;
-            out[z++] = pal[v][0];
-            out[z++] = pal[v][1];
-            out[z++] = pal[v][2];
-            if (target == 4) out[z++] = 255;
+            skip(pad);
          }
-         skip(pad);
+      } else { // bpp == 4 or 8
+         for (j=0; j < (int) img_y; ++j) {
+            for (i=0; i < (int) img_x; i += 2) {
+               int v=get8(),v2=0;
+               if (bpp == 4) {
+                  v2 = v & 15;
+                  v >>= 4;
+               }
+               out[z++] = pal[v][0];
+               out[z++] = pal[v][1];
+               out[z++] = pal[v][2];
+               if (target == 4) out[z++] = 255;
+               if (i+1 == (int) img_x) break;
+               v = (bpp == 8) ? get8() : v2;
+               out[z++] = pal[v][0];
+               out[z++] = pal[v][1];
+               out[z++] = pal[v][2];
+               if (target == 4) out[z++] = 255;
+            }
+            skip(pad);
+         }
       }
    } else {
       int rshift=0,gshift=0,bshift=0,ashift=0,rcount=0,gcount=0,bcount=0,acount=0;
@@ -359,7 +378,7 @@ static stbi_uc *bmp_load(int *x, int *y, int *comp, int req_comp)
                out[z++] = shiftsigned(v & mg, gshift, gcount);
                out[z++] = shiftsigned(v & mb, bshift, bcount);
                a = (ma ? shiftsigned(v & ma, ashift, acount) : 255);
-               if (target == 4) out[z++] = a; 
+               if (target == 4) out[z++] = a;
             }
          }
          skip(pad);
@@ -400,14 +419,14 @@ stbi_uc *stbi_bmp_load_from_memory (const stbi_uc *buffer, int len, int *x, int 
    unsigned char signature[signatureLength] = { 'B','M' };
    unsigned char check[signatureLength];
    NSInteger     i,size=[provider getBytes:check range:NSMakeRange(0,signatureLength)];
-   
+
    if(size!=signatureLength)
     return NO;
-    
+
    for(i=0;i<signatureLength;i++)
     if(signature[i]!=check[i])
      return NO;
-     
+
    return YES;
 }
 
@@ -438,7 +457,7 @@ stbi_uc *stbi_bmp_load_from_memory (const stbi_uc *buffer, int len, int *x, int 
    int            bitsPerPixel=32;
    int            bytesPerRow=(bitsPerPixel/(sizeof(char)*8))*width;
    NSData        *bitmap;
-   
+
    if(pixels==NULL)
     return nil;
 
@@ -449,11 +468,11 @@ stbi_uc *stbi_bmp_load_from_memory (const stbi_uc *buffer, int len, int *x, int 
     O2Image        *image=[[O2Image alloc] initWithWidth:width height:height bitsPerComponent:8 bitsPerPixel:bitsPerPixel bytesPerRow:bytesPerRow
                                               colorSpace:colorSpace bitmapInfo:kO2BitmapByteOrder32Big|kO2ImageAlphaPremultipliedLast decoder:NULL
                                                 provider:provider decode:NULL interpolate:NO renderingIntent:kO2RenderingIntentDefault];
-      
+
    [colorSpace release];
    [provider release];
    [bitmap release];
-   
+
    return image;
 }
 
