@@ -597,14 +597,6 @@ int readLength(char* &offset)
 - (void)finishDecoding {
 }
 
-- (void)_setBundle:(NSBundle*)bundle {
-    _bundle = bundle;
-}
-
-- (NSBundle*)_bundle {
-    return _bundle;
-}
-
 - (void)dealloc {
     if (_classNames) {
         for (unsigned int i = 0; i < _fixed[8]; i++) {
@@ -633,8 +625,6 @@ int readLength(char* &offset)
         }
         free(_objects);
     }
-
-    _bundle = nil;
 
     [super dealloc];
 }

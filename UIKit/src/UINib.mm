@@ -30,31 +30,57 @@ NSString * const UINibExternalObjects = @"externals";
     NSData *_data;
 }
 
-- (NSArray*)loadNib:(NSString*)filename withOwner:(id)ownerObject {
-    return [self loadNib:filename withOwner:ownerObject proxies:nil];
++ (UINib *)nibWithNibName:(NSString *)name bundle:(NSBundle *)bundle
+{
+    return [[[UINib alloc] initWithNibNamed:name bundle:bundle] autorelease];
 }
 
-- (NSArray*)loadNib:(NSString*)filename withOwner:(id)ownerObject proxies:(NSDictionary*)proxies {
-    NSData* data = [NSData dataWithContentsOfFile:filename];
-    if (data == nil) {
-        data = [NSData dataWithContentsOfFile:[filename stringByAppendingPathComponent:@"/runtime.nib"]];
-    }
++ (UINib *)nibWithData:(NSData *)data bundle:(NSBundle *)bundle
+{
+    return [[[UINib alloc] initWithNibData:data bundle:bundle] autorelease];
+}
 
-    return [self loadNibWithData:data withOwner:ownerObject proxies:proxies];
+- (instancetype)initWithNibNamed:(NSString *)name bundle:(NSBundle *)bundle
+{
+    bundle = bundle ?: [NSBundle mainBundle];
+    
+    NSString *path = [bundle pathForResource:name ofType:@"nib"];
+    if(!path) {
+        path = [bundle pathForResource:name ofType:@"nib"];
+    }
+    if(!path) {
+        // FIXME Is this correct???
+        path = [bundle pathForResource:@"runtime" ofType:@"nib" inDirectory:name];
+    }
+    
+    return [self initWithNibData:[NSData dataWithContentsOfFile:path] bundle:bundle];
+}
+
+- (instancetype)initWithNibData:(NSData *)data bundle:(NSBundle *)bundle;
+{
+    self = [super init];
+    _data = [data retain];
+    _bundle = bundle ? [bundle retain] : [[NSBundle mainBundle] retain];
+    return self;
 }
 
 - (instancetype)initWithCoder:(NSCoder*)coder
 {
-    //NSData *data = [coder decodeObjectForKey:@"archiveData"];
-    id data = [coder decodeObjectForKey:@"archiveData"];
-    self = [super initWithNibData:data bundle:nil];
+    self = [super init];
+    _data = [[coder decodeObjectForKey:@"archiveData"] retain];
     return self;
+}
+
+- (void)dealloc {
+    [_data release];
+    [_bundle release];
+    [super dealloc];
 }
 
 - (NSArray *)instantiateWithOwner:(id)owner options:(NSDictionary *)options
 {
     NSDictionary *proxies = options[UINibExternalObjects];
-    return [self loadNibWithData:self._data withOwner:owner proxies:proxies];
+    return [self loadNibWithData:_data withOwner:owner proxies:proxies];
 }
 
 - (NSArray*)loadNibWithData:(NSData*)data withOwner:(id)ownerObject proxies:(NSDictionary*)proxies {
@@ -80,7 +106,6 @@ NSString * const UINibExternalObjects = @"externals";
         [UIProxyObject addProxyObject:curObj withName:key forCoder:prop];
     }
 
-    [prop _setBundle:(id)_bundle];
     [prop initForReadingWithData:data];
 //    return nil; ok
     // id allObjects = prop("decodeObjectForKey:", @"UINibObjectsKey");
@@ -122,28 +147,6 @@ NSString * const UINibExternalObjects = @"externals";
     [UIProxyObject clearProxyObjects:prop];
 
     return ret;
-}
-
-- (void)_setBundle:(NSBundle*)bundle {
-    _bundle = bundle;
-}
-
-- (NSBundle*)_bundle {
-    return _bundle;
-}
-
-- (void)_setData:(NSData*)data {
-    _data = data;
-}
-
-- (NSData*)_data {
-    return _data;
-}
-
-- (void)dealloc {
-    [_data release];
-    _bundle = nil;
-    [super dealloc];
 }
 
 @end

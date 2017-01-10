@@ -724,11 +724,10 @@ static UIInterfaceOrientation interfaceOrientationFromNSString(NSString *orienta
         }
         window.rootViewController = rootVC;
     } else if(mainNibName) {
-        // DEBUGLOG(@"main nib name %@", mainNibName);
-        // NSArray *topLevelObjects = nil;
-        // NSNib *mainNib = [[NSNib alloc] initWithNibNamed:mainNibName bundle:[NSBundle mainBundle]];
-        // NSArray *objects = [mainNib loadNib:mainNibName withOwner:self];
-        // DEBUGLOG(@"main nib %@", objects);
+        DEBUGLOG(@"main nib name %@", mainNibName);
+        UINib *mainNib = [UINib nibWithNibName:mainNibName bundle:[NSBundle mainBundle]];
+        NSArray *objects = [mainNib instantiateWithOwner:self options:nil];
+        DEBUGLOG(@"main nib %@", objects);
     }
         
     emscripten_trace_report_memory_layout();

@@ -184,8 +184,8 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
     
     NSMutableDictionary *proxies = [NSMutableDictionary dictionaryWithDictionary:@{ @"UIStoryboardPlaceholder": self.storyboard}];
     [proxies addEntriesFromDictionary:self.externalObjects];
-    UINib *nib = [[UINib alloc] init];
-    [nib loadNib:path withOwner:self proxies:proxies];
+    UINib *nib = [UINib nibWithData:[NSData dataWithContentsOfFile:path] bundle:nil];
+    [nib instantiateWithOwner:self options:@{UINibExternalObjects: proxies}];
     self.externalObjects = nil;
 }
 

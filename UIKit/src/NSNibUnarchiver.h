@@ -35,8 +35,6 @@ typedef struct Item Item;
     Object *_curObject[16];
 
     int _curObjectLevel;
-
-    id _bundle;
 }
 -(double) decodeDoubleForKey:(id)key;
 -(float) decodeFloatForKey:(id)key;
@@ -49,8 +47,6 @@ typedef struct Item Item;
 -(NSInteger) decodeIntegerForKey:(NSString*)key;
 -(NSInteger) decodeInt32ForKey:(NSString*)key;
 -(void) finishDecoding;
--(void) _setBundle:(NSBundle*)bundle;
--(NSBundle*) _bundle;
 -(void) dealloc;
 +(id) unarchiveObjectWithFile:(NSString*)file;
 +(id) unarchiveObjectWithData:(NSData*)data;

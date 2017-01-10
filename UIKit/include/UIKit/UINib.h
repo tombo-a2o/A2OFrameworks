@@ -20,9 +20,11 @@ extern NSString * const UINibProxiedObjectsKey;
 extern NSString * const UINibExternalObjects;
 
 @interface UINib : NSObject
-- (NSArray*)loadNib:(NSString*)filename withOwner:(id)ownerObject;
-- (NSArray*)loadNib:(NSString*)filename withOwner:(id)ownerObject proxies:(NSDictionary*)proxies;
++ (UINib *)nibWithNibName:(NSString *)name bundle:(NSBundle *)bundle;
++ (UINib *)nibWithData:(NSData *)data bundle:(NSBundle *)bundle;
 
+- (instancetype)initWithNibNamed:(NSString *)name bundle:(NSBundle *)bundle;
+- (instancetype)initWithNibData:(NSData *)data bundle:(NSBundle *)bundle;
 - (instancetype)initWithCoder:(NSCoder*)coder;
 - (NSArray *)instantiateWithOwner:(id)ownerOrNil options:(NSDictionary *)options;
 @end
