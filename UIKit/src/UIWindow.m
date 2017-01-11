@@ -80,6 +80,14 @@ NSString *const UIKeyboardBoundsUserInfoKey = @"UIKeyboardBoundsUserInfoKey";
     return self;
 }
 
+- (id)initWithCoder:(NSCoder*)coder {
+    if ((self=[super initWithCoder:coder])) {
+        [self _makeHidden];
+        self.screen = [UIScreen mainScreen];
+    }
+    return self;
+}
+
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
