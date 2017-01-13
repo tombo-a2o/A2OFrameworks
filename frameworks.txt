@@ -1,7 +1,0 @@
-AppKit
-CommonCrypto
-CoreData
-CoreGraphics
-CoreText
-Onyx2D
-QuartzCore
