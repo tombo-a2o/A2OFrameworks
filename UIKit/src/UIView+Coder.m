@@ -35,7 +35,7 @@ static double x,y,width,height;
     DEBUGLOG(@"UIView initWithCoder %x %@", self, [self class]);
 
     [self _commonInit];
-    
+
     CGRect bounds = [coder decodeCGRectForKey:@"UIBounds"];
     CGPoint center = [coder decodeCGPointForKey:@"UICenter"];
 
@@ -116,7 +116,7 @@ static double x,y,width,height;
         //                 break;
         //             }
         //         }
-        // 
+        //
         //         if (![priv->constraints containsObject:constraint] && !remove) {
         //             [priv->constraints addObject:constraint];
         //             if ([constraint conformsToProtocol:@protocol(AutoLayoutConstraint)]) {
@@ -133,13 +133,13 @@ static double x,y,width,height;
 
     [self setHidden:[coder decodeInt32ForKey:@"UIHidden"]];
 
-    self.autoresizesSubviews = [coder decodeBoolForKey:@"UIAutoresizeSubviews"];
+    self.autoresizesSubviews = ![coder containsValueForKey:@"UIAutoresizeSubviews"] || [coder decodeBoolForKey:@"UIAutoresizeSubviews"]; // default YES
     self.autoresizingMask = (UIViewAutoresizing)[coder decodeInt32ForKey:@"UIAutoresizingMask"];
     self.tag = [coder decodeInt32ForKey:@"UITag"];
     self.multipleTouchEnabled = [coder decodeBoolForKey:@"UIMultipleTouchEnabled"];
 
-    [self setOpaque:[coder decodeBoolForKey:@"UIOpaque"]];
-    [self setClipsToBounds:[coder decodeInt32ForKey:@"UIClipsToBounds"]];
+    self.opaque = ![coder containsValueForKey:@"UIOpaque"] || [coder decodeBoolForKey:@"UIOpaque"]; // default YES
+    self.clipsToBounds = [coder decodeInt32ForKey:@"UIClipsToBounds"];
 
     UIColor* backgroundColor = [coder decodeObjectForKey:@"UIBackgroundColor"];
     if (backgroundColor != nil) {
