@@ -32,8 +32,21 @@
 
 static CGImageSourceRef CreateCGImageSourceWithFile(NSString *imagePath)
 {
+    NSURL *url;
+    if(imagePath.isAbsolutePath) {
+        url = [NSURL fileURLWithPath:imagePath];
+    } else {
+        NSString *file = imagePath.lastPathComponent;
+        NSString *basename = file.stringByDeletingPathExtension;
+        NSString *extension = file.pathExtension;
+        NSString *dir = imagePath.stringByDeletingLastPathComponent;
+
+        NSBundle *bundle = [NSBundle mainBundle];
+        url = [bundle URLForResource:basename withExtension:extension subdirectory:dir];
+    }
+
     //NSString *macPath = [[[imagePath stringByDeletingPathExtension] stringByAppendingString:@"~mac"] stringByAppendingPathExtension:[imagePath pathExtension]];
-    return CGImageSourceCreateWithURL((__bridge CFURLRef)[NSURL fileURLWithPath:imagePath], NULL);
+    return url ? CGImageSourceCreateWithURL((__bridge CFURLRef)url, NULL) : NULL;
 }
 
 @implementation UIImageRep {
@@ -67,7 +80,7 @@ static CGImageSourceRef CreateCGImageSourceWithFile(NSString *imagePath)
         if (rep) [reps addObject:rep];
         CFRelease(src2X);
     }
-    
+
     return ([reps count] > 0)? reps : nil;
 }
 
@@ -109,7 +122,7 @@ static CGImageSourceRef CreateCGImageSourceWithFile(NSString *imagePath)
     } else {
         self = nil;
     }
-    
+
     return self;
 }
 
@@ -127,7 +140,7 @@ static CGImageSourceRef CreateCGImageSourceWithFile(NSString *imagePath)
 - (BOOL)isOpaque
 {
     BOOL opaque = NO;
-    
+
     if (_CGImage) {
         CGImageAlphaInfo info = CGImageGetAlphaInfo(_CGImage);
         opaque = (info == kCGImageAlphaNone) || (info == kCGImageAlphaNoneSkipLast) || (info == kCGImageAlphaNoneSkipFirst);
@@ -136,14 +149,14 @@ static CGImageSourceRef CreateCGImageSourceWithFile(NSString *imagePath)
         opaque = CFDictionaryGetValue(info, kCGImagePropertyHasAlpha) != kCFBooleanTrue;
         CFRelease(info);
     }
-    
+
     return opaque;
 }
 
 - (CGSize)imageSize
 {
     CGSize size = CGSizeZero;
-    
+
     if (_CGImage) {
         size.width = CGImageGetWidth(_CGImage);
         size.height = CGImageGetHeight(_CGImage);
@@ -169,7 +182,7 @@ static CGImageSourceRef CreateCGImageSourceWithFile(NSString *imagePath)
         CFRelease(_imageSource);
         _imageSource = NULL;
     }
-    
+
     return _CGImage;
 }
 
@@ -181,7 +194,7 @@ static CGImageSourceRef CreateCGImageSourceWithFile(NSString *imagePath)
     CGContextTranslateCTM(ctx, rect.origin.x, rect.origin.y+rect.size.height);
     CGContextScaleCTM(ctx, 1, -1);
     rect.origin = CGPointZero;
-    
+
     if (CGRectIsNull(fromRect)) {
         CGContextDrawImage(ctx, rect, image);
     } else {
@@ -194,7 +207,7 @@ static CGImageSourceRef CreateCGImageSourceWithFile(NSString *imagePath)
         CGContextDrawImage(ctx, rect, tempImage);
         CGImageRelease(tempImage);
     }
-    
+
     CGContextRestoreGState(ctx);
     CGImageRelease(image);
 }

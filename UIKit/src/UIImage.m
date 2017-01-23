@@ -38,31 +38,29 @@
 
 + (UIImage *)_imageNamed:(NSString *)name
 {
-    NSBundle *bundle = [NSBundle mainBundle];
-    NSString *path = [[bundle resourcePath] stringByAppendingPathComponent:name];
-    UIImage *img = [self imageWithContentsOfFile:path];
-    
+    UIImage *img = [self imageWithContentsOfFile:name];
+
     if (!img) {
         // if nothing is found, try again after replacing any underscores in the name with dashes.
         // I don't know why, but UIKit does something similar. it probably has a good reason and it might not be this simplistic, but
         // for now this little hack makes Ramp Champ work. :)
-        path = [[[bundle resourcePath] stringByAppendingPathComponent:[[name stringByDeletingPathExtension] stringByReplacingOccurrencesOfString:@"_" withString:@"-"]] stringByAppendingPathExtension:[name pathExtension]];
-        img = [self imageWithContentsOfFile:path];
+        NSString *name2 = [[[name stringByDeletingPathExtension] stringByReplacingOccurrencesOfString:@"_" withString:@"-"] stringByAppendingPathExtension:[name pathExtension]];
+        img = [self imageWithContentsOfFile:name2];
     }
-    
+
     return img;
 }
 
 + (id)imageNamed:(NSString *)name
 {
     UIImage *img = [self _cachedImageForName:name];
-    
+
     if (!img) {
         // as per the iOS docs, if it fails to find a match with the bare name, it re-tries by appending a png file extension
         img = [self _imageNamed:name] ?: [self _imageNamed:[name stringByAppendingPathExtension:@"png"]];
         [self _cacheImage:img forName:name];
     }
-    
+
     return img;
 }
 
@@ -176,7 +174,7 @@
     CGContextSetAlpha(ctx, alpha);
 
     [self drawInRect:rect];
-    
+
     CGContextRestoreGState(ctx);
 }
 
