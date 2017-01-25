@@ -27,16 +27,9 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#if 1
-
-@implementation UIPhotosAlbum
-@end
-
-#else
-
 #import "UIPhotosAlbum.h"
-#import <UIKit/UIImage.h>
-#import <AppKit/NSSavePanel.h>
+#import <UIKit/UIKit.h>
+#import <emscripten.h>
 
 @implementation UIPhotosAlbum
 
@@ -47,62 +40,34 @@
     if (!album) {
         album = [[self alloc] init];
     }
-    
+
     return album;
-}
-
-- (void)_writeImageWithInfo:(NSDictionary *)info
-{
-    UIImage *image = [info objectForKey:@"image"];
-    NSError *error = nil;
-
-    NSSavePanel *panel = [NSSavePanel savePanel];
-    [panel setAllowedFileTypes:[NSArray arrayWithObject:@"png"]];
-
-    if (NSFileHandlingPanelOKButton == [panel runModal] && [panel URL]) {
-        NSData *imageData = UIImagePNGRepresentation(image);
-        
-        if (imageData) {
-            [imageData writeToURL:[panel URL] options:NSDataWritingAtomic error:&error];
-        } else {
-            error = [NSError errorWithDomain:@"could not generate png image" code:2 userInfo:nil];
-        }
-    } else {
-        error = [NSError errorWithDomain:@"save panel cancelled" code:1 userInfo:nil];
-    }
-    
-    id target = [info objectForKey:@"target"];
-
-    if (target) {
-        SEL action = NSSelectorFromString([info objectForKey:@"action"]);
-        void *context = [[info objectForKey:@"context"] pointerValue];
-        typedef void(*ActionMethod)(id, SEL, id, NSError *, void *);
-        ActionMethod method = (ActionMethod)[target methodForSelector:action];
-        method(target, action, image, error, context);
-    }
 }
 
 - (void)writeImage:(UIImage *)image completionTarget:(id)target action:(SEL)action context:(void *)context
 {
     if (image) {
-        NSMutableDictionary *info = [NSMutableDictionary dictionaryWithCapacity:4];
-        [info setObject:image forKey:@"image"];
+        NSData *data = UIImagePNGRepresentation(image);
+        NSError *error = nil;
 
-        if (target && action) {
-            [info setObject:target forKey:@"target"];
-            [info setObject:NSStringFromSelector(action) forKey:@"action"];
+        // http://qiita.com/ukyo/items/d623209655a003b13add
+        EM_ASM_({
+            var a = document.createElement('a');
+            var blob = new Blob([HEAPU8.subarray($0, $0+$1)], {type: 'image/png'});
+            var url = window.URL.createObjectURL(blob);
+            a.href = url;
+            a.download = 'image'+(new Date().toISOString().replace(/[-:.TZ]/g,''))+'.png';
+            var e = document.createEvent('MouseEvent');
+            e.initEvent("click", true, true, window, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
+            a.dispatchEvent(e);
+        }, data.bytes, data.length);
+
+        if (target) {
+            typedef void(*ActionMethod)(id, SEL, id, NSError *, void *);
+            ActionMethod method = (ActionMethod)[target methodForSelector:action];
+            method(target, action, image, error, context);
         }
-        
-        if (context) {
-            [info setObject:[NSValue valueWithPointer:context] forKey:@"context"];
-        }
-        
-        // deferring this partly because the save dialog is modal and partly because I don't think code is going
-        // to expect the target/action to be sent before the save function even returns.
-        [self performSelector:@selector(_writeImageWithInfo:) withObject:info afterDelay:0];
     }
 }
 
 @end
-
-#endif
