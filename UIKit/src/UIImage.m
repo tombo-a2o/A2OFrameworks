@@ -204,6 +204,7 @@ void UIImageWriteToSavedPhotosAlbum(UIImage *image, id completionTarget, SEL com
 
 void UISaveVideoAtPathToSavedPhotosAlbum(NSString *videoPath, id completionTarget, SEL completionSelector, void *contextInfo)
 {
+    NSLog(@"*** %s is not implemented", __FUNCTION__);
 }
 
 BOOL UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(NSString *videoPath)
