@@ -29,19 +29,19 @@ static O2ImageFileType fileTypeForUTI(CFStringRef uti){
 
    if([(NSString *)uti isEqualToString:@"public.tiff"])
     return O2ImageFileTIFF;
-     
+
    if([(NSString *)uti isEqualToString:@"com.microsoft.bmp"])
     return O2ImageFileBMP;
-     
+
    if([(NSString *)uti isEqualToString:@"com.compuserve.gif"])
     return O2ImageFileGIF;
-     
+
    if([(NSString *)uti isEqualToString:@"public.jpeg"])
     return O2ImageFileJPEG;
-     
+
    if([(NSString *)uti isEqualToString:@"public.png"])
     return O2ImageFilePNG;
-     
+
    if([(NSString *)uti isEqualToString:@"public.jpeg-2000"])
     return O2ImageFileJPEG2000;
 
@@ -69,31 +69,36 @@ O2ImageDestinationRef O2ImageDestinationCreateWithDataConsumer(O2DataConsumerRef
    O2ImageDestinationRef self=NSAllocateObject([O2ImageDestination class],0,NULL);
 
     if (self) {
-        
+
        self->_consumer=O2DataConsumerRetain(dataConsumer);
        self->_type=fileTypeForUTI(type);
        self->_imageCount=imageCount;
        self->_options=(options==NULL)?NULL:(CFDictionaryRef)CFRetain(options);
-       
+
        switch(self->_type){
-       
+
         case O2ImageFileUnknown:
+         NSLog(@"%s unsupported image type %@", __FUNCTION__, type);
          break;
-         
+
         case O2ImageFileTIFF:
          self->_encoder=O2TIFFEncoderCreate(self->_consumer);
          O2TIFFEncoderBegin((O2TIFFEncoderRef)self->_encoder);
          break;
 
         case O2ImageFileBMP:
+         NSLog(@"%s unsupported image type %@", __FUNCTION__, type);
          break;
 
         case O2ImageFileGIF:
+         NSLog(@"%s unsupported image type %@", __FUNCTION__, type);
          break;
 
         case O2ImageFileJPEG:
     #ifdef LIBJPEG_PRESENT
          self->_encoder=O2JPGEncoderCreate(self->_consumer);
+    #else
+         NSLog(@"%s unsupported image type %@", __FUNCTION__, type);
     #endif
          break;
 
@@ -102,10 +107,11 @@ O2ImageDestinationRef O2ImageDestinationCreateWithDataConsumer(O2DataConsumerRef
          break;
 
         case O2ImageFileJPEG2000:
+         NSLog(@"%s unsupported image type %@", __FUNCTION__, type);
          break;
        }
     }
-    
+
    return self;
 }
 
@@ -121,12 +127,12 @@ void O2ImageDestinationSetProperties(O2ImageDestinationRef self,CFDictionaryRef 
 
 void O2ImageDestinationAddImage(O2ImageDestinationRef self,O2ImageRef image,CFDictionaryRef properties) {
    self->_imageCount--;
-   
+
    switch(self->_type){
-   
+
     case O2ImageFileUnknown:
      break;
-     
+
     case O2ImageFileTIFF:
      O2TIFFEncoderWriteImage((O2TIFFEncoderRef)self->_encoder,image,properties,(self->_imageCount==0)?YES:NO);
      break;
@@ -150,7 +156,7 @@ void O2ImageDestinationAddImage(O2ImageDestinationRef self,O2ImageRef image,CFDi
     case O2ImageFileJPEG2000:
      break;
    }
-   
+
 }
 
 void O2ImageDestinationAddImageFromSource(O2ImageDestinationRef self,O2ImageSourceRef imageSource,size_t index,CFDictionaryRef properties) {
@@ -161,10 +167,10 @@ void O2ImageDestinationAddImageFromSource(O2ImageDestinationRef self,O2ImageSour
 
 bool O2ImageDestinationFinalize(O2ImageDestinationRef self) {
    switch(self->_type){
-   
+
     case O2ImageFileUnknown:
      break;
-     
+
     case O2ImageFileTIFF:
      O2TIFFEncoderEnd((O2TIFFEncoderRef)self->_encoder);
      O2TIFFEncoderDealloc((O2TIFFEncoderRef)self->_encoder);
@@ -172,6 +178,7 @@ bool O2ImageDestinationFinalize(O2ImageDestinationRef self) {
      break;
 
     case O2ImageFileBMP:
+
      break;
 
     case O2ImageFileGIF:
@@ -197,7 +204,7 @@ bool O2ImageDestinationFinalize(O2ImageDestinationRef self) {
    if (self->_options)
 	   CFRelease(self->_options);
 	self->_options = NULL;
-	
+
    return TRUE;
 }
 
