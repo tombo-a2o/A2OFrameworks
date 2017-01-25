@@ -1,21 +1,21 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 
-const CFStringRef kUTTagClassFilenameExtension = CFSTR("filenameExtension");
-const CFStringRef kUTTagClassMIMEType = CFSTR("mimeType");
+const CFStringRef kUTTagClassFilenameExtension = CFSTR("public.filename-extension");
+const CFStringRef kUTTagClassMIMEType = CFSTR("public.mime-type");
 const CFStringRef kUTTagClassNSPboardType = CFSTR("");
 const CFStringRef kUTTagClassOSType = CFSTR("");
 
-const CFStringRef kUTTypeImage = CFSTR("image");
-const CFStringRef kUTTypeJPEG = CFSTR("image/jpeg");
-const CFStringRef kUTTypeJPEG2000 = CFSTR("image/jpeng2000");
-const CFStringRef kUTTypeTIFF = CFSTR("image/tiff");
-const CFStringRef kUTTypePICT = CFSTR("image/pict");
-const CFStringRef kUTTypeGIF = CFSTR("image/gif");
-const CFStringRef kUTTypePNG = CFSTR("image/png");
-const CFStringRef kUTTypeQuickTimeImage = CFSTR("image/qif");
-const CFStringRef kUTTypeAppleICNS = CFSTR("image/icns");
-const CFStringRef kUTTypeBMP = CFSTR("image/bmp");
-const CFStringRef kUTTypeICO = CFSTR("image/ico");
+const CFStringRef kUTTypeImage = CFSTR("public.image");
+const CFStringRef kUTTypeJPEG = CFSTR("public.jpeg");
+const CFStringRef kUTTypeJPEG2000 = CFSTR("public.jpeg-2000");
+const CFStringRef kUTTypeTIFF = CFSTR("public.tiff");
+const CFStringRef kUTTypePICT = CFSTR("com.apple.pict");
+const CFStringRef kUTTypeGIF = CFSTR("com.compuserve.gif");
+const CFStringRef kUTTypePNG = CFSTR("public.png");
+const CFStringRef kUTTypeQuickTimeImage = CFSTR("com.apple.quicktime-image");
+const CFStringRef kUTTypeAppleICNS = CFSTR("com.apple.icns");
+const CFStringRef kUTTypeBMP = CFSTR("com.microsoft.bmp");
+const CFStringRef kUTTypeICO = CFSTR("com.microsoft.ico");
 
 CFStringRef UTTypeCreatePreferredIdentifierForTag ( CFStringRef inTagClass, CFStringRef inTag, CFStringRef inConformingToUTI )
 {
