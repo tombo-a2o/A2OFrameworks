@@ -67,7 +67,7 @@ static NSArray* CreateCTLinesForString(NSString *string, CGSize constrainedToSiz
                     line = [string substringWithRange:NSMakeRange(start, usedCharacters)];
                 } else {
                     // CTLineTruncationType truncType;
-                    // 
+                    //
                     // if (lineBreakMode == NSLineBreakByHeadTruncation) {
                     //     truncType = kCTLineTruncationStart;
                     // } else if (lineBreakMode == NSLineBreakByTailTruncation) {
@@ -75,7 +75,7 @@ static NSArray* CreateCTLinesForString(NSString *string, CGSize constrainedToSiz
                     // } else {
                     //     truncType = kCTLineTruncationMiddle;
                     // }
-                    // 
+                    //
                     usedCharacters = stringLength - start;
                     line = [string substringWithRange:NSMakeRange(start, usedCharacters)];
                     // CFAttributedStringRef ellipsisString = CFAttributedStringCreate(NULL, CFSTR("…"), attributes);
@@ -94,24 +94,24 @@ static NSArray* CreateCTLinesForString(NSString *string, CGSize constrainedToSiz
                 // }
                 // line = CTTypesetterCreateLine(typesetter, CFRangeMake(start, usedCharacters));
                 usedCharacters = CGFontSuggestLineBreak(cgFont, text, stringLength, font.pointSize, start, constrainedToSize.width);
-                
+
                 // TODO re-implement with ICU
                 NSString *prohibitsAtBegin = @"、。）」ぁぃぅぇぉっゃゅょァィゥェォッャュョ";
                 NSString *prohibitsAtLast = @"（「";
-                
+
                 NSString *lastChar = [string substringWithRange:NSMakeRange(start+usedCharacters-1, 1)];
                 NSString *nextChar = start + usedCharacters < stringLength ? [string substringWithRange:NSMakeRange(start+usedCharacters, 1)] : nil;
                 if([prohibitsAtLast rangeOfString:lastChar options:0].location != NSNotFound || (nextChar && [prohibitsAtBegin rangeOfString:nextChar options:0].location != NSNotFound)) {
                     usedCharacters--;
                 }
-                
+
                 line = [string substringWithRange:NSMakeRange(start, usedCharacters)];
             }
 
             if (usedCharacters) {
                 // drawSize.width = MAX(drawSize.width, ceilf(CTLineGetTypographicBounds(line,NULL,NULL,NULL)));
                 drawSize.width = MAX(drawSize.width, ceilf(CGFontGetTextWidth(cgFont, text + start, usedCharacters, font.pointSize)));
-                
+
                 [lines addObject:line];
             }
 
@@ -179,6 +179,8 @@ static NSArray* CreateCTLinesForString(NSString *string, CGSize constrainedToSiz
 
 - (CGSize)drawInRect:(CGRect)rect withFont:(UIFont *)font lineBreakMode:(NSLineBreakMode)lineBreakMode alignment:(UITextAlignment)alignment
 {
+    if(font.pointSize == 0) return CGSizeZero;
+
     CGSize actualSize = CGSizeZero;
     CGSize s = rect.size;
     NSArray* lines = CreateCTLinesForString(self, rect.size, font, lineBreakMode, &actualSize);
@@ -205,14 +207,14 @@ static NSArray* CreateCTLinesForString(NSString *string, CGSize constrainedToSiz
             size_t len = [line length];
             unichar *text = malloc(len * sizeof(unichar));
             [line getCharacters:text range:NSMakeRange(0, len)];
-            
+
             CGFloat textWidth = CGFontGetTextWidth([font CGFont], text, len, font.pointSize);
             CGFloat penOffset = flush * (rect.size.width - textWidth);
-            
+
             CGContextShowUnicodeTextAtPoint(ctx, penOffset, textOffset, text, len);
-            
+
             free(text);
-            
+
             textOffset += fontLineHeight;
         }
         CGContextRestoreGState(ctx);
