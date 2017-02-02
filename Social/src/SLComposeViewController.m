@@ -1,5 +1,6 @@
 #import <Social/SLComposeViewController.h>
 #import <UIKit/UIKit.h>
+#import <CoreFoundation/CFBundlePriv.h>
 
 NSString *const SLServiceTypeFacebook = @"facebook";
 NSString *const SLServiceTypeTwitter = @"twitter";
@@ -9,6 +10,7 @@ NSString *const SLServiceTypeTencentWeibo = @"tencentWeibo";
 @implementation SLComposeViewController {
     NSString *_initialText;
     NSMutableArray *_urls;
+    NSBundle *_frameworkBundle;
 }
 
 + (SLComposeViewController *)composeViewControllerForServiceType:(NSString *)serviceType
@@ -30,6 +32,8 @@ NSString *const SLServiceTypeTencentWeibo = @"tencentWeibo";
         self.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
         _serviceType = serviceType;
         _urls = [[NSMutableArray alloc] init];
+        _frameworkBundle = [NSBundle bundleWithPath:@"/frameworks/Social.framework/Resources"];
+        [_frameworkBundle load];
     }
     return self;
 }
@@ -44,22 +48,42 @@ NSString *const SLServiceTypeTencentWeibo = @"tencentWeibo";
     } else {
         assert(0);
     }
-    
+
 }
 
 #define TWITTER 1
 #define FACEBOOK 2
 
+#define SLLocalizedString(key) [self localizedString:key]
+
+- (NSString*)localizedString:(NSString*)key
+{
+    NSArray* localizations = [_frameworkBundle localizations];
+    NSArray* prefArray = [(NSArray*)CFBundleCopyLocalizationsForPreferences((CFArrayRef)localizations, NULL) autorelease];
+    for(NSString *pref in prefArray) {
+        return (NSString*)CFBundleCopyLocalizedStringForLocalization([_frameworkBundle _cfBundle], (CFStringRef)key, NULL, NULL, (CFStringRef)pref);
+    }
+    return key;
+}
+
 - (void)_prepareTweetView
 {
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Twitter" message:@"外部サイトに移動します" delegate:self cancelButtonTitle:@"キャンセル" otherButtonTitles:@"はい", nil];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Twitter"
+                                                    message:[self localizedString:@"About to open a new tab"]
+                                                   delegate:self
+                                          cancelButtonTitle:[self localizedString:@"Cancel"]
+                                          otherButtonTitles:[self localizedString:@"OK"], nil];
     alert.tag = TWITTER;
     [alert show];
 }
 
 - (void)_prepareFacebookView
 {
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Facebook" message:@"外部サイトに移動します" delegate:self cancelButtonTitle:@"キャンセル" otherButtonTitles:@"はい", nil];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Facebook"
+                                                    message:[self localizedString:@"About to open a new tab"]
+                                                   delegate:self
+                                          cancelButtonTitle:[self localizedString:@"Cancel"]
+                                          otherButtonTitles:[self localizedString:@"OK"], nil];
     alert.tag = FACEBOOK;
     [alert show];
 }
@@ -89,7 +113,7 @@ static inline NSString* escapeHTML(NSString *input)
         }];
     } else {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillEnterForeground) name:UIApplicationWillEnterForegroundNotification object:nil];
-        
+
         NSMutableString *baseUrl;
         if(alertView.tag == TWITTER) {
             baseUrl = [NSMutableString stringWithString:@"https://twitter.com/intent/tweet?text="];
