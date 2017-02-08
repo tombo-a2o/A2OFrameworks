@@ -404,37 +404,37 @@ static UIInterfaceOrientation interfaceOrientationFromNSString(NSString *orienta
 // - (NSApplicationTerminateReply)terminateApplicationBeforeDate:(NSDate *)timeoutDate
 // {
 //     [self _enterBackground];
-// 
+//
 //     _backgroundTasksExpirationDate = timeoutDate;
-// 
+//
 //     // we will briefly block here for a short time and run the runloop in an attempt to let the background tasks finish up before
 //     // actually prompting the user with an annoying alert. users are much more used to an app hanging for a brief moment while
 //     // quitting than they are with an alert appearing/disappearing suddenly that they might have had trouble reading and processing
 //     // before it's gone. that sort of thing creates anxiety.
 //     NSDate *blockingBackgroundExpiration = [NSDate dateWithTimeIntervalSinceNow:1.33];
-// 
+//
 //     for (;;) {
 //         if (![self _runRunLoopForBackgroundTasksBeforeDate:blockingBackgroundExpiration] || [NSDate timeIntervalSinceReferenceDate] >= [blockingBackgroundExpiration timeIntervalSinceReferenceDate]) {
 //             break;
 //         }
 //     }
-// 
+//
 //     // if it turns out we're all done with tasks (or maybe had none to begin with), we'll clean up the structures
 //     // and tell our app we can terminate immediately now.
 //     if ([_backgroundTasks count] == 0) {
 //         [self _cancelBackgroundTasks];
-// 
+//
 //         // and reset our timer since we're done
 //         _backgroundTasksExpirationDate = nil;
-// 
+//
 //         // and return
 //         return NSTerminateNow;
 //     }
-// 
+//
 //     // otherwise... we have to do a deferred thing so we can show an alert while we wait for background tasks to finish...
-// 
+//
 //     void (^taskFinisher)(void) = ^{
-// #if 1        
+// #if 1
 //         NSLog(@"%s fix me", __FUNCTION__);
 // #else
 //         NSAlert *alert = [[NSAlert alloc] init];
@@ -444,27 +444,27 @@ static UIInterfaceOrientation interfaceOrientationFromNSString(NSString *orienta
 //         [alert setInformativeText:@"Finishing some tasks..."];
 //         [alert addButtonWithTitle:@"Quit Now"];
 //         [alert layout];
-// 
+//
 //         // to avoid upsetting the user with an alert that flashes too quickly to read, we'll later artifically ensure that
 //         // the alert has been visible for at least some small amount of time to give them a chance to see and understand it.
 //         NSDate *minimumDisplayTime = [NSDate dateWithTimeIntervalSinceNow:2.33];
-// 
+//
 //         NSModalSession session = [NSApp beginModalSessionForWindow:alert.window];
-// 
+//
 //         // run the runloop and wait for tasks to finish
 //         while ([NSApp runModalSession:session] == NSRunContinuesResponse) {
 //             if (![self _runRunLoopForBackgroundTasksBeforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]]) {
 //                 break;
 //             }
 //         }
-// 
+//
 //         // when we exit the runloop loop, then we're done with the tasks. either they are all finished or the time has run out
 //         // so we need to clean things up here as if we're all finished. if there's any remaining tasks, run their expiration handlers
 //         [self _cancelBackgroundTasks];
-// 
+//
 //         // and reset our timer since we're done
 //         _backgroundTasksExpirationDate = nil;
-// 
+//
 //         // now just in case all of this happened too quickly and the user might not have had time to read and understand the alert,
 //         // we will kill some time for a bit as long as the alert is still visible. runModalSession: will not return NSRunContinuesResponse
 //         // if the user closed the alert, so in that case then this delay won't happen at all. however if the tasks finished too quickly
@@ -474,15 +474,15 @@ static UIInterfaceOrientation interfaceOrientationFromNSString(NSString *orienta
 //                 break;
 //             }
 //         }
-// 
-// 
+//
+//
 //         [NSApp endModalSession:session];
-// 
+//
 //         // tell the real NSApp we're all done here
 //         [NSApp replyToApplicationShouldTerminate:YES];
 // #endif
 //     };
-// 
+//
 //     // I need to delay this but run it on the main thread and also be able to run it in the panel run loop mode
 //     // because we're probably in that run loop mode due to how -applicationShouldTerminate: does things. I don't
 //     // know if I could do this same thing with a couple of simple GCD calls, but whatever, this works too. :)
@@ -490,7 +490,7 @@ static UIInterfaceOrientation interfaceOrientationFromNSString(NSString *orienta
 //                            withObject:[taskFinisher copy]
 //                         waitUntilDone:NO
 //                                 modes:[NSArray arrayWithObjects:NSModalPanelRunLoopMode, NSRunLoopCommonModes, nil]];
-// 
+//
 //     return NSTerminateLater;
 // }
 
@@ -601,16 +601,26 @@ static UIInterfaceOrientation interfaceOrientationFromNSString(NSString *orienta
 {
     // To avoid link error on emscripten, we need to encode
     // encodeURI("ポップアップブロックを解除してください")
-    
+
+    // tenuki localization
+    NSArray* localizations = @[@"ja", @"en"];
+    NSArray* prefArray = (__bridge NSArray*)CFBundleCopyLocalizationsForPreferences((__bridge CFArrayRef)localizations, NULL);
+    BOOL isJapanese = [prefArray indexOfObject:@"ja"] != NSNotFound;
+
     const char* urlString = [url.absoluteString UTF8String];
     int success = EM_ASM_INT({
         var url = Pointer_stringify($0);
+        var isJapanese = $1;
         var ret = window.open(url, '_blank') != null ? 1 : 0;
         if(!ret) {
-            alert(decodeURI("%E3%83%9D%E3%83%83%E3%83%97%E3%82%A2%E3%83%83%E3%83%97%E3%83%96%E3%83%AD%E3%83%83%E3%82%AF%E3%82%92%E8%A7%A3%E9%99%A4%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84"));
+            if(isJapanese) {
+                alert(decodeURI("%E3%83%9D%E3%83%83%E3%83%97%E3%82%A2%E3%83%83%E3%83%97%E3%83%96%E3%83%AD%E3%83%83%E3%82%AF%E3%82%92%E8%A7%A3%E9%99%A4%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84"));
+            } else {
+                alert("Please allow pop-ups!");
+            }
         }
         return ret;
-    }, urlString);
+    }, urlString, isJapanese);
     return success;
 }
 
@@ -733,7 +743,7 @@ static UIInterfaceOrientation interfaceOrientationFromNSString(NSString *orienta
         NSArray *objects = [mainNib instantiateWithOwner:self options:nil];
         DEBUGLOG(@"main nib %@", objects);
     }
-        
+
     emscripten_trace_report_memory_layout();
 }
 
@@ -747,7 +757,7 @@ static UIInterfaceOrientation interfaceOrientationFromNSString(NSString *orienta
 
         // Actually, this should be later than here
         [UIDevice currentDevice].orientation = EM_ASM_INT_V({return Module['initialDeviceOrientation'] || 0;}) ?: UIDeviceOrientationPortrait;
-        
+
         [self _applicationDidBecomeActive:nil];
     }
 }
@@ -758,7 +768,7 @@ static UIInterfaceOrientation interfaceOrientationFromNSString(NSString *orienta
 
     dispatch_async(dispatch_get_main_queue(), ^{
         [self finishLaunching];
-        
+
         __block int count = 0;
 
         dispatch_source_t source = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 2<<10, dispatch_get_current_queue());
@@ -771,7 +781,7 @@ static UIInterfaceOrientation interfaceOrientationFromNSString(NSString *orienta
             if(count % 100 == 0) {
                 EM_ASM({ FS.syncfs(false, function(){}) });
             }
-            
+
             count++;
         });
         dispatch_resume(source);
