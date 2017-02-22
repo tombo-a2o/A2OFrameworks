@@ -269,6 +269,11 @@ static UIInterfaceOrientation interfaceOrientationFromNSString(NSString *orienta
     NSLog(@"%s not implemented", __FUNCTION__);
 }
 
+- (void)setStatusBarHidden:(BOOL)hidden
+{
+    NSLog(@"%s not implemented", __FUNCTION__);
+}
+
 - (void)registerForRemoteNotificationTypes:(UIRemoteNotificationType)types
 {
     NSLog(@"%s not implemented", __FUNCTION__);

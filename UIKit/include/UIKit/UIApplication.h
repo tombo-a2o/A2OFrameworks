@@ -218,6 +218,7 @@ extern const NSTimeInterval UIMinimumKeepAliveTimeout;
 
 @interface UIApplication(UIApplicationDeprecated)
 - (void)setStatusBarHidden:(BOOL)hidden animated:(BOOL)animated __attribute__((deprecated)); // use -setStatusBarHidden:withAnimation:
+@property (nonatomic, getter=isStatusBarHidden, readwrite) BOOL statusBarHidden;
 @end
 
 // This can replace your call to NSApplicationMain. It does not implement NSApplicationMain exactly (and it never calls NSApplicationMain)
