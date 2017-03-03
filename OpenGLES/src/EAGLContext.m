@@ -82,9 +82,11 @@ static EAGLContext *_currentContext = nil;
 
 -(BOOL)presentRenderbuffer:(NSUInteger)target {
     glGetError();
-    
-    GLint renderbuffer;
+
+    GLint renderbuffer, currentTexture;
     glGetIntegerv(GL_RENDERBUFFER_BINDING, &renderbuffer);
+    glGetIntegerv(GL_TEXTURE_BINDING_2D, &currentTexture);
+
     //NSLog(@"renderbuffer %d", renderbuffer);
     CAEAGLLayer *layer = [_renderBufferEAGLLayer objectForKey:[NSNumber numberWithInt:renderbuffer]];
     if(!layer) {
@@ -104,7 +106,7 @@ static EAGLContext *_currentContext = nil;
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
     glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 0, 0, width, height, 0);
-    
+
 #if DEBUG
     if(glGetError() != GL_NO_ERROR) {
         NSLog(@"failed to glCopyTexImage2D");
@@ -117,7 +119,7 @@ static EAGLContext *_currentContext = nil;
     static GLuint frame_buffer;
     static GLuint old_frame_buffer;
     glGetIntegerv(GL_FRAMEBUFFER_BINDING, &old_frame_buffer);
-    
+
     glGenFramebuffers(1, &frame_buffer);
     glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
@@ -136,7 +138,7 @@ static EAGLContext *_currentContext = nil;
     glBindFramebuffer(GL_FRAMEBUFFER, old_frame_buffer);
 #endif
 
-    glBindTexture(GL_TEXTURE_2D, 0);
+    glBindTexture(GL_TEXTURE_2D, currentTexture);
     [layer _setTextureId:texture];
 
     return YES;
