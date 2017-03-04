@@ -515,6 +515,10 @@ BOOL O2FontGetGlyphAdvances(O2FontRef self,const O2Glyph *glyphs,size_t count,in
     }
     return YES;
 }
+BOOL      O2FontGetGlyphBBoxes(O2FontRef self,const O2Glyph *glyphs,size_t count,O2Rect *bboxes) {
+    // FIXME: implement
+    return NO;
+}
 
 O2Glyph   O2FontGetGlyphWithGlyphName(O2FontRef self,CFStringRef name) {
     return [self glyphWithGlyphName:(NSString *)name];

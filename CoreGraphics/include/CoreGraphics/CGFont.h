@@ -34,6 +34,7 @@ COREGRAPHICS_EXPORT CGRect CGFontGetFontBBox(CGFontRef self);
 
 COREGRAPHICS_EXPORT size_t CGFontGetNumberOfGlyphs(CGFontRef self);
 COREGRAPHICS_EXPORT bool CGFontGetGlyphAdvances(CGFontRef self, const CGGlyph *glyphs, size_t count, int *advances);
+COREGRAPHICS_EXPORT bool CGFontGetGlyphBBoxes(CGFontRef self, const CGGlyph *glyphs, size_t count, CGRect *bboxes);
 
 COREGRAPHICS_EXPORT CGGlyph CGFontGetGlyphWithGlyphName(CGFontRef self, CFStringRef name);
 COREGRAPHICS_EXPORT CFStringRef CGFontCopyGlyphNameForGlyph(CGFontRef self, CGGlyph glyph);

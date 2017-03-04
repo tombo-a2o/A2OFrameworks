@@ -69,6 +69,10 @@ bool      CGFontGetGlyphAdvances(CGFontRef self,const CGGlyph *glyphs,size_t cou
     return O2FontGetGlyphAdvances(self, glyphs, count, advances);
 }
 
+bool      CGFontGetGlyphBBoxes(CGFontRef self,const CGGlyph *glyphs,size_t count,CGRect *bboxes) {
+    return O2FontGetGlyphBBoxes(self, glyphs, count, bboxes);
+}
+
 CGGlyph   CGFontGetGlyphWithGlyphName(CGFontRef self,CFStringRef name) {
    return O2FontGetGlyphWithGlyphName(self,name);
 }

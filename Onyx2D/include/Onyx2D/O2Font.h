@@ -106,6 +106,7 @@ NSCharacterSet *O2FontGetCoveredCharacterSet(O2FontRef self);
 
 size_t O2FontGetNumberOfGlyphs(O2FontRef self);
 BOOL O2FontGetGlyphAdvances(O2FontRef self, const O2Glyph *glyphs, size_t count, int *advances);
+BOOL O2FontGetGlyphBBoxes(O2FontRef self, const O2Glyph *glyphs, size_t count, O2Rect *bboxes);
 
 O2Glyph O2FontGetGlyphWithGlyphName(O2FontRef self, CFStringRef name);
 NSString *O2FontCopyGlyphNameForGlyph(O2FontRef self, O2Glyph glyph);
