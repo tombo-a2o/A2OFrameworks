@@ -20,4 +20,6 @@ COREGRAPHICS_EXPORT CGDataProviderRef CGDataProviderCreateWithCFData(CFDataRef d
 
 COREGRAPHICS_EXPORT CGDataProviderRef CGDataProviderCreateWithData(void *info, const void *data, size_t size, CGDataProviderReleaseDataCallback releaseCallback);
 
+COREGRAPHICS_EXPORT CGDataProviderRef CGDataProviderCreateWithFilename(const char *filename);
+
 COREGRAPHICS_EXPORT CFDataRef CGDataProviderCopyData(CGDataProviderRef self);

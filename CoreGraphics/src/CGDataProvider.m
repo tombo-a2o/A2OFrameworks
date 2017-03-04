@@ -21,11 +21,14 @@ CGDataProviderRef CGDataProviderCreateWithCFData(CFDataRef data) {
    return O2DataProviderCreateWithCFData(data);
 }
 
-COREGRAPHICS_EXPORT CGDataProviderRef CGDataProviderCreateWithData(void *info,const void *data,size_t size,CGDataProviderReleaseDataCallback releaseCallback) {
+CGDataProviderRef CGDataProviderCreateWithData(void *info,const void *data,size_t size,CGDataProviderReleaseDataCallback releaseCallback) {
    return O2DataProviderCreateWithData(info,data,size,releaseCallback);
 }
 
-COREGRAPHICS_EXPORT CFDataRef CGDataProviderCopyData(CGDataProviderRef self) {
-   return (CFDataRef)O2DataProviderCopyData(self);
+CGDataProviderRef CGDataProviderCreateWithFilename(const char *filename) {
+   return O2DataProviderCreateWithFilename(filename);
 }
 
+CFDataRef CGDataProviderCopyData(CGDataProviderRef self) {
+   return (CFDataRef)O2DataProviderCopyData(self);
+}
