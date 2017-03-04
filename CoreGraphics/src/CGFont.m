@@ -9,6 +9,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <CoreGraphics/CGFont.h>
 #import <Onyx2D/O2Font.h>
 
+CGFontRef CGFontCreateWithDataProvider(CGDataProviderRef provider) {
+   return O2FontCreateWithDataProvider(provider);
+}
+
 CGFontRef CGFontCreateWithFontName(CFStringRef name) {
    return O2FontCreateWithFontName((NSString *)name);
 }
