@@ -1,5 +1,7 @@
 #import <GameKit/GKLocalPlayer.h>
 
+NSString *GKPlayerAuthenticationDidChangeNotificationName = @"GKPlayerAuthenticationDidChangeNotificationName";
+
 @implementation GKLocalPlayer
 + (GKLocalPlayer *)localPlayer
 {

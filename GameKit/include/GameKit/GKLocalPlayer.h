@@ -1,7 +1,10 @@
 #import <GameKit/GKPlayer.h>
+#import <GameKit/GKBase.h>
 #import <UIKit/UIViewController.h>
 
-@interface GKLocalPlayer : GKPlayer 
+GK_EXPORT NSString *GKPlayerAuthenticationDidChangeNotificationName;
+
+@interface GKLocalPlayer : GKPlayer
 + (GKLocalPlayer *)localPlayer;
 - (void)authenticateWithCompletionHandler:(void (^)(NSError *error))completionHandler;
 @property(nonatomic, copy) void (^authenticateHandler)( UIViewController *viewController, NSError *error);
