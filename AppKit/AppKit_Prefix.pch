@@ -1,0 +1,8 @@
+#import <Foundation/Foundation.h>
+#import <CoreGraphics/CoreGraphics.h>
+
+#ifdef DEBUG
+#define DEBUGLOG(...) NSLog(__VA_ARGS__)
+#else
+#define DEBUGLOG(...)
+#endif

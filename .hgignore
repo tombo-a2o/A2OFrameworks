@@ -1,0 +1,20 @@
+syntax: glob
+*.mode1
+*.mode1v3
+*.pbxuser
+*.perspectivev3
+*.mode2v3
+build
+build
+
+.svn
+.DS_Store
+*.pyc
+*.swp
+*~.nib
+
+*.orig
+
+xcuserdata
+project.xcworkspace
+system
