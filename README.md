@@ -3,6 +3,7 @@
 A2OFrameworks is based on these projects.
 
 - Chameleon: UIKit for Mac development http://chameleonproject.org/
+- Cocotron: cross-platform Objective-C API similar to that described by Apple Inc.'s Cocoa documentation http://www.cocotron.org/
 
 # Chameleon
 
