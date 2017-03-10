@@ -1,0 +1,736 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXAggregateTarget section */
+		D9DB9E981C5A05E800139AB5 /* Framework */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = D9DB9E9B1C5A05E800139AB5 /* Build configuration list for PBXAggregateTarget "Framework" */;
+			buildPhases = (
+				D9DB9EB91C5A080500139AB5 /* ShellScript */,
+			);
+			dependencies = (
+				D9DB9EB81C5A07ED00139AB5 /* PBXTargetDependency */,
+			);
+			name = Framework;
+			productName = Framework;
+		};
+/* End PBXAggregateTarget section */
+
+/* Begin PBXBuildFile section */
+		6B73CF5BC93F1480C9F9E7A1 /* libPods-StoreKitTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 51B88FB9E5AEE2A25DD3D7C0 /* libPods-StoreKitTests.a */; };
+		D90769011C33E308005EBBDB /* SKRequestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D90769001C33E308005EBBDB /* SKRequestTests.m */; };
+		D937186E1CC59FD2003ED7C2 /* SKAFNetworkEmscripten.h in Headers */ = {isa = PBXBuildFile; fileRef = D937186D1CC59FD2003ED7C2 /* SKAFNetworkEmscripten.h */; };
+		D94BB96C1C5C5ACD00816E24 /* SKDownload.m in Sources */ = {isa = PBXBuildFile; fileRef = D923A6BE1C09177700EC5559 /* SKDownload.m */; };
+		D94BB96D1C5C5ACD00816E24 /* SKPayment.m in Sources */ = {isa = PBXBuildFile; fileRef = D923A6BF1C09177700EC5559 /* SKPayment.m */; };
+		D94BB96E1C5C5ACD00816E24 /* SKPaymentQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = D923A6C01C09177700EC5559 /* SKPaymentQueue.m */; };
+		D94BB96F1C5C5ACD00816E24 /* SKPaymentTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = D9B5C5631C34B22A00146EB5 /* SKPaymentTransaction.m */; };
+		D94BB9701C5C5ACD00816E24 /* SKProduct.m in Sources */ = {isa = PBXBuildFile; fileRef = D9B5C5611C34947F00146EB5 /* SKProduct.m */; };
+		D94BB9711C5C5ACD00816E24 /* SKProductsResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = D9810E221C0A8BDE0019C82D /* SKProductsResponse.m */; };
+		D94BB9721C5C5ACD00816E24 /* SKRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = D923A6C11C09177700EC5559 /* SKRequest.m */; };
+		D94BB9731C5C5ACD00816E24 /* SKStoreProductViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D923A6C21C09177700EC5559 /* SKStoreProductViewController.m */; };
+		D96106591C643963008255F7 /* SKAFNetworkReachabilityManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D96106491C64393B008255F7 /* SKAFNetworkReachabilityManager.m */; };
+		D961065A1C643963008255F7 /* SKAFSecurityPolicy.m in Sources */ = {isa = PBXBuildFile; fileRef = D961064B1C64393B008255F7 /* SKAFSecurityPolicy.m */; };
+		D961065B1C643963008255F7 /* SKAFURLRequestSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = D961064D1C64393B008255F7 /* SKAFURLRequestSerialization.m */; };
+		D961065C1C643963008255F7 /* SKAFURLResponseSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = D961064F1C64393B008255F7 /* SKAFURLResponseSerialization.m */; };
+		D961065D1C643963008255F7 /* SKAFURLSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D96106511C64393B008255F7 /* SKAFURLSessionManager.m */; };
+		D961065E1C6439F0008255F7 /* SKAFHTTPSessionManager.h in Headers */ = {isa = PBXBuildFile; fileRef = D96106451C64393B008255F7 /* SKAFHTTPSessionManager.h */; };
+		D961065F1C6439F0008255F7 /* SKAFNetworking.h in Headers */ = {isa = PBXBuildFile; fileRef = D96106471C64393B008255F7 /* SKAFNetworking.h */; };
+		D96106601C6439F0008255F7 /* SKAFNetworkReachabilityManager.h in Headers */ = {isa = PBXBuildFile; fileRef = D96106481C64393B008255F7 /* SKAFNetworkReachabilityManager.h */; };
+		D96106611C6439F0008255F7 /* SKAFSecurityPolicy.h in Headers */ = {isa = PBXBuildFile; fileRef = D961064A1C64393B008255F7 /* SKAFSecurityPolicy.h */; };
+		D96106621C6439F0008255F7 /* SKAFURLRequestSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = D961064C1C64393B008255F7 /* SKAFURLRequestSerialization.h */; };
+		D96106631C6439F0008255F7 /* SKAFURLResponseSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = D961064E1C64393B008255F7 /* SKAFURLResponseSerialization.h */; };
+		D96106641C6439F0008255F7 /* SKAFURLSessionManager.h in Headers */ = {isa = PBXBuildFile; fileRef = D96106501C64393B008255F7 /* SKAFURLSessionManager.h */; };
+		D96106651C643C7E008255F7 /* SKAFHTTPSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D96106461C64393B008255F7 /* SKAFHTTPSessionManager.m */; };
+		D9901E0A1C292AA6001609FB /* SKPaymentQueueTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D9901E091C292AA6001609FB /* SKPaymentQueueTests.m */; };
+		D9DB9EAA1C5A06D700139AB5 /* SKBase.h in Headers */ = {isa = PBXBuildFile; fileRef = D9EF2D551C0AB10400179F0C /* SKBase.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D9DB9EAB1C5A06D700139AB5 /* SKDownload.h in Headers */ = {isa = PBXBuildFile; fileRef = D9EF2D561C0AB10400179F0C /* SKDownload.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D9DB9EAC1C5A06D700139AB5 /* SKPayment.h in Headers */ = {isa = PBXBuildFile; fileRef = D9EF2D571C0AB10400179F0C /* SKPayment.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D9DB9EAD1C5A06D700139AB5 /* SKPaymentQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = D9EF2D581C0AB10400179F0C /* SKPaymentQueue.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D9DB9EAE1C5A06D700139AB5 /* SKPaymentTransaction.h in Headers */ = {isa = PBXBuildFile; fileRef = D9EF2D591C0AB10400179F0C /* SKPaymentTransaction.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D9DB9EAF1C5A06D700139AB5 /* SKProduct.h in Headers */ = {isa = PBXBuildFile; fileRef = D9EF2D5A1C0AB10400179F0C /* SKProduct.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D9DB9EB01C5A06D700139AB5 /* SKProductsResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = D9EF2D5B1C0AB10400179F0C /* SKProductsResponse.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D9DB9EB11C5A06D700139AB5 /* SKRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = D9EF2D5C1C0AB10400179F0C /* SKRequest.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D9DB9EB21C5A06D700139AB5 /* SKStoreProductViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = D9EF2D5D1C0AB10400179F0C /* SKStoreProductViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D9DB9EB31C5A06D700139AB5 /* StoreKit.h in Headers */ = {isa = PBXBuildFile; fileRef = D9EF2D5E1C0AB10400179F0C /* StoreKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		D96106661C643E65008255F7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D96B1F581C09166B005704D7 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D9DB9E981C5A05E800139AB5;
+			remoteInfo = Framework;
+		};
+		D9DB9EB71C5A07ED00139AB5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D96B1F581C09166B005704D7 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D9DB9E9F1C5A065C00139AB5;
+			remoteInfo = StoreKit;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		D9DB9E9E1C5A065C00139AB5 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		1CAB19EDF0BDBBAC8D2C31C3 /* Pods-StoreKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StoreKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-StoreKitTests/Pods-StoreKitTests.debug.xcconfig"; sourceTree = "<group>"; };
+		51B88FB9E5AEE2A25DD3D7C0 /* libPods-StoreKitTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-StoreKitTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		643153C76FC15AC9C3E427A3 /* Pods-StoreKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StoreKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-StoreKitTests/Pods-StoreKitTests.release.xcconfig"; sourceTree = "<group>"; };
+		D90769001C33E308005EBBDB /* SKRequestTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKRequestTests.m; sourceTree = "<group>"; };
+		D923A6BE1C09177700EC5559 /* SKDownload.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKDownload.m; sourceTree = "<group>"; };
+		D923A6BF1C09177700EC5559 /* SKPayment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKPayment.m; sourceTree = "<group>"; };
+		D923A6C01C09177700EC5559 /* SKPaymentQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKPaymentQueue.m; sourceTree = "<group>"; };
+		D923A6C11C09177700EC5559 /* SKRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKRequest.m; sourceTree = "<group>"; };
+		D923A6C21C09177700EC5559 /* SKStoreProductViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKStoreProductViewController.m; sourceTree = "<group>"; };
+		D937186D1CC59FD2003ED7C2 /* SKAFNetworkEmscripten.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKAFNetworkEmscripten.h; sourceTree = "<group>"; };
+		D96106451C64393B008255F7 /* SKAFHTTPSessionManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SKAFHTTPSessionManager.h; sourceTree = "<group>"; };
+		D96106461C64393B008255F7 /* SKAFHTTPSessionManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SKAFHTTPSessionManager.m; sourceTree = "<group>"; };
+		D96106471C64393B008255F7 /* SKAFNetworking.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SKAFNetworking.h; sourceTree = "<group>"; };
+		D96106481C64393B008255F7 /* SKAFNetworkReachabilityManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SKAFNetworkReachabilityManager.h; sourceTree = "<group>"; };
+		D96106491C64393B008255F7 /* SKAFNetworkReachabilityManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SKAFNetworkReachabilityManager.m; sourceTree = "<group>"; };
+		D961064A1C64393B008255F7 /* SKAFSecurityPolicy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SKAFSecurityPolicy.h; sourceTree = "<group>"; };
+		D961064B1C64393B008255F7 /* SKAFSecurityPolicy.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SKAFSecurityPolicy.m; sourceTree = "<group>"; };
+		D961064C1C64393B008255F7 /* SKAFURLRequestSerialization.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SKAFURLRequestSerialization.h; sourceTree = "<group>"; };
+		D961064D1C64393B008255F7 /* SKAFURLRequestSerialization.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SKAFURLRequestSerialization.m; sourceTree = "<group>"; };
+		D961064E1C64393B008255F7 /* SKAFURLResponseSerialization.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SKAFURLResponseSerialization.h; sourceTree = "<group>"; };
+		D961064F1C64393B008255F7 /* SKAFURLResponseSerialization.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SKAFURLResponseSerialization.m; sourceTree = "<group>"; };
+		D96106501C64393B008255F7 /* SKAFURLSessionManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SKAFURLSessionManager.h; sourceTree = "<group>"; };
+		D96106511C64393B008255F7 /* SKAFURLSessionManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SKAFURLSessionManager.m; sourceTree = "<group>"; };
+		D9810E221C0A8BDE0019C82D /* SKProductsResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKProductsResponse.m; sourceTree = "<group>"; };
+		D9901E091C292AA6001609FB /* SKPaymentQueueTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKPaymentQueueTests.m; sourceTree = "<group>"; };
+		D9B5C5611C34947F00146EB5 /* SKProduct.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKProduct.m; sourceTree = "<group>"; };
+		D9B5C5631C34B22A00146EB5 /* SKPaymentTransaction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKPaymentTransaction.m; sourceTree = "<group>"; };
+		D9D753941C212C7300C40E06 /* StoreKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StoreKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D9D753981C212C7300C40E06 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D9DB9EA01C5A065C00139AB5 /* libStoreKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libStoreKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		D9EF2D551C0AB10400179F0C /* SKBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SKBase.h; path = StoreKit/SKBase.h; sourceTree = "<group>"; };
+		D9EF2D561C0AB10400179F0C /* SKDownload.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SKDownload.h; path = StoreKit/SKDownload.h; sourceTree = "<group>"; };
+		D9EF2D571C0AB10400179F0C /* SKPayment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SKPayment.h; path = StoreKit/SKPayment.h; sourceTree = "<group>"; };
+		D9EF2D581C0AB10400179F0C /* SKPaymentQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SKPaymentQueue.h; path = StoreKit/SKPaymentQueue.h; sourceTree = "<group>"; };
+		D9EF2D591C0AB10400179F0C /* SKPaymentTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SKPaymentTransaction.h; path = StoreKit/SKPaymentTransaction.h; sourceTree = "<group>"; };
+		D9EF2D5A1C0AB10400179F0C /* SKProduct.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SKProduct.h; path = StoreKit/SKProduct.h; sourceTree = "<group>"; };
+		D9EF2D5B1C0AB10400179F0C /* SKProductsResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SKProductsResponse.h; path = StoreKit/SKProductsResponse.h; sourceTree = "<group>"; };
+		D9EF2D5C1C0AB10400179F0C /* SKRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SKRequest.h; path = StoreKit/SKRequest.h; sourceTree = "<group>"; };
+		D9EF2D5D1C0AB10400179F0C /* SKStoreProductViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SKStoreProductViewController.h; path = StoreKit/SKStoreProductViewController.h; sourceTree = "<group>"; };
+		D9EF2D5E1C0AB10400179F0C /* StoreKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StoreKit.h; path = StoreKit/StoreKit.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D9D753911C212C7300C40E06 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6B73CF5BC93F1480C9F9E7A1 /* libPods-StoreKitTests.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D9DB9E9D1C5A065C00139AB5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		901F9368F728BA071FBD120C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				51B88FB9E5AEE2A25DD3D7C0 /* libPods-StoreKitTests.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		CA167CBF6236CB79346CAF83 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				1CAB19EDF0BDBBAC8D2C31C3 /* Pods-StoreKitTests.debug.xcconfig */,
+				643153C76FC15AC9C3E427A3 /* Pods-StoreKitTests.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		D923A6BC1C09174500EC5559 /* Headers */ = {
+			isa = PBXGroup;
+			children = (
+				D9EF2D551C0AB10400179F0C /* SKBase.h */,
+				D9EF2D561C0AB10400179F0C /* SKDownload.h */,
+				D9EF2D571C0AB10400179F0C /* SKPayment.h */,
+				D9EF2D581C0AB10400179F0C /* SKPaymentQueue.h */,
+				D9EF2D591C0AB10400179F0C /* SKPaymentTransaction.h */,
+				D9EF2D5A1C0AB10400179F0C /* SKProduct.h */,
+				D9EF2D5B1C0AB10400179F0C /* SKProductsResponse.h */,
+				D9EF2D5C1C0AB10400179F0C /* SKRequest.h */,
+				D9EF2D5D1C0AB10400179F0C /* SKStoreProductViewController.h */,
+				D9EF2D5E1C0AB10400179F0C /* StoreKit.h */,
+			);
+			name = Headers;
+			path = include;
+			sourceTree = "<group>";
+		};
+		D923A6BD1C09175F00EC5559 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				D923A6BE1C09177700EC5559 /* SKDownload.m */,
+				D923A6BF1C09177700EC5559 /* SKPayment.m */,
+				D923A6C01C09177700EC5559 /* SKPaymentQueue.m */,
+				D9B5C5631C34B22A00146EB5 /* SKPaymentTransaction.m */,
+				D9B5C5611C34947F00146EB5 /* SKProduct.m */,
+				D9810E221C0A8BDE0019C82D /* SKProductsResponse.m */,
+				D923A6C11C09177700EC5559 /* SKRequest.m */,
+				D923A6C21C09177700EC5559 /* SKStoreProductViewController.m */,
+			);
+			name = Sources;
+			path = src;
+			sourceTree = "<group>";
+		};
+		D96106431C64393B008255F7 /* AFNetworking-3.0.4 */ = {
+			isa = PBXGroup;
+			children = (
+				D96106441C64393B008255F7 /* SKAFNetworking */,
+			);
+			name = "AFNetworking-3.0.4";
+			path = "src/AFNetworking-3.0.4";
+			sourceTree = "<group>";
+		};
+		D96106441C64393B008255F7 /* SKAFNetworking */ = {
+			isa = PBXGroup;
+			children = (
+				D96106451C64393B008255F7 /* SKAFHTTPSessionManager.h */,
+				D96106461C64393B008255F7 /* SKAFHTTPSessionManager.m */,
+				D96106471C64393B008255F7 /* SKAFNetworking.h */,
+				D96106481C64393B008255F7 /* SKAFNetworkReachabilityManager.h */,
+				D937186D1CC59FD2003ED7C2 /* SKAFNetworkEmscripten.h */,
+				D96106491C64393B008255F7 /* SKAFNetworkReachabilityManager.m */,
+				D961064A1C64393B008255F7 /* SKAFSecurityPolicy.h */,
+				D961064B1C64393B008255F7 /* SKAFSecurityPolicy.m */,
+				D961064C1C64393B008255F7 /* SKAFURLRequestSerialization.h */,
+				D961064D1C64393B008255F7 /* SKAFURLRequestSerialization.m */,
+				D961064E1C64393B008255F7 /* SKAFURLResponseSerialization.h */,
+				D961064F1C64393B008255F7 /* SKAFURLResponseSerialization.m */,
+				D96106501C64393B008255F7 /* SKAFURLSessionManager.h */,
+				D96106511C64393B008255F7 /* SKAFURLSessionManager.m */,
+			);
+			path = SKAFNetworking;
+			sourceTree = "<group>";
+		};
+		D96B1F571C09166B005704D7 = {
+			isa = PBXGroup;
+			children = (
+				D96106431C64393B008255F7 /* AFNetworking-3.0.4 */,
+				D923A6BD1C09175F00EC5559 /* Sources */,
+				D923A6BC1C09174500EC5559 /* Headers */,
+				D9D753951C212C7300C40E06 /* StoreKitTests */,
+				D96B1F621C09166B005704D7 /* Products */,
+				901F9368F728BA071FBD120C /* Frameworks */,
+				CA167CBF6236CB79346CAF83 /* Pods */,
+			);
+			sourceTree = "<group>";
+		};
+		D96B1F621C09166B005704D7 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D9D753941C212C7300C40E06 /* StoreKitTests.xctest */,
+				D9DB9EA01C5A065C00139AB5 /* libStoreKit.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D9D753951C212C7300C40E06 /* StoreKitTests */ = {
+			isa = PBXGroup;
+			children = (
+				D9D753981C212C7300C40E06 /* Info.plist */,
+				D90769001C33E308005EBBDB /* SKRequestTests.m */,
+				D9901E091C292AA6001609FB /* SKPaymentQueueTests.m */,
+			);
+			path = StoreKitTests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		D9DB9EA91C5A067200139AB5 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D9DB9EB31C5A06D700139AB5 /* StoreKit.h in Headers */,
+				D9DB9EAA1C5A06D700139AB5 /* SKBase.h in Headers */,
+				D9DB9EAB1C5A06D700139AB5 /* SKDownload.h in Headers */,
+				D9DB9EAC1C5A06D700139AB5 /* SKPayment.h in Headers */,
+				D937186E1CC59FD2003ED7C2 /* SKAFNetworkEmscripten.h in Headers */,
+				D9DB9EAD1C5A06D700139AB5 /* SKPaymentQueue.h in Headers */,
+				D9DB9EAE1C5A06D700139AB5 /* SKPaymentTransaction.h in Headers */,
+				D9DB9EAF1C5A06D700139AB5 /* SKProduct.h in Headers */,
+				D9DB9EB01C5A06D700139AB5 /* SKProductsResponse.h in Headers */,
+				D9DB9EB11C5A06D700139AB5 /* SKRequest.h in Headers */,
+				D9DB9EB21C5A06D700139AB5 /* SKStoreProductViewController.h in Headers */,
+				D961065E1C6439F0008255F7 /* SKAFHTTPSessionManager.h in Headers */,
+				D961065F1C6439F0008255F7 /* SKAFNetworking.h in Headers */,
+				D96106601C6439F0008255F7 /* SKAFNetworkReachabilityManager.h in Headers */,
+				D96106611C6439F0008255F7 /* SKAFSecurityPolicy.h in Headers */,
+				D96106621C6439F0008255F7 /* SKAFURLRequestSerialization.h in Headers */,
+				D96106631C6439F0008255F7 /* SKAFURLResponseSerialization.h in Headers */,
+				D96106641C6439F0008255F7 /* SKAFURLSessionManager.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		D9D753931C212C7300C40E06 /* StoreKitTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D9D7539E1C212C7300C40E06 /* Build configuration list for PBXNativeTarget "StoreKitTests" */;
+			buildPhases = (
+				7A1CFA5FE3E296DF7B943093 /* Check Pods Manifest.lock */,
+				D9D753901C212C7300C40E06 /* Sources */,
+				D9D753911C212C7300C40E06 /* Frameworks */,
+				D9D753921C212C7300C40E06 /* Resources */,
+				2478D3E70AFBF25E50FF4BFA /* Embed Pods Frameworks */,
+				359216656A2E664E3B319396 /* Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D96106671C643E65008255F7 /* PBXTargetDependency */,
+			);
+			name = StoreKitTests;
+			productName = StoreKitTests;
+			productReference = D9D753941C212C7300C40E06 /* StoreKitTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		D9DB9E9F1C5A065C00139AB5 /* StoreKit */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D9DB9EA61C5A065C00139AB5 /* Build configuration list for PBXNativeTarget "StoreKit" */;
+			buildPhases = (
+				D9DB9E9C1C5A065C00139AB5 /* Sources */,
+				D9DB9E9D1C5A065C00139AB5 /* Frameworks */,
+				D9DB9E9E1C5A065C00139AB5 /* CopyFiles */,
+				D9DB9EA91C5A067200139AB5 /* Headers */,
+				D9DB9EB41C5A075500139AB5 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = StoreKit;
+			productName = StoreKit;
+			productReference = D9DB9EA01C5A065C00139AB5 /* libStoreKit.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D96B1F581C09166B005704D7 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0720;
+				ORGANIZATIONNAME = "Tombo, inc.";
+				TargetAttributes = {
+					D9D753931C212C7300C40E06 = {
+						CreatedOnToolsVersion = 7.2;
+					};
+					D9DB9E981C5A05E800139AB5 = {
+						CreatedOnToolsVersion = 7.2;
+					};
+					D9DB9E9F1C5A065C00139AB5 = {
+						CreatedOnToolsVersion = 7.2;
+					};
+				};
+			};
+			buildConfigurationList = D96B1F5B1C09166B005704D7 /* Build configuration list for PBXProject "StoreKit" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = D96B1F571C09166B005704D7;
+			productRefGroup = D96B1F621C09166B005704D7 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D9DB9E9F1C5A065C00139AB5 /* StoreKit */,
+				D9DB9E981C5A05E800139AB5 /* Framework */,
+				D9D753931C212C7300C40E06 /* StoreKitTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		D9D753921C212C7300C40E06 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		2478D3E70AFBF25E50FF4BFA /* Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-StoreKitTests/Pods-StoreKitTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		359216656A2E664E3B319396 /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-StoreKitTests/Pods-StoreKitTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		7A1CFA5FE3E296DF7B943093 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		D9DB9EB41C5A075500139AB5 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e\n\nmkdir -p \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.framework/Versions/A/Headers\"\n\n# Link the \"Current\" version to \"A\"\n/bin/ln -sfh A \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.framework/Versions/Current\"\n/bin/ln -sfh Versions/Current/Headers \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.framework/Headers\"\n/bin/ln -sfh \"Versions/Current/${PRODUCT_NAME}\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.framework/${PRODUCT_NAME}\"\n\n# The -a ensures that the headers maintain the source modification date so that we don't constantly\n# cause propagating rebuilds of files that import these headers.\n/bin/cp -a \"${TARGET_BUILD_DIR}/${PUBLIC_HEADERS_FOLDER_PATH}/\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.framework/Versions/A/Headers\"";
+		};
+		D9DB9EB91C5A080500139AB5 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e\nset +u\n# Avoid recursively calling this script.\nif [[ $SF_MASTER_SCRIPT_RUNNING ]]\nthen\nexit 0\nfi\nset -u\nexport SF_MASTER_SCRIPT_RUNNING=1\n\nSF_TARGET_NAME=${PROJECT_NAME}\nSF_EXECUTABLE_PATH=\"lib${SF_TARGET_NAME}.a\"\nSF_WRAPPER_NAME=\"${SF_TARGET_NAME}.framework\"\n\n# The following conditionals come from\n# https://github.com/kstenerud/iOS-Universal-Framework\n\nif [[ \"$SDK_NAME\" =~ ([A-Za-z]+) ]]\nthen\nSF_SDK_PLATFORM=${BASH_REMATCH[1]}\nelse\necho \"Could not find platform name from SDK_NAME: $SDK_NAME\"\nexit 1\nfi\n\nif [[ \"$SDK_NAME\" =~ ([0-9]+.*$) ]]\nthen\nSF_SDK_VERSION=${BASH_REMATCH[1]}\nelse\necho \"Could not find sdk version from SDK_NAME: $SDK_NAME\"\nexit 1\nfi\n\nif [[ \"$SF_SDK_PLATFORM\" = \"iphoneos\" ]]\nthen\nSF_OTHER_PLATFORM=iphonesimulator\nelse\nSF_OTHER_PLATFORM=iphoneos\nfi\n\nif [[ \"$BUILT_PRODUCTS_DIR\" =~ (.*)$SF_SDK_PLATFORM$ ]]\nthen\nSF_OTHER_BUILT_PRODUCTS_DIR=\"${BASH_REMATCH[1]}${SF_OTHER_PLATFORM}\"\nelse\necho \"Could not find platform name from build products directory: $BUILT_PRODUCTS_DIR\"\nexit 1\nfi\n\n# Build the other platform.\nxcrun xcodebuild -project \"${PROJECT_FILE_PATH}\" -target \"${TARGET_NAME}\" -configuration \"${CONFIGURATION}\" -sdk ${SF_OTHER_PLATFORM}${SF_SDK_VERSION} BUILD_DIR=\"${BUILD_DIR}\" OBJROOT=\"${OBJROOT}\" BUILD_ROOT=\"${BUILD_ROOT}\" SYMROOT=\"${SYMROOT}\" $ACTION\n\n# xcrun xcodebuild ONLY_ACTIVE_ARCH=NO -workspace \"${PROJECT_DIR}/${PROJECT_NAME}.xcworkspace\" -scheme \"${TARGET_NAME}\" -configuration \"${CONFIGURATION}\" -sdk ${SF_OTHER_PLATFORM}${SF_SDK_VERSION} BUILD_DIR=\"${BUILD_DIR}\" OBJROOT=\"${OBJROOT}\" BUILD_ROOT=\"${BUILD_ROOT}\" SYMROOT=\"${SYMROOT}\" $ACTION\n\n# Smash the two static libraries into one fat binary and store it in the .framework\nxcrun lipo -create \"${BUILT_PRODUCTS_DIR}/${SF_EXECUTABLE_PATH}\" \"${SF_OTHER_BUILT_PRODUCTS_DIR}/${SF_EXECUTABLE_PATH}\" -output \"${BUILT_PRODUCTS_DIR}/${SF_WRAPPER_NAME}/Versions/A/${SF_TARGET_NAME}\"\n\n# Copy the binary to the other architecture folder to have a complete framework in both.\ncp -a \"${BUILT_PRODUCTS_DIR}/${SF_WRAPPER_NAME}/Versions/A/${SF_TARGET_NAME}\" \"${SF_OTHER_BUILT_PRODUCTS_DIR}/${SF_WRAPPER_NAME}/Versions/A/${SF_TARGET_NAME}\"";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D9D753901C212C7300C40E06 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D90769011C33E308005EBBDB /* SKRequestTests.m in Sources */,
+				D9901E0A1C292AA6001609FB /* SKPaymentQueueTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D9DB9E9C1C5A065C00139AB5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D96106591C643963008255F7 /* SKAFNetworkReachabilityManager.m in Sources */,
+				D961065A1C643963008255F7 /* SKAFSecurityPolicy.m in Sources */,
+				D961065B1C643963008255F7 /* SKAFURLRequestSerialization.m in Sources */,
+				D961065C1C643963008255F7 /* SKAFURLResponseSerialization.m in Sources */,
+				D961065D1C643963008255F7 /* SKAFURLSessionManager.m in Sources */,
+				D94BB96C1C5C5ACD00816E24 /* SKDownload.m in Sources */,
+				D94BB96D1C5C5ACD00816E24 /* SKPayment.m in Sources */,
+				D94BB96E1C5C5ACD00816E24 /* SKPaymentQueue.m in Sources */,
+				D94BB96F1C5C5ACD00816E24 /* SKPaymentTransaction.m in Sources */,
+				D94BB9701C5C5ACD00816E24 /* SKProduct.m in Sources */,
+				D94BB9711C5C5ACD00816E24 /* SKProductsResponse.m in Sources */,
+				D96106651C643C7E008255F7 /* SKAFHTTPSessionManager.m in Sources */,
+				D94BB9721C5C5ACD00816E24 /* SKRequest.m in Sources */,
+				D94BB9731C5C5ACD00816E24 /* SKStoreProductViewController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		D96106671C643E65008255F7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D9DB9E981C5A05E800139AB5 /* Framework */;
+			targetProxy = D96106661C643E65008255F7 /* PBXContainerItemProxy */;
+		};
+		D9DB9EB81C5A07ED00139AB5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D9DB9E9F1C5A065C00139AB5 /* StoreKit */;
+			targetProxy = D9DB9EB71C5A07ED00139AB5 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		D96B1F731C09166B005704D7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_EXPAND_BUILD_SETTINGS = YES;
+				INFOPLIST_FILE = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = NO;
+				PUBLIC_HEADERS_FOLDER_PATH = Headers;
+				SDKROOT = iphoneos;
+				STRIP_STYLE = "non-global";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		D96B1F741C09166B005704D7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_EXPAND_BUILD_SETTINGS = YES;
+				INFOPLIST_FILE = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				ONLY_ACTIVE_ARCH = NO;
+				PUBLIC_HEADERS_FOLDER_PATH = Headers;
+				SDKROOT = iphoneos;
+				STRIP_STYLE = "non-global";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		D9D7539C1C212C7300C40E06 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/StoreKit.framework/StoreKit";
+				INFOPLIST_FILE = StoreKitTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = io.tombo.StoreKitTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		D9D7539D1C212C7300C40E06 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = StoreKitTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = io.tombo.StoreKitTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		D9DB9E991C5A05E800139AB5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		D9DB9E9A1C5A05E800139AB5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		D9DB9EA71C5A065C00139AB5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = (
+					"$(ARCHS_STANDARD)",
+					armv7s,
+				);
+				HEADER_SEARCH_PATHS = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/build/Debug-iphoneos",
+				);
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-fembed-bitcode",
+				);
+				OTHER_LDFLAGS = "$(inherited)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRIP_INSTALLED_PRODUCT = YES;
+				TEST_HOST = "";
+			};
+			name = Debug;
+		};
+		D9DB9EA81C5A065C00139AB5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = (
+					"$(ARCHS_STANDARD)",
+					armv7s,
+				);
+				HEADER_SEARCH_PATHS = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/build/Debug-iphoneos",
+				);
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-fembed-bitcode",
+				);
+				OTHER_LDFLAGS = "$(inherited)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRIP_INSTALLED_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		D96B1F5B1C09166B005704D7 /* Build configuration list for PBXProject "StoreKit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D96B1F731C09166B005704D7 /* Debug */,
+				D96B1F741C09166B005704D7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D9D7539E1C212C7300C40E06 /* Build configuration list for PBXNativeTarget "StoreKitTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D9D7539C1C212C7300C40E06 /* Debug */,
+				D9D7539D1C212C7300C40E06 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D9DB9E9B1C5A05E800139AB5 /* Build configuration list for PBXAggregateTarget "Framework" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D9DB9E991C5A05E800139AB5 /* Debug */,
+				D9DB9E9A1C5A05E800139AB5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D9DB9EA61C5A065C00139AB5 /* Build configuration list for PBXNativeTarget "StoreKit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D9DB9EA71C5A065C00139AB5 /* Debug */,
+				D9DB9EA81C5A065C00139AB5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = D96B1F581C09166B005704D7 /* Project object */;
+}
