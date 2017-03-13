@@ -8,5 +8,8 @@ NSString *const kCALineCapButt = @"butt";
 NSString *const kCALineCapRound = @"round";
 NSString *const kCALineCapSquare = @"square";
 
+NSString *const kCAFillRuleNonZero = @"nonZero";
+NSString *const kCAFillRuleEvenOdd = @"evenOdd";
+
 @implementation CAShapeLayer
 @end

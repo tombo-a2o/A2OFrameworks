@@ -8,6 +8,9 @@ CA_EXPORT NSString *const kCALineCapButt;
 CA_EXPORT NSString *const kCALineCapRound;
 CA_EXPORT NSString *const kCALineCapSquare;
 
+CA_EXPORT NSString *const kCAFillRuleNonZero;
+CA_EXPORT NSString *const kCAFillRuleEvenOdd;
+
 @interface CAShapeLayer : CALayer
 @property CGPathRef path;
 @property CGColorRef fillColor;
