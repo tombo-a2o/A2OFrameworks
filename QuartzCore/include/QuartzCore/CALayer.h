@@ -109,6 +109,7 @@ CA_EXPORT NSString * const kCATransition;
 @property CGSize shadowOffset;
 @property CGColorRef shadowColor;
 @property CGPathRef shadowPath;
+@property(strong) CALayer *mask;
 
 - (instancetype)init;
 - (instancetype)initWithLayer:(id)layer;
