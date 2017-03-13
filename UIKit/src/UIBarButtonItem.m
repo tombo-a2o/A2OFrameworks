@@ -152,4 +152,8 @@
 {
 }
 
+- (void)addTarget:(id)target action:(SEL)action forControlEvents:(UIControlEvents)controlEvents
+{
+}
+
 @end

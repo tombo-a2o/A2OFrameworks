@@ -232,7 +232,7 @@ static id constructObject(NSNibUnarchiver* self, Object* pObj) {
             // instance change means UIProxyObject or UIImageNibPlaceholder returns object, which is autoreleased
             [pObj->cachedId autorelease];
         }
-        
+
         if ([pObj->cachedId respondsToSelector:@selector(awakeAfterUsingCoder:)]) {
             pObj->cachedId = [pObj->cachedId awakeAfterUsingCoder:(id)self];
         }
@@ -246,7 +246,7 @@ static id idForItem(NSNibUnarchiver* self, Item* item) {
         switch (item->type) {
             case NIBOBJ_UID: {
                 Object* pObj = objectForUid(self, *((uint32_t*)item->data));
- 
+
                 if (pObj->cachedId == nil) {
                     pObj->cachedId = constructObject(self, pObj);
                 }
@@ -299,7 +299,7 @@ int readLength(char* &offset)
         byte = *offset;
         ret |= (byte & 0x7f) << shift;
         shift += 7;
-        
+
         offset++;
     } while(!(byte & 0x80));
     return ret;
@@ -326,7 +326,7 @@ int readLength(char* &offset)
 
         assert(extra == 0 || extra == 1);
         _curOffset += extra*4;
-        
+
         _classNames[i] = (char*)malloc(len + 1);
         memcpy(_classNames[i], _curOffset, len);
 
@@ -438,7 +438,7 @@ int readLength(char* &offset)
         _objects[i] = curObject;
 
         int16_t objectClassName = readLength(_curOffset);
-        
+
         curObject->className = _classNames[objectClassName];
         curObject->classType = _classTypes[objectClassName];
         if (curObject->className == NULL || objectClassName >= _fixed[8]) {

@@ -120,6 +120,7 @@
 #import <UIKit/UIAlertController.h>
 #import <UIKit/UIUserNotificationSettings.h>
 #import <UIKit/UIActivity.h>
+#import <UIKit/UIStoryboardSegue.h>
 
 // non-standard imports
 #import <UIKit/UIScrollWheelGestureRecognizer.h>
