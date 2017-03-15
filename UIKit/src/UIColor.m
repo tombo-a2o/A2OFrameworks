@@ -153,6 +153,11 @@ static UIColor *LightTextColor = nil;
     return [self initWithRed:red green:green blue:blue alpha:alpha];
 }
 
+- (id)copyWithZone:(NSZone *)zone
+{
+    return [[self.class alloc] _initWithRepresentations:_representations];
+}
+
 - (UIColorRep *)_bestRepresentationForProposedScale:(CGFloat)scale
 {
     UIColorRep *bestRep = nil;
