@@ -28,11 +28,13 @@
  */
 
 #import <UIKit/UINibLoading.h>
+#import <UIKit/UINib.h>
 
 @implementation NSBundle (UINibLoading)
 - (NSArray *)loadNibNamed:(NSString *)name owner:(id)owner options:(NSDictionary *)options
 {
-    return nil;
+    UINib *nib =[UINib nibWithNibName:name bundle:self];
+    return [nib instantiateWithOwner:owner options:options];
 }
 @end
 
