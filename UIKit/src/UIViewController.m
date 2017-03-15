@@ -64,12 +64,12 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
     BOOL _appearanceTransitionIsAnimated;
     BOOL _viewIsAppearing;
     _UIViewControllerParentageTransition _parentageTransition;
-    
+
     __weak UIViewController *_presentingViewController;
     UIViewController *_presentedViewController;
 
     UIInterfaceOrientation _interfaceOrientation;
-    
+
     NSString *_nibName;
     NSBundle *_nibBundle;
 }
@@ -157,12 +157,12 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
     if(_view) {
         return;
     }
-    
+
     if(!_nibName) {
         self.view = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
         return;
     }
-    
+
     NSString *path = [_nibBundle pathForResource:_nibName ofType:@"nib"];
     if(!path) {
         path = [[NSBundle mainBundle] pathForResource:_nibName ofType:@"nib"];
@@ -181,9 +181,14 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
     if(!path) {
         assert(0);
     }
-    
-    NSMutableDictionary *proxies = [NSMutableDictionary dictionaryWithDictionary:@{ @"UIStoryboardPlaceholder": self.storyboard}];
-    [proxies addEntriesFromDictionary:self.externalObjects];
+
+    NSMutableDictionary *proxies = [NSMutableDictionary dictionary];
+    if(self.storyboard) {
+        [proxies setObject:self.storyboard forKey:@"UIStoryboardPlaceholder"];
+    }
+    if(self.externalObjects) {
+        [proxies addEntriesFromDictionary:self.externalObjects];
+    }
     UINib *nib = [UINib nibWithData:[NSData dataWithContentsOfFile:path] bundle:nil];
     [nib instantiateWithOwner:self options:@{UINibExternalObjects: proxies}];
     self.externalObjects = nil;
@@ -297,24 +302,24 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
         [_presentedViewController viewWillAppear:animated];
 
         [self viewWillDisappear:animated];
-        
+
         [CATransaction begin];
-        
+
         selfView.layer.doubleSided = NO;
         newView.layer.doubleSided = NO;
-        
+
         [CATransaction setCompletionBlock:^{
             //selfView.hidden = YES;		// I think the real one may actually remove it, which would mean needing to remember the superview, I guess? Not sure...
-            
+
             [self viewDidDisappear:animated];
 
             [_presentedViewController viewDidAppear:animated];
-            
+
             if(completion) {
                 completion();
             }
         }];
-        
+
         UIModalTransitionStyle style = _presentedViewController.modalTransitionStyle;
         switch(style) {
         case UIModalTransitionStyleFlipHorizontal:
@@ -328,7 +333,7 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
         default:
             NSLog(@"%s Unsupported modalTransitionStyle %d", __FUNCTION__, style);
         }
-        
+
         [CATransaction commit];
     }
 }
@@ -344,29 +349,29 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
         }
 
         [self viewWillAppear:animated];
-        
+
         UIView *selfView = self.view;
         UIView *currentView = _presentedViewController.view;
-        
+
         [CATransaction begin];
-        
+
         selfView.hidden = NO;
         selfView.layer.doubleSided = NO;
         currentView.layer.doubleSided = NO;
-        
+
         [CATransaction setCompletionBlock:^{
 
             [_presentedViewController.view removeFromSuperview];
             [_presentedViewController _setPresentingViewController:nil];
             _presentedViewController = nil;
-            
+
             [self viewDidAppear:animated];
-            
+
             if(completion) {
                 completion();
             }
         }];
-        
+
         UIModalTransitionStyle style = _presentedViewController.modalTransitionStyle;
         if(!style || style == UIModalTransitionStyleFlipHorizontal) {
             [selfView.layer addAnimation:[UIAnimation backToFrontCounterClockwise] forKey:nil];
@@ -374,7 +379,7 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
         } else {
             NSLog(@"%s Unsupported modalTransitionStyle %d", __FUNCTION__, style);
         }
-        
+
         [CATransaction commit];
     } else if(_presentingViewController) {
         [_presentingViewController dismissViewControllerAnimated:animated completion:completion];
