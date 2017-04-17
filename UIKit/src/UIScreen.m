@@ -41,6 +41,8 @@
 #import <emscripten/html5.h>
 #import <QuartzCore/CATransform3D.h>
 
+extern void UIKit_initScreen(void);
+
 NSString *const UIScreenDidConnectNotification = @"UIScreenDidConnectNotification";
 NSString *const UIScreenDidDisconnectNotification = @"UIScreenDidDisconnectNotification";
 NSString *const UIScreenModeDidChangeNotification = @"UIScreenModeDidChangeNotification";
@@ -102,16 +104,13 @@ NSString *const UIScreenModeDidChangeNotification = @"UIScreenModeDidChangeNotif
         attr.stencil = 1;
         EMSCRIPTEN_WEBGL_CONTEXT_HANDLE webglContext = emscripten_webgl_create_context(0, &attr);
         emscripten_webgl_make_context_current(webglContext);
-        EM_ASM({
-            Module.useWebGL = true;
-            Browser.moduleContextCreatedCallbacks.forEach(function(callback) { callback() });
-        });
+        UIKit_initScreen();
 
         _rootLayer.frame = self.bounds;
         _rootLayer.contentsScale = self.scale;
         _rootLayer.delegate = self;
         _rootLayer.anchorPoint = CGPointMake(0,0);
-        
+
         _layerContext = [[CALayerContext alloc] initWithLayer:_rootLayer];
     }
     return self;
@@ -121,7 +120,7 @@ NSString *const UIScreenModeDidChangeNotification = @"UIScreenModeDidChangeNotif
 {
     UIInterfaceOrientation interfaceOrientation = _orientation;
     UIDeviceOrientation deviceOrientation = [UIDevice currentDevice].orientation;
-    
+
     float scale = _currentMode.pixelAspectRatio;
     CGSize physicalSize = _currentMode.size; // ex. 640x1136 (on iPhone5)
     CGSize logicalSize = _currentMode.logicalSize; // ex. 320x568 (on iPhone5)
@@ -151,7 +150,7 @@ NSString *const UIScreenModeDidChangeNotification = @"UIScreenModeDidChangeNotif
 
     float angles[] = {0, 0, M_PI, M_PI_2*3, M_PI_2};
     float angle = angles[deviceOrientation] - angles[interfaceOrientation];
-    
+
     CGAffineTransform transform =
         CGAffineTransformTranslate(
             CGAffineTransformRotate(
@@ -162,7 +161,7 @@ NSString *const UIScreenModeDidChangeNotification = @"UIScreenModeDidChangeNotif
             ),
             canvasSize.width/2, canvasSize.height/2
         );
-        
+
     _rootLayer.sublayerTransform = CATransform3DMakeAffineTransform(transform);
     _touchTransform = CGAffineTransformInvert(transform);
 }

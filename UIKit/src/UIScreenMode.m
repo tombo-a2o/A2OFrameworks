@@ -31,6 +31,11 @@
 #import <UIKit/UIGeometry.h>
 #import <emscripten.h>
 
+extern unsigned int UIKit_getScreenModeNumber(void);
+extern unsigned int UIKit_getScreenWidthAt(int idx);
+extern unsigned int UIKit_getScreenHeightAt(int idx);
+extern unsigned int UIKit_getScreenScaleAt(int idx);
+
 @implementation UIScreenMode
 
 + (id)screenModeIphone5
@@ -43,24 +48,16 @@
 
 + (NSArray*)_userDefinedModes
 {
-    int num = EM_ASM_INT_V({
-        return Module['screenModes'] ? Module['screenModes'].length : 0;
-    });
+    int num = UIKit_getScreenModeNumber();
 
     if(!num) return nil;
 
     NSMutableArray *ret = [NSMutableArray arrayWithCapacity:num];
     for(int i = 0; i < num; i++) {
         UIScreenMode *mode = [[UIScreenMode alloc] init];
-        int width = EM_ASM_INT({
-            return Module['screenModes'][$0].width;
-        }, i);
-        int height = EM_ASM_INT({
-            return Module['screenModes'][$0].height;
-        }, i);
-        float scale = EM_ASM_DOUBLE({
-            return Module['screenModes'][$0].scale;
-        }, i);
+        int width = UIKit_getScreenWidthAt(i);
+        int height = UIKit_getScreenHeightAt(i);
+        float scale = UIKit_getScreenScaleAt(i);
         mode->_size = CGSizeMake(width, height);
         mode->_pixelAspectRatio = scale;
         [ret addObject:mode];
