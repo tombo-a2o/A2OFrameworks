@@ -31,6 +31,8 @@
 #import <UIKit/UIKit.h>
 #import <emscripten.h>
 
+extern void UIKit_downloadImage(void* data, size_t length);
+
 @implementation UIPhotosAlbum
 
 + (UIPhotosAlbum *)sharedPhotosAlbum
@@ -50,17 +52,7 @@
         NSData *data = UIImagePNGRepresentation(image);
         NSError *error = nil;
 
-        // http://qiita.com/ukyo/items/d623209655a003b13add
-        EM_ASM_({
-            var a = document.createElement('a');
-            var blob = new Blob([HEAPU8.subarray($0, $0+$1)], {type: 'image/png'});
-            var url = window.URL.createObjectURL(blob);
-            a.href = url;
-            a.download = 'image'+(new Date().toISOString().replace(/[-:.TZ]/g,''))+'.png';
-            var e = document.createEvent('MouseEvent');
-            e.initEvent("click", true, true, window, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
-            a.dispatchEvent(e);
-        }, data.bytes, data.length);
+        UIKit_downloadImage(data.bytes, data.length);
 
         if (target) {
             typedef void(*ActionMethod)(id, SEL, id, NSError *, void *);

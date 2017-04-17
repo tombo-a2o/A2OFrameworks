@@ -36,6 +36,10 @@
 #import <emscripten/html5.h>
 #import <emscripten/trace.h>
 
+extern int UIKit_openUrl(const char* urlString, int isJapanese);
+extern int UIKit_getInitialDeviceOrientation(void);
+extern void UIKit_syncfs(void);
+
 NSString *const UIApplicationWillChangeStatusBarOrientationNotification = @"UIApplicationWillChangeStatusBarOrientationNotification";
 NSString *const UIApplicationDidChangeStatusBarOrientationNotification = @"UIApplicationDidChangeStatusBarOrientationNotification";
 NSString *const UIApplicationWillEnterForegroundNotification = @"UIApplicationWillEnterForegroundNotification";
@@ -604,28 +608,13 @@ static UIInterfaceOrientation interfaceOrientationFromNSString(NSString *orienta
 
 - (BOOL)openURL:(NSURL *)url
 {
-    // To avoid link error on emscripten, we need to encode
-    // encodeURI("ポップアップブロックを解除してください")
-
     // tenuki localization
     NSArray* localizations = @[@"ja", @"en"];
     NSArray* prefArray = (__bridge NSArray*)CFBundleCopyLocalizationsForPreferences((__bridge CFArrayRef)localizations, NULL);
     BOOL isJapanese = [prefArray indexOfObject:@"ja"] != NSNotFound;
 
     const char* urlString = [url.absoluteString UTF8String];
-    int success = EM_ASM_INT({
-        var url = Pointer_stringify($0);
-        var isJapanese = $1;
-        var ret = window.open(url, '_blank') != null ? 1 : 0;
-        if(!ret) {
-            if(isJapanese) {
-                alert(decodeURI("%E3%83%9D%E3%83%83%E3%83%97%E3%82%A2%E3%83%83%E3%83%97%E3%83%96%E3%83%AD%E3%83%83%E3%82%AF%E3%82%92%E8%A7%A3%E9%99%A4%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84"));
-            } else {
-                alert("Please allow pop-ups!");
-            }
-        }
-        return ret;
-    }, urlString, isJapanese);
+    int success = UIKit_openUrl(urlString, isJapanese);
     return success;
 }
 
@@ -761,7 +750,7 @@ static UIInterfaceOrientation interfaceOrientationFromNSString(NSString *orienta
         [self _applicationDidFinishLaunching];
 
         // Actually, this should be later than here
-        [UIDevice currentDevice].orientation = EM_ASM_INT_V({return Module['initialDeviceOrientation'] || 0;}) ?: UIDeviceOrientationPortrait;
+        [UIDevice currentDevice].orientation = UIKit_getInitialDeviceOrientation() ?: UIDeviceOrientationPortrait;
 
         [self _applicationDidBecomeActive:nil];
     }
@@ -784,7 +773,7 @@ static UIInterfaceOrientation interfaceOrientationFromNSString(NSString *orienta
             }
 
             if(count % 100 == 0) {
-                EM_ASM({ FS.syncfs(false, function(){}) });
+                UIKit_syncfs();
             }
 
             count++;
