@@ -44,6 +44,7 @@ extern NSString *const UIKeyboardDidShowNotification;
 extern NSString *const UIKeyboardWillHideNotification;
 extern NSString *const UIKeyboardDidHideNotification;
 extern NSString *const UIKeyboardWillChangeFrameNotification;
+extern NSString *const UIKeyboardDidChangeFrameNotification;
 
 extern NSString *const UIKeyboardFrameBeginUserInfoKey;
 extern NSString *const UIKeyboardFrameEndUserInfoKey;

@@ -52,6 +52,7 @@ NSString *const UIKeyboardDidShowNotification = @"UIKeyboardDidShowNotification"
 NSString *const UIKeyboardWillHideNotification = @"UIKeyboardWillHideNotification";
 NSString *const UIKeyboardDidHideNotification = @"UIKeyboardDidHideNotification";
 NSString *const UIKeyboardWillChangeFrameNotification = @"UIKeyboardWillChangeFrameNotification";
+NSString *const UIKeyboardDidChangeFrameNotification = @"UIKeyboardDidChangeFrameNotification";
 
 NSString *const UIKeyboardFrameBeginUserInfoKey = @"UIKeyboardFrameBeginUserInfoKey";
 NSString *const UIKeyboardFrameEndUserInfoKey = @"UIKeyboardFrameEndUserInfoKey";

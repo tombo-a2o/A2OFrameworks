@@ -47,6 +47,13 @@ typedef NS_ENUM(NSInteger, UIUserInterfaceIdiom) {
     UIUserInterfaceIdiomDesktop,
 };
 
+typedef NS_ENUM(NSInteger, UIDeviceBatteryState) {
+    UIDeviceBatteryStateUnknown,
+    UIDeviceBatteryStateUnplugged,
+    UIDeviceBatteryStateCharging,
+    UIDeviceBatteryStateFull,
+};
+
 #define UI_USER_INTERFACE_IDIOM() \
     ([[UIDevice currentDevice] respondsToSelector:@selector(userInterfaceIdiom)] ? \
     [[UIDevice currentDevice] userInterfaceIdiom] : \
@@ -75,4 +82,7 @@ typedef NS_ENUM(NSInteger, UIUserInterfaceIdiom) {
 @property (nonatomic, readonly, strong) NSString *model;
 @property (nonatomic, readonly, getter=isGeneratingDeviceOrientationNotifications) BOOL generatesDeviceOrientationNotifications; // aways returns NO
 @property (nonatomic, readonly, strong) NSUUID *identifierForVendor;
+@property (nonatomic, readonly) UIDeviceBatteryState batteryState;
+@property (nonatomic, readonly) float batteryLevel;
+@property (nonatomic, getter=isBatteryMonitoringEnabled) BOOL batteryMonitoringEnabled;
 @end
