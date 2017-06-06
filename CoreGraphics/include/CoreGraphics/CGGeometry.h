@@ -40,7 +40,7 @@ enum CGRectEdge {
     CGRectMinXEdge,
     CGRectMinYEdge,
     CGRectMaxXEdge,
-    CGRectMaxYEdge 
+    CGRectMaxYEdge
 };
 typedef enum CGRectEdge CGRectEdge;
 
@@ -160,8 +160,3 @@ static inline bool CGRectContainsRect(CGRect a, CGRect b) {
 }
 
 COREGRAPHICS_EXPORT CGRect CGRectStandardize(CGRect rect);
-
-@class NSString;
-COREGRAPHICS_EXPORT CGPoint CGPointFromString(NSString *string);
-COREGRAPHICS_EXPORT CGRect CGRectFromString(NSString * string);
-COREGRAPHICS_EXPORT CGSize CGSizeFromString(NSString *string);

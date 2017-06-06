@@ -13,7 +13,7 @@
 // THE SOFTWARE.
 //
 //******************************************************************************
-#import <CoreGraphics/CGGeometry.h>
+#import <UIKit/UIGeometry.h>
 #import <Foundation/NSString.h>
 
 CGPoint CGPointFromString(NSString *strPt) {

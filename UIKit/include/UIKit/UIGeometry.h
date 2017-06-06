@@ -29,6 +29,7 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreGraphics/CoreGraphics.h>
+#import <UIKit/UIKitDefines.h>
 
 typedef struct UIEdgeInsets {
     CGFloat top, left, bottom, right;  // specify amount to inset (positive) for each of the edges. values can be negative to 'outset'
@@ -67,15 +68,18 @@ static inline BOOL UIOffsetEqualToOffset(UIOffset offset1, UIOffset offset2) {
 
 extern const UIOffset UIOffsetZero;
 
-NSString *NSStringFromCGPoint(CGPoint p);
-NSString *NSStringFromCGRect(CGRect r);
-NSString *NSStringFromCGSize(CGSize s);
+UIKIT_EXPORT NSString *NSStringFromCGPoint(CGPoint p);
+UIKIT_EXPORT NSString *NSStringFromCGRect(CGRect r);
+UIKIT_EXPORT NSString *NSStringFromCGSize(CGSize s);
+UIKIT_EXPORT CGPoint CGPointFromString(NSString *string);
+UIKIT_EXPORT CGRect CGRectFromString(NSString * string);
+UIKIT_EXPORT CGSize CGSizeFromString(NSString *string);
 
-NSString *NSStringFromCGAffineTransform(CGAffineTransform transform);
+UIKIT_EXPORT NSString *NSStringFromCGAffineTransform(CGAffineTransform transform);
 
-NSString *NSStringFromUIEdgeInsets(UIEdgeInsets insets);
+UIKIT_EXPORT NSString *NSStringFromUIEdgeInsets(UIEdgeInsets insets);
 
-NSString *NSStringFromUIOffset(UIOffset offset);
+UIKIT_EXPORT NSString *NSStringFromUIOffset(UIOffset offset);
 
 @interface NSValue (NSValueUIGeometryExtensions)
 + (NSValue *)valueWithCGPoint:(CGPoint)point;

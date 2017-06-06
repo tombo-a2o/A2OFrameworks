@@ -137,7 +137,7 @@ static double x,y,width,height;
     if(!obj) {
         return CGRectZero;
     }
-    
+
     if([obj isKindOfClass:[NSString class]]) {
         return NSRectFromString(obj);
     } else {
@@ -152,7 +152,7 @@ static double x,y,width,height;
         rect.origin.y = y;
         rect.size.width = width;
         rect.size.height = height;
-        
+
         return rect;
     }
 }
@@ -163,7 +163,7 @@ static double x,y,width,height;
     if(!obj) {
         return CGSizeZero;
     }
-    
+
     if([obj isKindOfClass:[NSString class]]) {
         return NSSizeFromString(obj);
     } else {
@@ -174,7 +174,7 @@ static double x,y,width,height;
         memcpy(&height, bytes+9, sizeof(double));
         size.width = width;
         size.height = height;
-        
+
         return size;
     }
 }
@@ -185,7 +185,7 @@ static double x,y,width,height;
     if(!obj) {
         return CGPointZero;
     }
-    
+
     if([obj isKindOfClass:[NSString class]]) {
         return NSPointFromString(obj);
     } else {
@@ -196,7 +196,7 @@ static double x,y,width,height;
         memcpy(&y, bytes+9, sizeof(double));
         point.x = x;
         point.y = y;
-        
+
         return point;
     }
 }
