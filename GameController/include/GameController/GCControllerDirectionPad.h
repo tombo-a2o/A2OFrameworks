@@ -1,8 +1,11 @@
 #import <Foundation/Foundation.h>
+#import <GameController/GCControllerElement.h>
 
-@class GCControllerButtonInput;
+@class GCControllerAxisInput, GCControllerButtonInput;
 
-@interface GCControllerDirectionPad : NSObject
+@interface GCControllerDirectionPad : GCControllerElement
+@property(nonatomic, readonly) GCControllerAxisInput *xAxis;
+@property(nonatomic, readonly) GCControllerAxisInput *yAxis;
 @property(nonatomic, readonly) GCControllerButtonInput *up;
 @property(nonatomic, readonly) GCControllerButtonInput *down;
 @property(nonatomic, readonly) GCControllerButtonInput *left;
