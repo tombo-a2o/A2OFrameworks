@@ -51,6 +51,7 @@ typedef NS_ENUM(NSInteger, UIWebViewNavigationType) {
 @interface UIWebView : UIView
 - (void)loadHTMLString:(NSString *)string baseURL:(NSURL *)baseURL;
 - (void)loadRequest:(NSURLRequest *)request;
+- (void)loadData:(NSData *)data MIMEType:(NSString *)MIMEType textEncodingName:(NSString *)textEncodingName baseURL:(NSURL *)baseURL;
 - (void)stopLoading;
 - (void)reload;
 - (void)goBack;
