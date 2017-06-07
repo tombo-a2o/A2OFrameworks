@@ -23,7 +23,7 @@ extern void audioBuffer_read(const char* name, int channel, int bytes, void* des
 
 OSStatus ExtAudioFileGetProperty ( ExtAudioFileRef inExtAudioFile, ExtAudioFilePropertyID inPropertyID, UInt32 * ioPropertyDataSize, void * outPropertyData ) {
     const char* filename = CFStringGetCStringPtr(inExtAudioFile->path, CFStringGetSystemEncoding());
-    
+
     switch(inPropertyID) {
     case kExtAudioFileProperty_FileDataFormat:
         assert(*ioPropertyDataSize == sizeof(AudioStreamBasicDescription));
@@ -53,7 +53,7 @@ OSStatus ExtAudioFileGetProperty ( ExtAudioFileRef inExtAudioFile, ExtAudioFileP
 
 OSStatus ExtAudioFileSetProperty ( ExtAudioFileRef inExtAudioFile, ExtAudioFilePropertyID inPropertyID, UInt32 inPropertyDataSize, const void * inPropertyData ) {
     const char* filename = CFStringGetCStringPtr(inExtAudioFile->path, CFStringGetSystemEncoding());
-    
+
     switch(inPropertyID) {
     case kExtAudioFileProperty_ClientDataFormat:
         assert(inPropertyDataSize == sizeof(AudioStreamBasicDescription));
@@ -71,17 +71,17 @@ OSStatus ExtAudioFileRead ( ExtAudioFileRef inExtAudioFile, UInt32 * ioNumberFra
     const char* filename = CFStringGetCStringPtr(inExtAudioFile->path, CFStringGetSystemEncoding());
     AudioStreamBasicDescription *format = &inExtAudioFile->clientFormat;
     AudioBuffer buffer = ioData->mBuffers[0];
-    
+
     assert(ioData->mNumberBuffers == 1);
-    
+
     assert(format->mFramesPerPacket == 1);
     assert(format->mFormatID == kAudioFormatLinearPCM);
     assert(format->mBytesPerPacket == format->mBytesPerFrame);
-    
+
     int bytes = format->mBytesPerFrame / format->mChannelsPerFrame;
-    
+
     assert(format->mBitsPerChannel == bytes * 8);
-    
+
     audioBuffer_read(filename, buffer.mNumberChannels, bytes, buffer.mData);
     return 0;
 }
@@ -90,4 +90,9 @@ OSStatus ExtAudioFileDispose ( ExtAudioFileRef inExtAudioFile ) {
     CFRelease(inExtAudioFile->path);
     free(inExtAudioFile);
     return noErr;
+}
+
+OSStatus ExtAudioFileSeek(ExtAudioFileRef inExtAudioFile, SInt64 inFrameOffset) {
+    assert(0);
+    return 0;
 }
