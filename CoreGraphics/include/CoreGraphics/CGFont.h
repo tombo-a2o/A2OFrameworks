@@ -10,7 +10,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #import <CoreGraphics/CGDataProvider.h>
 #import <CoreGraphics/CGGeometry.h>
 #import <CoreFoundation/CoreFoundation.h>
-#import <Foundation/NSString.h>
 
 typedef struct O2Font *CGFontRef;
 
@@ -42,5 +41,5 @@ COREGRAPHICS_EXPORT CGGlyph CGFontGetGlyphWithGlyphName(CGFontRef self, CFString
 COREGRAPHICS_EXPORT CFStringRef CGFontCopyGlyphNameForGlyph(CGFontRef self, CGGlyph glyph);
 
 COREGRAPHICS_EXPORT CFDataRef CGFontCopyTableForTag(CGFontRef self, uint32_t tag);
-COREGRAPHICS_EXPORT CGFloat CGFontGetTextWidth(CGFontRef self, const unichar *codes, size_t count, CGFloat fontSize);
-COREGRAPHICS_EXPORT size_t CGFontSuggestLineBreak(CGFontRef self, const unichar *codes, size_t count, CGFloat fontSize, CFIndex start, CGFloat width);
+COREGRAPHICS_EXPORT CGFloat CGFontGetTextWidth(CGFontRef self, const unsigned short *codes, size_t count, CGFloat fontSize);
+COREGRAPHICS_EXPORT size_t CGFontSuggestLineBreak(CGFontRef self, const unsigned short *codes, size_t count, CGFloat fontSize, CFIndex start, CGFloat width);
