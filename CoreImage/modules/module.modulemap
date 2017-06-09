@@ -1,0 +1,6 @@
+framework module CoreImage {
+    umbrella header "CoreImage.h"
+
+    export *
+    module * { export * }
+}

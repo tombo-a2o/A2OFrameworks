@@ -1,0 +1,6 @@
+framework module CoreVideo {
+    umbrella header "CoreVideo.h"
+
+    export *
+    module * { export * }
+}

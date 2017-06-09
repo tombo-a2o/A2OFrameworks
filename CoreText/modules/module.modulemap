@@ -1,0 +1,6 @@
+framework module CoreText {
+    umbrella header "CoreText.h"
+
+    export *
+    module * { export * }
+}

@@ -1,0 +1,6 @@
+framework module MapKit {
+    umbrella header "MapKit.h"
+
+    export *
+    module * { export * }
+}

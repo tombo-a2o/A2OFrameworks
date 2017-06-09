@@ -1,0 +1,6 @@
+framework module TomboAFNetworking {
+    umbrella header "TomboAFNetworking.h"
+
+    export *
+    module * { export * }
+}

@@ -1,0 +1,6 @@
+framework module SafariServices {
+    umbrella header "SafariServices.h"
+
+    export *
+    module * { export * }
+}

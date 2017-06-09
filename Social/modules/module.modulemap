@@ -1,0 +1,6 @@
+framework module Social {
+    umbrella header "Social.h"
+
+    export *
+    module * { export * }
+}

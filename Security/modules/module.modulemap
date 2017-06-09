@@ -1,0 +1,6 @@
+framework module Security {
+    umbrella header "Security.h"
+
+    export *
+    module * { export * }
+}

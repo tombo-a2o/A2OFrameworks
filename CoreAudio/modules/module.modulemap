@@ -1,0 +1,6 @@
+framework module CoreAudio {
+    umbrella header "CoreAudio.h"
+
+    export *
+    module * { export * }
+}

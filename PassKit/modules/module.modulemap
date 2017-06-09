@@ -1,0 +1,6 @@
+framework module PassKit {
+    umbrella header "PassKit.h"
+
+    export *
+    module * { export * }
+}

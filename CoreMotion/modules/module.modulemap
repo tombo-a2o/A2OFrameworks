@@ -1,0 +1,6 @@
+framework module CoreMotion {
+    umbrella header "CoreMotion.h"
+
+    export *
+    module * { export * }
+}

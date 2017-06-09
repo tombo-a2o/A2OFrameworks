@@ -16,7 +16,8 @@ SOURCES = $(wildcard TomboAFNetworking/*.m)
 PUBLIC_HEADERS = $(wildcard TomboAFNetworking/*.h)
 PRIVATE_HEADERS =
 RESOURCE_DIR = resource
+MODULE_MAP = modules/module.modulemap
 
 $(warning $(SOURCES))
 
-$(eval $(call framework_build, TomboAFNetworking, $(BUILD_DIR), $(INSTALL_DIR), $(SOURCES), $(PUBLIC_HEADERS), $(PRIVATE_HEADERS), $(RESOURCE_DIR)))
+$(eval $(call framework_build, TomboAFNetworking, $(BUILD_DIR), $(INSTALL_DIR), $(SOURCES), $(PUBLIC_HEADERS), $(PRIVATE_HEADERS), $(RESOURCE_DIR), $(MODULE_MAP)))

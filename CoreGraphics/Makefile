@@ -16,5 +16,6 @@ SOURCES			= $(wildcard src/CG*.m src/A2O*.m)
 PUBLIC_HEADERS	= $(wildcard include/CoreGraphics/*.h)
 PRIVATE_HEADERS	= $(wildcard private_include/CoreGraphics/*.h)
 RESOURCE_DIR	= resource
+MODULE_MAP		= modules/module.modulemap
 
-$(eval $(call framework_build, CoreGraphics, $(BUILD_DIR), $(INSTALL_DIR), $(SOURCES), $(PUBLIC_HEADERS), $(PRIVATE_HEADERS), $(RESOURCE_DIR)))
+$(eval $(call framework_build, CoreGraphics, $(BUILD_DIR), $(INSTALL_DIR), $(SOURCES), $(PUBLIC_HEADERS), $(PRIVATE_HEADERS), $(RESOURCE_DIR), $(MODULE_MAP)))

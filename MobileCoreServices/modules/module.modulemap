@@ -1,0 +1,6 @@
+framework module MobileCoreServices {
+    umbrella header "MobileCoreServices.h"
+
+    export *
+    module * { export * }
+}

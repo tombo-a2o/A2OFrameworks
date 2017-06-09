@@ -14,5 +14,6 @@ SOURCES			= $(wildcard src/*.m)
 PUBLIC_HEADERS	= $(wildcard include/**/*.h)
 PRIVATE_HEADERS	= $(wildcard private_include/**/*.h)
 RESOURCE_DIR	= resource
+MODULE_MAP		= modules/module.modulemap
 
-$(eval $(call framework_build, SafariServices, $(BUILD_DIR), $(INSTALL_DIR), $(SOURCES), $(PUBLIC_HEADERS), $(PRIVATE_HEADERS), $(RESOURCE_DIR)))
+$(eval $(call framework_build, SafariServices, $(BUILD_DIR), $(INSTALL_DIR), $(SOURCES), $(PUBLIC_HEADERS), $(PRIVATE_HEADERS), $(RESOURCE_DIR), $(MODULE_MAP)))

@@ -1,0 +1,6 @@
+framework module AdSupport {
+    umbrella header "AdSupport.h"
+
+    export *
+    module * { export * }
+}

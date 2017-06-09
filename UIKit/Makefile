@@ -16,8 +16,9 @@ SOURCES			= $(wildcard src/*.m src/*.mm)
 PUBLIC_HEADERS	= $(wildcard include/UIKit/*.h)
 PRIVATE_HEADERS	= $(wildcard private_include/UIKit/*.h)
 RESOURCE_DIR	= resource
+MODULE_MAP		= modules/module.modulemap
 
-$(eval $(call framework_build, UIKit, $(BUILD_DIR), $(INSTALL_DIR), $(SOURCES), $(PUBLIC_HEADERS), $(PRIVATE_HEADERS), $(RESOURCE_DIR)))
+$(eval $(call framework_build, UIKit, $(BUILD_DIR), $(INSTALL_DIR), $(SOURCES), $(PUBLIC_HEADERS), $(PRIVATE_HEADERS), $(RESOURCE_DIR), $(MODULE_MAP)))
 
 # nib classes created for no-ARC (MRC) 
 

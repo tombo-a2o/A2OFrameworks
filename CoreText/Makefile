@@ -16,5 +16,6 @@ SOURCES			= $(wildcard src/*.m)
 PUBLIC_HEADERS	= $(wildcard include/CoreText/*.h)
 PRIVATE_HEADERS	= $(wildcard private_include/CoreText/*.h)
 RESOURCE_DIR	= resource
+MODULE_MAP		= modules/module.modulemap
 
-$(eval $(call framework_build, CoreText, $(BUILD_DIR), $(INSTALL_DIR), $(SOURCES), $(PUBLIC_HEADERS), $(PRIVATE_HEADERS), $(RESOURCE_DIR)))
+$(eval $(call framework_build, CoreText, $(BUILD_DIR), $(INSTALL_DIR), $(SOURCES), $(PUBLIC_HEADERS), $(PRIVATE_HEADERS), $(RESOURCE_DIR), $(MODULE_MAP)))

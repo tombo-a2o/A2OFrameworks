@@ -1,0 +1,6 @@
+framework module TomboKit {
+    umbrella header "TomboKit.h"
+
+    export *
+    module * { export * }
+}

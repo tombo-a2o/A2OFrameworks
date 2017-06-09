@@ -1,0 +1,6 @@
+framework module iAd {
+    umbrella header "iAd.h"
+
+    export *
+    module * { export * }
+}

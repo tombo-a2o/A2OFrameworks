@@ -1,0 +1,6 @@
+framework module EventKit {
+    umbrella header "EventKit.h"
+
+    export *
+    module * { export * }
+}

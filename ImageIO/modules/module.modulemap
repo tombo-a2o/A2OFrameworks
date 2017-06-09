@@ -1,0 +1,6 @@
+framework module ImageIO {
+    umbrella header "ImageIO.h"
+
+    export *
+    module * { export * }
+}

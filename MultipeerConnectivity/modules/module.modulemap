@@ -1,0 +1,6 @@
+framework module MultipeerConnectivity {
+    umbrella header "MultipeerConnectivity.h"
+
+    export *
+    module * { export * }
+}

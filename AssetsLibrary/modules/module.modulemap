@@ -1,0 +1,6 @@
+framework module AssetsLibrary {
+    umbrella header "AssetsLibrary.h"
+
+    export *
+    module * { export * }
+}
