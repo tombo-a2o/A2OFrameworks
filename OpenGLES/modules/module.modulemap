@@ -1,6 +1,5 @@
 framework module OpenGLES {
-    umbrella header "OpenGLES.h"
+    umbrella "Headers"
 
-    export *
     module * { export * }
 }
