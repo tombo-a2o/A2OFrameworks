@@ -2,7 +2,7 @@
 #define __ExtendedAudioFile__
 
 #include <CoreFoundation/CoreFoundation.h>
-#include <CoreAudio/CoreAudio.h>
+#include <CoreAudio/CoreAudioTypes.h>
 
 CF_EXTERN_C_BEGIN
 

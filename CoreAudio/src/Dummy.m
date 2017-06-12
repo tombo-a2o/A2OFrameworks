@@ -1,1 +1,1 @@
-#import <CoreAudio/CoreAudio.h>
+#import <CoreAudio/CoreAudioTypes.h>
