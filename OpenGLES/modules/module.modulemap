@@ -2,4 +2,14 @@ framework module OpenGLES {
     umbrella "Headers"
 
     module * { export * }
+
+    module EAGL {
+        header "EAGL.h"
+        export *
+    }
+
+    module EAGLDrawable {
+        header "EAGLDrawable.h"
+        export *
+    }
 }
