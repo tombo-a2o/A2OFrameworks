@@ -20,3 +20,5 @@ mkdir -p private_include/$name
 touch include/$name/$name.h
 mkdir src
 echo "#import <$name/$name.h>" > src/Dummy.m
+mkdir modules
+sed -e s/Social/$1/g ../Social/modules/module.modulemap > modules/module.modulemap
