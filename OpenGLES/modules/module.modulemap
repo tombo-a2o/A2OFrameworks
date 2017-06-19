@@ -4,11 +4,13 @@ framework module OpenGLES {
     module * { export * }
 
     module EAGL {
+        requires objc
         header "EAGL.h"
         export *
     }
 
     module EAGLDrawable {
+        requires objc
         header "EAGLDrawable.h"
         export *
     }
