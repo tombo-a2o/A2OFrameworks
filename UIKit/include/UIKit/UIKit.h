@@ -64,6 +64,7 @@
 #import <UIKit/UIViewController.h>
 #import <UIKit/UIScreenMode.h>
 #import <UIKit/UIActionSheet.h>
+#import <UIKit/UIAlert.h>
 #import <UIKit/UIAlertView.h>
 #import <UIKit/UITextField.h>
 #import <UIKit/UINavigationItem.h>
