@@ -38,4 +38,6 @@ typedef enum {
 - (void)setDestinationEntity:(NSEntityDescription *)value;
 - (void)setInverseRelationship:(NSRelationshipDescription *)value;
 
+@property(getter=isOrdered) BOOL ordered;
+
 @end

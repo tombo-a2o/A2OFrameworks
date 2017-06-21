@@ -24,6 +24,10 @@ COREDATA_EXPORT NSString *const NSRefreshedObjectsKey;
 COREDATA_EXPORT NSString *const NSInvalidatedObjectsKey;
 COREDATA_EXPORT NSString *const NSInvalidatedAllObjectsKey;
 
+typedef NS_ENUM(NSInteger, NSManagedObjectContextConcurrencyType) {
+    NSConfinementConcurrencyType = 0x00,
+};
+
 @interface NSManagedObjectContext : NSObject <NSLocking> {
     NSLock *_lock;
     NSPersistentStoreCoordinator *_storeCoordinator;
@@ -104,5 +108,9 @@ COREDATA_EXPORT NSString *const NSInvalidatedAllObjectsKey;
 - (void)discardEditing;
 - (void)objectDidBeginEditing:(id)editor;
 - (void)objectDidEndEditing:(id)editor;
+
+- (void)performBlockAndWait:(void (^)(void))block;
+
+@property(readonly) NSManagedObjectContextConcurrencyType concurrencyType;
 
 @end
