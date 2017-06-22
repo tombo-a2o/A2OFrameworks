@@ -99,6 +99,7 @@
 #import <UIKit/UIAccelerometer.h>
 #import <UIKit/UIMenuController.h>
 #import <UIKit/UIMenuItem.h>
+#import <UIKit/UIMotionEffect.h>
 #import <UIKit/UIViewAdapter.h>
 #import <UIKit/UIPageControl.h>
 #import <UIKit/UIProgressView.h>
