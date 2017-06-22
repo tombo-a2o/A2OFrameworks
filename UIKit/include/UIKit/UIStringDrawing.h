@@ -74,6 +74,8 @@ typedef NS_ENUM(NSInteger, NSStringDrawingOptions) {
     NSStringDrawingUsesDeviceMetrics = 1 << 3,
 };
 
+typedef NSString *NSAttributedStringKey;
+
 extern NSString *const UITextAttributeFont;
 extern NSString *const UITextAttributeTextColor;
 extern NSString *const UITextAttributeTextShadowColor;
@@ -104,5 +106,6 @@ extern NSString *const UITextAttributeTextShadowOffset;
 - (CGSize)drawAtPoint:(CGPoint)point forWidth:(CGFloat)width withFont:(UIFont *)font minFontSize:(CGFloat)minFontSize actualFontSize:(CGFloat *)actualFontSize lineBreakMode:(NSLineBreakMode)lineBreakMode baselineAdjustment:(UIBaselineAdjustment)baselineAdjustment;
 - (CGRect)boundingRectWithSize:(CGSize)size options:(NSStringDrawingOptions)options attributes:(NSDictionary *)attributes context:(NSStringDrawingContext *)context;
 - (void)drawInRect:(CGRect)rect withAttributes:(NSDictionary<NSString *,id> *)attrs;
+- (CGSize)sizeWithAttributes:(NSDictionary<NSAttributedStringKey, id> *)attrs;
 
 @end

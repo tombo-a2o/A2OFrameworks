@@ -42,6 +42,12 @@ typedef NS_ENUM(NSInteger, UIImageOrientation) {
     UIImageOrientationRightMirrored, // vertical flip
 };
 
+typedef NS_ENUM(NSInteger, UIImageRenderingMode) {
+    UIImageRenderingModeAutomatic,
+    UIImageRenderingModeAlwaysOriginal,
+    UIImageRenderingModeAlwaysTemplate,
+};
+
 @interface UIImage : NSObject {
 @private
     NSArray *_representations;
@@ -52,11 +58,13 @@ typedef NS_ENUM(NSInteger, UIImageOrientation) {
 + (UIImage *)imageWithContentsOfFile:(NSString *)path;
 + (UIImage *)imageWithCGImage:(CGImageRef)imageRef;
 + (UIImage *)imageWithCGImage:(CGImageRef)imageRef scale:(CGFloat)scale orientation:(UIImageOrientation)orientation;
+- (UIImage *)imageWithRenderingMode:(UIImageRenderingMode)renderingMode;
 
 - (id)initWithData:(NSData *)data;
 - (id)initWithContentsOfFile:(NSString *)path;
 - (id)initWithCGImage:(CGImageRef)imageRef;
 - (id)initWithCGImage:(CGImageRef)imageRef scale:(CGFloat)scale orientation:(UIImageOrientation)orientation;
+- (id)initWithRenderingMode:(UIImageRenderingMode)renderingMode;
 
 - (UIImage *)stretchableImageWithLeftCapWidth:(NSInteger)leftCapWidth topCapHeight:(NSInteger)topCapHeight;
 - (UIImage *)resizableImageWithCapInsets:(UIEdgeInsets)capInsets;   // not correctly implemented
