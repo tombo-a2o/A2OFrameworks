@@ -29,6 +29,7 @@
 
 #import <UIKit/UIAccelerometer.h>
 #import "UIAcceleration+UIPrivate.h"
+#import <emscripten/emscripten.h>
 #import <emscripten/html5.h>
 
 static UIAccelerometer *_theAccelerometer = nil;
