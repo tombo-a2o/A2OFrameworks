@@ -445,14 +445,25 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
      */
 }
 
+#ifdef ORIENTAION_DEBUG
+#define ODEBUG_LOG(...) NSLog(__VA_ARGS__)
+#else
+#define ODEBUG_LOG(...)
+#endif
+
+
 - (void)_updateOrientation:(BOOL)forceUpdate
 {
+    ODEBUG_LOG(@"%s ", __FUNCTION__);
+
     if(!forceUpdate && !self.shouldAutorotate) return;
 
     UIDeviceOrientation deviceOrientation = [[UIDevice currentDevice] orientation];
+    ODEBUG_LOG(@"deviceOrientation %d", deviceOrientation);
 
     UIInterfaceOrientationMask supportedInterfaceOrientations = [[UIApplication sharedApplication] _supportedInterfaceOrientations] & [self _supportedInterfaceOrientations];
 
+    ODEBUG_LOG(@"supportedInterfaceOrientations %d", supportedInterfaceOrientations);
     assert(supportedInterfaceOrientations);
 
     if((1<<deviceOrientation) & supportedInterfaceOrientations) {
@@ -468,6 +479,7 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
             _interfaceOrientation = UIInterfaceOrientationPortraitUpsideDown;
         }
     }
+    ODEBUG_LOG(@"_interfaceOrientation mask %d", _interfaceOrientation);
 }
 
 + (BOOL)_implementsShouldAutorotateToInterfaceOrientation
@@ -478,6 +490,7 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
 
 - (UIInterfaceOrientationMask)_supportedInterfaceOrientations
 {
+    ODEBUG_LOG(@"%s ", __FUNCTION__);
     // if subclass dares implementing shouldAutorotateToInterfaceOrientation, it means <iOS6 apps.
     if([[self class] _implementsShouldAutorotateToInterfaceOrientation]) {
         UIInterfaceOrientationMask mask = 0;
@@ -489,9 +502,12 @@ typedef NS_ENUM(NSInteger, _UIViewControllerParentageTransition) {
             mask |= UIInterfaceOrientationMaskLandscapeLeft;
         if([self shouldAutorotateToInterfaceOrientation:UIInterfaceOrientationLandscapeRight])
             mask |= UIInterfaceOrientationMaskLandscapeRight;
+        ODEBUG_LOG(@"_implementsShouldAutorotateToInterfaceOrientation -> true: mask = %d", mask);
         return mask;
     } else {
-        return [self supportedInterfaceOrientations];
+        UIInterfaceOrientationMask mask = [self supportedInterfaceOrientations];
+        ODEBUG_LOG(@"_implementsShouldAutorotateToInterfaceOrientation -> false: mask = %d", mask);
+        return mask;
     }
 }
 

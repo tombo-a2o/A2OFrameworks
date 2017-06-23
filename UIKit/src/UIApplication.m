@@ -183,8 +183,16 @@ static UIInterfaceOrientation interfaceOrientationFromNSString(NSString *orienta
     }
 }
 
+#ifdef ORIENTAION_DEBUG
+#define ODEBUG_LOG(...) NSLog(__VA_ARGS__)
+#else
+#define ODEBUG_LOG(...)
+#endif
+
 - (UIInterfaceOrientationMask)_supportedInterfaceOrientationsFromInfoPlist
 {
+    ODEBUG_LOG(@"%s ", __FUNCTION__);
+
     NSArray *orientations = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"UISupportedInterfaceOrientations"];
     if(!orientations) {
         NSString *orientation = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"UIInterfaceOrientation"];
@@ -203,6 +211,8 @@ static UIInterfaceOrientation interfaceOrientationFromNSString(NSString *orienta
 
 - (UIInterfaceOrientation)_preferredOrientationFromInfoPlist
 {
+    ODEBUG_LOG(@"%s ", __FUNCTION__);
+
     NSArray *orientations = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"UISupportedInterfaceOrientations"];
     if(orientations) {
         return interfaceOrientationFromNSString(orientations[0]);
@@ -216,6 +226,8 @@ static UIInterfaceOrientation interfaceOrientationFromNSString(NSString *orienta
 
 - (UIInterfaceOrientationMask)_supportedInterfaceOrientations
 {
+    ODEBUG_LOG(@"%s ", __FUNCTION__);
+
     if([_delegate respondsToSelector:@selector(application:supportedInterfaceOrientationsForWindow:)]) {
         return [_delegate application:self supportedInterfaceOrientationsForWindow:[self keyWindow]];
     } else {
