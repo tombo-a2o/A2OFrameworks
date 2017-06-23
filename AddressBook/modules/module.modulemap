@@ -1,0 +1,6 @@
+framework module AddressBook {
+    umbrella header "AddressBook.h"
+
+    export *
+    module * { export * }
+}
