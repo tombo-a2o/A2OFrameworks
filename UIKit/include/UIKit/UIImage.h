@@ -91,9 +91,9 @@ typedef NS_ENUM(NSInteger, UIImageRenderingMode) {
 
 @end
 
-void UIImageWriteToSavedPhotosAlbum(UIImage *image, id completionTarget, SEL completionSelector, void *contextInfo);
-void UISaveVideoAtPathToSavedPhotosAlbum(NSString *videoPath, id completionTarget, SEL completionSelector, void *contextInfo);
-BOOL UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(NSString *videoPath);
+UIKIT_EXPORT void UIImageWriteToSavedPhotosAlbum(UIImage *image, id completionTarget, SEL completionSelector, void *contextInfo);
+UIKIT_EXPORT void UISaveVideoAtPathToSavedPhotosAlbum(NSString *videoPath, id completionTarget, SEL completionSelector, void *contextInfo);
+UIKIT_EXPORT BOOL UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(NSString *videoPath);
 
 // both of these use .CGImage to generate the image data - note what this means for multi-scale images!
 UIKIT_EXPORT NSData *UIImageJPEGRepresentation(UIImage *image, CGFloat compressionQuality);
