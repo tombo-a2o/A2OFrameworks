@@ -26,25 +26,25 @@ static void o2png_write_data(png_structp png_ptr, png_bytep data, png_size_t len
 	O2DataConsumerPutBytes(self->_consumer,data,length);
 }
 
-void O2PNGEncoderWriteImage(O2PNGEncoderRef self,O2ImageRef image,CFDictionaryRef props) 
+void O2PNGEncoderWriteImage(O2PNGEncoderRef self,O2ImageRef image,CFDictionaryRef props)
 {
 	// Note: only encoding 32 bits RGBA images have been tested
 	NSDictionary *properties = (NSDictionary *)props;
-	
+
 	unsigned long length = 0;
 	size_t width = O2ImageGetWidth(image);
 	size_t height = O2ImageGetHeight(image);
-	
+
 	int bpr = O2ImageGetBytesPerRow(image);
 	png_bytep *row_pointers = calloc(sizeof(void *), height);
 	const uint8_t *bytes = [image directBytes];
 	for (int i = 0; i < height; ++i) {
 		row_pointers[i] = (uint8_t *)(bytes + i*bpr);
 	}
-	
+
 	png_structp png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 	png_infop info_ptr = png_create_info_struct(png_ptr);
-    
+
     // Default options for png compression are quite slow.
     // These settings speed it up a lot without sacrificing a lot of disk space
     png_set_filter(png_ptr, PNG_FILTER_TYPE_BASE, PNG_FILTER_SUB);
@@ -56,11 +56,11 @@ void O2PNGEncoderWriteImage(O2PNGEncoderRef self,O2ImageRef image,CFDictionaryRe
 		return;
 	}
 	png_set_write_fn(png_ptr, self, o2png_write_data, NULL);
-	
-	
+
+
 	png_byte color_type = PNG_COLOR_TYPE_RGB_ALPHA;
 	png_byte bit_depth = 8;
-	
+
 	switch(O2ImageGetBitmapInfo(image)&kO2BitmapAlphaInfoMask){
 		case kO2ImageAlphaNone:
 			color_type = PNG_COLOR_TYPE_RGB;
@@ -77,18 +77,18 @@ void O2PNGEncoderWriteImage(O2PNGEncoderRef self,O2ImageRef image,CFDictionaryRe
 			color_type = PNG_COLOR_TYPE_RGB_ALPHA;
 			break;
 	}
-	
+
 	png_set_IHDR(png_ptr, info_ptr, width, height,
 				 bit_depth, color_type, PNG_INTERLACE_NONE,
 				 PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
-	
+
 	if (setjmp(png_jmpbuf(png_ptr))) {
 		NSLog(@"Error writing png header");
 		png_destroy_write_struct(&png_ptr, &info_ptr);
 		return;
 	}
 	png_write_info(png_ptr, info_ptr);
-	
+
 	switch (O2ImageGetBitmapInfo(image) & kO2BitmapByteOrderMask) {
 		case kO2BitmapByteOrder16Little:
 			bit_depth = 4;
@@ -105,7 +105,7 @@ void O2PNGEncoderWriteImage(O2PNGEncoderRef self,O2ImageRef image,CFDictionaryRe
 		case kO2BitmapByteOrderDefault:
 		default:
 #ifdef __LITTLE_ENDIAN__
-			png_set_bgr(png_ptr);
+			//png_set_bgr(png_ptr);
 #endif
 			break;
 	}
@@ -115,15 +115,15 @@ void O2PNGEncoderWriteImage(O2PNGEncoderRef self,O2ImageRef image,CFDictionaryRe
 		return;
 	}
 	png_write_image(png_ptr, row_pointers);
-	
-	
+
+
 	if (setjmp(png_jmpbuf(png_ptr))) {
 		NSLog(@"Error finishing png image data");
 		png_destroy_write_struct(&png_ptr, &info_ptr);
 		return;
 	}
 	png_write_end(png_ptr, NULL);
-	
+
 	png_destroy_write_struct(&png_ptr, &info_ptr);
 	free(row_pointers);
 }
@@ -159,7 +159,7 @@ USAGE:
      int stbi_write_tga(char const *filename, int w, int h, int comp, const void *data);
 
    Each function returns 0 on failure and non-0 on success.
-   
+
    The functions create an image file defined by the parameters. The image
    is a rectangle of pixels stored from left-to-right, top-to-bottom.
    Each pixel contains 'comp' channels of data stored interleaved with 8-bits
@@ -172,7 +172,7 @@ USAGE:
    PNG creates output files with the same number of components as the input.
    The BMP and TGA formats expand Y to RGB in the file format. BMP does not
    output alpha.
-   
+
    PNG supports writing rectangles of data even when the bytes storing rows of
    data are not consecutive in memory (e.g. sub-rectangles of a larger image),
    by supplying the stride between the beginning of adjacent rows. The other
@@ -292,7 +292,7 @@ unsigned char * stbi_zlib_compress(unsigned char *data, int data_len, int *out_l
 
    i=0;
    while (i < data_len-3) {
-      // hash next 3 bytes of data to be compressed 
+      // hash next 3 bytes of data to be compressed
       int h = stbi__zhash(data+i)&(stbi__ZHASH-1), best=3;
       unsigned char *bestloc = 0;
       unsigned char **hlist = hash_table[h];
@@ -412,21 +412,21 @@ unsigned char *stbi_write_png_to_mem(O2ImageRef image, int x, int y, int *out_le
    unsigned char *out,*o, *filt, *zlib;
    signed char *line_buffer;
    int i,j,k,p,zlen;
-   
+
    int n=4; // 1=y,2=ya,3=rgb,4=rgba
    int stride_bytes=0;
-   
+
    if (stride_bytes == 0)
       stride_bytes = x * n;
 
    filt = (unsigned char *) malloc((x*n+1) * y); if (!filt) return 0;
    line_buffer = (signed char *) malloc(x * n); if (!line_buffer) { free(filt); return 0; }
-   
+
    O2argb8u *pixelBuffer=(O2argb8u *)malloc(x*sizeof(O2argb8u));
    O2argb8u *pixels;
     unsigned char *lastZ=(unsigned char *)calloc(1,x*n);
    unsigned char *z=(unsigned char *)calloc(1,x*n);
-       
+
    for (j=0; j < y; ++j) {
       static int mapping[] = { 0,1,2,3,4 };
       static int firstmap[] = { 0,1,0,5,6 };
@@ -434,7 +434,7 @@ unsigned char *stbi_write_png_to_mem(O2ImageRef image, int x, int y, int *out_le
       int best = 0, bestval = 0x7fffffff;
 
        pixels=O2Image_read_argb8u(image,0,j,pixelBuffer,x);
-       
+
        if(pixels==NULL)
            pixels=pixelBuffer;
 
@@ -448,7 +448,7 @@ unsigned char *stbi_write_png_to_mem(O2ImageRef image, int x, int y, int *out_le
        for (p=0; p < 2; ++p) {
          for (k= p?best:0; k < 5; ++k) {
             int type = mymap[k],est=0;
-                         
+
             for (i=0; i < n; ++i)
                switch (type) {
                   case 0: line_buffer[i] = z[i]; break;
@@ -479,7 +479,7 @@ unsigned char *stbi_write_png_to_mem(O2ImageRef image, int x, int y, int *out_le
       // when we get here, best contains the filter type, and line_buffer contains the data
       filt[j*(x*n+1)] = (unsigned char) best;
       memcpy(filt+j*(x*n+1)+1, line_buffer, x*n);
-       
+
        unsigned char *tmp=lastZ;
        lastZ=z;
        z=tmp;
@@ -488,13 +488,13 @@ unsigned char *stbi_write_png_to_mem(O2ImageRef image, int x, int y, int *out_le
     free(lastZ);
    free(pixelBuffer);
    free(line_buffer);
-   
+
    zlib = stbi_zlib_compress(filt, y*( x*n+1), &zlen, 8); // increase 8 to get smaller but use more memory
    free(filt);
    if (!zlib) return 0;
 
    // each tag requires 12 bytes of overhead
-   out = (unsigned char *) malloc(8 + 12+13 + 12+zlen + 12); 
+   out = (unsigned char *) malloc(8 + 12+13 + 12+zlen + 12);
    if (!out) return 0;
    *out_len = 8 + 12+13 + 12+zlen + 12;
 
@@ -535,15 +535,14 @@ unsigned char *stbi_write_png_to_mem(O2ImageRef image, int x, int y, int *out_le
 
 void O2PNGEncoderWriteImage(O2PNGEncoderRef self,O2ImageRef image,CFDictionaryRef properties) {
    int length;
-   
+
    unsigned char *png = stbi_write_png_to_mem(image, O2ImageGetWidth(image), O2ImageGetHeight(image), &length);
-   
+
    if(png==NULL)
     return;
 
    O2DataConsumerPutBytes(self->_consumer,png,length);
-   
+
    free(png);
 }
 #endif
-
