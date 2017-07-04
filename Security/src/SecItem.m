@@ -43,3 +43,9 @@ OSStatus SecItemAdd(CFDictionaryRef _attributes, CFTypeRef *result)
     NSLog(@"%s attributes: %@", __FUNCTION__, attributes);
     return 0;
 }
+
+OSStatus SecItemDelete(CFDictionaryRef query)
+{
+    NSLog(@"*** %s is not implemented", __FUNCTION__);
+    return 0;
+}
