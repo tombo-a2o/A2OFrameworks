@@ -32,6 +32,7 @@
 #import <UIKit/UIGraphics.h>
 #import "UIFont+UIPrivate.h"
 #import <UIKit/NSParagraphStyle.h>
+#import <UIKit/NSAttributedString.h>
 
 NSString *const UITextAttributeFont = @"UITextAttributeFont";
 NSString *const UITextAttributeTextColor = @"UITextAttributeTextColor";
@@ -237,7 +238,23 @@ static NSArray* CreateCTLinesForString(NSString *string, CGSize constrainedToSiz
 
 - (void)drawInRect:(CGRect)rect withAttributes:(NSDictionary<NSString *,id> *)attrs
 {
-    NSLog(@"%s is not implemented", __FUNCTION__);
+    NSLog(@"*** %s is not implemented", __FUNCTION__);
+}
+
+- (CGRect)boundingRectWithSize:(CGSize)size options:(NSStringDrawingOptions)options attributes:(NSDictionary *)attributes context:(NSStringDrawingContext *)context
+{
+    CGRect ret;
+
+    UIFont *font = (UIFont*)[attributes objectForKey:NSFontAttributeName];
+    NSLineBreakMode lineBreakMode = NSLineBreakByWordWrapping;
+    ret.size = [self sizeWithFont:font constrainedToSize:size lineBreakMode:lineBreakMode];
+    return ret;
+}
+
+- (CGSize)sizeWithAttributes:(NSDictionary<NSAttributedStringKey, id> *)attrs
+{
+    NSLog(@"*** %s is not implemented", __FUNCTION__);
+    return CGSizeZero;
 }
 
 @end
