@@ -25,8 +25,10 @@ OSStatus SecItemCopyMatching(CFDictionaryRef _query, CFTypeRef *_result)
     NSLog(@"%s query: %@", __FUNCTION__, query);
 
 
-    NSDictionary *result = [[NSDictionary alloc] init];
-    *_result = result;
+    if(_result) {
+        NSDictionary *result = [[NSDictionary alloc] init];
+        *_result = result;
+    }
     return errSecItemNotFound;
 }
 
