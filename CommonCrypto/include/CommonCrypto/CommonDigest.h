@@ -1,15 +1,15 @@
-/* 
+/*
  * Copyright (c) 2004 Apple Computer, Inc. All Rights Reserved.
- * 
+ *
  * @APPLE_LICENSE_HEADER_START@
- * 
+ *
  * This file contains Original Code and/or Modifications of Original Code
  * as defined in and that are subject to the Apple Public Source License
  * Version 2.0 (the 'License'). You may not use this file except in
  * compliance with the License. Please obtain a copy of the License at
  * http://www.opensource.apple.com/apsl/ and read it before using this
  * file.
- * 
+ *
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
  * EXPRESS OR IMPLIED, AND APPLE HEREBY DISCLAIMS ALL SUCH WARRANTIES,
@@ -17,14 +17,14 @@
  * FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT.
  * Please see the License for the specific language governing rights and
  * limitations under the License.
- * 
+ *
  * @APPLE_LICENSE_HEADER_END@
  */
 
 /*
  * CommonDigest.h - common digest routines: MD2, MD4, MD5, SHA1.
  */
- 
+
 #ifndef _CC_COMMON_DIGEST_H_
 #define _CC_COMMON_DIGEST_H_
 
@@ -37,20 +37,20 @@ extern "C" {
 
 /*
  * For compatibility with legacy implementations, the *Init(), *Update(),
- * and *Final() functions declared here *always* return a value of 1 (one). 
- * This corresponds to "success" in the similar openssl implementations. 
- * There are no errors of any kind which can be, or are, reported here, 
- * so you can safely ignore the return values of all of these functions 
+ * and *Final() functions declared here *always* return a value of 1 (one).
+ * This corresponds to "success" in the similar openssl implementations.
+ * There are no errors of any kind which can be, or are, reported here,
+ * so you can safely ignore the return values of all of these functions
  * if you are implementing new code.
  *
  * The one-shot functions (CC_MD2(), CC_SHA1(), etc.) perform digest
  * calculation and place the result in the caller-supplied buffer
  * indicated by the md parameter. They return the md parameter.
  * Unlike the opensssl counterparts, these one-shot functions require
- * a non-NULL md pointer. Passing in NULL for the md parameter 
- * results in a NULL return and no digest calculation. 
+ * a non-NULL md pointer. Passing in NULL for the md parameter
+ * results in a NULL return and no digest calculation.
  */
- 
+
 typedef uint32_t CC_LONG;       /* 32 bit unsigned integer */
 typedef uint64_t CC_LONG64;     /* 64 bit unsigned integer */
 
@@ -170,6 +170,7 @@ typedef struct CC_SHA256state_st
 {   CC_LONG count[2];
     CC_LONG hash[8];
     CC_LONG wbuf[16];
+    unsigned int num, md_len;
 } CC_SHA256_CTX;
 
 extern int CC_SHA224_Init(CC_SHA256_CTX *c)
@@ -213,6 +214,7 @@ typedef struct CC_SHA512state_st
 {   CC_LONG64 count[2];
     CC_LONG64 hash[8];
     CC_LONG64 wbuf[16];
+    unsigned int num, md_len;
 } CC_SHA512_CTX;
 
 extern int CC_SHA384_Init(CC_SHA512_CTX *c)
@@ -247,7 +249,7 @@ __OSX_AVAILABLE_STARTING(__MAC_10_4, __IPHONE_NA);
 
 /*
  * To use the above digest functions with existing code which uses
- * the corresponding openssl functions, #define the symbol 
+ * the corresponding openssl functions, #define the symbol
  * COMMON_DIGEST_FOR_OPENSSL in your client code (BEFORE including
  * this file), and simply link against libSystem (or System.framework)
  * instead of libcrypto.
@@ -257,7 +259,7 @@ __OSX_AVAILABLE_STARTING(__MAC_10_4, __IPHONE_NA);
  * on a CC_MD5_CTX object, do not assume that you can do an openssl-style
  * MD5_Update() on that same context.
  */
- 
+
 #ifdef  COMMON_DIGEST_FOR_OPENSSL
 
 #if defined(EMSCRIPTEN)
@@ -315,12 +317,12 @@ __OSX_AVAILABLE_STARTING(__MAC_10_4, __IPHONE_NA);
 #endif  /* COMMON_DIGEST_FOR_OPENSSL */
 
 /*
- * In a manner similar to that described above for openssl 
- * compatibility, these macros can be used to provide compatiblity 
- * with legacy implementations of MD5 using the interface defined 
+ * In a manner similar to that described above for openssl
+ * compatibility, these macros can be used to provide compatiblity
+ * with legacy implementations of MD5 using the interface defined
  * in RFC 1321.
  */
- 
+
 #ifdef  COMMON_DIGEST_FOR_RFC_1321
 
 #define MD5_CTX                     CC_MD5_CTX
