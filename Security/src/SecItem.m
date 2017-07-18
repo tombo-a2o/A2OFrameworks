@@ -14,7 +14,7 @@
 NSArray<NSString *>* attributeKeys(void){
     static NSArray<NSString *>* _attributeKeys = nil;
     if(!_attributeKeys) {
-        _attributeKeys = @[(NSString*)kSecAttrService, (NSString*)kSecAttrAccount];
+        _attributeKeys = [[NSArray alloc] initWithObjects:(__bridge NSString*)kSecAttrService, (__bridge NSString*)kSecAttrAccount, nil];
     }
     return _attributeKeys;
 }
