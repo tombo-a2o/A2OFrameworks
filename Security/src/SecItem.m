@@ -122,7 +122,7 @@ static inline void bindParameter(sqlite3_stmt *stmt, NSDictionary* query) {
 static inline void bindParameterWithData(sqlite3_stmt *stmt, NSDictionary* query) {
     bindParameter(stmt, query);
 
-    NSData *data = [query objectForKey:kSecValueData];
+    NSData *data = [query objectForKey:(__bridge id)kSecValueData];
     int idx = sqlite3_bind_parameter_index(stmt, ":data");
     assert(idx != 0);
     int result = sqlite3_bind_blob(stmt, idx, [data bytes], data.length, NULL);
@@ -131,20 +131,20 @@ static inline void bindParameterWithData(sqlite3_stmt *stmt, NSDictionary* query
 
 OSStatus SecItemCopyMatching(CFDictionaryRef _query, CFTypeRef *_result)
 {
-    NSDictionary *query = (NSDictionary *)_query;
+    NSDictionary *query = (__bridge NSDictionary *)_query;
 
     DEBUGLOG(@"%s: %@", __FUNCTION__, query);
 
-    NSObject *secClass = [query objectForKey:kSecClass];
+    NSObject *secClass = [query objectForKey:(__bridge id)kSecClass];
     if(secClass != kSecClassGenericPassword) {
         NSLog(@"%s: only kSecClassGenericPassword is supported", __FUNCTION__);
         return errSecUnimplemented;
     }
 
-    NSNumber *returnData = [query objectForKey:kSecReturnData];
-    NSNumber *returnAttributes = [query objectForKey:kSecReturnAttributes];
-    NSNumber *returnRef = [query objectForKey:kSecReturnRef];
-    NSNumber *returnPersistentRef = [query objectForKey:kSecReturnPersistentRef];
+    NSNumber *returnData = [query objectForKey:(__bridge id)kSecReturnData];
+    NSNumber *returnAttributes = [query objectForKey:(__bridge id)kSecReturnAttributes];
+    NSNumber *returnRef = [query objectForKey:(__bridge id)kSecReturnRef];
+    NSNumber *returnPersistentRef = [query objectForKey:(__bridge id)kSecReturnPersistentRef];
 
     if(returnAttributes && [returnAttributes boolValue]) {
         NSLog(@"%s: kSecReturnAttributes=true is not supported", __FUNCTION__);
@@ -159,7 +159,7 @@ OSStatus SecItemCopyMatching(CFDictionaryRef _query, CFTypeRef *_result)
         return errSecUnimplemented;
     }
 
-    NSString *matchLimit = [query objectForKey:kSecMatchLimit];
+    NSString *matchLimit = [query objectForKey:(__bridge id)kSecMatchLimit];
 
     if(matchLimit && matchLimit != kSecMatchLimitOne) {
         NSLog(@"%s: only kSecMatchLimitOne=true is supported", __FUNCTION__);
@@ -189,7 +189,7 @@ OSStatus SecItemCopyMatching(CFDictionaryRef _query, CFTypeRef *_result)
         const void* data = sqlite3_column_blob(stmt, 0);
         int length = sqlite3_column_bytes(stmt, 0);
         if(_result && returnData.boolValue) {
-            *_result = (CFTypeRef)[NSData dataWithBytes:data length:length];
+            *_result = (__bridge CFTypeRef)[NSData dataWithBytes:data length:length];
         }
         status = errSecSuccess;
     } else {
@@ -208,11 +208,11 @@ OSStatus SecItemCopyMatching(CFDictionaryRef _query, CFTypeRef *_result)
 
 OSStatus SecItemAdd(CFDictionaryRef _attributes, CFTypeRef *_result)
 {
-    NSDictionary *attributes = (NSDictionary *)_attributes;
+    NSDictionary *attributes = (__bridge NSDictionary *)_attributes;
 
     DEBUGLOG(@"%s attributes: %@", __FUNCTION__, attributes);
 
-    NSObject *secClass = [attributes objectForKey:kSecClass];
+    NSObject *secClass = [attributes objectForKey:(__bridge id)kSecClass];
     if(secClass != kSecClassGenericPassword) {
         NSLog(@"%s: only kSecClassGenericPassword is supported", __FUNCTION__);
         return errSecUnimplemented;
@@ -252,9 +252,9 @@ OSStatus SecItemAdd(CFDictionaryRef _attributes, CFTypeRef *_result)
 
 OSStatus SecItemUpdate(CFDictionaryRef _attributes, CFDictionaryRef attributesToUpdate)
 {
-    NSDictionary *attributes = (NSDictionary *)_attributes;
+    NSDictionary *attributes = (__bridge NSDictionary *)_attributes;
 
-    NSObject *secClass = [attributes objectForKey:kSecClass];
+    NSObject *secClass = [attributes objectForKey:(__bridge id)kSecClass];
     if(secClass != kSecClassGenericPassword) {
         NSLog(@"%s: only kSecClassGenericPassword is supported", __FUNCTION__);
         return errSecUnimplemented;
@@ -293,11 +293,11 @@ OSStatus SecItemUpdate(CFDictionaryRef _attributes, CFDictionaryRef attributesTo
 
 OSStatus SecItemDelete(CFDictionaryRef _query)
 {
-    NSDictionary *query = (NSDictionary *)_query;
+    NSDictionary *query = (__bridge NSDictionary *)_query;
 
     DEBUGLOG(@"%s: %@", __FUNCTION__, query);
 
-    NSObject *secClass = [query objectForKey:kSecClass];
+    NSObject *secClass = [query objectForKey:(__bridge id)kSecClass];
     if(secClass != kSecClassGenericPassword) {
         NSLog(@"%s: only kSecClassGenericPassword is supported", __FUNCTION__);
         return errSecUnimplemented;
