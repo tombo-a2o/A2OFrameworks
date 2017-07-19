@@ -92,7 +92,7 @@ void setDeviceOrientation(UIDeviceOrientation orientation) __attribute__((used))
 
 - (NSString *)systemName
 {
-    return [[NSProcessInfo processInfo] operatingSystemName];
+    return @"iOS";
 }
 
 - (NSString *)systemVersion
