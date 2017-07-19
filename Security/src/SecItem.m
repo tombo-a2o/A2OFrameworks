@@ -189,7 +189,7 @@ OSStatus SecItemCopyMatching(CFDictionaryRef _query, CFTypeRef *_result)
         const void* data = sqlite3_column_blob(stmt, 0);
         int length = sqlite3_column_bytes(stmt, 0);
         if(_result && returnData.boolValue) {
-            *_result = (__bridge CFTypeRef)[NSData dataWithBytes:data length:length];
+            *_result = (__bridge_retained CFTypeRef)[NSData dataWithBytes:data length:length];
         }
         status = errSecSuccess;
     } else {
