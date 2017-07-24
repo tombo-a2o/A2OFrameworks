@@ -52,8 +52,9 @@ static NSString * SKAFPercentEscapedStringFromString(NSString *string) {
     [allowedCharacterSet removeCharactersInString:[kSKAFCharactersGeneralDelimitersToEncode stringByAppendingString:kSKAFCharactersSubDelimitersToEncode]];
 
 	// FIXME: https://github.com/SKAFNetworking/SKAFNetworking/pull/3028
-    // return [string stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacterSet];
+    return [string stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacterSet];
 
+#if 0
     static NSUInteger const batchSize = 50;
 
     NSUInteger index = 0;
@@ -77,6 +78,7 @@ static NSString * SKAFPercentEscapedStringFromString(NSString *string) {
     }
 
 	return escaped;
+#endif
 }
 
 #pragma mark -
