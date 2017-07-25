@@ -90,4 +90,16 @@
     NSLog(@"*** %s is not implemented", __FUNCTION__);
 }
 
+- (XCTestExpectation *)expectationWithDescription:(NSString *)description
+{
+    NSLog(@"*** %s is not implemented", __FUNCTION__);
+    return nil;
+}
+
+- (void)waitForExpectationsWithTimeout:(NSTimeInterval)timeout
+                               handler:(XCWaitCompletionHandler)handler
+{
+    NSLog(@"*** %s is not implemented", __FUNCTION__);
+}
+
 @end
