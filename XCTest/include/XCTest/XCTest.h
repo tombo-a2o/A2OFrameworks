@@ -38,7 +38,7 @@
 #import <XCTest/XCTestCase.h>
 // #import <XCTest/XCTestCase+AsynchronousTesting.h>
 #import <XCTest/XCTestCaseRun.h>
-// #import <XCTest/XCTestExpectation.h>
+#import <XCTest/XCTestExpectation.h>
 #import <XCTest/XCTestLog.h>
 #import <XCTest/XCTestObserver.h>
 // #import <XCTest/XCTestObservationCenter.h>
