@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-#import <XCTest/XCTest.h>
+#import <XCTest/XCTestRun.h>
 
 @implementation XCTestRun
 + (instancetype)testRunWithTest:(XCTest *)test

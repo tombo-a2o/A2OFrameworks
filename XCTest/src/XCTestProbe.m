@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-#import <XCTest/XCTest.h>
+#import <XCTest/XCTestProbe.h>
 
 @implementation XCTestProbe
 + (BOOL)isTesting

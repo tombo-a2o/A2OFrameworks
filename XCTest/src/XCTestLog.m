@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-#import <XCTest/XCTest.h>
+#import <XCTest/XCTestLog.h>
 
 @implementation XCTestLog
 - (void)testLogWithFormat:(NSString *)format, ... NS_FORMAT_FUNCTION(1,2)

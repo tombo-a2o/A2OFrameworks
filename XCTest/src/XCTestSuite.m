@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-#import <XCTest/XCTest.h>
+#import <XCTest/XCTestSuite.h>
 
 @implementation XCTestSuite
 + (instancetype)defaultTestSuite
