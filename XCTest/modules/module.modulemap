@@ -1,0 +1,6 @@
+framework module XCTest {
+    umbrella header "XCTest.h"
+
+    export *
+    module * { export * }
+}
