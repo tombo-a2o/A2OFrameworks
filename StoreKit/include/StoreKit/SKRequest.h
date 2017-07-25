@@ -5,7 +5,7 @@
 
 @class SKRequest;
 
-@protocol SKRequestDelegate
+@protocol SKRequestDelegate <NSObject>
 
 // Completing Requests
 - (void)requestDidFinish:(SKRequest *)request;
