@@ -67,7 +67,9 @@ NSString * const SKTomboProductsURL = @"https://api.tom.bo/products";
         SKDebugLog(@"error: %@ response: %@", error, response);
         if (error) {
             NSLog(@"Error(%@): %@", NSStringFromClass([self class]), error);
-            [self.delegate request:self didFailWithError:error];
+            if([self.delegate respondsToSelector:@selector(request:didFailWithError:)]) {
+                [self.delegate request:self didFailWithError:error];
+            }
         } else {
             NSDictionary *data = [responseObject objectForKey:@"data"];
             NSArray *productsArray = [data objectForKey:@"products"];
@@ -88,7 +90,9 @@ NSString * const SKTomboProductsURL = @"https://api.tom.bo/products";
 
             // NOTE: I don't know the sequence of calling these notification methods
             [self.delegate productsRequest:self didReceiveResponse:_productsResponse];
-            [self.delegate requestDidFinish:self];
+            if([self.delegate respondsToSelector:@selector(requestDidFinish:)]) {
+                [self.delegate requestDidFinish:self];
+            }
         }
     }];
 
