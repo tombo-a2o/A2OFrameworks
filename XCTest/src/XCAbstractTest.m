@@ -1,7 +1,7 @@
-#import <Foundation/Foundation.h>
 #import <XCTest/XCAbstractTest.h>
 
 @implementation XCTest
+
 - (void)performTest:(XCTestRun *)run
 {
     NSLog(@"*** %s is not implemented", __FUNCTION__);

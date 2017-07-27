@@ -51,7 +51,7 @@
 // #import <XCTest/XCTKVOExpectation.h>
 // #import <XCTest/XCTNSNotificationExpectation.h>
 // #import <XCTest/XCTNSPredicateExpectation.h>
-// #import <XCTest/XCTWaiter.h>
+#import <XCTest/XCTWaiter.h>
 
 // #import <XCTest/XCUIApplication.h>
 // #import <XCTest/XCUIDevice.h>

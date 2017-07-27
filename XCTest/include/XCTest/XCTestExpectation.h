@@ -1,4 +1,5 @@
 #import <XCTest/XCTestDefines.h>
+#import <XCTest/XCTestCase.h>
 
 @interface XCTestExpectation : NSObject
 - (instancetype)initWithDescription:(NSString *)expectationDescription;
@@ -7,6 +8,7 @@
 @property(nonatomic) NSUInteger expectedFulfillmentCount;
 @property(nonatomic) BOOL assertForOverFulfill;
 @property(getter=isInverted) BOOL inverted;
+- (BOOL)isFullfilled;
 @end
 
 typedef void (^XCWaitCompletionHandler)(NSError *error);
