@@ -23,3 +23,9 @@ xcuserdata
 
 ## CocoaPods
 Pods/
+
+
+## a2obrew
+a2o
+.ninja*
+run.log
