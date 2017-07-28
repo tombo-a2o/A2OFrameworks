@@ -39,37 +39,36 @@
 
 - (void)waitForExpectationsAsync:(NSArray<XCTestExpectation *> *)expectations timeout:(NSTimeInterval)timeout callback:(XCTWaiterResultHandler)callback
 {
-    NSLog(@"%s", __FUNCTION__);
     _expectations = [expectations copy];
     _callback = callback;
 
-    for(XCTestExpectation *expectation in _expectations) {
-        [expectation addObserver:self forKeyPath:@"fulfillmentCount" options:NSKeyValueObservingOptionNew context:nil];
-    }
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, timeout * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        NSLog(@"%s", __FUNCTION__);
-        if (![self isAllFullfilled]) {
-            _callback(XCTWaiterResultTimedOut);
-        }
+    if([self isAllFullfilled]) {
+        callback(XCTWaiterResultCompleted);
+    } else {
         for(XCTestExpectation *expectation in _expectations) {
-            [expectation removeObserver:self forKeyPath:@"fulfillmentCount"];
+            [expectation addObserver:self forKeyPath:@"fulfillmentCount" options:NSKeyValueObservingOptionNew context:nil];
         }
-    });
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, timeout * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            if (![self isAllFullfilled]) {
+                _callback(XCTWaiterResultTimedOut);
+            }
+            for(XCTestExpectation *expectation in _expectations) {
+                [expectation removeObserver:self forKeyPath:@"fulfillmentCount"];
+            }
+        });
+    }
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-    NSLog(@"%s 1", __FUNCTION__);
     if([self isAllFullfilled]) {
-        NSLog(@"%s 2", __FUNCTION__);
         _callback(XCTWaiterResultCompleted);
     }
 }
 
 - (BOOL)isAllFullfilled
 {
-    NSLog(@"%s", __FUNCTION__);
-    BOOL result = NO;
+    BOOL result = YES;
     for(XCTestExpectation *expectation in _expectations) {
         result = result && [expectation isFullfilled];
     }

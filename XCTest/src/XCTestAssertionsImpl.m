@@ -6,7 +6,17 @@
 
 void _XCTFailureHandler(XCTestCase *test, BOOL expected, const char *filePath, NSUInteger lineNumber, NSString *condition, NSString * __nullable format, ...)
 {
-    [test recordFailureWithDescription:condition inFile:[NSString stringWithUTF8String:filePath] atLine:lineNumber expected:expected];
+    NSString *description;
+    if(format) {
+        va_list args;
+        va_start(args, format);
+        NSString *str = [[NSString alloc] initWithFormat:format arguments:args];
+        va_end(args);
+        description = [NSString stringWithFormat:@"%@ - %@", condition, str];
+    } else {
+        description = condition;
+    }
+    [test recordFailureWithDescription:description inFile:[NSString stringWithUTF8String:filePath] atLine:lineNumber expected:expected];
 }
 
 NSString* _XCTFailureFormat (_XCTAssertionType assertionType, NSUInteger formatIndex)

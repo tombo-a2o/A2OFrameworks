@@ -17,7 +17,7 @@
 
 - (void)fulfill
 {
-    _fulfillmentCount++;
+    self.fulfillmentCount = self.fulfillmentCount + 1;
 }
 
 - (BOOL)isFullfilled
