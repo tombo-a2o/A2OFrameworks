@@ -1,8 +1,8 @@
 #import <TomboKit/TomboKit.h>
 #import <TomboAFNetworking/TomboAFNetworking.h>
 
-NSString * const TomboKitTomboPaymentsURL = @"https://api.tom.bo/payments";
-NSString * const TomboKitTomboProductsURL = @"https://api.tom.bo/products";
+NSString * const TomboKitTomboPaymentsURL = @"https://api.tombo.io/payments";
+NSString * const TomboKitTomboProductsURL = @"https://api.tombo.io/products";
 
 @implementation TomboKitAPI {
     // TODO: Split _URLSessionManager
