@@ -32,7 +32,7 @@
     SKProductsRequest *productsRequest = [[SKProductsRequest alloc] initWithProductIdentifiers:set];
     productsRequest.delegate = self;
 
-    stubRequest(@"GET", [NSString stringWithFormat:@"%@?product_identifier=productIdentifier1%%2CproductIdentifier2", SKTomboProductsURL]).
+    stubRequest(@"GET", [NSString stringWithFormat:@"%@?product_identifier=productIdentifier1%%2CproductIdentifier2", @"https://api.tombo.io/products"]).
     andReturn(200).
     withHeaders(@{@"Content-Type": @"application/json"}).
     withBody([NSJSONSerialization dataWithJSONObject:@{

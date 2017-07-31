@@ -55,7 +55,7 @@
     SKProduct *product = [[SKProduct alloc] initWithProductIdentifier:@"product1" localizedTitle:@"title" localizedDescription:@"desc" price:[[NSDecimalNumber alloc] initWithInt:101] priceLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"ja_JP"]];
     SKPayment *payment = [SKPayment paymentWithProduct:product];
 
-    stubRequest(@"POST", SKTomboPaymentsURL).
+    stubRequest(@"POST", @"https://api.tombo.io/payments").
     withBody(@"{\"payments\":[{\"requestData\":null,\"applicationUsername\":null,\"productIdentifier\":\"product1\",\"quantity\":1}]}").
     andReturn(200).
     withHeaders(@{@"Content-Type": @"application/json"}).

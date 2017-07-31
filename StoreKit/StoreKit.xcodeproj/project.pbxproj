@@ -22,7 +22,8 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		6655252818DC185FAC8DE035 /* libPods-StoreKitTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F7BB4AB85C52D73BFA751563 /* libPods-StoreKitTests.a */; };
+		4D4C650D1F2F481C003A8FB3 /* TomboKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D4C650A1F2F4817003A8FB3 /* TomboKit.framework */; };
+		9A0604175A2931489F238110 /* libPods-StoreKitTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6EB731003551FC09860DE136 /* libPods-StoreKitTests.a */; };
 		D90769011C33E308005EBBDB /* SKRequestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D90769001C33E308005EBBDB /* SKRequestTests.m */; };
 		D94BB96C1C5C5ACD00816E24 /* SKDownload.m in Sources */ = {isa = PBXBuildFile; fileRef = D923A6BE1C09177700EC5559 /* SKDownload.m */; };
 		D94BB96D1C5C5ACD00816E24 /* SKPayment.m in Sources */ = {isa = PBXBuildFile; fileRef = D923A6BF1C09177700EC5559 /* SKPayment.m */; };
@@ -46,6 +47,27 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		4D4C65091F2F4817003A8FB3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4D4C65001F2F4816003A8FB3 /* TomboKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4D4C63B71F2F428E003A8FB3;
+			remoteInfo = TomboKit;
+		};
+		4D4C650B1F2F4817003A8FB3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4D4C65001F2F4816003A8FB3 /* TomboKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4D4C63C01F2F428E003A8FB3;
+			remoteInfo = TomboKitTests;
+		};
+		4D4C651A1F2F6855003A8FB3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4D4C65001F2F4816003A8FB3 /* TomboKit.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 4D4C63B61F2F428E003A8FB3;
+			remoteInfo = TomboKit;
+		};
 		D96106661C643E65008255F7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D96B1F581C09166B005704D7 /* Project object */;
@@ -75,7 +97,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		503ECCA44E59D5C330DA8ACC /* Pods-StoreKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StoreKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-StoreKitTests/Pods-StoreKitTests.release.xcconfig"; sourceTree = "<group>"; };
+		4D4C65001F2F4816003A8FB3 /* TomboKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TomboKit.xcodeproj; path = ../TomboKit/TomboKit.xcodeproj; sourceTree = "<group>"; };
+		6EB731003551FC09860DE136 /* libPods-StoreKitTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-StoreKitTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B0FE193336247A647DB3F10A /* Pods-StoreKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StoreKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-StoreKitTests/Pods-StoreKitTests.release.xcconfig"; sourceTree = "<group>"; };
+		BEF4F5F23192AA48E291D5F1 /* Pods-StoreKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StoreKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-StoreKitTests/Pods-StoreKitTests.debug.xcconfig"; sourceTree = "<group>"; };
 		D90769001C33E308005EBBDB /* SKRequestTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKRequestTests.m; sourceTree = "<group>"; };
 		D923A6BE1C09177700EC5559 /* SKDownload.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKDownload.m; sourceTree = "<group>"; };
 		D923A6BF1C09177700EC5559 /* SKPayment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKPayment.m; sourceTree = "<group>"; };
@@ -99,8 +124,6 @@
 		D9EF2D5C1C0AB10400179F0C /* SKRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SKRequest.h; path = StoreKit/SKRequest.h; sourceTree = "<group>"; };
 		D9EF2D5D1C0AB10400179F0C /* SKStoreProductViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SKStoreProductViewController.h; path = StoreKit/SKStoreProductViewController.h; sourceTree = "<group>"; };
 		D9EF2D5E1C0AB10400179F0C /* StoreKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StoreKit.h; path = StoreKit/StoreKit.h; sourceTree = "<group>"; };
-		E8771C8A3523E513CA842FB4 /* Pods-StoreKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StoreKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-StoreKitTests/Pods-StoreKitTests.debug.xcconfig"; sourceTree = "<group>"; };
-		F7BB4AB85C52D73BFA751563 /* libPods-StoreKitTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-StoreKitTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,7 +131,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6655252818DC185FAC8DE035 /* libPods-StoreKitTests.a in Frameworks */,
+				9A0604175A2931489F238110 /* libPods-StoreKitTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -116,6 +139,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4D4C650D1F2F481C003A8FB3 /* TomboKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -125,9 +149,19 @@
 		0B16BA49E0EE6360B1E86B6E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				F7BB4AB85C52D73BFA751563 /* libPods-StoreKitTests.a */,
+				4D4C65001F2F4816003A8FB3 /* TomboKit.xcodeproj */,
+				6EB731003551FC09860DE136 /* libPods-StoreKitTests.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		4D4C65011F2F4816003A8FB3 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				4D4C650A1F2F4817003A8FB3 /* TomboKit.framework */,
+				4D4C650C1F2F4817003A8FB3 /* TomboKitTests.xctest */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		D923A6BC1C09174500EC5559 /* Headers */ = {
@@ -171,8 +205,8 @@
 				D923A6BC1C09174500EC5559 /* Headers */,
 				D9D753951C212C7300C40E06 /* StoreKitTests */,
 				D96B1F621C09166B005704D7 /* Products */,
-				DD56CC188A26F5CC8DDD51DB /* Pods */,
 				0B16BA49E0EE6360B1E86B6E /* Frameworks */,
+				EBED6B025C5C5743596A7FB5 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -195,11 +229,11 @@
 			path = StoreKitTests;
 			sourceTree = "<group>";
 		};
-		DD56CC188A26F5CC8DDD51DB /* Pods */ = {
+		EBED6B025C5C5743596A7FB5 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				E8771C8A3523E513CA842FB4 /* Pods-StoreKitTests.debug.xcconfig */,
-				503ECCA44E59D5C330DA8ACC /* Pods-StoreKitTests.release.xcconfig */,
+				BEF4F5F23192AA48E291D5F1 /* Pods-StoreKitTests.debug.xcconfig */,
+				B0FE193336247A647DB3F10A /* Pods-StoreKitTests.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -231,12 +265,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D9D7539E1C212C7300C40E06 /* Build configuration list for PBXNativeTarget "StoreKitTests" */;
 			buildPhases = (
-				CA222CFF3DEEC68307602AC8 /* [CP] Check Pods Manifest.lock */,
+				FE62D06B9D1CA3F4F5C03DFC /* [CP] Check Pods Manifest.lock */,
 				D9D753901C212C7300C40E06 /* Sources */,
 				D9D753911C212C7300C40E06 /* Frameworks */,
 				D9D753921C212C7300C40E06 /* Resources */,
-				31C5557335DDA1CCD51C928A /* [CP] Embed Pods Frameworks */,
-				3AE627317443FCFA9C2DBAA3 /* [CP] Copy Pods Resources */,
+				0046EDC31559A7083EA18D74 /* [CP] Embed Pods Frameworks */,
+				59981255C89B2214A185A8C5 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -261,6 +295,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				4D4C651B1F2F6855003A8FB3 /* PBXTargetDependency */,
 			);
 			name = StoreKit;
 			productName = StoreKit;
@@ -273,7 +308,7 @@
 		D96B1F581C09166B005704D7 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0720;
+				LastUpgradeCheck = 0830;
 				ORGANIZATIONNAME = "Tombo, inc.";
 				TargetAttributes = {
 					D9D753931C212C7300C40E06 = {
@@ -297,6 +332,12 @@
 			mainGroup = D96B1F571C09166B005704D7;
 			productRefGroup = D96B1F621C09166B005704D7 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 4D4C65011F2F4816003A8FB3 /* Products */;
+					ProjectRef = 4D4C65001F2F4816003A8FB3 /* TomboKit.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				D9DB9E9F1C5A065C00139AB5 /* StoreKit */,
@@ -305,6 +346,23 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		4D4C650A1F2F4817003A8FB3 /* TomboKit.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = TomboKit.framework;
+			remoteRef = 4D4C65091F2F4817003A8FB3 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		4D4C650C1F2F4817003A8FB3 /* TomboKitTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = TomboKitTests.xctest;
+			remoteRef = 4D4C650B1F2F4817003A8FB3 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		D9D753921C212C7300C40E06 /* Resources */ = {
@@ -317,7 +375,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		31C5557335DDA1CCD51C928A /* [CP] Embed Pods Frameworks */ = {
+		0046EDC31559A7083EA18D74 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -332,7 +390,7 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-StoreKitTests/Pods-StoreKitTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		3AE627317443FCFA9C2DBAA3 /* [CP] Copy Pods Resources */ = {
+		59981255C89B2214A185A8C5 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -345,21 +403,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-StoreKitTests/Pods-StoreKitTests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		CA222CFF3DEEC68307602AC8 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		D9DB9EB41C5A075500139AB5 /* ShellScript */ = {
@@ -387,6 +430,21 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "set -e\nset +u\n# Avoid recursively calling this script.\nif [[ $SF_MASTER_SCRIPT_RUNNING ]]\nthen\nexit 0\nfi\nset -u\nexport SF_MASTER_SCRIPT_RUNNING=1\n\nSF_TARGET_NAME=${PROJECT_NAME}\nSF_EXECUTABLE_PATH=\"lib${SF_TARGET_NAME}.a\"\nSF_WRAPPER_NAME=\"${SF_TARGET_NAME}.framework\"\n\n# The following conditionals come from\n# https://github.com/kstenerud/iOS-Universal-Framework\n\nif [[ \"$SDK_NAME\" =~ ([A-Za-z]+) ]]\nthen\nSF_SDK_PLATFORM=${BASH_REMATCH[1]}\nelse\necho \"Could not find platform name from SDK_NAME: $SDK_NAME\"\nexit 1\nfi\n\nif [[ \"$SDK_NAME\" =~ ([0-9]+.*$) ]]\nthen\nSF_SDK_VERSION=${BASH_REMATCH[1]}\nelse\necho \"Could not find sdk version from SDK_NAME: $SDK_NAME\"\nexit 1\nfi\n\nif [[ \"$SF_SDK_PLATFORM\" = \"iphoneos\" ]]\nthen\nSF_OTHER_PLATFORM=iphonesimulator\nelse\nSF_OTHER_PLATFORM=iphoneos\nfi\n\nif [[ \"$BUILT_PRODUCTS_DIR\" =~ (.*)$SF_SDK_PLATFORM$ ]]\nthen\nSF_OTHER_BUILT_PRODUCTS_DIR=\"${BASH_REMATCH[1]}${SF_OTHER_PLATFORM}\"\nelse\necho \"Could not find platform name from build products directory: $BUILT_PRODUCTS_DIR\"\nexit 1\nfi\n\n# Build the other platform.\nxcrun xcodebuild -project \"${PROJECT_FILE_PATH}\" -target \"${TARGET_NAME}\" -configuration \"${CONFIGURATION}\" -sdk ${SF_OTHER_PLATFORM}${SF_SDK_VERSION} BUILD_DIR=\"${BUILD_DIR}\" OBJROOT=\"${OBJROOT}\" BUILD_ROOT=\"${BUILD_ROOT}\" SYMROOT=\"${SYMROOT}\" $ACTION\n\n# xcrun xcodebuild ONLY_ACTIVE_ARCH=NO -workspace \"${PROJECT_DIR}/${PROJECT_NAME}.xcworkspace\" -scheme \"${TARGET_NAME}\" -configuration \"${CONFIGURATION}\" -sdk ${SF_OTHER_PLATFORM}${SF_SDK_VERSION} BUILD_DIR=\"${BUILD_DIR}\" OBJROOT=\"${OBJROOT}\" BUILD_ROOT=\"${BUILD_ROOT}\" SYMROOT=\"${SYMROOT}\" $ACTION\n\n# Smash the two static libraries into one fat binary and store it in the .framework\nxcrun lipo -create \"${BUILT_PRODUCTS_DIR}/${SF_EXECUTABLE_PATH}\" \"${SF_OTHER_BUILT_PRODUCTS_DIR}/${SF_EXECUTABLE_PATH}\" -output \"${BUILT_PRODUCTS_DIR}/${SF_WRAPPER_NAME}/Versions/A/${SF_TARGET_NAME}\"\n\n# Copy the binary to the other architecture folder to have a complete framework in both.\ncp -a \"${BUILT_PRODUCTS_DIR}/${SF_WRAPPER_NAME}/Versions/A/${SF_TARGET_NAME}\" \"${SF_OTHER_BUILT_PRODUCTS_DIR}/${SF_WRAPPER_NAME}/Versions/A/${SF_TARGET_NAME}\"";
+		};
+		FE62D06B9D1CA3F4F5C03DFC /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -418,6 +476,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		4D4C651B1F2F6855003A8FB3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = TomboKit;
+			targetProxy = 4D4C651A1F2F6855003A8FB3 /* PBXContainerItemProxy */;
+		};
 		D96106671C643E65008255F7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = D9DB9E981C5A05E800139AB5 /* Framework */;
@@ -444,8 +507,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -471,9 +536,9 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_EXPAND_BUILD_SETTINGS = YES;
 				INFOPLIST_FILE = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
-				ONLY_ACTIVE_ARCH = NO;
+				ONLY_ACTIVE_ARCH = YES;
 				PUBLIC_HEADERS_FOLDER_PATH = Headers;
 				SDKROOT = iphoneos;
 				STRIP_STYLE = "non-global";
@@ -496,8 +561,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -517,9 +584,9 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_EXPAND_BUILD_SETTINGS = YES;
 				INFOPLIST_FILE = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				ONLY_ACTIVE_ARCH = NO;
+				ONLY_ACTIVE_ARCH = YES;
 				PUBLIC_HEADERS_FOLDER_PATH = Headers;
 				SDKROOT = iphoneos;
 				STRIP_STYLE = "non-global";
@@ -532,7 +599,7 @@
 		};
 		D9D7539C1C212C7300C40E06 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E8771C8A3523E513CA842FB4 /* Pods-StoreKitTests.debug.xcconfig */;
+			baseConfigurationReference = BEF4F5F23192AA48E291D5F1 /* Pods-StoreKitTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/StoreKit.framework/StoreKit";
 				INFOPLIST_FILE = StoreKitTests/Info.plist;
@@ -545,7 +612,7 @@
 		};
 		D9D7539D1C212C7300C40E06 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 503ECCA44E59D5C330DA8ACC /* Pods-StoreKitTests.release.xcconfig */;
+			baseConfigurationReference = B0FE193336247A647DB3F10A /* Pods-StoreKitTests.release.xcconfig */;
 			buildSettings = {
 				INFOPLIST_FILE = StoreKitTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
@@ -572,17 +639,13 @@
 		D9DB9EA71C5A065C00139AB5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					"$(ARCHS_STANDARD)",
-					armv7s,
-				);
 				HEADER_SEARCH_PATHS = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/build/Debug-iphoneos",
 				);
-				ONLY_ACTIVE_ARCH = NO;
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = (
 					"$(inherited)",
 					"-fembed-bitcode",
@@ -598,17 +661,13 @@
 		D9DB9EA81C5A065C00139AB5 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					"$(ARCHS_STANDARD)",
-					armv7s,
-				);
 				HEADER_SEARCH_PATHS = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/build/Debug-iphoneos",
 				);
-				ONLY_ACTIVE_ARCH = NO;
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = (
 					"$(inherited)",
 					"-fembed-bitcode",
