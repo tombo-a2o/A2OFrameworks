@@ -71,9 +71,6 @@ NSString * const TomboKitTomboProductsURL = @"https://api.tombo.io/products";
 }
 
 - (void)getProducts:(NSArray *)productIdentifiers
-           quantity:(NSInteger)quantity
-        requestData:(NSData *)requestData
-applicationUsername:(NSString *)applicationUsername
             success:(void (^)(NSDictionary *))success
             failure:(void (^)(NSError *))failure
 {
@@ -115,6 +112,11 @@ applicationUsername:(NSString *)applicationUsername
     }];
 
     [dataTask resume];
+}
+
+- (void)cancel
+{
+    [_URLSessionManager.operationQueue cancelAllOperations];
 }
 
 @end
