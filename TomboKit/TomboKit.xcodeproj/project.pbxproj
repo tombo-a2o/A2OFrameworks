@@ -13,7 +13,7 @@
 		4D4C63DD1F2F42C5003A8FB3 /* TomboKitAPI.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D4C63DB1F2F42C5003A8FB3 /* TomboKitAPI.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4D4C63DE1F2F42F1003A8FB3 /* TomboKitPaymentQueueTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D4C63D41F2F42BA003A8FB3 /* TomboKitPaymentQueueTests.m */; };
 		4D4C63DF1F2F42F1003A8FB3 /* TomboKitRequestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D4C63D51F2F42BA003A8FB3 /* TomboKitRequestTests.m */; };
-		4D4C64AF1F2F43D5003A8FB3 /* TomboAFNetworking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D4C64AE1F2F43D0003A8FB3 /* TomboAFNetworking.framework */; };
+		4D4C65191F2F66CE003A8FB3 /* TomboAFNetworking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D4C65181F2F66C6003A8FB3 /* TomboAFNetworking.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -24,39 +24,18 @@
 			remoteGlobalIDString = 4D4C63B61F2F428E003A8FB3;
 			remoteInfo = TomboKit;
 		};
-		4D4C64A11F2F43D0003A8FB3 /* PBXContainerItemProxy */ = {
+		4D4C65171F2F66C6003A8FB3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 4D4C64291F2F43CF003A8FB3 /* TomboAFNetworking iOS Example.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = F8E469601395739C00DB05C8;
-			remoteInfo = "TomboAFNetworking iOS Example";
-		};
-		4D4C64A41F2F43D0003A8FB3 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4D4C642C1F2F43CF003A8FB3 /* TomboAFNetworking OS X Example.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = F8129BFB1591061B009BFE23;
-			remoteInfo = "TomboAFNetworking Example";
-		};
-		4D4C64A81F2F43D0003A8FB3 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4D4C646F1F2F43CF003A8FB3 /* TomboAFNetworking Tests.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 2902D27817DF4E1100C81C5A;
-			remoteInfo = "iOS Tests";
-		};
-		4D4C64AA1F2F43D0003A8FB3 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4D4C646F1F2F43CF003A8FB3 /* TomboAFNetworking Tests.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 2902D28C17DF4E2900C81C5A;
-			remoteInfo = "OS X Tests";
-		};
-		4D4C64AD1F2F43D0003A8FB3 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4D4C648A1F2F43CF003A8FB3 /* TomboAFNetworking.xcodeproj */;
+			containerPortal = 4D4C65131F2F66C6003A8FB3 /* TomboAFNetworking.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 4D4C63731F2F4184003A8FB3;
+			remoteInfo = TomboAFNetworking;
+		};
+		4D4C651C1F2F6871003A8FB3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4D4C65131F2F66C6003A8FB3 /* TomboAFNetworking.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 4D4C63721F2F4184003A8FB3;
 			remoteInfo = TomboAFNetworking;
 		};
 /* End PBXContainerItemProxy section */
@@ -69,159 +48,7 @@
 		4D4C63D51F2F42BA003A8FB3 /* TomboKitRequestTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TomboKitRequestTests.m; sourceTree = "<group>"; };
 		4D4C63DA1F2F42C5003A8FB3 /* TomboKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TomboKit.h; sourceTree = "<group>"; };
 		4D4C63DB1F2F42C5003A8FB3 /* TomboKitAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TomboKitAPI.h; sourceTree = "<group>"; };
-		4D4C63E21F2F43CF003A8FB3 /* .cocoadocs.yml */ = {isa = PBXFileReference; lastKnownFileType = text; path = .cocoadocs.yml; sourceTree = "<group>"; };
-		4D4C63E31F2F43CF003A8FB3 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
-		4D4C63E41F2F43CF003A8FB3 /* .travis.yml */ = {isa = PBXFileReference; lastKnownFileType = text; path = .travis.yml; sourceTree = "<group>"; };
-		4D4C63E91F2F43CF003A8FB3 /* TomboAFHTTPRequestOperation.d */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.dtrace; path = TomboAFHTTPRequestOperation.d; sourceTree = "<group>"; };
-		4D4C63EA1F2F43CF003A8FB3 /* TomboAFHTTPRequestOperation.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = TomboAFHTTPRequestOperation.o; sourceTree = "<group>"; };
-		4D4C63EB1F2F43CF003A8FB3 /* TomboAFHTTPRequestOperationManager.d */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.dtrace; path = TomboAFHTTPRequestOperationManager.d; sourceTree = "<group>"; };
-		4D4C63EC1F2F43CF003A8FB3 /* TomboAFHTTPRequestOperationManager.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = TomboAFHTTPRequestOperationManager.o; sourceTree = "<group>"; };
-		4D4C63ED1F2F43CF003A8FB3 /* TomboAFHTTPSessionManager.d */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.dtrace; path = TomboAFHTTPSessionManager.d; sourceTree = "<group>"; };
-		4D4C63EE1F2F43CF003A8FB3 /* TomboAFHTTPSessionManager.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = TomboAFHTTPSessionManager.o; sourceTree = "<group>"; };
-		4D4C63EF1F2F43CF003A8FB3 /* TomboAFNetworkReachabilityManager.d */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.dtrace; path = TomboAFNetworkReachabilityManager.d; sourceTree = "<group>"; };
-		4D4C63F01F2F43CF003A8FB3 /* TomboAFNetworkReachabilityManager.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = TomboAFNetworkReachabilityManager.o; sourceTree = "<group>"; };
-		4D4C63F11F2F43CF003A8FB3 /* TomboAFSecurityPolicy.d */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.dtrace; path = TomboAFSecurityPolicy.d; sourceTree = "<group>"; };
-		4D4C63F21F2F43CF003A8FB3 /* TomboAFSecurityPolicy.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = TomboAFSecurityPolicy.o; sourceTree = "<group>"; };
-		4D4C63F31F2F43CF003A8FB3 /* TomboAFURLConnectionOperation.d */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.dtrace; path = TomboAFURLConnectionOperation.d; sourceTree = "<group>"; };
-		4D4C63F41F2F43CF003A8FB3 /* TomboAFURLConnectionOperation.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = TomboAFURLConnectionOperation.o; sourceTree = "<group>"; };
-		4D4C63F51F2F43CF003A8FB3 /* TomboAFURLRequestSerialization.d */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.dtrace; path = TomboAFURLRequestSerialization.d; sourceTree = "<group>"; };
-		4D4C63F61F2F43CF003A8FB3 /* TomboAFURLRequestSerialization.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = TomboAFURLRequestSerialization.o; sourceTree = "<group>"; };
-		4D4C63F71F2F43CF003A8FB3 /* TomboAFURLResponseSerialization.d */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.dtrace; path = TomboAFURLResponseSerialization.d; sourceTree = "<group>"; };
-		4D4C63F81F2F43CF003A8FB3 /* TomboAFURLResponseSerialization.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = TomboAFURLResponseSerialization.o; sourceTree = "<group>"; };
-		4D4C63F91F2F43CF003A8FB3 /* TomboAFURLSessionManager.d */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.dtrace; path = TomboAFURLSessionManager.d; sourceTree = "<group>"; };
-		4D4C63FA1F2F43CF003A8FB3 /* TomboAFURLSessionManager.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = TomboAFURLSessionManager.o; sourceTree = "<group>"; };
-		4D4C63FB1F2F43CF003A8FB3 /* TomboAFNetworking.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = TomboAFNetworking.a; sourceTree = "<group>"; };
-		4D4C63FC1F2F43CF003A8FB3 /* TomboAFNetworking.bc */ = {isa = PBXFileReference; lastKnownFileType = file; path = TomboAFNetworking.bc; sourceTree = "<group>"; };
-		4D4C63FD1F2F43CF003A8FB3 /* TomboAFNetworking.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = TomboAFNetworking.framework; sourceTree = "<group>"; };
-		4D4C63FE1F2F43CF003A8FB3 /* TomboAFNetworking.so.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = TomboAFNetworking.so.js; sourceTree = "<group>"; };
-		4D4C63FF1F2F43CF003A8FB3 /* TomboAFNetworking.so.js.externals */ = {isa = PBXFileReference; lastKnownFileType = text; path = TomboAFNetworking.so.js.externals; sourceTree = "<group>"; };
-		4D4C64001F2F43CF003A8FB3 /* TomboAFNetworking.wasm */ = {isa = PBXFileReference; lastKnownFileType = file; path = TomboAFNetworking.wasm; sourceTree = "<group>"; };
-		4D4C64011F2F43CF003A8FB3 /* TomboAFNetworking.wasm.externals */ = {isa = PBXFileReference; lastKnownFileType = text; path = TomboAFNetworking.wasm.externals; sourceTree = "<group>"; };
-		4D4C64021F2F43CF003A8FB3 /* TomboAFNetworking.wasm.symbols */ = {isa = PBXFileReference; lastKnownFileType = text; path = TomboAFNetworking.wasm.symbols; sourceTree = "<group>"; };
-		4D4C64031F2F43CF003A8FB3 /* CHANGELOG.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CHANGELOG.md; sourceTree = "<group>"; };
-		4D4C64041F2F43CF003A8FB3 /* CONTRIBUTING.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CONTRIBUTING.md; sourceTree = "<group>"; };
-		4D4C64061F2F43CF003A8FB3 /* adn.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = adn.cer; sourceTree = "<group>"; };
-		4D4C64071F2F43CF003A8FB3 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
-		4D4C64081F2F43CF003A8FB3 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		4D4C640B1F2F43CF003A8FB3 /* GlobalTimelineViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GlobalTimelineViewController.h; sourceTree = "<group>"; };
-		4D4C640C1F2F43CF003A8FB3 /* GlobalTimelineViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GlobalTimelineViewController.m; sourceTree = "<group>"; };
-		4D4C640E1F2F43CF003A8FB3 /* Post.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Post.h; sourceTree = "<group>"; };
-		4D4C640F1F2F43CF003A8FB3 /* Post.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Post.m; sourceTree = "<group>"; };
-		4D4C64101F2F43CF003A8FB3 /* User.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = User.h; sourceTree = "<group>"; };
-		4D4C64111F2F43CF003A8FB3 /* User.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = User.m; sourceTree = "<group>"; };
-		4D4C64121F2F43CF003A8FB3 /* TomboAFAppDotNetAPIClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TomboAFAppDotNetAPIClient.h; sourceTree = "<group>"; };
-		4D4C64131F2F43CF003A8FB3 /* TomboAFAppDotNetAPIClient.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TomboAFAppDotNetAPIClient.m; sourceTree = "<group>"; };
-		4D4C64151F2F43CF003A8FB3 /* PostTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PostTableViewCell.h; sourceTree = "<group>"; };
-		4D4C64161F2F43CF003A8FB3 /* PostTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PostTableViewCell.m; sourceTree = "<group>"; };
-		4D4C64171F2F43CF003A8FB3 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
-		4D4C64181F2F43CF003A8FB3 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
-		4D4C64191F2F43CF003A8FB3 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
-		4D4C641A1F2F43CF003A8FB3 /* digicert_ca_3.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = digicert_ca_3.cer; sourceTree = "<group>"; };
-		4D4C641C1F2F43CF003A8FB3 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
-		4D4C641D1F2F43CF003A8FB3 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
-		4D4C641E1F2F43CF003A8FB3 /* Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon@2x.png"; sourceTree = "<group>"; };
-		4D4C64201F2F43CF003A8FB3 /* profile-image-placeholder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "profile-image-placeholder.png"; sourceTree = "<group>"; };
-		4D4C64211F2F43CF003A8FB3 /* profile-image-placeholder@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "profile-image-placeholder@2x.png"; sourceTree = "<group>"; };
-		4D4C64221F2F43CF003A8FB3 /* iOS-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "iOS-Info.plist"; sourceTree = "<group>"; };
-		4D4C64231F2F43CF003A8FB3 /* Mac-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Mac-Info.plist"; sourceTree = "<group>"; };
-		4D4C64241F2F43CF003A8FB3 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		4D4C64251F2F43CF003A8FB3 /* MainMenu.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
-		4D4C64261F2F43CF003A8FB3 /* Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = "<group>"; };
-		4D4C64271F2F43CF003A8FB3 /* root_ca.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = root_ca.cer; sourceTree = "<group>"; };
-		4D4C64281F2F43CF003A8FB3 /* TomboAFNetworking Example.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "TomboAFNetworking Example.entitlements"; sourceTree = "<group>"; };
-		4D4C64291F2F43CF003A8FB3 /* TomboAFNetworking iOS Example.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = "TomboAFNetworking iOS Example.xcodeproj"; sourceTree = "<group>"; };
-		4D4C642C1F2F43CF003A8FB3 /* TomboAFNetworking OS X Example.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = "TomboAFNetworking OS X Example.xcodeproj"; sourceTree = "<group>"; };
-		4D4C642F1F2F43CF003A8FB3 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
-		4D4C64301F2F43CF003A8FB3 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
-		4D4C64321F2F43CF003A8FB3 /* module.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
-		4D4C64331F2F43CF003A8FB3 /* Rakefile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Rakefile; sourceTree = "<group>"; };
-		4D4C64341F2F43CF003A8FB3 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		4D4C64381F2F43CF003A8FB3 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		4D4C64391F2F43CF003A8FB3 /* iOS Tests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "iOS Tests-Info.plist"; sourceTree = "<group>"; };
-		4D4C643A1F2F43CF003A8FB3 /* iOS Tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "iOS Tests-Prefix.pch"; sourceTree = "<group>"; };
-		4D4C643D1F2F43CF003A8FB3 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		4D4C643E1F2F43CF003A8FB3 /* OS X Tests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "OS X Tests-Info.plist"; sourceTree = "<group>"; };
-		4D4C643F1F2F43CF003A8FB3 /* OS X Tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "OS X Tests-Prefix.pch"; sourceTree = "<group>"; };
-		4D4C64401F2F43CF003A8FB3 /* Podfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; };
-		4D4C64441F2F43CF003A8FB3 /* adn_0.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = adn_0.cer; sourceTree = "<group>"; };
-		4D4C64451F2F43CF003A8FB3 /* adn_1.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = adn_1.cer; sourceTree = "<group>"; };
-		4D4C64461F2F43CF003A8FB3 /* adn_2.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = adn_2.cer; sourceTree = "<group>"; };
-		4D4C64481F2F43CF003A8FB3 /* AddTrust_External_CA_Root.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = AddTrust_External_CA_Root.cer; sourceTree = "<group>"; };
-		4D4C64491F2F43CF003A8FB3 /* COMODO_RSA_Certification_Authority.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = COMODO_RSA_Certification_Authority.cer; sourceTree = "<group>"; };
-		4D4C644A1F2F43CF003A8FB3 /* COMODO_RSA_Domain_Validation_Secure_Server_CA.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = COMODO_RSA_Domain_Validation_Secure_Server_CA.cer; sourceTree = "<group>"; };
-		4D4C644B1F2F43CF003A8FB3 /* httpbinorg_01162016.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = httpbinorg_01162016.cer; sourceTree = "<group>"; };
-		4D4C644D1F2F43CF003A8FB3 /* httpbin_0.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = httpbin_0.cer; sourceTree = "<group>"; };
-		4D4C644E1F2F43CF003A8FB3 /* httpbin_1.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = httpbin_1.cer; sourceTree = "<group>"; };
-		4D4C644F1F2F43CF003A8FB3 /* httpbin_2.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = httpbin_2.cer; sourceTree = "<group>"; };
-		4D4C64501F2F43CF003A8FB3 /* httpbin_3.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = httpbin_3.cer; sourceTree = "<group>"; };
-		4D4C64521F2F43CF003A8FB3 /* AltName.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = AltName.cer; sourceTree = "<group>"; };
-		4D4C64531F2F43CF003A8FB3 /* foobar.com.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = foobar.com.cer; sourceTree = "<group>"; };
-		4D4C64541F2F43CF003A8FB3 /* NoDomains.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = NoDomains.cer; sourceTree = "<group>"; };
-		4D4C64561F2F43CF003A8FB3 /* iOS Tests.xcscheme */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "iOS Tests.xcscheme"; sourceTree = "<group>"; };
-		4D4C64571F2F43CF003A8FB3 /* OS X Tests.xcscheme */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "OS X Tests.xcscheme"; sourceTree = "<group>"; };
-		4D4C645A1F2F43CF003A8FB3 /* TomboAFHTTPClientTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TomboAFHTTPClientTests.m; sourceTree = "<group>"; };
-		4D4C645B1F2F43CF003A8FB3 /* TomboAFHTTPRequestOperationTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TomboAFHTTPRequestOperationTests.m; sourceTree = "<group>"; };
-		4D4C645C1F2F43CF003A8FB3 /* TomboAFImageRequestOperationTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TomboAFImageRequestOperationTests.m; sourceTree = "<group>"; };
-		4D4C645D1F2F43CF003A8FB3 /* TomboAFJSONRequestOperationTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TomboAFJSONRequestOperationTests.m; sourceTree = "<group>"; };
-		4D4C645E1F2F43CF003A8FB3 /* TomboAFMockURLProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TomboAFMockURLProtocol.h; sourceTree = "<group>"; };
-		4D4C645F1F2F43CF003A8FB3 /* TomboAFMockURLProtocol.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TomboAFMockURLProtocol.m; sourceTree = "<group>"; };
-		4D4C64601F2F43CF003A8FB3 /* TomboAFNetworkingTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TomboAFNetworkingTests.h; sourceTree = "<group>"; };
-		4D4C64611F2F43CF003A8FB3 /* TomboAFNetworkingTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TomboAFNetworkingTests.m; sourceTree = "<group>"; };
-		4D4C64621F2F43CF003A8FB3 /* TomboAFURLConnectionOperationTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TomboAFURLConnectionOperationTests.m; sourceTree = "<group>"; };
-		4D4C64631F2F43CF003A8FB3 /* TomboAFHTTPRequestOperationTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TomboAFHTTPRequestOperationTests.m; sourceTree = "<group>"; };
-		4D4C64641F2F43CF003A8FB3 /* TomboAFHTTPRequestSerializationTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TomboAFHTTPRequestSerializationTests.m; sourceTree = "<group>"; };
-		4D4C64651F2F43CF003A8FB3 /* TomboAFHTTPResponseSerializationTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TomboAFHTTPResponseSerializationTests.m; sourceTree = "<group>"; };
-		4D4C64661F2F43CF003A8FB3 /* TomboAFHTTPSessionManagerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TomboAFHTTPSessionManagerTests.m; sourceTree = "<group>"; };
-		4D4C64671F2F43CF003A8FB3 /* TomboAFJSONSerializationTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TomboAFJSONSerializationTests.m; sourceTree = "<group>"; };
-		4D4C64681F2F43CF003A8FB3 /* TomboAFNetworkActivityManagerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TomboAFNetworkActivityManagerTests.m; sourceTree = "<group>"; };
-		4D4C64691F2F43CF003A8FB3 /* TomboAFNetworkReachabilityManagerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TomboAFNetworkReachabilityManagerTests.m; sourceTree = "<group>"; };
-		4D4C646A1F2F43CF003A8FB3 /* TomboAFPropertyListResponseSerializerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TomboAFPropertyListResponseSerializerTests.m; sourceTree = "<group>"; };
-		4D4C646B1F2F43CF003A8FB3 /* TomboAFSecurityPolicyTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TomboAFSecurityPolicyTests.m; sourceTree = "<group>"; };
-		4D4C646C1F2F43CF003A8FB3 /* TomboAFTestCase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TomboAFTestCase.h; sourceTree = "<group>"; };
-		4D4C646D1F2F43CF003A8FB3 /* TomboAFTestCase.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TomboAFTestCase.m; sourceTree = "<group>"; };
-		4D4C646E1F2F43CF003A8FB3 /* TomboAFURLSessionManagerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TomboAFURLSessionManagerTests.m; sourceTree = "<group>"; };
-		4D4C646F1F2F43CF003A8FB3 /* TomboAFNetworking Tests.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = "TomboAFNetworking Tests.xcodeproj"; sourceTree = "<group>"; };
-		4D4C64721F2F43CF003A8FB3 /* TomboAFNetworking-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TomboAFNetworking-Prefix.pch"; sourceTree = "<group>"; };
-		4D4C64731F2F43CF003A8FB3 /* TomboAFNetworkingTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "TomboAFNetworkingTests-Info.plist"; sourceTree = "<group>"; };
-		4D4C64751F2F43CF003A8FB3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		4D4C64761F2F43CF003A8FB3 /* TomboAFHTTPRequestOperation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TomboAFHTTPRequestOperation.h; sourceTree = "<group>"; };
-		4D4C64771F2F43CF003A8FB3 /* TomboAFHTTPRequestOperation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TomboAFHTTPRequestOperation.m; sourceTree = "<group>"; };
-		4D4C64781F2F43CF003A8FB3 /* TomboAFHTTPRequestOperationManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TomboAFHTTPRequestOperationManager.h; sourceTree = "<group>"; };
-		4D4C64791F2F43CF003A8FB3 /* TomboAFHTTPRequestOperationManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TomboAFHTTPRequestOperationManager.m; sourceTree = "<group>"; };
-		4D4C647A1F2F43CF003A8FB3 /* TomboAFHTTPSessionManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TomboAFHTTPSessionManager.h; sourceTree = "<group>"; };
-		4D4C647B1F2F43CF003A8FB3 /* TomboAFHTTPSessionManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TomboAFHTTPSessionManager.m; sourceTree = "<group>"; };
-		4D4C647C1F2F43CF003A8FB3 /* TomboAFNetworking.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TomboAFNetworking.h; sourceTree = "<group>"; };
-		4D4C647D1F2F43CF003A8FB3 /* TomboAFNetworkReachabilityManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TomboAFNetworkReachabilityManager.h; sourceTree = "<group>"; };
-		4D4C647E1F2F43CF003A8FB3 /* TomboAFNetworkReachabilityManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TomboAFNetworkReachabilityManager.m; sourceTree = "<group>"; };
-		4D4C647F1F2F43CF003A8FB3 /* TomboAFSecurityPolicy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TomboAFSecurityPolicy.h; sourceTree = "<group>"; };
-		4D4C64801F2F43CF003A8FB3 /* TomboAFSecurityPolicy.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TomboAFSecurityPolicy.m; sourceTree = "<group>"; };
-		4D4C64811F2F43CF003A8FB3 /* TomboAFURLConnectionOperation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TomboAFURLConnectionOperation.h; sourceTree = "<group>"; };
-		4D4C64821F2F43CF003A8FB3 /* TomboAFURLConnectionOperation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TomboAFURLConnectionOperation.m; sourceTree = "<group>"; };
-		4D4C64831F2F43CF003A8FB3 /* TomboAFURLRequestSerialization.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TomboAFURLRequestSerialization.h; sourceTree = "<group>"; };
-		4D4C64841F2F43CF003A8FB3 /* TomboAFURLRequestSerialization.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TomboAFURLRequestSerialization.m; sourceTree = "<group>"; };
-		4D4C64851F2F43CF003A8FB3 /* TomboAFURLResponseSerialization.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TomboAFURLResponseSerialization.h; sourceTree = "<group>"; };
-		4D4C64861F2F43CF003A8FB3 /* TomboAFURLResponseSerialization.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TomboAFURLResponseSerialization.m; sourceTree = "<group>"; };
-		4D4C64871F2F43CF003A8FB3 /* TomboAFURLSessionManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TomboAFURLSessionManager.h; sourceTree = "<group>"; };
-		4D4C64881F2F43CF003A8FB3 /* TomboAFURLSessionManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TomboAFURLSessionManager.m; sourceTree = "<group>"; };
-		4D4C64891F2F43CF003A8FB3 /* TomboAFNetworking.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = TomboAFNetworking.podspec; sourceTree = "<group>"; };
-		4D4C648A1F2F43CF003A8FB3 /* TomboAFNetworking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = TomboAFNetworking.xcodeproj; sourceTree = "<group>"; };
-		4D4C648F1F2F43CF003A8FB3 /* TomboAFNetworkActivityIndicatorManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TomboAFNetworkActivityIndicatorManager.h; sourceTree = "<group>"; };
-		4D4C64901F2F43CF003A8FB3 /* TomboAFNetworkActivityIndicatorManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TomboAFNetworkActivityIndicatorManager.m; sourceTree = "<group>"; };
-		4D4C64911F2F43CF003A8FB3 /* UIActivityIndicatorView+TomboAFNetworking.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIActivityIndicatorView+TomboAFNetworking.h"; sourceTree = "<group>"; };
-		4D4C64921F2F43CF003A8FB3 /* UIActivityIndicatorView+TomboAFNetworking.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIActivityIndicatorView+TomboAFNetworking.m"; sourceTree = "<group>"; };
-		4D4C64931F2F43CF003A8FB3 /* UIAlertView+TomboAFNetworking.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIAlertView+TomboAFNetworking.h"; sourceTree = "<group>"; };
-		4D4C64941F2F43CF003A8FB3 /* UIAlertView+TomboAFNetworking.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIAlertView+TomboAFNetworking.m"; sourceTree = "<group>"; };
-		4D4C64951F2F43CF003A8FB3 /* UIButton+TomboAFNetworking.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIButton+TomboAFNetworking.h"; sourceTree = "<group>"; };
-		4D4C64961F2F43CF003A8FB3 /* UIButton+TomboAFNetworking.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIButton+TomboAFNetworking.m"; sourceTree = "<group>"; };
-		4D4C64971F2F43CF003A8FB3 /* UIImageView+TomboAFNetworking.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIImageView+TomboAFNetworking.h"; sourceTree = "<group>"; };
-		4D4C64981F2F43CF003A8FB3 /* UIImageView+TomboAFNetworking.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIImageView+TomboAFNetworking.m"; sourceTree = "<group>"; };
-		4D4C64991F2F43CF003A8FB3 /* UIKit+TomboAFNetworking.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIKit+TomboAFNetworking.h"; sourceTree = "<group>"; };
-		4D4C649A1F2F43CF003A8FB3 /* UIProgressView+TomboAFNetworking.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIProgressView+TomboAFNetworking.h"; sourceTree = "<group>"; };
-		4D4C649B1F2F43CF003A8FB3 /* UIProgressView+TomboAFNetworking.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIProgressView+TomboAFNetworking.m"; sourceTree = "<group>"; };
-		4D4C649C1F2F43CF003A8FB3 /* UIRefreshControl+TomboAFNetworking.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIRefreshControl+TomboAFNetworking.h"; sourceTree = "<group>"; };
-		4D4C649D1F2F43CF003A8FB3 /* UIRefreshControl+TomboAFNetworking.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIRefreshControl+TomboAFNetworking.m"; sourceTree = "<group>"; };
-		4D4C649E1F2F43CF003A8FB3 /* UIWebView+TomboAFNetworking.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIWebView+TomboAFNetworking.h"; sourceTree = "<group>"; };
-		4D4C649F1F2F43CF003A8FB3 /* UIWebView+TomboAFNetworking.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIWebView+TomboAFNetworking.m"; sourceTree = "<group>"; };
+		4D4C65131F2F66C6003A8FB3 /* TomboAFNetworking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TomboAFNetworking.xcodeproj; path = ../TomboAFNetworking/TomboAFNetworking.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -229,7 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4D4C64AF1F2F43D5003A8FB3 /* TomboAFNetworking.framework in Frameworks */,
+				4D4C65191F2F66CE003A8FB3 /* TomboAFNetworking.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -295,411 +122,17 @@
 		4D4C63E01F2F43CE003A8FB3 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				4D4C63E11F2F43CF003A8FB3 /* TomboAFNetworking */,
+				4D4C65131F2F66C6003A8FB3 /* TomboAFNetworking.xcodeproj */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		4D4C63E11F2F43CF003A8FB3 /* TomboAFNetworking */ = {
+		4D4C65141F2F66C6003A8FB3 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				4D4C63E21F2F43CF003A8FB3 /* .cocoadocs.yml */,
-				4D4C63E31F2F43CF003A8FB3 /* .gitignore */,
-				4D4C63E41F2F43CF003A8FB3 /* .travis.yml */,
-				4D4C63E51F2F43CF003A8FB3 /* build */,
-				4D4C64031F2F43CF003A8FB3 /* CHANGELOG.md */,
-				4D4C64041F2F43CF003A8FB3 /* CONTRIBUTING.md */,
-				4D4C64051F2F43CF003A8FB3 /* Example */,
-				4D4C642F1F2F43CF003A8FB3 /* LICENSE */,
-				4D4C64301F2F43CF003A8FB3 /* Makefile */,
-				4D4C64311F2F43CF003A8FB3 /* modules */,
-				4D4C64331F2F43CF003A8FB3 /* Rakefile */,
-				4D4C64341F2F43CF003A8FB3 /* README.md */,
-				4D4C64351F2F43CF003A8FB3 /* Tests */,
-				4D4C64741F2F43CF003A8FB3 /* TomboAFNetworking */,
-				4D4C64891F2F43CF003A8FB3 /* TomboAFNetworking.podspec */,
-				4D4C648A1F2F43CF003A8FB3 /* TomboAFNetworking.xcodeproj */,
-				4D4C648D1F2F43CF003A8FB3 /* TomboAFNetworkingTests */,
-				4D4C648E1F2F43CF003A8FB3 /* UIKit+TomboAFNetworking */,
-			);
-			name = TomboAFNetworking;
-			path = ../TomboAFNetworking;
-			sourceTree = "<group>";
-		};
-		4D4C63E51F2F43CF003A8FB3 /* build */ = {
-			isa = PBXGroup;
-			children = (
-				4D4C63E61F2F43CF003A8FB3 /* release */,
-			);
-			path = build;
-			sourceTree = "<group>";
-		};
-		4D4C63E61F2F43CF003A8FB3 /* release */ = {
-			isa = PBXGroup;
-			children = (
-				4D4C63E71F2F43CF003A8FB3 /* objects */,
-				4D4C63FB1F2F43CF003A8FB3 /* TomboAFNetworking.a */,
-				4D4C63FC1F2F43CF003A8FB3 /* TomboAFNetworking.bc */,
-				4D4C63FD1F2F43CF003A8FB3 /* TomboAFNetworking.framework */,
-				4D4C63FE1F2F43CF003A8FB3 /* TomboAFNetworking.so.js */,
-				4D4C63FF1F2F43CF003A8FB3 /* TomboAFNetworking.so.js.externals */,
-				4D4C64001F2F43CF003A8FB3 /* TomboAFNetworking.wasm */,
-				4D4C64011F2F43CF003A8FB3 /* TomboAFNetworking.wasm.externals */,
-				4D4C64021F2F43CF003A8FB3 /* TomboAFNetworking.wasm.symbols */,
-			);
-			path = release;
-			sourceTree = "<group>";
-		};
-		4D4C63E71F2F43CF003A8FB3 /* objects */ = {
-			isa = PBXGroup;
-			children = (
-				4D4C63E81F2F43CF003A8FB3 /* TomboAFNetworking */,
-			);
-			path = objects;
-			sourceTree = "<group>";
-		};
-		4D4C63E81F2F43CF003A8FB3 /* TomboAFNetworking */ = {
-			isa = PBXGroup;
-			children = (
-				4D4C63E91F2F43CF003A8FB3 /* TomboAFHTTPRequestOperation.d */,
-				4D4C63EA1F2F43CF003A8FB3 /* TomboAFHTTPRequestOperation.o */,
-				4D4C63EB1F2F43CF003A8FB3 /* TomboAFHTTPRequestOperationManager.d */,
-				4D4C63EC1F2F43CF003A8FB3 /* TomboAFHTTPRequestOperationManager.o */,
-				4D4C63ED1F2F43CF003A8FB3 /* TomboAFHTTPSessionManager.d */,
-				4D4C63EE1F2F43CF003A8FB3 /* TomboAFHTTPSessionManager.o */,
-				4D4C63EF1F2F43CF003A8FB3 /* TomboAFNetworkReachabilityManager.d */,
-				4D4C63F01F2F43CF003A8FB3 /* TomboAFNetworkReachabilityManager.o */,
-				4D4C63F11F2F43CF003A8FB3 /* TomboAFSecurityPolicy.d */,
-				4D4C63F21F2F43CF003A8FB3 /* TomboAFSecurityPolicy.o */,
-				4D4C63F31F2F43CF003A8FB3 /* TomboAFURLConnectionOperation.d */,
-				4D4C63F41F2F43CF003A8FB3 /* TomboAFURLConnectionOperation.o */,
-				4D4C63F51F2F43CF003A8FB3 /* TomboAFURLRequestSerialization.d */,
-				4D4C63F61F2F43CF003A8FB3 /* TomboAFURLRequestSerialization.o */,
-				4D4C63F71F2F43CF003A8FB3 /* TomboAFURLResponseSerialization.d */,
-				4D4C63F81F2F43CF003A8FB3 /* TomboAFURLResponseSerialization.o */,
-				4D4C63F91F2F43CF003A8FB3 /* TomboAFURLSessionManager.d */,
-				4D4C63FA1F2F43CF003A8FB3 /* TomboAFURLSessionManager.o */,
-			);
-			path = TomboAFNetworking;
-			sourceTree = "<group>";
-		};
-		4D4C64051F2F43CF003A8FB3 /* Example */ = {
-			isa = PBXGroup;
-			children = (
-				4D4C64061F2F43CF003A8FB3 /* adn.cer */,
-				4D4C64071F2F43CF003A8FB3 /* AppDelegate.h */,
-				4D4C64081F2F43CF003A8FB3 /* AppDelegate.m */,
-				4D4C64091F2F43CF003A8FB3 /* Classes */,
-				4D4C64171F2F43CF003A8FB3 /* Default-568h@2x.png */,
-				4D4C64181F2F43CF003A8FB3 /* Default.png */,
-				4D4C64191F2F43CF003A8FB3 /* Default@2x.png */,
-				4D4C641A1F2F43CF003A8FB3 /* digicert_ca_3.cer */,
-				4D4C641B1F2F43CF003A8FB3 /* MainMenu.xib */,
-				4D4C641D1F2F43CF003A8FB3 /* Icon.png */,
-				4D4C641E1F2F43CF003A8FB3 /* Icon@2x.png */,
-				4D4C641F1F2F43CF003A8FB3 /* Images */,
-				4D4C64221F2F43CF003A8FB3 /* iOS-Info.plist */,
-				4D4C64231F2F43CF003A8FB3 /* Mac-Info.plist */,
-				4D4C64241F2F43CF003A8FB3 /* main.m */,
-				4D4C64251F2F43CF003A8FB3 /* MainMenu.xib */,
-				4D4C64261F2F43CF003A8FB3 /* Prefix.pch */,
-				4D4C64271F2F43CF003A8FB3 /* root_ca.cer */,
-				4D4C64281F2F43CF003A8FB3 /* TomboAFNetworking Example.entitlements */,
-				4D4C64291F2F43CF003A8FB3 /* TomboAFNetworking iOS Example.xcodeproj */,
-				4D4C642C1F2F43CF003A8FB3 /* TomboAFNetworking OS X Example.xcodeproj */,
-			);
-			path = Example;
-			sourceTree = "<group>";
-		};
-		4D4C64091F2F43CF003A8FB3 /* Classes */ = {
-			isa = PBXGroup;
-			children = (
-				4D4C640A1F2F43CF003A8FB3 /* Controllers */,
-				4D4C640D1F2F43CF003A8FB3 /* Models */,
-				4D4C64121F2F43CF003A8FB3 /* TomboAFAppDotNetAPIClient.h */,
-				4D4C64131F2F43CF003A8FB3 /* TomboAFAppDotNetAPIClient.m */,
-				4D4C64141F2F43CF003A8FB3 /* Views */,
-			);
-			path = Classes;
-			sourceTree = "<group>";
-		};
-		4D4C640A1F2F43CF003A8FB3 /* Controllers */ = {
-			isa = PBXGroup;
-			children = (
-				4D4C640B1F2F43CF003A8FB3 /* GlobalTimelineViewController.h */,
-				4D4C640C1F2F43CF003A8FB3 /* GlobalTimelineViewController.m */,
-			);
-			path = Controllers;
-			sourceTree = "<group>";
-		};
-		4D4C640D1F2F43CF003A8FB3 /* Models */ = {
-			isa = PBXGroup;
-			children = (
-				4D4C640E1F2F43CF003A8FB3 /* Post.h */,
-				4D4C640F1F2F43CF003A8FB3 /* Post.m */,
-				4D4C64101F2F43CF003A8FB3 /* User.h */,
-				4D4C64111F2F43CF003A8FB3 /* User.m */,
-			);
-			path = Models;
-			sourceTree = "<group>";
-		};
-		4D4C64141F2F43CF003A8FB3 /* Views */ = {
-			isa = PBXGroup;
-			children = (
-				4D4C64151F2F43CF003A8FB3 /* PostTableViewCell.h */,
-				4D4C64161F2F43CF003A8FB3 /* PostTableViewCell.m */,
-			);
-			path = Views;
-			sourceTree = "<group>";
-		};
-		4D4C641F1F2F43CF003A8FB3 /* Images */ = {
-			isa = PBXGroup;
-			children = (
-				4D4C64201F2F43CF003A8FB3 /* profile-image-placeholder.png */,
-				4D4C64211F2F43CF003A8FB3 /* profile-image-placeholder@2x.png */,
-			);
-			path = Images;
-			sourceTree = "<group>";
-		};
-		4D4C642A1F2F43CF003A8FB3 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				4D4C64A21F2F43D0003A8FB3 /* TomboAFNetworking iOS Example.app */,
+				4D4C65181F2F66C6003A8FB3 /* TomboAFNetworking.framework */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		4D4C642D1F2F43CF003A8FB3 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				4D4C64A51F2F43D0003A8FB3 /* TomboAFNetworking Example.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		4D4C64311F2F43CF003A8FB3 /* modules */ = {
-			isa = PBXGroup;
-			children = (
-				4D4C64321F2F43CF003A8FB3 /* module.modulemap */,
-			);
-			path = modules;
-			sourceTree = "<group>";
-		};
-		4D4C64351F2F43CF003A8FB3 /* Tests */ = {
-			isa = PBXGroup;
-			children = (
-				4D4C64361F2F43CF003A8FB3 /* iOS Tests */,
-				4D4C643B1F2F43CF003A8FB3 /* OS X Tests */,
-				4D4C64401F2F43CF003A8FB3 /* Podfile */,
-				4D4C64411F2F43CF003A8FB3 /* Resources */,
-				4D4C64551F2F43CF003A8FB3 /* Schemes */,
-				4D4C64581F2F43CF003A8FB3 /* Tests */,
-				4D4C646F1F2F43CF003A8FB3 /* TomboAFNetworking Tests.xcodeproj */,
-				4D4C64721F2F43CF003A8FB3 /* TomboAFNetworking-Prefix.pch */,
-				4D4C64731F2F43CF003A8FB3 /* TomboAFNetworkingTests-Info.plist */,
-			);
-			path = Tests;
-			sourceTree = "<group>";
-		};
-		4D4C64361F2F43CF003A8FB3 /* iOS Tests */ = {
-			isa = PBXGroup;
-			children = (
-				4D4C64371F2F43CF003A8FB3 /* InfoPlist.strings */,
-				4D4C64391F2F43CF003A8FB3 /* iOS Tests-Info.plist */,
-				4D4C643A1F2F43CF003A8FB3 /* iOS Tests-Prefix.pch */,
-			);
-			path = "iOS Tests";
-			sourceTree = "<group>";
-		};
-		4D4C643B1F2F43CF003A8FB3 /* OS X Tests */ = {
-			isa = PBXGroup;
-			children = (
-				4D4C643C1F2F43CF003A8FB3 /* InfoPlist.strings */,
-				4D4C643E1F2F43CF003A8FB3 /* OS X Tests-Info.plist */,
-				4D4C643F1F2F43CF003A8FB3 /* OS X Tests-Prefix.pch */,
-			);
-			path = "OS X Tests";
-			sourceTree = "<group>";
-		};
-		4D4C64411F2F43CF003A8FB3 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				4D4C64421F2F43CF003A8FB3 /* ADN.net */,
-				4D4C64471F2F43CF003A8FB3 /* HTTPBin.org */,
-				4D4C64511F2F43CF003A8FB3 /* SelfSigned */,
-			);
-			path = Resources;
-			sourceTree = "<group>";
-		};
-		4D4C64421F2F43CF003A8FB3 /* ADN.net */ = {
-			isa = PBXGroup;
-			children = (
-				4D4C64431F2F43CF003A8FB3 /* ADNNetServerTrustChain */,
-			);
-			path = ADN.net;
-			sourceTree = "<group>";
-		};
-		4D4C64431F2F43CF003A8FB3 /* ADNNetServerTrustChain */ = {
-			isa = PBXGroup;
-			children = (
-				4D4C64441F2F43CF003A8FB3 /* adn_0.cer */,
-				4D4C64451F2F43CF003A8FB3 /* adn_1.cer */,
-				4D4C64461F2F43CF003A8FB3 /* adn_2.cer */,
-			);
-			path = ADNNetServerTrustChain;
-			sourceTree = "<group>";
-		};
-		4D4C64471F2F43CF003A8FB3 /* HTTPBin.org */ = {
-			isa = PBXGroup;
-			children = (
-				4D4C64481F2F43CF003A8FB3 /* AddTrust_External_CA_Root.cer */,
-				4D4C64491F2F43CF003A8FB3 /* COMODO_RSA_Certification_Authority.cer */,
-				4D4C644A1F2F43CF003A8FB3 /* COMODO_RSA_Domain_Validation_Secure_Server_CA.cer */,
-				4D4C644B1F2F43CF003A8FB3 /* httpbinorg_01162016.cer */,
-				4D4C644C1F2F43CF003A8FB3 /* HTTPBinOrgServerTrustChain */,
-			);
-			path = HTTPBin.org;
-			sourceTree = "<group>";
-		};
-		4D4C644C1F2F43CF003A8FB3 /* HTTPBinOrgServerTrustChain */ = {
-			isa = PBXGroup;
-			children = (
-				4D4C644D1F2F43CF003A8FB3 /* httpbin_0.cer */,
-				4D4C644E1F2F43CF003A8FB3 /* httpbin_1.cer */,
-				4D4C644F1F2F43CF003A8FB3 /* httpbin_2.cer */,
-				4D4C64501F2F43CF003A8FB3 /* httpbin_3.cer */,
-			);
-			path = HTTPBinOrgServerTrustChain;
-			sourceTree = "<group>";
-		};
-		4D4C64511F2F43CF003A8FB3 /* SelfSigned */ = {
-			isa = PBXGroup;
-			children = (
-				4D4C64521F2F43CF003A8FB3 /* AltName.cer */,
-				4D4C64531F2F43CF003A8FB3 /* foobar.com.cer */,
-				4D4C64541F2F43CF003A8FB3 /* NoDomains.cer */,
-			);
-			path = SelfSigned;
-			sourceTree = "<group>";
-		};
-		4D4C64551F2F43CF003A8FB3 /* Schemes */ = {
-			isa = PBXGroup;
-			children = (
-				4D4C64561F2F43CF003A8FB3 /* iOS Tests.xcscheme */,
-				4D4C64571F2F43CF003A8FB3 /* OS X Tests.xcscheme */,
-			);
-			path = Schemes;
-			sourceTree = "<group>";
-		};
-		4D4C64581F2F43CF003A8FB3 /* Tests */ = {
-			isa = PBXGroup;
-			children = (
-				4D4C64591F2F43CF003A8FB3 /* 1.0 Tests */,
-				4D4C64631F2F43CF003A8FB3 /* TomboAFHTTPRequestOperationTests.m */,
-				4D4C64641F2F43CF003A8FB3 /* TomboAFHTTPRequestSerializationTests.m */,
-				4D4C64651F2F43CF003A8FB3 /* TomboAFHTTPResponseSerializationTests.m */,
-				4D4C64661F2F43CF003A8FB3 /* TomboAFHTTPSessionManagerTests.m */,
-				4D4C64671F2F43CF003A8FB3 /* TomboAFJSONSerializationTests.m */,
-				4D4C64681F2F43CF003A8FB3 /* TomboAFNetworkActivityManagerTests.m */,
-				4D4C64691F2F43CF003A8FB3 /* TomboAFNetworkReachabilityManagerTests.m */,
-				4D4C646A1F2F43CF003A8FB3 /* TomboAFPropertyListResponseSerializerTests.m */,
-				4D4C646B1F2F43CF003A8FB3 /* TomboAFSecurityPolicyTests.m */,
-				4D4C646C1F2F43CF003A8FB3 /* TomboAFTestCase.h */,
-				4D4C646D1F2F43CF003A8FB3 /* TomboAFTestCase.m */,
-				4D4C646E1F2F43CF003A8FB3 /* TomboAFURLSessionManagerTests.m */,
-			);
-			path = Tests;
-			sourceTree = "<group>";
-		};
-		4D4C64591F2F43CF003A8FB3 /* 1.0 Tests */ = {
-			isa = PBXGroup;
-			children = (
-				4D4C645A1F2F43CF003A8FB3 /* TomboAFHTTPClientTests.m */,
-				4D4C645B1F2F43CF003A8FB3 /* TomboAFHTTPRequestOperationTests.m */,
-				4D4C645C1F2F43CF003A8FB3 /* TomboAFImageRequestOperationTests.m */,
-				4D4C645D1F2F43CF003A8FB3 /* TomboAFJSONRequestOperationTests.m */,
-				4D4C645E1F2F43CF003A8FB3 /* TomboAFMockURLProtocol.h */,
-				4D4C645F1F2F43CF003A8FB3 /* TomboAFMockURLProtocol.m */,
-				4D4C64601F2F43CF003A8FB3 /* TomboAFNetworkingTests.h */,
-				4D4C64611F2F43CF003A8FB3 /* TomboAFNetworkingTests.m */,
-				4D4C64621F2F43CF003A8FB3 /* TomboAFURLConnectionOperationTests.m */,
-			);
-			path = "1.0 Tests";
-			sourceTree = "<group>";
-		};
-		4D4C64701F2F43CF003A8FB3 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				4D4C64A91F2F43D0003A8FB3 /* iOS Tests.xctest */,
-				4D4C64AB1F2F43D0003A8FB3 /* OS X Tests.xctest */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		4D4C64741F2F43CF003A8FB3 /* TomboAFNetworking */ = {
-			isa = PBXGroup;
-			children = (
-				4D4C64751F2F43CF003A8FB3 /* Info.plist */,
-				4D4C64761F2F43CF003A8FB3 /* TomboAFHTTPRequestOperation.h */,
-				4D4C64771F2F43CF003A8FB3 /* TomboAFHTTPRequestOperation.m */,
-				4D4C64781F2F43CF003A8FB3 /* TomboAFHTTPRequestOperationManager.h */,
-				4D4C64791F2F43CF003A8FB3 /* TomboAFHTTPRequestOperationManager.m */,
-				4D4C647A1F2F43CF003A8FB3 /* TomboAFHTTPSessionManager.h */,
-				4D4C647B1F2F43CF003A8FB3 /* TomboAFHTTPSessionManager.m */,
-				4D4C647C1F2F43CF003A8FB3 /* TomboAFNetworking.h */,
-				4D4C647D1F2F43CF003A8FB3 /* TomboAFNetworkReachabilityManager.h */,
-				4D4C647E1F2F43CF003A8FB3 /* TomboAFNetworkReachabilityManager.m */,
-				4D4C647F1F2F43CF003A8FB3 /* TomboAFSecurityPolicy.h */,
-				4D4C64801F2F43CF003A8FB3 /* TomboAFSecurityPolicy.m */,
-				4D4C64811F2F43CF003A8FB3 /* TomboAFURLConnectionOperation.h */,
-				4D4C64821F2F43CF003A8FB3 /* TomboAFURLConnectionOperation.m */,
-				4D4C64831F2F43CF003A8FB3 /* TomboAFURLRequestSerialization.h */,
-				4D4C64841F2F43CF003A8FB3 /* TomboAFURLRequestSerialization.m */,
-				4D4C64851F2F43CF003A8FB3 /* TomboAFURLResponseSerialization.h */,
-				4D4C64861F2F43CF003A8FB3 /* TomboAFURLResponseSerialization.m */,
-				4D4C64871F2F43CF003A8FB3 /* TomboAFURLSessionManager.h */,
-				4D4C64881F2F43CF003A8FB3 /* TomboAFURLSessionManager.m */,
-			);
-			path = TomboAFNetworking;
-			sourceTree = "<group>";
-		};
-		4D4C648B1F2F43CF003A8FB3 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				4D4C64AE1F2F43D0003A8FB3 /* TomboAFNetworking.framework */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		4D4C648D1F2F43CF003A8FB3 /* TomboAFNetworkingTests */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = TomboAFNetworkingTests;
-			sourceTree = "<group>";
-		};
-		4D4C648E1F2F43CF003A8FB3 /* UIKit+TomboAFNetworking */ = {
-			isa = PBXGroup;
-			children = (
-				4D4C648F1F2F43CF003A8FB3 /* TomboAFNetworkActivityIndicatorManager.h */,
-				4D4C64901F2F43CF003A8FB3 /* TomboAFNetworkActivityIndicatorManager.m */,
-				4D4C64911F2F43CF003A8FB3 /* UIActivityIndicatorView+TomboAFNetworking.h */,
-				4D4C64921F2F43CF003A8FB3 /* UIActivityIndicatorView+TomboAFNetworking.m */,
-				4D4C64931F2F43CF003A8FB3 /* UIAlertView+TomboAFNetworking.h */,
-				4D4C64941F2F43CF003A8FB3 /* UIAlertView+TomboAFNetworking.m */,
-				4D4C64951F2F43CF003A8FB3 /* UIButton+TomboAFNetworking.h */,
-				4D4C64961F2F43CF003A8FB3 /* UIButton+TomboAFNetworking.m */,
-				4D4C64971F2F43CF003A8FB3 /* UIImageView+TomboAFNetworking.h */,
-				4D4C64981F2F43CF003A8FB3 /* UIImageView+TomboAFNetworking.m */,
-				4D4C64991F2F43CF003A8FB3 /* UIKit+TomboAFNetworking.h */,
-				4D4C649A1F2F43CF003A8FB3 /* UIProgressView+TomboAFNetworking.h */,
-				4D4C649B1F2F43CF003A8FB3 /* UIProgressView+TomboAFNetworking.m */,
-				4D4C649C1F2F43CF003A8FB3 /* UIRefreshControl+TomboAFNetworking.h */,
-				4D4C649D1F2F43CF003A8FB3 /* UIRefreshControl+TomboAFNetworking.m */,
-				4D4C649E1F2F43CF003A8FB3 /* UIWebView+TomboAFNetworking.h */,
-				4D4C649F1F2F43CF003A8FB3 /* UIWebView+TomboAFNetworking.m */,
-			);
-			path = "UIKit+TomboAFNetworking";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -729,6 +162,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				4D4C651D1F2F6871003A8FB3 /* PBXTargetDependency */,
 			);
 			name = TomboKit;
 			productName = TomboKit;
@@ -784,20 +218,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 4D4C642A1F2F43CF003A8FB3 /* Products */;
-					ProjectRef = 4D4C64291F2F43CF003A8FB3 /* TomboAFNetworking iOS Example.xcodeproj */;
-				},
-				{
-					ProductGroup = 4D4C642D1F2F43CF003A8FB3 /* Products */;
-					ProjectRef = 4D4C642C1F2F43CF003A8FB3 /* TomboAFNetworking OS X Example.xcodeproj */;
-				},
-				{
-					ProductGroup = 4D4C64701F2F43CF003A8FB3 /* Products */;
-					ProjectRef = 4D4C646F1F2F43CF003A8FB3 /* TomboAFNetworking Tests.xcodeproj */;
-				},
-				{
-					ProductGroup = 4D4C648B1F2F43CF003A8FB3 /* Products */;
-					ProjectRef = 4D4C648A1F2F43CF003A8FB3 /* TomboAFNetworking.xcodeproj */;
+					ProductGroup = 4D4C65141F2F66C6003A8FB3 /* Products */;
+					ProjectRef = 4D4C65131F2F66C6003A8FB3 /* TomboAFNetworking.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -809,39 +231,11 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		4D4C64A21F2F43D0003A8FB3 /* TomboAFNetworking iOS Example.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = "TomboAFNetworking iOS Example.app";
-			remoteRef = 4D4C64A11F2F43D0003A8FB3 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		4D4C64A51F2F43D0003A8FB3 /* TomboAFNetworking Example.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = "TomboAFNetworking Example.app";
-			remoteRef = 4D4C64A41F2F43D0003A8FB3 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		4D4C64A91F2F43D0003A8FB3 /* iOS Tests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = "iOS Tests.xctest";
-			remoteRef = 4D4C64A81F2F43D0003A8FB3 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		4D4C64AB1F2F43D0003A8FB3 /* OS X Tests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = "OS X Tests.xctest";
-			remoteRef = 4D4C64AA1F2F43D0003A8FB3 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		4D4C64AE1F2F43D0003A8FB3 /* TomboAFNetworking.framework */ = {
+		4D4C65181F2F66C6003A8FB3 /* TomboAFNetworking.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = TomboAFNetworking.framework;
-			remoteRef = 4D4C64AD1F2F43D0003A8FB3 /* PBXContainerItemProxy */;
+			remoteRef = 4D4C65171F2F66C6003A8FB3 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -889,34 +283,12 @@
 			target = 4D4C63B61F2F428E003A8FB3 /* TomboKit */;
 			targetProxy = 4D4C63C21F2F428E003A8FB3 /* PBXContainerItemProxy */;
 		};
+		4D4C651D1F2F6871003A8FB3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = TomboAFNetworking;
+			targetProxy = 4D4C651C1F2F6871003A8FB3 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
-
-/* Begin PBXVariantGroup section */
-		4D4C641B1F2F43CF003A8FB3 /* MainMenu.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				4D4C641C1F2F43CF003A8FB3 /* en */,
-			);
-			name = MainMenu.xib;
-			sourceTree = "<group>";
-		};
-		4D4C64371F2F43CF003A8FB3 /* InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				4D4C64381F2F43CF003A8FB3 /* en */,
-			);
-			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
-		4D4C643C1F2F43CF003A8FB3 /* InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				4D4C643D1F2F43CF003A8FB3 /* en */,
-			);
-			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		4D4C63C91F2F428E003A8FB3 /* Debug */ = {
