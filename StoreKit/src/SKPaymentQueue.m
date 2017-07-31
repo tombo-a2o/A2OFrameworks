@@ -1,14 +1,12 @@
 #import <StoreKit/StoreKit.h>
-#import "SKAFNetworking.h"
 #import <UIKit/UIKit.h>
-
-NSString * const SKTomboPaymentsURL = @"https://api.tom.bo/payments";
+#import <TomboKit/TomboKit.h>
 
 static SKPaymentQueue* _defaultQueue;
 
 @implementation SKPaymentQueue {
     NSMutableArray *_transactionObservers;
-    SKAFURLSessionManager *_URLSessionManager;
+    TomboKitAPI *_tomboKitAPI;
 }
 
 - (instancetype)init {
@@ -48,62 +46,35 @@ static SKPaymentQueue* _defaultQueue;
 {
     SKDebugLog(@"payment: %@", payment);
 
-    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-    _URLSessionManager = [[SKAFURLSessionManager alloc] initWithSessionConfiguration:configuration];
-#ifdef DEBUG
-    _URLSessionManager.securityPolicy.validatesDomainName = NO;
-    _URLSessionManager.securityPolicy.allowInvalidCertificates = YES;
-    SKDebugLog(@"ALLOW INVALID CERTIFICATES");
-#endif
-
-    NSObject *applicationUserName = payment.applicationUsername;
-    if (applicationUserName == nil) {
-        applicationUserName = [NSNull null];
-    }
-
-    NSDictionary *parameters = @{@"payments": @[@{
-                                                    @"productIdentifier": payment.productIdentifier,
-                                                    @"quantity": [NSNumber numberWithInteger:payment.quantity],
-                                                    @"requestData": [NSNull null],
-                                                    @"applicationUsername": applicationUserName
-                                                    }]};
-    NSError *serializerError = nil;
-    NSMutableURLRequest *request = [[SKAFJSONRequestSerializer serializer] requestWithMethod:@"POST" URLString:SKTomboPaymentsURL parameters:parameters error:&serializerError];
-    _URLSessionManager.responseSerializer = [SKAFJSONResponseSerializer serializer];
-
-    NSURLSessionDataTask *dataTask = [_URLSessionManager dataTaskWithRequest:request completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
-        _URLSessionManager = nil;
-
-        SKDebugLog(@"error: %@ response: %@", error, response);
+    [_tomboKitAPI postPayments:payment.productIdentifier quantity:payment.quantity requestData:nil applicationUsername:payment.applicationUsername success:^(NSDictionary *data){
         NSMutableArray *transactions = [[NSMutableArray alloc] init];
-        if (error) {
-            NSLog(@"Error(%@): %@", NSStringFromClass([self class]), error);
-            // FIXME: generate random transaction id in UUID-like format
-            SKPaymentTransaction *transaction = [[SKPaymentTransaction alloc] initWithTransactionIdentifier:nil payment:payment transactionState:SKPaymentTransactionStateFailed transactionDate:nil error:error];
-            [transactions addObject:transaction];
-        } else {
+        NSArray *transactionsArray = [data objectForKey:@"transactions"];
+        for (NSDictionary *transactionDict in transactionsArray) {
             NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
             NSLocale *posixLocale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
             [dateFormatter setLocale:posixLocale];
             [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ssZZZZZ"];
 
-            NSDictionary *data = [responseObject objectForKey:@"data"];
-            NSArray *transactionsArray = [data objectForKey:@"transactions"];
-            for (NSDictionary *transactionDict in transactionsArray) {
-                NSString *transactionIdentifier = [transactionDict objectForKey:@"transactionIdentifier"];
-                NSDate *transactionDate = [dateFormatter dateFromString:[transactionDict objectForKey:@"transactionDate"]];
+            NSString *transactionIdentifier = [transactionDict objectForKey:@"transactionIdentifier"];
+            NSDate *transactionDate = [dateFormatter dateFromString:[transactionDict objectForKey:@"transactionDate"]];
 
-                SKPaymentTransaction *transaction = [[SKPaymentTransaction alloc] initWithTransactionIdentifier:transactionIdentifier payment:payment transactionState:SKPaymentTransactionStatePurchased transactionDate:transactionDate error:error];
-                [transactions addObject:transaction];
-            }
-            SKDebugLog(@"transactions: %@", transactions);
+            SKPaymentTransaction *transaction = [[SKPaymentTransaction alloc] initWithTransactionIdentifier:transactionIdentifier payment:payment transactionState:SKPaymentTransactionStatePurchased transactionDate:transactionDate error:nil];
+            [transactions addObject:transaction];
         }
+        SKDebugLog(@"transactions: %@", transactions);
+        for (id<SKPaymentTransactionObserver> observer in _transactionObservers) {
+            [observer paymentQueue:self updatedTransactions:transactions];
+        }
+    } failure:^(NSError *error){
+        NSLog(@"Error(%@): %@", NSStringFromClass([self class]), error);
+        NSMutableArray *transactions = [[NSMutableArray alloc] init];
+        // FIXME: generate random transaction id in UUID-like format
+        SKPaymentTransaction *transaction = [[SKPaymentTransaction alloc] initWithTransactionIdentifier:nil payment:payment transactionState:SKPaymentTransactionStateFailed transactionDate:nil error:error];
+        [transactions addObject:transaction];
         for (id<SKPaymentTransactionObserver> observer in _transactionObservers) {
             [observer paymentQueue:self updatedTransactions:transactions];
         }
     }];
-
-    [dataTask resume];
 }
 
 // Adds a payment request to the queue.

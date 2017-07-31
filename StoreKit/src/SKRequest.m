@@ -1,10 +1,9 @@
 #import <StoreKit/StoreKit.h>
-#import "SKAFNetworking.h"
+#import <TomboKit/TomboKit.h>
 
 NSString * const SKReceiptPropertyIsExpired = @"expired";
 NSString * const SKReceiptPropertyIsRevoked = @"revoked";
 NSString * const SKReceiptPropertyIsVolumePurchase = @"vpp";
-NSString * const SKTomboProductsURL = @"https://api.tom.bo/products";
 
 @implementation SKRequest
 
@@ -23,9 +22,9 @@ NSString * const SKTomboProductsURL = @"https://api.tom.bo/products";
 @end
 
 @implementation SKProductsRequest {
+    TomboKitAPI *_tomboKitAPI;
     NSSet *_productIdentifiers;
     SKProductsResponse *_productsResponse;
-    SKAFURLSessionManager *_URLSessionManager;
 }
 
 @dynamic delegate;
@@ -34,6 +33,7 @@ NSString * const SKTomboProductsURL = @"https://api.tom.bo/products";
 - (instancetype)initWithProductIdentifiers:(NSSet/*<NSString *>*/ *)productIdentifiers
 {
     _productIdentifiers = [productIdentifiers mutableCopy];
+    _tomboKitAPI = [[TomboKitAPI alloc] init];
     return [super init];
 }
 
@@ -45,64 +45,43 @@ NSString * const SKTomboProductsURL = @"https://api.tom.bo/products";
 
     _productsResponse = nil;
 
-    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-    _URLSessionManager = [[SKAFURLSessionManager alloc] initWithSessionConfiguration:configuration];
-#ifdef DEBUG
-    _URLSessionManager.securityPolicy.validatesDomainName = NO;
-    _URLSessionManager.securityPolicy.allowInvalidCertificates = YES;
-    SKDebugLog(@"ALLOW INVALID CERTIFICATES");
-#endif
-
     NSArray *productIdentifiers = [_productIdentifiers allObjects];
     productIdentifiers = [productIdentifiers sortedArrayUsingSelector:@selector(compare:)];
 
-    NSDictionary *parameters = @{@"product_identifier": [productIdentifiers componentsJoinedByString: @","]};
-    NSError *serializerError = nil;
-    NSMutableURLRequest *request = [[SKAFHTTPRequestSerializer serializer] requestWithMethod:@"GET" URLString:SKTomboProductsURL parameters:parameters error:&serializerError];
+    [_tomboKitAPI getProducts:productIdentifiers success:^(NSDictionary *data) {
+        NSArray *productsArray = [data objectForKey:@"products"];
+        NSMutableArray *products = [[NSMutableArray alloc] init];
+        for (NSDictionary *productDict in productsArray) {
+            NSString *productIdentifier = [productDict objectForKey:@"productIdentifier"];
+            NSString *localizedTitle = [productDict objectForKey:@"localizedTitle"];
+            NSString *localizedDescription = [productDict objectForKey:@"localizedDescription"];
+            NSDecimalNumber *price = [NSDecimalNumber decimalNumberWithString:[productDict objectForKey:@"price"]];
+            NSLocale *priceLocale = [[NSLocale alloc] initWithLocaleIdentifier:[productDict objectForKey:@"priceLocale"]];
 
-    _URLSessionManager.responseSerializer = [SKAFJSONResponseSerializer serializer];
+            SKProduct *product = [[SKProduct alloc] initWithProductIdentifier:productIdentifier localizedTitle:localizedTitle localizedDescription:localizedDescription price:price priceLocale:priceLocale];
+            [products addObject:product];
+        }
+        _productsResponse = [[SKProductsResponse alloc] initWithProducts:products];
 
-    NSURLSessionDataTask *dataTask = [_URLSessionManager dataTaskWithRequest:request completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
-        _URLSessionManager = nil;
-        SKDebugLog(@"error: %@ response: %@", error, response);
-        if (error) {
-            NSLog(@"Error(%@): %@", NSStringFromClass([self class]), error);
-            if([self.delegate respondsToSelector:@selector(request:didFailWithError:)]) {
-                [self.delegate request:self didFailWithError:error];
-            }
-        } else {
-            NSDictionary *data = [responseObject objectForKey:@"data"];
-            NSArray *productsArray = [data objectForKey:@"products"];
-            NSMutableArray *products = [[NSMutableArray alloc] init];
-            for (NSDictionary *productDict in productsArray) {
-                NSString *productIdentifier = [productDict objectForKey:@"productIdentifier"];
-                NSString *localizedTitle = [productDict objectForKey:@"localizedTitle"];
-                NSString *localizedDescription = [productDict objectForKey:@"localizedDescription"];
-                NSDecimalNumber *price = [NSDecimalNumber decimalNumberWithString:[productDict objectForKey:@"price"]];
-                NSLocale *priceLocale = [[NSLocale alloc] initWithLocaleIdentifier:[productDict objectForKey:@"priceLocale"]];
+        SKDebugLog(@"products: %@", _productsResponse);
 
-                SKProduct *product = [[SKProduct alloc] initWithProductIdentifier:productIdentifier localizedTitle:localizedTitle localizedDescription:localizedDescription price:price priceLocale:priceLocale];
-                [products addObject:product];
-            }
-            _productsResponse = [[SKProductsResponse alloc] initWithProducts:products];
-
-            SKDebugLog(@"products: %@", _productsResponse);
-
-            // NOTE: I don't know the sequence of calling these notification methods
-            [self.delegate productsRequest:self didReceiveResponse:_productsResponse];
-            if([self.delegate respondsToSelector:@selector(requestDidFinish:)]) {
-                [self.delegate requestDidFinish:self];
-            }
+        // NOTE: I don't know the sequence of calling these notification methods
+        [self.delegate productsRequest:self didReceiveResponse:_productsResponse];
+        if([self.delegate respondsToSelector:@selector(requestDidFinish:)]) {
+            [self.delegate requestDidFinish:self];
+        }
+    } failure:^(NSError *error) {
+        NSLog(@"Error(%@): %@", NSStringFromClass([self class]), error);
+        if([self.delegate respondsToSelector:@selector(request:didFailWithError:)]) {
+            [self.delegate request:self didFailWithError:error];
         }
     }];
-
-    [dataTask resume];
 }
 
 // Cancels a previously started request.
 - (void)cancel
 {
-    [_URLSessionManager.operationQueue cancelAllOperations];
+    [_tomboKitAPI cancel];
 }
 
 @end
