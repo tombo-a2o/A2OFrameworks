@@ -11,6 +11,7 @@ static SKPaymentQueue* _defaultQueue;
 
 - (instancetype)init {
     _transactionObservers = [[NSMutableArray alloc] init];
+    _tomboKitAPI = [[TomboKitAPI alloc] init];
     return [super init];
 }
 

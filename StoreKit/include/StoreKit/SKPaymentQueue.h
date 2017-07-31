@@ -50,5 +50,3 @@
 - (void)connectToPaymentAPI:(SKPayment *)payment;
 
 @end
-
-extern NSString * const SKTomboPaymentsURL;
