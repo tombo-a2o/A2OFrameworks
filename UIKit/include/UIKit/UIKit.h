@@ -85,6 +85,7 @@
 #import <UIKit/UIDataDetectors.h>
 #import <UIKit/UITableViewController.h>
 #import <UIKit/UISearchBar.h>
+#import <UIKit/UISearchController.h>
 #import <UIKit/UISearchDisplayController.h>
 #import <UIKit/UIImagePickerController.h>
 #import <UIKit/UINibLoading.h>
