@@ -36,13 +36,35 @@
 #import <UIKit/UIView.h>
 #import <UIKit/UITextField.h>
 
+typedef NS_ENUM(NSInteger, UISearchBarIcon)
+{
+    UISearchBarIconSearch,
+    UISearchBarIconClear,
+    UISearchBarIconBookmark,
+    UISearchBarIconResultsList,
+};
+
+typedef NS_ENUM(NSInteger, UISearchBarStyle)
+{
+    UISearchBarStyleDefault,
+    UISearchBarStyleProminent,
+    UISearchBarStyleMinimal,
+};
 @protocol UISearchBarDelegate;
+
+@class UIImage;
 
 @interface UISearchBar : UIView
 @property (nonatomic, copy) NSString *text;
 @property (nonatomic, assign) id<UISearchBarDelegate> delegate;
 @property (nonatomic) BOOL showsCancelButton;
 @property (nonatomic, copy) NSString *placeholder;
+@property(nonatomic) BOOL showsScopeBar;
+@property(nonatomic, copy) NSArray<NSString *> *scopeButtonTitles;
+@property(nonatomic) BOOL showsBookmarkButton;
+@property(nonatomic, strong) UIImage *backgroundImage;
+- (void)setImage:(UIImage *)iconImage forSearchBarIcon:(UISearchBarIcon)icon state:(UIControlState)state;
+@property(nonatomic) UISearchBarStyle searchBarStyle;
 @end
 
 

@@ -12,6 +12,7 @@
 // - Setting item content offset is not supported
 
 #import <UIKit/UIControl.h>
+#import <UIKit/UIInterface.h>
 
 @class UIImage;
 
@@ -54,4 +55,6 @@ typedef NS_ENUM(NSInteger, UISegmentedControlSegment) {
 
 - (void)setTitleTextAttributes:(NSDictionary *)attributes forState:(UIControlState)state;
 - (NSDictionary *)titleTextAttributesForState:(UIControlState)state;
+- (void)setBackgroundImage:(UIImage *)backgroundImage forState:(UIControlState)state barMetrics:(UIBarMetrics)barMetrics;
+- (void)setDividerImage:(UIImage *)dividerImage forLeftSegmentState:(UIControlState)leftState rightSegmentState:(UIControlState)rightState barMetrics:(UIBarMetrics)barMetrics;
 @end

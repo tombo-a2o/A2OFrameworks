@@ -1,5 +1,7 @@
 #import <UIKit/UIViewController.h>
 
+@class UITextField;
+
 typedef NS_ENUM(NSInteger, UIAlertControllerStyle) {
     UIAlertControllerStyleActionSheet = 0,
     UIAlertControllerStyleAlert,
@@ -13,6 +15,9 @@ typedef NS_ENUM(NSInteger, UIAlertControllerStyle) {
                                  message:(NSString *)message
                           preferredStyle:(UIAlertControllerStyle)preferredStyle;
 - (void)addAction:(UIAlertAction *)action;
+- (void)addTextFieldWithConfigurationHandler:(void (^)(UITextField *textField))configurationHandler;
+
+@property(nonatomic, readonly) NSArray<UITextField *> *textFields;
 @end
 
 typedef NS_ENUM(NSInteger, UIAlertActionStyle) {
@@ -28,5 +33,4 @@ typedef NS_ENUM(NSInteger, UIAlertActionStyle) {
 @property (nonatomic, readonly) NSString *title;
 @property (nonatomic, readonly) UIAlertActionStyle style;
 @property (nonatomic, getter=isEnabled) BOOL enabled;
-
 @end

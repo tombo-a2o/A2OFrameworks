@@ -29,11 +29,20 @@
 
 #import <UIKit/UIViewController.h>
 
+typedef NS_ENUM(NSInteger, UISplitViewControllerDisplayMode)
+{
+    UISplitViewControllerDisplayModeAutomatic,
+    UISplitViewControllerDisplayModePrimaryHidden,
+    UISplitViewControllerDisplayModeAllVisible,
+    UISplitViewControllerDisplayModePrimaryOverlay,
+};
+
 @protocol UISplitViewControllerDelegate;
 
 @interface UISplitViewController : UIViewController
 @property (nonatomic, assign) id <UISplitViewControllerDelegate> delegate;
 @property (nonatomic, copy) NSArray *viewControllers;
+@property (nonatomic) UISplitViewControllerDisplayMode preferredDisplayMode;
 @end
 
 @class UIPopoverController;

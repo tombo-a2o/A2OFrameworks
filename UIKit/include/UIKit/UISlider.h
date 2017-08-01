@@ -57,4 +57,5 @@
 @property (nonatomic, readonly) UIImage *currentMaximumTrackImage;
 @property (nonatomic, strong) UIColor *thumbTintColor;
 @property (nonatomic, readonly) UIImage *currentThumbImage;
+@property(nonatomic, getter=isContinuous) BOOL continuous;
 @end

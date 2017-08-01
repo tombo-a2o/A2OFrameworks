@@ -29,6 +29,7 @@
 
 #import <UIKit/UIFont.h>
 #import <CoreGraphics/CGFont.h>
+#import <UIKit/UIFontDescriptor.h>
 
 NSString *const UIFontTextStyleTitle1 = @"title1";
 NSString *const UIFontTextStyleTitle2 = @"title2";
@@ -95,7 +96,7 @@ NSString *const UIFontTextStyleCallout = @"callout";
     } else {
         fontName = [coder decodeObjectForKey:@"NSName"];
     }
-    
+
     return [self initWithName:fontName size:size];
 }
 
@@ -164,4 +165,11 @@ NSString *const UIFontTextStyleCallout = @"callout";
 {
     return [NSString stringWithFormat:@"<%@: %p; name = %@; pointSize = %f>", [self class], self, CGFontCopyFullName(_cgFont), _pointSize];
 }
+
++ (UIFont *)fontWithDescriptor:(UIFontDescriptor *)descriptor size:(CGFloat)pointSize
+{
+    NSLog(@"*** %s is not implemented", __FUNCTION__);
+    return nil;
+}
+
 @end

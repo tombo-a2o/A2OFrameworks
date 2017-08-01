@@ -107,6 +107,7 @@
 #import <UIKit/UIPickerView.h>
 #import <UIKit/UIPanGestureRecognizer.h>
 #import <UIKit/UIPinchGestureRecognizer.h>
+#import <UIKit/UIPopoverPresentationController.h>
 #import <UIKit/UIRotationGestureRecognizer.h>
 #import <UIKit/UISwipeGestureRecognizer.h>
 #import <UIKit/UIDatePicker.h>
@@ -124,9 +125,15 @@
 #import <UIKit/UIUserNotificationSettings.h>
 #import <UIKit/UIActivity.h>
 #import <UIKit/UIStoryboardSegue.h>
+#import <UIKit/UIStackView.h>
+#import <UIKit/UIStepper.h>
 
 // non-standard imports
 #import <UIKit/UIScrollWheelGestureRecognizer.h>
 
 #import <UIKit/NSParagraphStyle.h>
 #import <UIKit/NSAttributedString.h>
+#import <UIKit/NSLayoutConstraint.h>
+#import <UIKit/NSTextAttachment.h>
+#import <UIKit/NSLayoutAnchor.h>
+#import <UIKit/NSLayoutDimension.h>

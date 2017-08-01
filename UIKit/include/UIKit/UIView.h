@@ -99,7 +99,7 @@ typedef NS_OPTIONS(NSUInteger, UIViewAnimationOptions) {
     UIViewAnimationOptionTransitionFlipFromBottom  = 7 << 20,
 };
 
-@class UIColor, CALayer, UIViewController, UIGestureRecognizer;
+@class UIColor, CALayer, UIViewController, UIGestureRecognizer, NSLayoutDimension;
 
 @interface UIView : UIResponder <UIAppearanceContainer, UIAppearance>
 + (Class)layerClass;
@@ -139,6 +139,11 @@ typedef NS_OPTIONS(NSUInteger, UIViewAnimationOptions) {
 - (void)willMoveToSuperview:(UIView *)newSuperview;
 - (void)willMoveToWindow:(UIWindow *)newWindow;
 - (void)willRemoveSubview:(UIView *)subview;
+
+- (BOOL)needsUpdateConstraints;
+- (void)setNeedsUpdateConstraints;
+- (void)updateConstraints;
+- (void)updateConstraintsIfNeeded;
 
 + (void)animateWithDuration:(NSTimeInterval)duration delay:(NSTimeInterval)delay options:(UIViewAnimationOptions)options animations:(void (^)(void))animations completion:(void (^)(BOOL finished))completion;
 + (void)animateWithDuration:(NSTimeInterval)duration animations:(void (^)(void))animations completion:(void (^)(BOOL finished))completion;
@@ -187,4 +192,6 @@ typedef NS_OPTIONS(NSUInteger, UIViewAnimationOptions) {
 @property (nonatomic, getter=isMultipleTouchEnabled) BOOL multipleTouchEnabled;	// state is maintained, but it has no effect
 @property (nonatomic, getter=isExclusiveTouch) BOOL exclusiveTouch; // state is maintained, but it has no effect
 @property (nonatomic, copy) NSArray *gestureRecognizers;
+@property (nonatomic, readonly, strong) NSLayoutDimension *widthAnchor;
+@property (nonatomic, readonly, strong) NSLayoutDimension *heightAnchor;
 @end

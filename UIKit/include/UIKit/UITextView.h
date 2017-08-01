@@ -36,7 +36,7 @@ extern NSString *const UITextViewTextDidBeginEditingNotification;
 extern NSString *const UITextViewTextDidChangeNotification;
 extern NSString *const UITextViewTextDidEndEditingNotification;
 
-@class UIColor, UIFont, UITextView;
+@class UIColor, UIFont, UITextView, NSAttributedString;
 
 @protocol UITextViewDelegate <NSObject, UIScrollViewDelegate>
 @optional
@@ -63,4 +63,5 @@ extern NSString *const UITextViewTextDidEndEditingNotification;
 @property (nonatomic, assign) id<UITextViewDelegate> delegate;
 @property (readwrite, strong) UIView *inputAccessoryView;
 @property (readwrite, strong) UIView *inputView;
+@property (copy) NSAttributedString *attributedText;
 @end

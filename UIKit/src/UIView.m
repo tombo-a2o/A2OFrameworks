@@ -83,7 +83,7 @@ static BOOL _animationsEnabled = YES;
     _userInteractionEnabled = YES;
     _subviews = [[NSMutableSet alloc] init];
     _gestureRecognizers = [[NSMutableSet alloc] init];
-    
+
     _layer = [[[[self class] layerClass] alloc] init];
     _layer.delegate = self;
     _layer.layoutManager = [UIViewLayoutManager layoutManager];
@@ -100,7 +100,7 @@ static BOOL _animationsEnabled = YES;
         DEBUGLOG(@"UIView initWithFrame %x %@ %@", self, NSStringFromCGRect(theFrame), [self class]);
 
         [self _commonInit];
-        
+
         self.frame = theFrame;
 
         [self setNeedsDisplay];
@@ -1207,13 +1207,34 @@ static BOOL _animationsEnabled = YES;
             }
         }
     }];
-    
+
     printf("%s\n", [[self description] UTF8String]);
-    
+
     [self.subviews enumerateObjectsUsingBlock:^(id view, NSUInteger idx, BOOL *stop){
         BOOL isLast = idx == ([self.subviews count] - 1);
         [view dumpViewTreeWithLevel:[levels arrayByAddingObject: [NSNumber numberWithBool:isLast]]];
     }];
+}
+
+- (BOOL)needsUpdateConstraints
+{
+    NSLog(@"*** %s is not implemented", __FUNCTION__);
+    return nil;
+}
+
+- (void)setNeedsUpdateConstraints;
+{
+    NSLog(@"*** %s is not implemented", __FUNCTION__);
+}
+
+- (void)updateConstraints;
+{
+    NSLog(@"*** %s is not implemented", __FUNCTION__);
+}
+
+- (void)updateConstraintsIfNeeded;
+{
+    NSLog(@"*** %s is not implemented", __FUNCTION__);
 }
 
 @end

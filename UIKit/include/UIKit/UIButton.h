@@ -63,6 +63,8 @@ typedef NS_ENUM(NSInteger, UIButtonType) {
 - (CGRect)titleRectForContentRect:(CGRect)contentRect;
 - (CGRect)imageRectForContentRect:(CGRect)contentRect;
 
+- (void)setAttributedTitle:(NSAttributedString *)title forState:(UIControlState)state;
+
 @property (nonatomic, readonly) UIButtonType buttonType;
 @property (nonatomic,readonly,strong) UILabel *titleLabel;
 @property (nonatomic,readonly,strong) UIImageView *imageView;

@@ -76,7 +76,7 @@ static NSString *UIButtonContentTypeImage = @"UIButtonContentTypeImage";
         case UIButtonTypeInfoDark:
         case UIButtonTypeContactAdd:
             return [[UIRoundedRectButton alloc] init];
-            
+
         case UIButtonTypeCustom:
         default:
             return [[self alloc] init];
@@ -94,7 +94,7 @@ static NSString *UIButtonContentTypeImage = @"UIButtonContentTypeImage";
         _adjustsImageWhenHighlighted = YES;
         _adjustsImageWhenDisabled = YES;
         _showsTouchWhenHighlighted = NO;
-        
+
         self.opaque = NO;
         _titleLabel.lineBreakMode = UILineBreakModeMiddleTruncation;
         _titleLabel.backgroundColor = [UIColor clearColor];
@@ -118,7 +118,7 @@ static NSString *UIButtonContentTypeImage = @"UIButtonContentTypeImage";
         _adjustsImageWhenHighlighted = [coder decodeBoolForKey:@"UIAdjustsImageWhenHighlighted"];
         _adjustsImageWhenDisabled = [coder decodeBoolForKey:@"UIAdjustsImageWhenDisabled"];
         _showsTouchWhenHighlighted = NO;
-    
+
         _titleLabel.lineBreakMode = UILineBreakModeMiddleTruncation;
         _titleLabel.backgroundColor = [UIColor clearColor];
         _titleLabel.textAlignment = UITextAlignmentLeft;
@@ -126,12 +126,12 @@ static NSString *UIButtonContentTypeImage = @"UIButtonContentTypeImage";
         [self addSubview:_backgroundImageView];
         [self addSubview:_imageView];
         [self addSubview:_titleLabel];
-        
+
         NSDictionary *dict = [coder decodeObjectForKey:@"UIButtonStatefulContent"];
         for (NSNumber *key in [dict keyEnumerator]) {
             UIControlState state = [key intValue];
             UIButtonContent *content = [dict valueForKey:key];
-            
+
             [self setImage:content.image forState:state];
             [self setBackgroundImage:content.backgroundImage forState:state];
             [self setTitleShadowColor:content.shadowColor forState:state];
@@ -191,10 +191,10 @@ static NSString *UIButtonContentTypeImage = @"UIButtonContentTypeImage";
     _titleLabel.text = [self titleForState:state];
     _titleLabel.textColor = [self titleColorForState:state] ?: [self _defaultTitleColor];
     _titleLabel.shadowColor = [self titleShadowColorForState:state] ?: [self _defaultTitleShadowColor];
-    
+
     UIImage *image = [self _contentForState:state type:UIButtonContentTypeImage];
     UIImage *backgroundImage = [self _contentForState:state type:UIButtonContentTypeBackgroundImage];
-    
+
     if (!image) {
         image = [self imageForState:state];	// find the correct default image to show
         if (_adjustsImageWhenDisabled && state & UIControlStateDisabled) {
@@ -207,7 +207,7 @@ static NSString *UIButtonContentTypeImage = @"UIButtonContentTypeImage";
     } else {
         [_imageView _setDrawMode:_UIImageViewDrawModeNormal];
     }
-    
+
     if (!backgroundImage) {
         backgroundImage = [self backgroundImageForState:state];
         if (_adjustsImageWhenDisabled && state & UIControlStateDisabled) {
@@ -220,29 +220,29 @@ static NSString *UIButtonContentTypeImage = @"UIButtonContentTypeImage";
     } else {
         [_backgroundImageView _setDrawMode:_UIImageViewDrawModeNormal];
     }
-    
+
     _imageView.image = image;
     _backgroundImageView.image = backgroundImage;
-    
+
     [self setNeedsLayout];
 }
 
 - (void)_setContent:(id)value forState:(UIControlState)state type:(NSString *)type
 {
     NSMutableDictionary *typeContent = [_content objectForKey:type];
-    
+
     if (!typeContent) {
         typeContent = [[NSMutableDictionary alloc] init];
         [_content setObject:typeContent forKey:type];
     }
-    
+
     NSNumber *key = [NSNumber numberWithInt:state];
     if (value) {
         [typeContent setObject:value forKey:key];
     } else {
         [typeContent removeObjectForKey:key];
     }
-    
+
     [self _updateContent];
 }
 
@@ -331,7 +331,7 @@ static NSString *UIButtonContentTypeImage = @"UIButtonContentTypeImage";
 
     rect.origin = contentRect.origin;
     rect.size = size;
-    
+
     // clamp the right edge of the rect to the contentRect - this is what the real UIButton appears to do.
     if (CGRectGetMaxX(rect) > CGRectGetMaxX(contentRect)) {
         rect.size.width -= CGRectGetMaxX(rect) - CGRectGetMaxX(contentRect);
@@ -339,43 +339,43 @@ static NSString *UIButtonContentTypeImage = @"UIButtonContentTypeImage";
     if (CGRectGetMaxY(rect) > CGRectGetMaxY(contentRect)) {
         rect.size.height -= CGRectGetMaxY(rect) - CGRectGetMaxY(contentRect);
     }
-    
+
     switch (self.contentHorizontalAlignment) {
         case UIControlContentHorizontalAlignmentCenter:
             rect.origin.x += floorf((contentRect.size.width/2.f) - (rect.size.width/2.f));
             break;
-            
+
         case UIControlContentHorizontalAlignmentRight:
             rect.origin.x += contentRect.size.width - rect.size.width;
             break;
-            
+
         case UIControlContentHorizontalAlignmentFill:
             rect.size.width = contentRect.size.width;
             break;
-            
+
         case UIControlContentHorizontalAlignmentLeft:
             // don't do anything - it's already left aligned
             break;
     }
-    
+
     switch (self.contentVerticalAlignment) {
         case UIControlContentVerticalAlignmentCenter:
             rect.origin.y += floorf((contentRect.size.height/2.f) - (rect.size.height/2.f));
             break;
-            
+
         case UIControlContentVerticalAlignmentBottom:
             rect.origin.y += contentRect.size.height - rect.size.height;
             break;
-            
+
         case UIControlContentVerticalAlignmentFill:
             rect.size.height = contentRect.size.height;
             break;
-            
+
         case UIControlContentVerticalAlignmentTop:
             // don't do anything - it's already top aligned
             break;
     }
-    
+
     return rect;
 }
 
@@ -383,47 +383,47 @@ static NSString *UIButtonContentTypeImage = @"UIButtonContentTypeImage";
 - (CGRect)titleRectForContentRect:(CGRect)contentRect
 {
     const UIControlState state = self.state;
-    
+
     CGSize titleSize = [self _titleSizeForState:state];
     CGSize imageSize = [self _imageSizeForState:state];
-    
+
     CGSize totalSize;
     totalSize.width = imageSize.width + titleSize.width;
     totalSize.height = titleSize.height > imageSize.height ? titleSize.height : imageSize.height;
-    
+
     CGRect rect = [self _componentRectForSize:totalSize inContentRect:contentRect withState:state];
-    
+
     rect.origin.x += imageSize.width;
-    
+
     return rect;
 }
 
 - (CGRect)imageRectForContentRect:(CGRect)contentRect
 {
     const UIControlState state = self.state;
-    
+
     CGSize titleSize = [self _titleSizeForState:state];
     CGSize imageSize = [self _imageSizeForState:state];
-    
+
     CGSize totalSize = imageSize;
     totalSize.width += titleSize.width;
-    
+
     CGRect rect = [self _componentRectForSize:totalSize inContentRect:contentRect withState:state];
-    
+
     if(rect.size.width > imageSize.width) {
         rect.size.width = imageSize.width;
     }
     if(rect.size.height > imageSize.height) {
         rect.size.height = imageSize.height;
     }
-    
+
     return rect;
 }
 
 - (void)layoutSubviews
 {
     [super layoutSubviews];
-    
+
     const CGRect bounds = self.bounds;
     const CGRect contentRect = [self contentRectForBounds:bounds];
 
@@ -441,21 +441,21 @@ static NSString *UIButtonContentTypeImage = @"UIButtonContentTypeImage";
 - (CGSize)sizeThatFits:(CGSize)size
 {
     const UIControlState state = self.state;
-    
+
     const CGSize imageSize = [self _imageSizeForState:state];
     const CGSize titleSize = [self _titleSizeForState:state];
-    
+
     CGSize fitSize;
     fitSize.width = _contentEdgeInsets.left + _contentEdgeInsets.right + titleSize.width + imageSize.width;
     fitSize.height = _contentEdgeInsets.top + _contentEdgeInsets.bottom + MAX(titleSize.height,imageSize.height);
-    
+
     UIImage* background = [self currentBackgroundImage];
     if(background) {
         CGSize backgroundSize = background.size;
         fitSize.width = MAX(fitSize.width, backgroundSize.width);
         fitSize.height = MAX(fitSize.height, backgroundSize.height);
     }
-    
+
     return fitSize;
 }
 
@@ -467,4 +467,8 @@ static NSString *UIButtonContentTypeImage = @"UIButtonContentTypeImage";
     // decent way to avoid the problem in general and define a kind of "standard" behavior in this case.
 }
 
+- (void)setAttributedTitle:(NSAttributedString *)title forState:(UIControlState)state
+{
+    NSLog(@"*** %s is not implemented", __FUNCTION__);
+}
 @end

@@ -35,7 +35,7 @@
 
 #import <UIKit/UIView.h>
 
-@protocol UIPickerViewDataSource, UIPickerViewDelegate;
+@protocol UIPickerViewDataSource, UIPickerViewDelegate, UIPickerViewAccessibilityDelegate;
 
 @interface UIPickerView : UIView
 - (NSInteger) numberOfRowsInComponent: (NSInteger) component; // stub
@@ -73,4 +73,7 @@
 
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component;
 
+@end
+
+@protocol UIPickerViewAccessibilityDelegate
 @end

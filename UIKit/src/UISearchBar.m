@@ -63,4 +63,8 @@
     _searchField.text = text;
 }
 
+- (void)setImage:(UIImage *)iconImage forSearchBarIcon:(UISearchBarIcon)icon state:(UIControlState)state
+{
+    NSLog(@"*** %s is not implemented", __FUNCTION__);
+}
 @end

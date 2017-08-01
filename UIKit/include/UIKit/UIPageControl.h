@@ -33,4 +33,6 @@
 @interface UIPageControl : UIControl
 @property (nonatomic) NSInteger currentPage;
 @property (nonatomic) NSInteger numberOfPages;
+@property(nonatomic, strong) UIColor *pageIndicatorTintColor;
+@property(nonatomic, strong) UIColor *currentPageIndicatorTintColor;
 @end

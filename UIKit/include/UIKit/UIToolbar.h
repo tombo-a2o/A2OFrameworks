@@ -30,10 +30,17 @@
 #import <UIKit/UIView.h>
 #import <UIKit/UIInterface.h>
 
+typedef NS_ENUM(NSInteger, UIBarPosition) {
+    UIBarPositionAny = 0,
+    UIBarPositionBottom = 1,
+    UIBarPositionTop = 2,
+    UIBarPositionTopAttached = 3,
+};
+
 typedef NS_ENUM(NSInteger, UIToolbarPosition) {
-    UIToolbarPositionAny = 0,
-    UIToolbarPositionBottom = 1,
-    UIToolbarPositionTop = 2,
+    UIToolbarPositionAny = UIBarPositionAny,
+    UIToolbarPositionBottom = UIBarPositionBottom,
+    UIToolbarPositionTop = UIBarPositionTop,
 };
 
 @interface UIToolbar : UIView

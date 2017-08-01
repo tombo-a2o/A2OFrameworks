@@ -34,4 +34,6 @@
 - (void)setOn:(BOOL)on animated:(BOOL)animated;
 
 @property(nonatomic, getter=isOn) BOOL on;
+@property(nonatomic, strong) UIColor *onTintColor;
+@property(nonatomic, strong) UIColor *thumbTintColor;
 @end

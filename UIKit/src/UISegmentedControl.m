@@ -12,6 +12,7 @@
 #import <UIKit/UIStringDrawing.h>
 #import <UIKit/UIGraphics.h>
 #import <UIKit/UIImage.h>
+#import <UIKit/UIInterface.h>
 #import <UIKit/UIFont.h>
 
 static NSString *kSSSegmentedControlEnabledKey = @"enabled";
@@ -404,6 +405,16 @@ static NSString *kSSSegmentedControlEnabledKey = @"enabled";
 - (NSDictionary *)titleTextAttributesForState:(UIControlState)state
 {
     return nil;
+}
+
+- (void)setBackgroundImage:(UIImage *)backgroundImage forState:(UIControlState)state barMetrics:(UIBarMetrics)barMetrics
+{
+    NSLog(@"*** %s is not implemented", __FUNCTION__);
+}
+
+- (void)setDividerImage:(UIImage *)dividerImage forLeftSegmentState:(UIControlState)leftState rightSegmentState:(UIControlState)rightState barMetrics:(UIBarMetrics)barMetrics
+{
+    NSLog(@"*** %s is not implemented", __FUNCTION__);
 }
 
 @end

@@ -54,7 +54,7 @@ typedef NS_ENUM(NSInteger, UIModalTransitionStyle) {
     UIModalTransitionStylePartialCurl,
 };
 
-@class UINavigationItem, UINavigationController, UIBarButtonItem, UISplitViewController;
+@class UINavigationItem, UINavigationController, UIBarButtonItem, UISplitViewController, UIPopoverPresentationController;
 
 @interface UIViewController : UIResponder
 - (id)initWithNibName:(NSString *)nibName bundle:(NSBundle *)nibBundle;	// won't load a nib no matter what you do!
@@ -144,4 +144,5 @@ typedef NS_ENUM(NSInteger, UIModalTransitionStyle) {
 @property (nonatomic, retain) UITabBarItem *tabBarItem;
 
 @property(nonatomic, readonly, retain) UIStoryboard *storyboard;
+@property(nonatomic, readonly) UIPopoverPresentationController *popoverPresentationController;
 @end
