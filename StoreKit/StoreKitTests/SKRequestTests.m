@@ -28,6 +28,8 @@
             XCTFail(@"Timeout: %@", error);
             return;
         }
+        
+        XCTAssertNotNil(_response);
 
         NSArray <SKProduct *> *products = _response.products;
 
