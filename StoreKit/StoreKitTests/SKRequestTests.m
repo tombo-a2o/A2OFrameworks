@@ -1,5 +1,4 @@
 #import <XCTest/XCTest.h>
-#import "Nocilla.h"
 #import "StoreKit.h"
 
 @interface SKProductsRequestTests : XCTestCase <SKProductsRequestDelegate> {
@@ -15,46 +14,10 @@
 
 @implementation SKProductsRequestTests
 
-- (void)setUp
-{
-    [super setUp];
-    [[LSNocilla sharedInstance] start];
-}
-
-- (void)tearDown
-{
-    [[LSNocilla sharedInstance] stop];
-    [super tearDown];
-}
-
 - (void)testStart {
     NSSet *set = [NSSet setWithObjects:@"productIdentifier1", @"productIdentifier2", nil];
     SKProductsRequest *productsRequest = [[SKProductsRequest alloc] initWithProductIdentifiers:set];
     productsRequest.delegate = self;
-
-    stubRequest(@"GET", [NSString stringWithFormat:@"%@?product_identifier=productIdentifier1%%2CproductIdentifier2", @"https://api.tombo.io/products"]).
-    andReturn(200).
-    withHeaders(@{@"Content-Type": @"application/json"}).
-    withBody([NSJSONSerialization dataWithJSONObject:@{
-        @"data": @{
-            @"products": @[
-                @{
-                    @"productIdentifier": @"productIdentifier1",
-                    @"localizedTitle": @"product 1",
-                    @"localizedDescription": @"description of product 1",
-                    @"price": @"101",
-                    @"priceLocale": @"ja_JP"
-                },
-                @{
-                    @"productIdentifier": @"productIdentifier2",
-                    @"localizedTitle": @"product 2",
-                    @"localizedDescription": @"description of product 2",
-                    @"price": @"102",
-                    @"priceLocale": @"en_US"
-                }
-            ]
-        }
-    } options:NSJSONWritingPrettyPrinted error:nil]);
 
     _expectationDidFinish = [self expectationWithDescription:@"SKProductRequestDelegate requestDidFinish"];
 

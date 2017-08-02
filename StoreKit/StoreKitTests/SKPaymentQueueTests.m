@@ -1,5 +1,4 @@
 #import <XCTest/XCTest.h>
-#import "Nocilla.h"
 #import "StoreKit.h"
 
 @interface SKPaymentQueueTests : XCTestCase <SKPaymentTransactionObserver>
@@ -9,18 +8,6 @@
 @implementation SKPaymentQueueTests {
     XCTestExpectation *_expectation;
     NSArray<SKPaymentTransaction *> *_transactions;
-}
-
-- (void)setUp
-{
-    [super setUp];
-    [[LSNocilla sharedInstance] start];
-}
-
-- (void)tearDown
-{
-    [[LSNocilla sharedInstance] stop];
-    [super tearDown];
 }
 
 - (void)testCanMakePayments {
@@ -54,27 +41,6 @@
 
     SKProduct *product = [[SKProduct alloc] initWithProductIdentifier:@"product1" localizedTitle:@"title" localizedDescription:@"desc" price:[[NSDecimalNumber alloc] initWithInt:101] priceLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"ja_JP"]];
     SKPayment *payment = [SKPayment paymentWithProduct:product];
-
-    stubRequest(@"POST", @"https://api.tombo.io/payments").
-    withBody(@"{\"payments\":[{\"requestData\":null,\"applicationUsername\":null,\"productIdentifier\":\"product1\",\"quantity\":1}]}").
-    andReturn(200).
-    withHeaders(@{@"Content-Type": @"application/json"}).
-    withBody([NSJSONSerialization dataWithJSONObject:
-        @{
-            @"data": @{
-                @"transactions": @[
-                    @{
-                        @"transactionIdentifier": @"transactionIdentifier1",
-                        @"transactionDate": @"1980-03-17T05:58:17+09:00",
-                    },
-                    @{
-                        @"transactionIdentifier": @"transactionIdentifier2",
-                        @"transactionDate": @"2014-07-01T01:23:45-08:00",
-                    },
-                ]
-            }
-        }
-        options:NSJSONWritingPrettyPrinted error:nil]);
 
     _expectation = [self expectationWithDescription:@"SKPaymentTransactionObserver"];
 
