@@ -57,11 +57,6 @@ NSString * const TomboKitTomboProductsURL = @"https://api.tombo.io/products";
             NSLog(@"Error(%@): %@", NSStringFromClass([self class]), error);
             failure(error);
         } else {
-            NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-            NSLocale *posixLocale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
-            [dateFormatter setLocale:posixLocale];
-            [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ssZZZZZ"];
-
             NSDictionary *data = [responseObject objectForKey:@"data"];
             success(data);
         }

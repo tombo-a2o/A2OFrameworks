@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0819BCE0ADD33B7E6B604BDB /* libPods-TomboKitTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F072A3F5F87F3CE5888317D /* libPods-TomboKitTests.a */; };
 		4D4C63C11F2F428E003A8FB3 /* TomboKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D4C63B71F2F428E003A8FB3 /* TomboKit.framework */; };
 		4D4C63D61F2F42BA003A8FB3 /* TomboKitAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D4C63D21F2F42BA003A8FB3 /* TomboKitAPI.m */; };
 		4D4C63DC1F2F42C5003A8FB3 /* TomboKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D4C63DA1F2F42C5003A8FB3 /* TomboKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -49,6 +50,9 @@
 		4D4C63DA1F2F42C5003A8FB3 /* TomboKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TomboKit.h; sourceTree = "<group>"; };
 		4D4C63DB1F2F42C5003A8FB3 /* TomboKitAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TomboKitAPI.h; sourceTree = "<group>"; };
 		4D4C65131F2F66C6003A8FB3 /* TomboAFNetworking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TomboAFNetworking.xcodeproj; path = ../TomboAFNetworking/TomboAFNetworking.xcodeproj; sourceTree = "<group>"; };
+		6F072A3F5F87F3CE5888317D /* libPods-TomboKitTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-TomboKitTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		8B1CEF6AE6AA29DE159CB381 /* Pods-TomboKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TomboKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-TomboKitTests/Pods-TomboKitTests.release.xcconfig"; sourceTree = "<group>"; };
+		DD62BB61189D9D3335BFCB68 /* Pods-TomboKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TomboKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-TomboKitTests/Pods-TomboKitTests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,6 +69,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4D4C63C11F2F428E003A8FB3 /* TomboKit.framework in Frameworks */,
+				0819BCE0ADD33B7E6B604BDB /* libPods-TomboKitTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -79,6 +84,7 @@
 				4D4C63D31F2F42BA003A8FB3 /* TomboKitTests */,
 				4D4C63B81F2F428E003A8FB3 /* Products */,
 				4D4C63E01F2F43CE003A8FB3 /* Frameworks */,
+				F9E99D8574E0F494DFF2DAE7 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -123,6 +129,7 @@
 			isa = PBXGroup;
 			children = (
 				4D4C65131F2F66C6003A8FB3 /* TomboAFNetworking.xcodeproj */,
+				6F072A3F5F87F3CE5888317D /* libPods-TomboKitTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -133,6 +140,15 @@
 				4D4C65181F2F66C6003A8FB3 /* TomboAFNetworking.framework */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		F9E99D8574E0F494DFF2DAE7 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				DD62BB61189D9D3335BFCB68 /* Pods-TomboKitTests.debug.xcconfig */,
+				8B1CEF6AE6AA29DE159CB381 /* Pods-TomboKitTests.release.xcconfig */,
+			);
+			name = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -173,9 +189,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 4D4C63CE1F2F428E003A8FB3 /* Build configuration list for PBXNativeTarget "TomboKitTests" */;
 			buildPhases = (
+				1D6BA3166EDE94587836A6A0 /* [CP] Check Pods Manifest.lock */,
 				4D4C63BC1F2F428E003A8FB3 /* Sources */,
 				4D4C63BD1F2F428E003A8FB3 /* Frameworks */,
 				4D4C63BE1F2F428E003A8FB3 /* Resources */,
+				23E6BA21484988E2130725D7 /* [CP] Embed Pods Frameworks */,
+				C731B2B1D9F1699DBA74D288 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -256,6 +275,54 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		1D6BA3166EDE94587836A6A0 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		23E6BA21484988E2130725D7 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-TomboKitTests/Pods-TomboKitTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		C731B2B1D9F1699DBA74D288 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-TomboKitTests/Pods-TomboKitTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		4D4C63B21F2F428E003A8FB3 /* Sources */ = {
@@ -425,6 +492,7 @@
 		};
 		4D4C63CF1F2F428E003A8FB3 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = DD62BB61189D9D3335BFCB68 /* Pods-TomboKitTests.debug.xcconfig */;
 			buildSettings = {
 				INFOPLIST_FILE = TomboKitTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -435,6 +503,7 @@
 		};
 		4D4C63D01F2F428E003A8FB3 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8B1CEF6AE6AA29DE159CB381 /* Pods-TomboKitTests.release.xcconfig */;
 			buildSettings = {
 				INFOPLIST_FILE = TomboKitTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";

@@ -2,13 +2,12 @@
 #import "Nocilla.h"
 #import "TomboKit.h"
 
-@interface TomboKitPaymentQueueTests : XCTestCase <TomboKitPaymentTransactionObserver>
+@interface TomboKitPaymentQueueTests : XCTestCase
 
 @end
 
 @implementation TomboKitPaymentQueueTests {
     XCTestExpectation *_expectation;
-    NSArray<TomboKitPaymentTransaction *> *_transactions;
 }
 
 - (void)setUp
@@ -23,40 +22,9 @@
     [super tearDown];
 }
 
-- (void)testCanMakePayments {
-    // Now canMakePayments always returns YES
-    XCTAssertTrue([TomboKitPaymentQueue canMakePayments]);
-}
-
-- (void)testDefaultQueue {
-    TomboKitPaymentQueue *queue1 = [TomboKitPaymentQueue defaultQueue];
-    XCTAssertNotNil(queue1);
-    TomboKitPaymentQueue *queue2 = [TomboKitPaymentQueue defaultQueue];
-    XCTAssertEqualObjects(queue1, queue2);
-}
-
-- (void)testAddAndRemoveTransactionObserver {
-    TomboKitPaymentQueue *queue = [TomboKitPaymentQueue defaultQueue];
-
-    TomboKitPaymentQueueTests *observer1 = [[TomboKitPaymentQueueTests alloc] init];
-    TomboKitPaymentQueueTests *observer2 = [[TomboKitPaymentQueueTests alloc] init];
-
-    [queue addTransactionObserver:observer1];
-    [queue addTransactionObserver:observer2];
-
-    [queue removeTransactionObserver:observer1];
-    [queue removeTransactionObserver:observer2];
-}
-
 - (void)testConnectToPaymentAPI {
-    TomboKitPaymentQueue *queue = [TomboKitPaymentQueue defaultQueue];
-    [queue addTransactionObserver:self];
-
-    TomboKitProduct *product = [[TomboKitProduct alloc] initWithProductIdentifier:@"product1" localizedTitle:@"title" localizedDescription:@"desc" price:[[NSDecimalNumber alloc] initWithInt:101] priceLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"ja_JP"]];
-    TomboKitPayment *payment = [TomboKitPayment paymentWithProduct:product];
-
-    stubRequest(@"POST", TomboKitTomboPaymentsURL).
-    withBody(@"{\"payments\":[{\"requestData\":null,\"applicationUsername\":null,\"productIdentifier\":\"product1\",\"quantity\":1}]}").
+    stubRequest(@"POST", @"https://api.tombo.io/payments").
+    withBody(@"{\"payments\":[{\"quantity\":1,\"requestData\":null,\"applicationUsername\":null,\"productIdentifier\":\"product1\"}]}").
     andReturn(200).
     withHeaders(@{@"Content-Type": @"application/json"}).
     withBody([NSJSONSerialization dataWithJSONObject:
@@ -78,54 +46,35 @@
 
     _expectation = [self expectationWithDescription:@"TomboKitPaymentTransactionObserver"];
 
-    [queue connectToPaymentAPI:payment];
+    NSString* identifier = @"product1";
+    int quantity = 1;
+    NSString* applicationUsername = nil;
+    
+    TomboKitAPI *api = [[TomboKitAPI alloc] init];
+    
+    __block NSArray<NSDictionary*>* transactions = nil;
+    __block NSError* apiError = nil;
+    
+    [api postPayments:identifier quantity:quantity requestData:nil applicationUsername:applicationUsername success:^(NSDictionary *data) {
+        transactions = data[@"transactions"];
+        [_expectation fulfill];
+    } failure:^(NSError *error) {
+        apiError = error;
+        [_expectation fulfill];
+    }];
 
     [self waitForExpectationsWithTimeout:5 handler:^(NSError *error) {
         if (error != nil) {
             XCTFail(@"Timeout: %@", error);
             return;
         }
-
-        XCTAssertEqualObjects(_transactions[0].transactionIdentifier, @"transactionIdentifier1");
-        XCTAssertEqual(_transactions[0].transactionDate.timeIntervalSince1970, 322088297);
-        XCTAssertEqualObjects(_transactions[1].transactionIdentifier, @"transactionIdentifier2");
-        XCTAssertEqual(_transactions[1].transactionDate.timeIntervalSince1970, 1404206625);
-
-        for (TomboKitPaymentTransaction *transaction in _transactions) {
-            [queue finishTransaction:transaction];
-        }
+        
+        XCTAssertNil(apiError);
+        XCTAssertEqualObjects(transactions[0][@"transactionIdentifier"], @"transactionIdentifier1");
+        XCTAssertEqualObjects(transactions[0][@"transactionDate"], @"1980-03-17T05:58:17+09:00");
+        XCTAssertEqualObjects(transactions[1][@"transactionIdentifier"], @"transactionIdentifier2");
+        XCTAssertEqualObjects(transactions[1][@"transactionDate"], @"2014-07-01T01:23:45-08:00");
     }];
-}
-
-#pragma mark - TomboKitPaymentTransactionObserver
-
-// Handing Transactions
-- (void)paymentQueue:(TomboKitPaymentQueue *)queue updatedTransactions:(NSArray/*<TomboKitPaymentTransaction *>*/ *)transactions
-{
-    _transactions = [transactions copy];
-    [_expectation fulfill];
-}
-
-- (void)paymentQueue:(TomboKitPaymentQueue *)queue removedTransactions:(NSArray/*<TomboKitPaymentTransaction *>*/ *)transactions
-{
-    [_expectation fulfill];
-}
-
-// Handling Restored Transactions
-- (void)paymentQueue:(TomboKitPaymentQueue *)queue restoreCompletedTransactionsFailedWithError:(NSError *)error
-{
-    [_expectation fulfill];
-}
-
-- (void)paymentQueueRestoreCompletedTransactionsFinished:(TomboKitPaymentQueue *)queue
-{
-    [_expectation fulfill];
-}
-
-// Handling Download Actions
-- (void)paymentQueue:(TomboKitPaymentQueue *)queue updatedDownloads:(NSArray/*<TomboKitDownload *>*/ *)downloads
-{
-    [_expectation fulfill];
 }
 
 @end
