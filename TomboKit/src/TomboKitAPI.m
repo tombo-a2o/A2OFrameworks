@@ -1,12 +1,29 @@
 #import <TomboKit/TomboKit.h>
 #import <TomboAFNetworking/TomboAFNetworking.h>
 
-NSString * const TomboKitTomboPaymentsURL = @"https://api.tombo.io/payments";
-NSString * const TomboKitTomboProductsURL = @"https://api.tombo.io/products";
+extern char* a2oApiServerUrl(void);
 
 @implementation TomboKitAPI {
     // TODO: Split _URLSessionManager
     TomboAFURLSessionManager *_URLSessionManager;
+}
+
++ (NSString*)serverUrl
+{
+    char* server = a2oApiServerUrl();
+    NSString *url = [NSString stringWithUTF8String:server];
+    free(server);
+    return url;
+}
+
+- (NSString*)paymentsURL
+{
+    return [self.class.serverUrl stringByAppendingString:@"/payments"];
+}
+
+- (NSString*)productsURL
+{
+    return [self.class.serverUrl stringByAppendingString:@"/products"];
 }
 
 - (void)postPayments:(NSString *)productIdentifier
@@ -46,7 +63,7 @@ NSString * const TomboKitTomboProductsURL = @"https://api.tombo.io/products";
                                                     @"applicationUsername": appUsername
                                                     }]};
     NSError *serializerError = nil;
-    NSMutableURLRequest *request = [[TomboAFJSONRequestSerializer serializer] requestWithMethod:@"POST" URLString:TomboKitTomboPaymentsURL parameters:parameters error:&serializerError];
+    NSMutableURLRequest *request = [[TomboAFJSONRequestSerializer serializer] requestWithMethod:@"POST" URLString:self.paymentsURL parameters:parameters error:&serializerError];
     _URLSessionManager.responseSerializer = [TomboAFJSONResponseSerializer serializer];
 
     NSURLSessionDataTask *dataTask = [_URLSessionManager dataTaskWithRequest:request completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
@@ -90,7 +107,7 @@ NSString * const TomboKitTomboProductsURL = @"https://api.tombo.io/products";
 
     NSDictionary *parameters = @{@"product_identifier": [sortedProductIdentifiers componentsJoinedByString: @","]};
     NSError *serializerError = nil;
-    NSMutableURLRequest *request = [[TomboAFHTTPRequestSerializer serializer] requestWithMethod:@"GET" URLString:TomboKitTomboProductsURL parameters:parameters error:&serializerError];
+    NSMutableURLRequest *request = [[TomboAFHTTPRequestSerializer serializer] requestWithMethod:@"GET" URLString:self.productsURL parameters:parameters error:&serializerError];
 
     _URLSessionManager.responseSerializer = [TomboAFJSONResponseSerializer serializer];
 
