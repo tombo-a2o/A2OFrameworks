@@ -2,6 +2,7 @@
 #import <TomboAFNetworking/TomboAFNetworking.h>
 
 extern char* a2oApiServerUrl(void);
+extern char* a2oGetUserJwt(void);
 
 @implementation TomboKitAPI {
     // TODO: Split _URLSessionManager
@@ -14,6 +15,14 @@ extern char* a2oApiServerUrl(void);
     NSString *url = [NSString stringWithUTF8String:server];
     free(server);
     return url;
+}
+
+- (NSString*)userJwt
+{
+    char* jwtString = a2oGetUserJwt();
+    NSString *jwt = [NSString stringWithUTF8String:jwtString];
+    free(jwtString);
+    return jwt;
 }
 
 - (NSString*)paymentsURL
@@ -56,12 +65,15 @@ extern char* a2oApiServerUrl(void);
         appUsername = [NSNull null];
     }
 
-    NSDictionary *parameters = @{@"payments": @[@{
-                                                    @"productIdentifier": productIdentifier,
-                                                    @"quantity": [NSNumber numberWithInteger:quantity],
-                                                    @"requestData": [NSNull null],
-                                                    @"applicationUsername": appUsername
-                                                    }]};
+    NSDictionary *parameters = @{
+        @"payments": @[@{
+            @"productIdentifier": productIdentifier,
+            @"quantity": [NSNumber numberWithInteger:quantity],
+            @"requestData": [NSNull null],
+            @"applicationUsername": appUsername
+        }],
+        @"user_jwt": self.userJwt
+    };
     NSError *serializerError = nil;
     NSMutableURLRequest *request = [[TomboAFJSONRequestSerializer serializer] requestWithMethod:@"POST" URLString:self.paymentsURL parameters:parameters error:&serializerError];
     _URLSessionManager.responseSerializer = [TomboAFJSONResponseSerializer serializer];
@@ -105,7 +117,7 @@ extern char* a2oApiServerUrl(void);
 
     NSArray *sortedProductIdentifiers = [productIdentifiers sortedArrayUsingSelector:@selector(compare:)];
 
-    NSDictionary *parameters = @{@"product_identifier": [sortedProductIdentifiers componentsJoinedByString: @","]};
+    NSDictionary *parameters = @{@"product_identifiers": [sortedProductIdentifiers componentsJoinedByString: @","], @"user_jwt": self.userJwt};
     NSError *serializerError = nil;
     NSMutableURLRequest *request = [[TomboAFHTTPRequestSerializer serializer] requestWithMethod:@"GET" URLString:self.productsURL parameters:parameters error:&serializerError];
 
