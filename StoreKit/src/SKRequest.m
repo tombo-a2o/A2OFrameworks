@@ -48,15 +48,16 @@ NSString * const SKReceiptPropertyIsVolumePurchase = @"vpp";
     NSArray *productIdentifiers = [_productIdentifiers allObjects];
     productIdentifiers = [productIdentifiers sortedArrayUsingSelector:@selector(compare:)];
 
-    [_tomboKitAPI getProducts:productIdentifiers success:^(NSDictionary *data) {
-        NSArray *productsArray = [data objectForKey:@"products"];
+    [_tomboKitAPI getProducts:productIdentifiers success:^(NSArray *data) {
         NSMutableArray *products = [[NSMutableArray alloc] init];
-        for (NSDictionary *productDict in productsArray) {
-            NSString *productIdentifier = [productDict objectForKey:@"productIdentifier"];
-            NSString *localizedTitle = [productDict objectForKey:@"localizedTitle"];
-            NSString *localizedDescription = [productDict objectForKey:@"localizedDescription"];
-            NSDecimalNumber *price = [NSDecimalNumber decimalNumberWithString:[productDict objectForKey:@"price"]];
-            NSLocale *priceLocale = [[NSLocale alloc] initWithLocaleIdentifier:[productDict objectForKey:@"priceLocale"]];
+        for (NSDictionary *productDict in data) {
+            NSString *productIdentifier = [productDict objectForKey:@"id"];
+            NSDictionary* attributes = [productDict objectForKey:@"attributes"];
+            NSString *localizedTitle = [attributes objectForKey:@"title"];
+            NSString *localizedDescription = [attributes objectForKey:@"description"];
+            NSNumber *priceObject = [attributes objectForKey:@"price"];
+            NSDecimalNumber *price = [NSDecimalNumber decimalNumberWithDecimal:[priceObject decimalValue]];
+            NSLocale *priceLocale = [[NSLocale alloc] initWithLocaleIdentifier:[attributes objectForKey:@"language"]];
 
             SKProduct *product = [[SKProduct alloc] initWithProductIdentifier:productIdentifier localizedTitle:localizedTitle localizedDescription:localizedDescription price:price priceLocale:priceLocale];
             [products addObject:product];

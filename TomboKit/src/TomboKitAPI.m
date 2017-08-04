@@ -95,7 +95,7 @@ extern char* a2oGetUserJwt(void);
 }
 
 - (void)getProducts:(NSArray *)productIdentifiers
-            success:(void (^)(NSDictionary *))success
+            success:(void (^)(NSArray *))success
             failure:(void (^)(NSError *))failure
 {
     TomboKitDebugLog(@"TomboAPI::getProducts productIdentifiers: %@", productIdentifiers);
@@ -125,12 +125,12 @@ extern char* a2oGetUserJwt(void);
 
     NSURLSessionDataTask *dataTask = [_URLSessionManager dataTaskWithRequest:request completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
         _URLSessionManager = nil;
-        TomboKitDebugLog(@"TomboAPI::getProducts error: %@ response: %@", error, response);
+        TomboKitDebugLog(@"TomboAPI::getProducts error: %@ response: %@, responseObject:%@", error, response, responseObject);
         if (error) {
             NSLog(@"Error(%@): %@", NSStringFromClass([self class]), error);
             failure(error);
         } else {
-            NSDictionary *data = [responseObject objectForKey:@"data"];
+            NSArray *data = [responseObject objectForKey:@"data"];
             success(data);
         }
     }];

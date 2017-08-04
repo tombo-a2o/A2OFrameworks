@@ -10,7 +10,7 @@
              failure:(void (^)(NSError *))failure;
 
 - (void)getProducts:(NSArray *)productIdentifiers
-            success:(void (^)(NSDictionary *))success
+            success:(void (^)(NSArray *))success
             failure:(void (^)(NSError *))failure;
 
 - (void)cancel;

@@ -2,6 +2,22 @@
 #import "Nocilla.h"
 #import "TomboKit.h"
 
+char* a2oApiServerUrl(void)
+{
+    const char jwt[] = "http://api.tombo.io";
+    char *ret = (char*)malloc(sizeof(jwt));
+    strncpy(ret, jwt, sizeof(jwt));
+    return ret;
+}
+
+char* a2oGetUserJwt(void)
+{
+    const char jwt[] = "dummy_jwt";
+    char *ret = (char*)malloc(sizeof(jwt));
+    strncpy(ret, jwt, sizeof(jwt));
+    return ret;
+}
+
 @interface TomboKitProductsRequestTests : XCTestCase {
     XCTestExpectation *_expectationDidFinish;
     NSError *_error;
@@ -32,41 +48,39 @@
     andReturn(200).
     withHeaders(@{@"Content-Type": @"application/json"}).
     withBody([NSJSONSerialization dataWithJSONObject:@{
-        @"data": @{
-            @"products": @[
-                @{
-                    @"productIdentifier": @"productIdentifier1",
-                    @"localizedTitle": @"product 1",
-                    @"localizedDescription": @"description of product 1",
-                    @"price": @"101",
-                    @"priceLocale": @"ja_JP"
-                },
-                @{
-                    @"productIdentifier": @"productIdentifier2",
-                    @"localizedTitle": @"product 2",
-                    @"localizedDescription": @"description of product 2",
-                    @"price": @"102",
-                    @"priceLocale": @"en_US"
-                }
-            ]
-        }
+        @"data": @[
+            @{
+                @"productIdentifier": @"productIdentifier1",
+                @"localizedTitle": @"product 1",
+                @"localizedDescription": @"description of product 1",
+                @"price": @"101",
+                @"priceLocale": @"ja_JP"
+            },
+            @{
+                @"productIdentifier": @"productIdentifier2",
+                @"localizedTitle": @"product 2",
+                @"localizedDescription": @"description of product 2",
+                @"price": @"102",
+                @"priceLocale": @"en_US"
+            }
+        ]
     } options:NSJSONWritingPrettyPrinted error:nil]);
 
     _expectationDidFinish = [self expectationWithDescription:@"TomboKitProductRequestDelegate requestDidFinish"];
 
     TomboKitAPI *api = [[TomboKitAPI alloc] init];
-    
+
     __block NSArray <NSDictionary*> *products = nil;
     __block NSError *apiError = nil;
-    
-    [api getProducts:identifiers success:^(NSDictionary *data) {
-        products = data[@"products"];
+
+    [api getProducts:identifiers success:^(NSArray *data) {
+        products = data;
         [_expectationDidFinish fulfill];
     } failure:^(NSError *error) {
         apiError = error;
         [_expectationDidFinish fulfill];
     }];
-    
+
     [self waitForExpectationsWithTimeout:5 handler:^(NSError *error) {
         if (error != nil) {
             XCTFail(@"Timeout: %@", error);
