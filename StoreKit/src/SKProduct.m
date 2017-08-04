@@ -17,4 +17,9 @@
 //       @property(nonatomic, readonly) NSArray/*<NSNumber *>*/ *downloadContentLengths;
 //       @property(nonatomic, readonly) NSString *downloadContentVersion;
 
+- (NSString*)description
+{
+    return [NSString stringWithFormat:@"<%@ 0x%p> {%@, %@, %@, %@, %@}", NSStringFromClass([self class]), self, _productIdentifier, _localizedTitle, _localizedDescription, _price, _priceLocale];
+}
+
 @end
