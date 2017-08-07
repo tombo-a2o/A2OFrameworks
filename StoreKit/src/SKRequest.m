@@ -51,8 +51,8 @@ NSString * const SKReceiptPropertyIsVolumePurchase = @"vpp";
     [_tomboKitAPI getProducts:productIdentifiers success:^(NSArray *data) {
         NSMutableArray *products = [[NSMutableArray alloc] init];
         for (NSDictionary *productDict in data) {
-            NSString *productIdentifier = [productDict objectForKey:@"id"];
             NSDictionary* attributes = [productDict objectForKey:@"attributes"];
+            NSString *productIdentifier = [attributes objectForKey:@"product_identifier"];
             NSString *localizedTitle = [attributes objectForKey:@"title"];
             NSString *localizedDescription = [attributes objectForKey:@"description"];
             NSNumber *priceObject = [attributes objectForKey:@"price"];

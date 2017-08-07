@@ -1,6 +1,10 @@
 #import <StoreKit/SKProduct.h>
 
-@interface SKPayment : NSObject <NSCopying, NSMutableCopying>
+@interface SKPayment : NSObject <NSCopying, NSMutableCopying> {
+    NSString *_productIdentifier;
+    NSInteger _quantity;
+    NSData *_requestData;
+}
 
 // Creating Instances
 + (instancetype)paymentWithProduct:(SKProduct *)product;

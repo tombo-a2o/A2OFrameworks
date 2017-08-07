@@ -40,12 +40,32 @@
     return payment;
 }
 
+- (NSString*)description
+{
+    return [NSString stringWithFormat:@"<%@ 0x%p> {productIdentifier:%@, quantity:%d}", NSStringFromClass([self class]), self, _productIdentifier, _quantity];
+}
+
 @end
 
 @implementation SKMutablePayment
 
-@synthesize productIdentifier;
-@synthesize quantity;
-@synthesize requestData;
+@dynamic productIdentifier;
+@dynamic quantity;
+@dynamic requestData;
+
+- (void)setProductIdentifier:(NSString*)productIdentifier
+{
+    _productIdentifier = productIdentifier;
+}
+
+- (void)setQuantity:(NSInteger)quantity
+{
+    _quantity = quantity;
+}
+
+- (void)setRequestData:(NSData*)requestData
+{
+    _requestData = requestData;
+}
 
 @end

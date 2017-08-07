@@ -1,6 +1,7 @@
 #import <StoreKit/StoreKit.h>
 #import <UIKit/UIKit.h>
 #import <TomboKit/TomboKit.h>
+#import <objc/runtime.h>
 
 static SKPaymentQueue* _defaultQueue;
 
@@ -47,17 +48,19 @@ static SKPaymentQueue* _defaultQueue;
 {
     SKDebugLog(@"payment: %@", payment);
 
-    [_tomboKitAPI postPayments:payment.productIdentifier quantity:payment.quantity requestData:nil applicationUsername:payment.applicationUsername success:^(NSDictionary *data){
+    [_tomboKitAPI postPayments:payment.productIdentifier quantity:payment.quantity requestData:nil applicationUsername:payment.applicationUsername success:^(NSArray *transactionsArray){
+        SKDebugLog(@"%s %@", __FUNCTION__, transactionsArray);
         NSMutableArray *transactions = [[NSMutableArray alloc] init];
-        NSArray *transactionsArray = [data objectForKey:@"transactions"];
         for (NSDictionary *transactionDict in transactionsArray) {
             NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
             NSLocale *posixLocale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
             [dateFormatter setLocale:posixLocale];
-            [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ssZZZZZ"];
+            [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"];
 
-            NSString *transactionIdentifier = [transactionDict objectForKey:@"transactionIdentifier"];
-            NSDate *transactionDate = [dateFormatter dateFromString:[transactionDict objectForKey:@"transactionDate"]];
+            NSDictionary* attributes = [transactionDict objectForKey:@"attributes"];
+
+            NSString *transactionIdentifier = [transactionDict objectForKey:@"id"];
+            NSDate *transactionDate = [dateFormatter dateFromString:[attributes objectForKey:@"created_at"]];
 
             SKPaymentTransaction *transaction = [[SKPaymentTransaction alloc] initWithTransactionIdentifier:transactionIdentifier payment:payment transactionState:SKPaymentTransactionStatePurchased transactionDate:transactionDate error:nil];
             [transactions addObject:transaction];
@@ -78,6 +81,8 @@ static SKPaymentQueue* _defaultQueue;
     }];
 }
 
+static const char* paymentKey = "paymentKey";
+
 // Adds a payment request to the queue.
 - (void)addPayment:(SKPayment *)payment
 {
@@ -87,15 +92,22 @@ static SKPaymentQueue* _defaultQueue;
 
     NSString *confirmationMessage = [NSString stringWithFormat:@"Do you want to buy %@ %@ for %@", [quantityFormatter stringFromNumber:[NSNumber numberWithLong:payment.quantity]], @"TODO: get title", @"TODO: get price"];
 
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Confirm Your In-App Purchase" message:confirmationMessage preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Confirm Your In-App Purchase"
+                                                    message:confirmationMessage
+                                                   delegate:self
+                                          cancelButtonTitle:@"Cancel"
+                                          otherButtonTitles:@"Buy", nil];
+    objc_setAssociatedObject(alert, paymentKey, payment, OBJC_ASSOCIATION_RETAIN);
+    [alert show];
+}
 
-    [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+-(void)alertView:(UIAlertView*)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    if(buttonIndex == 0) {
         // do nothing
-    }]];
-
-    [alertController addAction:[UIAlertAction actionWithTitle:@"Buy" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+    } else {
+        SKPayment* payment = objc_getAssociatedObject(alertView, paymentKey);
         [self connectToPaymentAPI:payment];
-    }]];
+    }
 }
 
 // Completes a pending transaction.
