@@ -39,7 +39,7 @@ extern char* a2oGetUserJwt(void);
             quantity:(NSInteger)quantity
          requestData:(NSData *)requestData
  applicationUsername:(NSString *)applicationUsername
-             success:(void (^)(NSDictionary *))success
+             success:(void (^)(NSArray *))success
              failure:(void (^)(NSError *))failure
 {
     // TODO: show detailed log
@@ -64,6 +64,7 @@ extern char* a2oGetUserJwt(void);
     if (appUsername == nil) {
         appUsername = [NSNull null];
     }
+    TomboKitDebugLog(@"%@ %d %@ %@", productIdentifier, quantity, requestData, appUsername);
 
     NSDictionary *parameters = @{
         @"payments": @[@{
@@ -86,8 +87,8 @@ extern char* a2oGetUserJwt(void);
             NSLog(@"Error(%@): %@", NSStringFromClass([self class]), error);
             failure(error);
         } else {
-            NSDictionary *data = [responseObject objectForKey:@"data"];
-            success(data);
+            NSArray *payments = [responseObject objectForKey:@"data"];
+            success(payments);
         }
     }];
 

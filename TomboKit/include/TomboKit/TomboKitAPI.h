@@ -6,7 +6,7 @@
             quantity:(NSInteger)quantity
          requestData:(NSData *)requestData
  applicationUsername:(NSString *)applicationUsername
-             success:(void (^)(NSDictionary *))success
+             success:(void (^)(NSArray *))success
              failure:(void (^)(NSError *))failure;
 
 - (void)getProducts:(NSArray *)productIdentifiers
