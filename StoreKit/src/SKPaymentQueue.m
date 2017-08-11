@@ -2,6 +2,7 @@
 #import <UIKit/UIKit.h>
 #import <TomboKit/TomboKit.h>
 #import <objc/runtime.h>
+#import "SKPayment+Internal.h"
 
 static SKPaymentQueue* _defaultQueue;
 
@@ -48,7 +49,11 @@ static SKPaymentQueue* _defaultQueue;
 {
     SKDebugLog(@"payment: %@", payment);
 
-    [_tomboKitAPI postPayments:payment.productIdentifier quantity:payment.quantity requestData:nil applicationUsername:payment.applicationUsername success:^(NSArray *transactionsArray){
+    if(!payment.requestId) {
+        payment.requestId = [NSUUID UUID].UUIDString;
+    }
+
+    [_tomboKitAPI postPayments:payment.productIdentifier quantity:payment.quantity requestData:nil applicationUsername:payment.applicationUsername requestId:payment.requestId success:^(NSArray *transactionsArray){
         SKDebugLog(@"%s %@", __FUNCTION__, transactionsArray);
         NSMutableArray *transactions = [[NSMutableArray alloc] init];
         for (NSDictionary *transactionDict in transactionsArray) {
@@ -71,12 +76,18 @@ static SKPaymentQueue* _defaultQueue;
         }
     } failure:^(NSError *error){
         NSLog(@"Error(%@): %@", NSStringFromClass([self class]), error);
-        NSMutableArray *transactions = [[NSMutableArray alloc] init];
-        // FIXME: generate random transaction id in UUID-like format
-        SKPaymentTransaction *transaction = [[SKPaymentTransaction alloc] initWithTransactionIdentifier:nil payment:payment transactionState:SKPaymentTransactionStateFailed transactionDate:nil error:error];
-        [transactions addObject:transaction];
-        for (id<SKPaymentTransactionObserver> observer in _transactionObservers) {
-            [observer paymentQueue:self updatedTransactions:transactions];
+
+        if([error.domain isEqualToString:TomboKitErrorDomain]) {
+            // API error
+            NSMutableArray *transactions = [[NSMutableArray alloc] init];
+            SKPaymentTransaction *transaction = [[SKPaymentTransaction alloc] initWithTransactionIdentifier:nil payment:payment transactionState:SKPaymentTransactionStateFailed transactionDate:nil error:error];
+            [transactions addObject:transaction];
+            for (id<SKPaymentTransactionObserver> observer in _transactionObservers) {
+                [observer paymentQueue:self updatedTransactions:transactions];
+            }
+        } else {
+            // network error -> retry
+
         }
     }];
 }

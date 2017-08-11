@@ -1,4 +1,5 @@
 #import <StoreKit/SKPayment.h>
+#import "SKPayment+Internal.h"
 
 @implementation SKPayment
 
