@@ -2,22 +2,6 @@
 #import "Nocilla.h"
 #import "TomboKit.h"
 
-char* a2oApiServerUrl(void)
-{
-    const char jwt[] = "http://api.tombo.io";
-    char *ret = (char*)malloc(sizeof(jwt));
-    strncpy(ret, jwt, sizeof(jwt));
-    return ret;
-}
-
-char* a2oGetUserJwt(void)
-{
-    const char jwt[] = "dummy_jwt";
-    char *ret = (char*)malloc(sizeof(jwt));
-    strncpy(ret, jwt, sizeof(jwt));
-    return ret;
-}
-
 @interface TomboKitProductsRequestTests : XCTestCase {
     XCTestExpectation *_expectationDidFinish;
     NSError *_error;
@@ -44,7 +28,7 @@ char* a2oGetUserJwt(void)
 - (void)testStart {
     NSArray* identifiers = @[@"productIdentifier1", @"productIdentifier2"];
 
-    stubRequest(@"GET", [NSString stringWithFormat:@"%@?product_identifier=productIdentifier1%%2CproductIdentifier2", @"https://api.tombo.io/products"]).
+    stubRequest(@"GET", @"https://api.tombo.io/products?product_identifiers=productIdentifier1%2CproductIdentifier2&user_jwt=dummy_jwt").
     andReturn(200).
     withHeaders(@{@"Content-Type": @"application/json"}).
     withBody([NSJSONSerialization dataWithJSONObject:@{

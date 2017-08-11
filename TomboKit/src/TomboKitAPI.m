@@ -1,8 +1,28 @@
 #import <TomboKit/TomboKit.h>
 #import <TomboAFNetworking/TomboAFNetworking.h>
 
+NSString* TomboKitErrorDomain = @"io.tombo.a2o.tombokiterror";
+
 extern char* a2oApiServerUrl(void);
 extern char* a2oGetUserJwt(void);
+
+#if !defined(A2O_EMSCRIPTEN) // for test
+char* a2oApiServerUrl(void)
+{
+    const char jwt[] = "https://api.tombo.io";
+    char *ret = (char*)malloc(sizeof(jwt));
+    strncpy(ret, jwt, sizeof(jwt));
+    return ret;
+}
+
+char* a2oGetUserJwt(void)
+{
+    const char jwt[] = "dummy_jwt";
+    char *ret = (char*)malloc(sizeof(jwt));
+    strncpy(ret, jwt, sizeof(jwt));
+    return ret;
+}
+#endif
 
 @implementation TomboKitAPI {
     // TODO: Split _URLSessionManager
@@ -35,10 +55,12 @@ extern char* a2oGetUserJwt(void);
     return [self.class.serverUrl stringByAppendingString:@"/products"];
 }
 
+// TODO handle multiple payments
 - (void)postPayments:(NSString *)productIdentifier
             quantity:(NSInteger)quantity
          requestData:(NSData *)requestData
  applicationUsername:(NSString *)applicationUsername
+           requestId:(NSString*)requestId
              success:(void (^)(NSArray *))success
              failure:(void (^)(NSError *))failure
 {
@@ -46,7 +68,7 @@ extern char* a2oGetUserJwt(void);
     TomboKitDebugLog(@"TomboAPI::postPayments");
 
     if (_URLSessionManager) {
-        failure([[NSError alloc] initWithDomain:@"TomboKitErrorDomain"
+        failure([[NSError alloc] initWithDomain:TomboKitErrorDomain
                                            code:0
                                        userInfo:@{}
         ]);
@@ -71,7 +93,8 @@ extern char* a2oGetUserJwt(void);
             @"productIdentifier": productIdentifier,
             @"quantity": [NSNumber numberWithInteger:quantity],
             @"requestData": [NSNull null],
-            @"applicationUsername": appUsername
+            @"applicationUsername": appUsername,
+            @"requestId": requestId
         }],
         @"user_jwt": self.userJwt
     };
@@ -80,11 +103,19 @@ extern char* a2oGetUserJwt(void);
     _URLSessionManager.responseSerializer = [TomboAFJSONResponseSerializer serializer];
 
     NSURLSessionDataTask *dataTask = [_URLSessionManager dataTaskWithRequest:request completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
         _URLSessionManager = nil;
 
         TomboKitDebugLog(@"TomboAPI::postPayments error: %@ response: %@", error, response);
         if (error) {
             NSLog(@"Error(%@): %@", NSStringFromClass([self class]), error);
+            NSArray *errors = [responseObject objectForKey:@"errors"];
+            if(errors) {
+                NSString *errorMessage = errors[0];
+                error = [NSError errorWithDomain:TomboKitErrorDomain code:0 userInfo:@{
+                    NSLocalizedDescriptionKey: errorMessage
+                }];
+            }
             failure(error);
         } else {
             NSArray *payments = [responseObject objectForKey:@"data"];
@@ -102,7 +133,7 @@ extern char* a2oGetUserJwt(void);
     TomboKitDebugLog(@"TomboAPI::getProducts productIdentifiers: %@", productIdentifiers);
 
     if (_URLSessionManager) {
-        failure([[NSError alloc] initWithDomain:@"TomboKitErrorDomain"
+        failure([[NSError alloc] initWithDomain:TomboKitErrorDomain
                                            code:0
                                        userInfo:@{}
         ]);

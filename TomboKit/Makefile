@@ -2,7 +2,7 @@ include ../../Foundation/System/Makefile.template
 
 CC				= emcc
 STYLE_CPPFLAGS ?= -DDEBUG -O0 -g
-CPPFLAGS = -v -c -pipe -Wmost -Wno-trigraphs -Wreturn-type -fconstant-cfstrings -fno-exceptions -fblocks -D__IPHONE_OS_VERSION_MIN_REQUIRED=70000 -DDEPLOYMENT_TARGET_EMSCRIPTEN=1 -DTARGET_OS_IOS=1 -I./include -I./ -I./src/AFNetworking-3.0.4/TomboKitAFNetworking
+CPPFLAGS = -v -c -pipe -Wmost -Wno-trigraphs -Wreturn-type -fconstant-cfstrings -fno-exceptions -fblocks -D__IPHONE_OS_VERSION_MIN_REQUIRED=70000 -DDEPLOYMENT_TARGET_EMSCRIPTEN=1 -DTARGET_OS_IOS=1 -I./include -I./
 CFLAGS = -x objective-c
 STYLE_LFLAGS ?= -O0
 LFLAGS =
