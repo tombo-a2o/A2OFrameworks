@@ -1,4 +1,5 @@
-#import <TomboKit/TomboKit.h>
+#import <StoreKit/StoreKit.h>
+#import "TomboKitAPI.h"
 #import <TomboAFNetworking/TomboAFNetworking.h>
 
 NSString* TomboKitErrorDomain = @"io.tombo.a2o.tombokiterror";
@@ -65,7 +66,7 @@ char* a2oGetUserJwt(void)
              failure:(void (^)(NSError *))failure
 {
     // TODO: show detailed log
-    TomboKitDebugLog(@"TomboAPI::postPayments");
+    SKDebugLog(@"TomboAPI::postPayments");
 
     if (_URLSessionManager) {
         failure([[NSError alloc] initWithDomain:TomboKitErrorDomain
@@ -79,14 +80,14 @@ char* a2oGetUserJwt(void)
 #ifdef DEBUG
     _URLSessionManager.securityPolicy.validatesDomainName = NO;
     _URLSessionManager.securityPolicy.allowInvalidCertificates = YES;
-    TomboKitDebugLog(@"ALLOW INVALID CERTIFICATES");
+    SKDebugLog(@"ALLOW INVALID CERTIFICATES");
 #endif
 
     NSObject *appUsername = applicationUsername;
     if (appUsername == nil) {
         appUsername = [NSNull null];
     }
-    TomboKitDebugLog(@"%@ %d %@ %@", productIdentifier, quantity, requestData, appUsername);
+    SKDebugLog(@"%@ %d %@ %@", productIdentifier, quantity, requestData, appUsername);
 
     NSDictionary *parameters = @{
         @"payments": @[@{
@@ -106,7 +107,7 @@ char* a2oGetUserJwt(void)
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
         _URLSessionManager = nil;
 
-        TomboKitDebugLog(@"TomboAPI::postPayments error: %@ response: %@", error, response);
+        SKDebugLog(@"TomboAPI::postPayments error: %@ response: %@", error, response);
         if (error) {
             NSLog(@"Error(%@): %@", NSStringFromClass([self class]), error);
             NSArray *errors = [responseObject objectForKey:@"errors"];
@@ -130,7 +131,7 @@ char* a2oGetUserJwt(void)
             success:(void (^)(NSArray *))success
             failure:(void (^)(NSError *))failure
 {
-    TomboKitDebugLog(@"TomboAPI::getProducts productIdentifiers: %@", productIdentifiers);
+    SKDebugLog(@"TomboAPI::getProducts productIdentifiers: %@", productIdentifiers);
 
     if (_URLSessionManager) {
         failure([[NSError alloc] initWithDomain:TomboKitErrorDomain
@@ -144,7 +145,7 @@ char* a2oGetUserJwt(void)
 #ifdef DEBUG
     _URLSessionManager.securityPolicy.validatesDomainName = NO;
     _URLSessionManager.securityPolicy.allowInvalidCertificates = YES;
-    TomboKitDebugLog(@"ALLOW INVALID CERTIFICATES");
+    SKDebugLog(@"ALLOW INVALID CERTIFICATES");
 #endif
 
     NSArray *sortedProductIdentifiers = [productIdentifiers sortedArrayUsingSelector:@selector(compare:)];
@@ -157,7 +158,7 @@ char* a2oGetUserJwt(void)
 
     NSURLSessionDataTask *dataTask = [_URLSessionManager dataTaskWithRequest:request completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
         _URLSessionManager = nil;
-        TomboKitDebugLog(@"TomboAPI::getProducts error: %@ response: %@, responseObject:%@", error, response, responseObject);
+        SKDebugLog(@"TomboAPI::getProducts error: %@ response: %@, responseObject:%@", error, response, responseObject);
         if (error) {
             NSLog(@"Error(%@): %@", NSStringFromClass([self class]), error);
             failure(error);

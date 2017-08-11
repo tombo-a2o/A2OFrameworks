@@ -1,6 +1,6 @@
 #import <StoreKit/StoreKit.h>
 #import <UIKit/UIKit.h>
-#import <TomboKit/TomboKit.h>
+#import "TomboKitAPI.h"
 #import <objc/runtime.h>
 #import "SKPayment+Internal.h"
 

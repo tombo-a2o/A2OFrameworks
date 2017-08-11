@@ -1,5 +1,5 @@
 #import <StoreKit/StoreKit.h>
-#import <TomboKit/TomboKit.h>
+#import "TomboKitAPI.h"
 
 NSString * const SKReceiptPropertyIsExpired = @"expired";
 NSString * const SKReceiptPropertyIsRevoked = @"revoked";
