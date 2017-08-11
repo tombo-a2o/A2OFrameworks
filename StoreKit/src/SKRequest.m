@@ -1,5 +1,6 @@
 #import <StoreKit/StoreKit.h>
-#import "TomboKitAPI.h"
+#import <tombo_platform.h>
+#import <TomboAFNetworking/TomboAFNetworking.h>
 
 NSString * const SKReceiptPropertyIsExpired = @"expired";
 NSString * const SKReceiptPropertyIsRevoked = @"revoked";
@@ -21,68 +22,116 @@ NSString * const SKReceiptPropertyIsVolumePurchase = @"vpp";
 
 @end
 
+@interface SKProduct (API)
+- (instancetype)initWithResponseJSON:(NSDictionary*)json;
++ (NSArray<SKProduct*>*)productsWithResponseJSON:(NSArray*)json;
+@end
+
+@implementation SKProduct (API)
+- (instancetype)initWithResponseJSON:(NSDictionary*)json
+{
+    NSDictionary* attributes = [json objectForKey:@"attributes"];
+
+    NSString *productIdentifier = [attributes objectForKey:@"product_identifier"];
+    NSString *localizedTitle = [attributes objectForKey:@"title"];
+    NSString *localizedDescription = [attributes objectForKey:@"description"];
+    NSNumber *priceObject = [attributes objectForKey:@"price"];
+    NSDecimalNumber *price = [NSDecimalNumber decimalNumberWithDecimal:[priceObject decimalValue]];
+    NSLocale *priceLocale = [[NSLocale alloc] initWithLocaleIdentifier:[attributes objectForKey:@"language"]];
+
+    return [self initWithProductIdentifier:productIdentifier localizedTitle:localizedTitle localizedDescription:localizedDescription price:price priceLocale:priceLocale];
+}
++ (NSArray<SKProduct*>*)productsWithResponseJSON:(NSArray<NSDictionary*>*)json
+{
+    NSMutableArray *products = [[NSMutableArray alloc] init];
+    for (NSDictionary *productDict in json) {
+        SKProduct *product = [[SKProduct alloc] initWithResponseJSON:productDict];
+        [products addObject:product];
+    }
+    return products;
+}
+@end
+
 @implementation SKProductsRequest {
-    TomboKitAPI *_tomboKitAPI;
     NSSet *_productIdentifiers;
-    SKProductsResponse *_productsResponse;
+    TomboAFURLSessionManager *_URLSessionManager;
 }
 
 @dynamic delegate;
 
 // Initializes the request with the set of product identifiers.
-- (instancetype)initWithProductIdentifiers:(NSSet/*<NSString *>*/ *)productIdentifiers
+- (instancetype)initWithProductIdentifiers:(NSSet<NSString *> *)productIdentifiers
 {
     _productIdentifiers = [productIdentifiers mutableCopy];
-    _tomboKitAPI = [[TomboKitAPI alloc] init];
     return [super init];
 }
 
+- (NSDictionary*)requestJSON
+{
+    NSArray *productIdentifiers = [_productIdentifiers allObjects];
+    NSArray *sortedProductIdentifiers = [productIdentifiers sortedArrayUsingSelector:@selector(compare:)];
+
+    return @{@"product_identifiers": [sortedProductIdentifiers componentsJoinedByString: @","], @"user_jwt": getUserJwtString()};
+}
 
 // Sends the request to the Apple App Store.
 - (void)start
 {
-    SKDebugLog(@"productIdentifiers: %@", _productIdentifiers);
+    SKDebugLog(@"%s productIdentifiers: %@", __FUNCTION__, _productIdentifiers);
 
-    _productsResponse = nil;
+    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    _URLSessionManager = [[TomboAFURLSessionManager alloc] initWithSessionConfiguration:configuration];
+#ifdef DEBUG
+    _URLSessionManager.securityPolicy.validatesDomainName = NO;
+    _URLSessionManager.securityPolicy.allowInvalidCertificates = YES;
+    SKDebugLog(@"ALLOW INVALID CERTIFICATES");
+#endif
 
-    NSArray *productIdentifiers = [_productIdentifiers allObjects];
-    productIdentifiers = [productIdentifiers sortedArrayUsingSelector:@selector(compare:)];
+    NSString *urlString = [getTomboAPIServerUrlString() stringByAppendingString:@"/products"];
+    NSDictionary *parameters = [self requestJSON];
+    NSError *serializerError = nil;
+    NSMutableURLRequest *request = [[TomboAFHTTPRequestSerializer serializer] requestWithMethod:@"GET" URLString:urlString parameters:parameters error:&serializerError];
 
-    [_tomboKitAPI getProducts:productIdentifiers success:^(NSArray *data) {
-        NSMutableArray *products = [[NSMutableArray alloc] init];
-        for (NSDictionary *productDict in data) {
-            NSDictionary* attributes = [productDict objectForKey:@"attributes"];
-            NSString *productIdentifier = [attributes objectForKey:@"product_identifier"];
-            NSString *localizedTitle = [attributes objectForKey:@"title"];
-            NSString *localizedDescription = [attributes objectForKey:@"description"];
-            NSNumber *priceObject = [attributes objectForKey:@"price"];
-            NSDecimalNumber *price = [NSDecimalNumber decimalNumberWithDecimal:[priceObject decimalValue]];
-            NSLocale *priceLocale = [[NSLocale alloc] initWithLocaleIdentifier:[attributes objectForKey:@"language"]];
+    _URLSessionManager.responseSerializer = [TomboAFJSONResponseSerializer serializer];
 
-            SKProduct *product = [[SKProduct alloc] initWithProductIdentifier:productIdentifier localizedTitle:localizedTitle localizedDescription:localizedDescription price:price priceLocale:priceLocale];
-            [products addObject:product];
-        }
-        _productsResponse = [[SKProductsResponse alloc] initWithProducts:products];
+    NSURLSessionDataTask *dataTask = [_URLSessionManager dataTaskWithRequest:request completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
+        _URLSessionManager = nil;
+        SKDebugLog(@"TomboAPI::getProducts error: %@ response: %@, responseObject:%@", error, response, responseObject);
+        if (error) {
+            NSLog(@"Error(%@): %@", NSStringFromClass([self class]), error);
+            if([self.delegate respondsToSelector:@selector(request:didFailWithError:)]) {
+                [self.delegate request:self didFailWithError:error];
+            }
+        } else {
+            NSArray *data = [responseObject objectForKey:@"data"];
 
-        SKDebugLog(@"products: %@", _productsResponse);
+            NSArray<SKProduct*> *products = [SKProduct productsWithResponseJSON:data];
+            NSMutableSet *invalidProductIdentifiers = [_productIdentifiers mutableCopy];
+            for(SKProduct *product in products) {
+                [invalidProductIdentifiers removeObject:product.productIdentifier];
+            }
+            SKProductsResponse *productsResponse = [[SKProductsResponse alloc] initWithProducts:products invalidProductIdentifiers:[invalidProductIdentifiers allObjects]];
 
-        // NOTE: I don't know the sequence of calling these notification methods
-        [self.delegate productsRequest:self didReceiveResponse:_productsResponse];
-        if([self.delegate respondsToSelector:@selector(requestDidFinish:)]) {
-            [self.delegate requestDidFinish:self];
-        }
-    } failure:^(NSError *error) {
-        NSLog(@"Error(%@): %@", NSStringFromClass([self class]), error);
-        if([self.delegate respondsToSelector:@selector(request:didFailWithError:)]) {
-            [self.delegate request:self didFailWithError:error];
+
+
+
+            SKDebugLog(@"products: %@", productsResponse);
+
+            // NOTE: I don't know the sequence of calling these notification methods
+            [self.delegate productsRequest:self didReceiveResponse:productsResponse];
+            if([self.delegate respondsToSelector:@selector(requestDidFinish:)]) {
+                [self.delegate requestDidFinish:self];
+            }
         }
     }];
+
+    [dataTask resume];
 }
 
 // Cancels a previously started request.
 - (void)cancel
 {
-    [_tomboKitAPI cancel];
+    [_URLSessionManager.operationQueue cancelAllOperations];
 }
 
 @end
