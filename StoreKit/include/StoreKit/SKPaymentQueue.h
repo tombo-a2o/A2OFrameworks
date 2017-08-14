@@ -47,6 +47,6 @@
 - (void)resumeDownloads:(NSArray/*<SKDownload *>*/ *)downloads;
 
 // FIXME: move to private (for testing)
-- (void)connectToPaymentAPI:(SKPayment *)payment;
+- (void)connectToPaymentAPI:(SKPaymentTransaction *)transaction;
 
 @end

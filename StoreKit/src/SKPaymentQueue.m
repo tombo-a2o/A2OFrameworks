@@ -1,7 +1,7 @@
 #import <StoreKit/StoreKit.h>
 #import <UIKit/UIKit.h>
 #import <objc/runtime.h>
-#import "SKPayment+Internal.h"
+#import "SKPaymentTransaction+Internal.h"
 #import <tombo_platform.h>
 #import <TomboAFNetworking/TomboAFNetworking.h>
 
@@ -9,60 +9,81 @@ static SKPaymentQueue* _defaultQueue;
 
 NSString * const SKErrorDomain = @"io.tombo.storekit.error";
 
-@interface SKPayment (API)
-+ (NSDictionary*)requestJSON:(NSArray<SKPayment*>*)payments;
-@end
-
 @interface SKPaymentTransaction (API)
-- (instancetype)initWithResponseJSON:(NSDictionary*)json payment:(SKPayment*)payment;
-+ (NSArray<SKPaymentTransaction*>*)transactionsWithJSON:(NSArray<NSDictionary*>*)json payments:(NSArray<SKPayment*>*)payments;
+- (NSDictionary*)requestJSON;
+- (BOOL)updateWithResponseJSON:(NSDictionary*)json;
 @end
 
-@implementation SKPayment (API)
-+ (NSDictionary*)requestJSON:(NSArray<SKPayment*>*)payments
+@implementation SKPaymentTransaction (API)
+
+- (NSDictionary*)requestJSON
 {
-    NSMutableArray *paymentsJson = [[NSMutableArray alloc] init];
-    for(SKPayment* payment in payments) {
-        [paymentsJson addObject:@{
+    SKPayment *payment = self.payment;
+    return @{
+        @"payment": @{
             @"productIdentifier": payment.productIdentifier,
             @"quantity": [NSNumber numberWithInteger:payment.quantity],
             @"requestData": payment.requestData ?: [NSNull null],
             @"applicationUsername": payment.applicationUsername ?: [NSNull null],
-            @"requestId": payment.requestId
-        }];
-    }
-
-    return @{
-        @"payments": paymentsJson,
+            @"requestId": self.requestId
+        },
         @"user_jwt": getUserJwtString()
     };
 }
-@end
 
-@implementation SKPaymentTransaction (API)
-- (instancetype)initWithResponseJSON:(NSDictionary*)json payment:(SKPayment*)payment
+static NSDate* parseDate(NSString* dateString)
 {
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     NSLocale *posixLocale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
     [dateFormatter setLocale:posixLocale];
     [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"];
 
-    NSDictionary* attributes = [json objectForKey:@"attributes"];
-
-    NSString *transactionIdentifier = [json objectForKey:@"id"];
-    NSDate *transactionDate = [dateFormatter dateFromString:[attributes objectForKey:@"created_at"]];
-
-    return [self initWithTransactionIdentifier:transactionIdentifier payment:payment transactionState:SKPaymentTransactionStatePurchased transactionDate:transactionDate error:nil];
+    return [dateFormatter dateFromString:dateString];
 }
 
-+ (NSArray<SKPaymentTransaction*>*)transactionsWithJSON:(NSArray<NSDictionary*>*)json payments:(NSArray<SKPayment*>*)payments
+- (BOOL)updateWithResponseJSON:(NSDictionary*)json
 {
-    NSMutableArray *transactions = [[NSMutableArray alloc] init];
-    [json enumerateObjectsUsingBlock:^(NSDictionary *transactionDict, NSUInteger index, BOOL *stop) {
-        SKPaymentTransaction *transaction = [[SKPaymentTransaction alloc] initWithResponseJSON:transactionDict payment:payments[index]];
-        [transactions addObject:transaction];
-    }];
-    return transactions;
+    NSDictionary* attributes = [json objectForKey:@"attributes"];
+
+    NSInteger status = [[attributes objectForKey:@"status"] integerValue];
+    NSString *requestId = [attributes objectForKey:@"request_id"];
+
+    /*
+        client \ server| DEFAULT | CHARGE_FAILED | CHARGE_COMPLETE | COMPLETE
+        Purchasing     | ignore  | -> Failed     | -> Purchsed     | error
+        Purchased      | error   | error         | ignore          | ignore
+        Failed         | error   | ignore        | error           | error
+        Restored       | ?       | ?             | ?               | ?
+        Deferred       | ?       | ?             | ?               | ?
+    */
+
+    SKDebugLog(@"%s %d %@ %@", __FUNCTION__, status, requestId, self);
+
+    if(![self.requestId isEqualToString:requestId]) {
+        // TODO log error
+        return NO;
+    }
+
+    if(self.transactionState != SKPaymentTransactionStatePurchasing) {
+        // TODO log error
+        return NO;
+    }
+
+    switch(status) {
+    case 0: // nothing changed
+        return NO;
+    case 1: // failed
+        self.transactionState = SKPaymentTransactionStateFailed;
+        return YES;
+    case 2: // sucesss
+        self.transactionState = SKPaymentTransactionStatePurchased;
+        self.transactionIdentifier = [json objectForKey:@"id"];
+        self.transactionDate = parseDate([attributes objectForKey:@"created_at"]);
+        return YES;
+    default:
+        // TODO log error
+        return NO;
+    }
 }
 
 @end
@@ -105,14 +126,10 @@ NSString * const SKErrorDomain = @"io.tombo.storekit.error";
     [_transactionObservers removeObject:observer];
 }
 
-- (void)connectToPaymentAPI:(SKPayment *)payment
+- (void)connectToPaymentAPI:(SKPaymentTransaction *)transaction
 {
     // TODO: show detailed log
-    SKDebugLog(@"%s payment: %@", __FUNCTION__, payment);
-
-    if(!payment.requestId) {
-        payment.requestId = [NSUUID UUID].UUIDString;
-    }
+    SKDebugLog(@"%s transaction: %@", __FUNCTION__, transaction);
 
     NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
     _URLSessionManager = [[TomboAFURLSessionManager alloc] initWithSessionConfiguration:configuration];
@@ -123,7 +140,7 @@ NSString * const SKErrorDomain = @"io.tombo.storekit.error";
 #endif
 
     NSString *urlString = [getTomboAPIServerUrlString() stringByAppendingString:@"/payments"];
-    NSDictionary *parameters = [SKPayment requestJSON:@[payment]];
+    NSDictionary *parameters = [transaction requestJSON];
     NSError *serializerError = nil;
     NSMutableURLRequest *request = [[TomboAFJSONRequestSerializer serializer] requestWithMethod:@"POST" URLString:urlString parameters:parameters error:&serializerError];
     _URLSessionManager.responseSerializer = [TomboAFJSONResponseSerializer serializer];
@@ -131,7 +148,7 @@ NSString * const SKErrorDomain = @"io.tombo.storekit.error";
     NSURLSessionDataTask *dataTask = [_URLSessionManager dataTaskWithRequest:request completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
         _URLSessionManager = nil;
 
-        SKDebugLog(@"TomboAPI::postPayments error: %@ response: %@", error, response);
+        SKDebugLog(@"TomboAPI::postPayments error: %@ response: %@, responseObject:%@", error, response, responseObject);
         if (error) {
             NSLog(@"Error(%@): %@", NSStringFromClass([self class]), error);
             if(responseObject) {
@@ -143,22 +160,28 @@ NSString * const SKErrorDomain = @"io.tombo.storekit.error";
                     }];
                 }
 
-                NSMutableArray *transactions = [[NSMutableArray alloc] init];
-                SKPaymentTransaction *transaction = [[SKPaymentTransaction alloc] initWithTransactionIdentifier:nil payment:payment transactionState:SKPaymentTransactionStateFailed transactionDate:nil error:error];
-                [transactions addObject:transaction];
+                transaction.error = error;
+                NSArray *updatedTransactions = [NSArray arrayWithObject:transaction];
                 for (id<SKPaymentTransactionObserver> observer in _transactionObservers) {
-                    [observer paymentQueue:self updatedTransactions:transactions];
+                    [observer paymentQueue:self updatedTransactions:updatedTransactions];
                 }
-
             } else {
                 // Network error
             }
         } else {
+            NSMutableArray *updatedTransactions = [[NSMutableArray alloc] init];
+
             NSArray *data = [responseObject objectForKey:@"data"];
-            NSArray *transactions = [SKPaymentTransaction transactionsWithJSON:data payments:@[payment]];
-            SKDebugLog(@"transactions: %@", transactions);
+            for(NSDictionary *transactionDict in data) {
+                BOOL updated = [transaction updateWithResponseJSON:transactionDict];
+                if(updated) {
+                    [updatedTransactions addObject:transaction];
+                }
+            }
+
+            SKDebugLog(@"updatedTransactions: %@", updatedTransactions);
             for (id<SKPaymentTransactionObserver> observer in _transactionObservers) {
-                [observer paymentQueue:self updatedTransactions:transactions];
+                [observer paymentQueue:self updatedTransactions:updatedTransactions];
             }
         }
     }];
@@ -166,7 +189,7 @@ NSString * const SKErrorDomain = @"io.tombo.storekit.error";
     [dataTask resume];
 }
 
-static const char* paymentKey = "paymentKey";
+static const char* transactionKey = "transactionKey";
 
 // Adds a payment request to the queue.
 - (void)addPayment:(SKPayment *)payment
@@ -182,7 +205,10 @@ static const char* paymentKey = "paymentKey";
                                                    delegate:self
                                           cancelButtonTitle:@"Cancel"
                                           otherButtonTitles:@"Buy", nil];
-    objc_setAssociatedObject(alert, paymentKey, payment, OBJC_ASSOCIATION_RETAIN);
+
+    SKPaymentTransaction *transaction = [[SKPaymentTransaction alloc] initWithPayment:payment];
+
+    objc_setAssociatedObject(alert, transactionKey, transaction, OBJC_ASSOCIATION_RETAIN);
     [alert show];
 }
 
@@ -190,9 +216,9 @@ static const char* paymentKey = "paymentKey";
     if(buttonIndex == 0) {
         // do nothing
     } else {
-        SKPayment* payment = objc_getAssociatedObject(alertView, paymentKey);
+        SKPaymentTransaction* transaction = objc_getAssociatedObject(alertView, transactionKey);
         // TODO: serialize and save payment
-        [self connectToPaymentAPI:payment];
+        [self connectToPaymentAPI:transaction];
     }
 }
 

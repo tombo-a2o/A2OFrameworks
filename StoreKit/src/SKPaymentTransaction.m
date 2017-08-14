@@ -1,14 +1,16 @@
 #import <StoreKit/StoreKit.h>
+#import "SKPaymentTransaction+Internal.h"
 
 @implementation SKPaymentTransaction
 
-- (instancetype)initWithTransactionIdentifier:(NSString *)transactionIdentifier payment:(SKPayment *)payment transactionState:(SKPaymentTransactionState)transactionState transactionDate:(NSDate *)transactionDate error:(NSError *)error
+- (instancetype)initWithPayment:(SKPayment *)payment
 {
-    _transactionIdentifier = transactionIdentifier;
+    _transactionIdentifier = nil;
     _payment = payment;
-    _transactionState = transactionState;
-    _transactionDate = transactionDate;
-    _error = error;
+    _transactionState = SKPaymentTransactionStatePurchasing;
+    _transactionDate = nil;
+    _error = nil;
+    _requestId = [NSUUID UUID].UUIDString;
 
     return self;
 }
@@ -33,7 +35,7 @@
         stateString = @"SKPaymentTransactionStateDeferred";
         break;
     }
-    return [NSString stringWithFormat:@"<%@ 0x%p> {%@, %@, %@, %@, %@}", NSStringFromClass([self class]), self, _transactionIdentifier, _payment, stateString, _transactionDate, _error];
+    return [NSString stringWithFormat:@"<%@ 0x%p> {%@, %@, %@, %@, %@, %@}", NSStringFromClass([self class]), self, _transactionIdentifier, _payment, stateString, _transactionDate, _requestId, _error];
 }
 
 @end
