@@ -8,6 +8,7 @@
 static SKPaymentQueue* _defaultQueue;
 
 NSString * const SKErrorDomain = @"io.tombo.storekit.error";
+NSString * const SKServerErrorDomain = @"io.tombo.storekit.servererror";
 
 @interface SKPaymentTransaction (API)
 - (NSDictionary*)requestJSON;
@@ -155,7 +156,7 @@ static NSDate* parseDate(NSString* dateString)
                 NSArray *errors = [responseObject objectForKey:@"errors"];
                 if(errors) {
                     NSString *errorMessage = errors[0];
-                    error = [NSError errorWithDomain:SKErrorDomain code:0 userInfo:@{
+                    error = [NSError errorWithDomain:SKServerErrorDomain code:0 userInfo:@{
                         NSLocalizedDescriptionKey: errorMessage
                     }];
                 }
@@ -213,10 +214,16 @@ static const char* transactionKey = "transactionKey";
 }
 
 -(void)alertView:(UIAlertView*)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    SKPaymentTransaction* transaction = objc_getAssociatedObject(alertView, transactionKey);
     if(buttonIndex == 0) {
-        // do nothing
+        transaction.transactionState = SKPaymentTransactionStateFailed;
+        transaction.error = [NSError errorWithDomain:SKErrorDomain code:0 userInfo:nil];
+
+        NSArray *updatedTransactions = [NSArray arrayWithObject:transaction];
+        for (id<SKPaymentTransactionObserver> observer in _transactionObservers) {
+            [observer paymentQueue:self updatedTransactions:updatedTransactions];
+        }
     } else {
-        SKPaymentTransaction* transaction = objc_getAssociatedObject(alertView, transactionKey);
         // TODO: serialize and save payment
         [self connectToPaymentAPI:transaction];
     }
