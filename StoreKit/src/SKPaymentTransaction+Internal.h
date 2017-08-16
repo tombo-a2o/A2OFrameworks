@@ -1,4 +1,4 @@
-#import <StoreKit/SKPayment.h>
+#import <StoreKit/SKPaymentTransaction.h>
 
 @interface SKPaymentTransaction()
 - (instancetype)initWithPayment:(SKPayment *)payment;

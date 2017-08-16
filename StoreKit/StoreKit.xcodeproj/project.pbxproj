@@ -28,6 +28,7 @@
 		4D88496D1F4454D800AC9378 /* SKPaymentTransactionStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D88496A1F4454D800AC9378 /* SKPaymentTransactionStore.m */; };
 		4D88496F1F44574D00AC9378 /* libsqlite3.0.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D88496E1F44574D00AC9378 /* libsqlite3.0.tbd */; };
 		4D8849781F44590700AC9378 /* TomboAFNetworking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D8849771F44590300AC9378 /* TomboAFNetworking.framework */; };
+		4D88497C1F4463D800AC9378 /* SKPaymentTransactionStoreTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D88497B1F4463D800AC9378 /* SKPaymentTransactionStoreTest.m */; };
 		D90769011C33E308005EBBDB /* SKRequestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D90769001C33E308005EBBDB /* SKRequestTests.m */; };
 		D94BB96C1C5C5ACD00816E24 /* SKDownload.m in Sources */ = {isa = PBXBuildFile; fileRef = D923A6BE1C09177700EC5559 /* SKDownload.m */; };
 		D94BB96D1C5C5ACD00816E24 /* SKPayment.m in Sources */ = {isa = PBXBuildFile; fileRef = D923A6BF1C09177700EC5559 /* SKPayment.m */; };
@@ -99,6 +100,7 @@
 		4D88496A1F4454D800AC9378 /* SKPaymentTransactionStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKPaymentTransactionStore.m; sourceTree = "<group>"; };
 		4D88496E1F44574D00AC9378 /* libsqlite3.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.0.tbd; path = usr/lib/libsqlite3.0.tbd; sourceTree = SDKROOT; };
 		4D8849721F44590300AC9378 /* TomboAFNetworking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TomboAFNetworking.xcodeproj; path = ../TomboAFNetworking/TomboAFNetworking.xcodeproj; sourceTree = "<group>"; };
+		4D88497B1F4463D800AC9378 /* SKPaymentTransactionStoreTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKPaymentTransactionStoreTest.m; sourceTree = "<group>"; };
 		6EB731003551FC09860DE136 /* libPods-StoreKitTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-StoreKitTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B0FE193336247A647DB3F10A /* Pods-StoreKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StoreKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-StoreKitTests/Pods-StoreKitTests.release.xcconfig"; sourceTree = "<group>"; };
 		BEF4F5F23192AA48E291D5F1 /* Pods-StoreKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StoreKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-StoreKitTests/Pods-StoreKitTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -229,6 +231,7 @@
 			children = (
 				D9D753981C212C7300C40E06 /* Info.plist */,
 				D90769001C33E308005EBBDB /* SKRequestTests.m */,
+				4D88497B1F4463D800AC9378 /* SKPaymentTransactionStoreTest.m */,
 				D9901E091C292AA6001609FB /* SKPaymentQueueTests.m */,
 			);
 			path = StoreKitTests;
@@ -455,6 +458,7 @@
 			files = (
 				D90769011C33E308005EBBDB /* SKRequestTests.m in Sources */,
 				D9901E0A1C292AA6001609FB /* SKPaymentQueueTests.m in Sources */,
+				4D88497C1F4463D800AC9378 /* SKPaymentTransactionStoreTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
