@@ -113,7 +113,7 @@ static int bind_nsdate_nullable(sqlite3_stmt *stmt, int idx, NSDate *date)
     return date ? bind_nsdate(stmt, idx, date) : sqlite3_bind_null(stmt, idx);
 }
 
--(void)push:(SKPaymentTransaction*)transaction
+-(void)insert:(SKPaymentTransaction*)transaction
 {
     SKPayment *payment = transaction.payment;
 
@@ -205,27 +205,18 @@ static NSDate* column_nsdate_nullable(sqlite3_stmt* stmt, int col)
     return column_is_null(stmt, col) ? nil : column_nsdate(stmt, col);
 }
 
--(SKPaymentTransaction*)popIncomplete
+static SKPaymentTransaction* parseRow(sqlite3_stmt *stmt)
 {
-    int result;
-    result = sqlite3_reset(_selectStatementByState);
-    result = sqlite3_bind_int(_selectStatementByState, 1, SKPaymentTransactionStatePurchasing);
-
-    result = sqlite3_step(_selectStatementByState);
-    if(result != SQLITE_ROW) {
-        return nil;
-    }
-
-    NSString *requestId = column_nsstring(_selectStatementByState, 1);
-    NSString *productIdentifier = column_nsstring(_selectStatementByState, 2);
-    NSInteger quantity = sqlite3_column_int(_selectStatementByState, 3);
-    NSData *requestData = column_nsdata_nullable(_selectStatementByState, 4);
-    NSString *applicationUsername = column_nsstring_nullable(_selectStatementByState, 5);
-    NSInteger transactionState = sqlite3_column_int(_selectStatementByState, 6);
-    NSString *transactionIdentifier = column_nsstring_nullable(_selectStatementByState, 7);
-    NSDate *transactionDate = column_nsdate_nullable(_selectStatementByState, 8);
-    NSData *transactionReceipt = column_nsdata_nullable(_selectStatementByState, 9);
-    NSData *errorData = column_nsdata_nullable(_selectStatementByState, 10);
+    NSString *requestId = column_nsstring(stmt, 1);
+    NSString *productIdentifier = column_nsstring(stmt, 2);
+    NSInteger quantity = sqlite3_column_int(stmt, 3);
+    NSData *requestData = column_nsdata_nullable(stmt, 4);
+    NSString *applicationUsername = column_nsstring_nullable(stmt, 5);
+    NSInteger transactionState = sqlite3_column_int(stmt, 6);
+    NSString *transactionIdentifier = column_nsstring_nullable(stmt, 7);
+    NSDate *transactionDate = column_nsdate_nullable(stmt, 8);
+    NSData *transactionReceipt = column_nsdata_nullable(stmt, 9);
+    NSData *errorData = column_nsdata_nullable(stmt, 10);
     NSError *error = errorData ? [NSKeyedUnarchiver unarchiveObjectWithData:errorData] : nil;
 
     SKMutablePayment *payment = [[SKPayment paymentWithProductIdentifier:productIdentifier] mutableCopy];
@@ -241,6 +232,42 @@ static NSDate* column_nsdate_nullable(sqlite3_stmt* stmt, int col)
     transaction.error = error;
 
     return transaction;
+}
+
+-(SKPaymentTransaction*)incompleteTransaction
+{
+    NSMutableArray* transactions = [[NSMutableArray alloc] init];
+
+    int result;
+    result = sqlite3_reset(_selectStatementByState);
+    result = sqlite3_bind_int(_selectStatementByState, 1, SKPaymentTransactionStatePurchasing);
+
+    result = sqlite3_step(_selectStatementByState);
+
+    if(result != SQLITE_ROW) {
+        return nil;
+    }
+    SKPaymentTransaction *transaction = parseRow(_selectStatementByState);
+
+    return transaction;
+}
+
+-(NSArray<SKPaymentTransaction*>*)incompleteTransactions
+{
+    NSMutableArray* transactions = [[NSMutableArray alloc] init];
+
+    int result;
+    result = sqlite3_reset(_selectStatementByState);
+    result = sqlite3_bind_int(_selectStatementByState, 1, SKPaymentTransactionStatePurchasing);
+
+    result = sqlite3_step(_selectStatementByState);
+
+    while(result == SQLITE_ROW) {
+        SKPaymentTransaction *transaction = parseRow(_selectStatementByState);
+        [transactions addObject:transaction];
+    }
+
+    return transactions;
 }
 
 @end

@@ -3,7 +3,16 @@
 #import <objc/runtime.h>
 #import "SKPaymentTransaction+Internal.h"
 #import "SKPaymentTransactionStore.h"
+#if defined(A2O_EMSCRIPTEN)
 #import <tombo_platform.h>
+#else
+static inline NSString *getTomboAPIServerUrlString(void) {
+    return @"https://api.tombo.io";
+}
+static inline NSString *getUserJwtString(void) {
+    return @"dummy_jwt";
+}
+#endif
 #import <TomboAFNetworking/TomboAFNetworking.h>
 
 static SKPaymentQueue* _defaultQueue;
@@ -105,6 +114,13 @@ static NSDate* parseDate(NSString* dateString)
     return self;
 }
 
++ (void)load
+{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5.0f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        [[SKPaymentQueue defaultQueue] processRemainings];
+    });
+}
+
 // Returns whether the user is allowed to make payments.
 + (BOOL)canMakePayments
 {
@@ -133,7 +149,18 @@ static NSDate* parseDate(NSString* dateString)
     [_transactionObservers removeObject:observer];
 }
 
-- (void)postPaymentTransaction:(SKPaymentTransaction *)transaction
+- (void)notifyUpdatedTransaction:(SKPaymentTransaction*)transaction
+{
+    NSArray *updatedTransactions = [NSArray arrayWithObject:transaction];
+
+    SKDebugLog(@"updatedTransactions: %@", updatedTransactions);
+
+    for (id<SKPaymentTransactionObserver> observer in _transactionObservers) {
+        [observer paymentQueue:self updatedTransactions:updatedTransactions];
+    }
+}
+
+- (void)postPaymentTransaction:(SKPaymentTransaction *)transaction completionHandler:(void (^)(void))completionHandler
 {
     // TODO: show detailed log
     SKDebugLog(@"%s transaction: %@", __FUNCTION__, transaction);
@@ -153,29 +180,24 @@ static NSDate* parseDate(NSString* dateString)
 
                 transaction.error = error;
                 [_transactionStore update:transaction];
-                NSArray *updatedTransactions = [NSArray arrayWithObject:transaction];
-                for (id<SKPaymentTransactionObserver> observer in _transactionObservers) {
-                    [observer paymentQueue:self updatedTransactions:updatedTransactions];
-                }
+                [self notifyUpdatedTransaction:transaction];
+                if(completionHandler) completionHandler();
             } else {
                 // Network error
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3.0f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                    [self postPaymentTransaction:transaction completionHandler:completionHandler];
+                });
             }
         } else {
-            NSMutableArray *updatedTransactions = [[NSMutableArray alloc] init];
-
             NSArray *data = [responseObject objectForKey:@"data"];
             for(NSDictionary *transactionDict in data) {
                 BOOL updated = [transaction updateWithResponseJSON:transactionDict];
                 if(updated) {
-                    [updatedTransactions addObject:transaction];
                     [_transactionStore update:transaction];
+                    [self notifyUpdatedTransaction:transaction];
                 }
             }
-
-            SKDebugLog(@"updatedTransactions: %@", updatedTransactions);
-            for (id<SKPaymentTransactionObserver> observer in _transactionObservers) {
-                [observer paymentQueue:self updatedTransactions:updatedTransactions];
-            }
+            if(completionHandler) completionHandler();
         }
     }];
 }
@@ -218,6 +240,7 @@ static const char* transactionKey = "transactionKey";
                                           otherButtonTitles:@"Buy", nil];
 
     SKPaymentTransaction *transaction = [[SKPaymentTransaction alloc] initWithPayment:payment];
+    [_transactionStore insert:transaction];
 
     objc_setAssociatedObject(alert, transactionKey, transaction, OBJC_ASSOCIATION_RETAIN);
     [alert show];
@@ -228,14 +251,10 @@ static const char* transactionKey = "transactionKey";
     if(buttonIndex == 0) {
         transaction.transactionState = SKPaymentTransactionStateFailed;
         transaction.error = [NSError errorWithDomain:SKErrorDomain code:0 userInfo:nil];
-
-        NSArray *updatedTransactions = [NSArray arrayWithObject:transaction];
-        for (id<SKPaymentTransactionObserver> observer in _transactionObservers) {
-            [observer paymentQueue:self updatedTransactions:updatedTransactions];
-        }
+        [_transactionStore update:transaction];
+        [self notifyUpdatedTransaction:transaction];
     } else {
-        [_transactionStore push:transaction];
-        [self postPaymentTransaction:transaction];
+        [self postPaymentTransaction:transaction completionHandler:nil];
     }
 }
 
@@ -289,4 +308,15 @@ static const char* transactionKey = "transactionKey";
     [self doesNotRecognizeSelector:_cmd];
 }
 
+- (void)processRemainings
+{
+    SKPaymentTransaction* transaction = [_transactionStore incompleteTransaction];
+    if(transaction) {
+        [self postPaymentTransaction:transaction completionHandler:^{
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self processRemainings];
+            });
+        }];
+    }
+}
 @end

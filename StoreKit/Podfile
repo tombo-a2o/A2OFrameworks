@@ -1,6 +1,6 @@
 source 'https://github.com/CocoaPods/Specs.git'
 platform :ios, '7.0'
 
-target 'TomboKitTests' do
+target 'StoreKitTests' do
   pod 'Nocilla', '~> 0.10'
 end

@@ -1,5 +1,14 @@
 #import <StoreKit/StoreKit.h>
+#if defined(A2O_EMSCRIPTEN)
 #import <tombo_platform.h>
+#else
+static inline NSString *getTomboAPIServerUrlString(void) {
+    return @"https://api.tombo.io";
+}
+static inline NSString *getUserJwtString(void) {
+    return @"dummy_jwt";
+}
+#endif
 #import <TomboAFNetworking/TomboAFNetworking.h>
 
 NSString * const SKReceiptPropertyIsExpired = @"expired";
@@ -106,6 +115,7 @@ NSString * const SKReceiptPropertyIsVolumePurchase = @"vpp";
             NSArray *data = [responseObject objectForKey:@"data"];
 
             NSArray<SKProduct*> *products = [SKProduct productsWithResponseJSON:data];
+            NSLog(@"%@", products);
             NSMutableSet *invalidProductIdentifiers = [_productIdentifiers mutableCopy];
             for(SKProduct *product in products) {
                 [invalidProductIdentifiers removeObject:product.productIdentifier];
