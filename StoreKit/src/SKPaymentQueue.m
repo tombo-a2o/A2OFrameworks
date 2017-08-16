@@ -2,6 +2,7 @@
 #import <UIKit/UIKit.h>
 #import <objc/runtime.h>
 #import "SKPaymentTransaction+Internal.h"
+#import "SKSerializedTransactionQueue.h"
 #import <tombo_platform.h>
 #import <TomboAFNetworking/TomboAFNetworking.h>
 
@@ -91,12 +92,17 @@ static NSDate* parseDate(NSString* dateString)
 
 @implementation SKPaymentQueue {
     NSMutableArray *_transactionObservers;
-    TomboAFURLSessionManager *_URLSessionManager;
+    SKSerializedTransactionQueue *_serializedTransactionQueue;
+    BOOL _onConnect;
 }
 
 - (instancetype)init {
+    self = [super init];
+
     _transactionObservers = [[NSMutableArray alloc] init];
-    return [super init];
+    _serializedTransactionQueue = [SKSerializedTransactionQueue defaultQueue];
+
+    return self;
 }
 
 // Returns whether the user is allowed to make payments.
@@ -127,28 +133,12 @@ static NSDate* parseDate(NSString* dateString)
     [_transactionObservers removeObject:observer];
 }
 
-- (void)connectToPaymentAPI:(SKPaymentTransaction *)transaction
+- (void)postPaymentTransaction:(SKPaymentTransaction *)transaction
 {
     // TODO: show detailed log
     SKDebugLog(@"%s transaction: %@", __FUNCTION__, transaction);
 
-    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-    _URLSessionManager = [[TomboAFURLSessionManager alloc] initWithSessionConfiguration:configuration];
-#ifdef DEBUG
-    _URLSessionManager.securityPolicy.validatesDomainName = NO;
-    _URLSessionManager.securityPolicy.allowInvalidCertificates = YES;
-    SKDebugLog(@"ALLOW INVALID CERTIFICATES");
-#endif
-
-    NSString *urlString = [getTomboAPIServerUrlString() stringByAppendingString:@"/payments"];
-    NSDictionary *parameters = [transaction requestJSON];
-    NSError *serializerError = nil;
-    NSMutableURLRequest *request = [[TomboAFJSONRequestSerializer serializer] requestWithMethod:@"POST" URLString:urlString parameters:parameters error:&serializerError];
-    _URLSessionManager.responseSerializer = [TomboAFJSONResponseSerializer serializer];
-
-    NSURLSessionDataTask *dataTask = [_URLSessionManager dataTaskWithRequest:request completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
-        _URLSessionManager = nil;
-
+    [self connectToPaymentAPI:[transaction requestJSON] completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
         SKDebugLog(@"TomboAPI::postPayments error: %@ response: %@, responseObject:%@", error, response, responseObject);
         if (error) {
             NSLog(@"Error(%@): %@", NSStringFromClass([self class]), error);
@@ -162,6 +152,7 @@ static NSDate* parseDate(NSString* dateString)
                 }
 
                 transaction.error = error;
+                [_serializedTransactionQueue update:transaction];
                 NSArray *updatedTransactions = [NSArray arrayWithObject:transaction];
                 for (id<SKPaymentTransactionObserver> observer in _transactionObservers) {
                     [observer paymentQueue:self updatedTransactions:updatedTransactions];
@@ -177,6 +168,7 @@ static NSDate* parseDate(NSString* dateString)
                 BOOL updated = [transaction updateWithResponseJSON:transactionDict];
                 if(updated) {
                     [updatedTransactions addObject:transaction];
+                    [_serializedTransactionQueue update:transaction];
                 }
             }
 
@@ -186,6 +178,24 @@ static NSDate* parseDate(NSString* dateString)
             }
         }
     }];
+}
+
+- (void)connectToPaymentAPI:(NSDictionary *)parameters completionHandler:(void (^)(NSURLResponse *response, id responseObject, NSError *error))completionHandler
+{
+    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    TomboAFURLSessionManager *_URLSessionManager = [[TomboAFURLSessionManager alloc] initWithSessionConfiguration:configuration];
+#ifdef DEBUG
+    _URLSessionManager.securityPolicy.validatesDomainName = NO;
+    _URLSessionManager.securityPolicy.allowInvalidCertificates = YES;
+    SKDebugLog(@"ALLOW INVALID CERTIFICATES");
+#endif
+
+    NSString *urlString = [getTomboAPIServerUrlString() stringByAppendingString:@"/payments"];
+    NSError *serializerError = nil;
+    NSMutableURLRequest *request = [[TomboAFJSONRequestSerializer serializer] requestWithMethod:@"POST" URLString:urlString parameters:parameters error:&serializerError];
+    _URLSessionManager.responseSerializer = [TomboAFJSONResponseSerializer serializer];
+
+    NSURLSessionDataTask *dataTask = [_URLSessionManager dataTaskWithRequest:request completionHandler:completionHandler];
 
     [dataTask resume];
 }
@@ -224,8 +234,8 @@ static const char* transactionKey = "transactionKey";
             [observer paymentQueue:self updatedTransactions:updatedTransactions];
         }
     } else {
-        // TODO: serialize and save payment
-        [self connectToPaymentAPI:transaction];
+        [_serializedTransactionQueue push:transaction];
+        [self postPaymentTransaction:transaction];
     }
 }
 

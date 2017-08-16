@@ -9,5 +9,5 @@
 @property(nonatomic, readwrite) NSDate *transactionDate;
 @property(nonatomic, readwrite) NSData *transactionReceipt;
 
-@property(nonatomic, readonly) NSString *requestId;
+@property(nonatomic, readwrite) NSString *requestId;
 @end

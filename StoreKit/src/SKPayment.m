@@ -30,6 +30,9 @@
 {
     SKPayment *payment = [[SKPayment allocWithZone:zone] init];
     payment->_productIdentifier = [_productIdentifier copyWithZone:zone];
+    payment->_quantity = _quantity;
+    payment->_requestData = [_requestData copy];
+    payment->_applicationUsername = [_applicationUsername copy];
     return payment;
 }
 
@@ -37,6 +40,9 @@
 {
     SKMutablePayment *payment = [[SKMutablePayment allocWithZone:zone] init];
     payment.productIdentifier = [_productIdentifier mutableCopyWithZone:zone];
+    payment.quantity = _quantity;
+    payment.requestData = [_requestData copy];
+    payment.applicationUsername = [_applicationUsername copy];
     return payment;
 }
 
@@ -52,6 +58,7 @@
 @dynamic productIdentifier;
 @dynamic quantity;
 @dynamic requestData;
+@dynamic applicationUsername;
 
 - (void)setProductIdentifier:(NSString*)productIdentifier
 {
@@ -68,4 +75,8 @@
     _requestData = requestData;
 }
 
+- (void)setApplicationUsername:(NSString*)applicationUsername
+{
+    _applicationUsername = applicationUsername;
+}
 @end

@@ -4,6 +4,7 @@
     NSString *_productIdentifier;
     NSInteger _quantity;
     NSData *_requestData;
+    NSString *_applicationUsername;
 }
 
 // Creating Instances
@@ -24,5 +25,5 @@
 @property(nonatomic, copy, readwrite) NSString *productIdentifier;
 @property(nonatomic, readwrite) NSInteger quantity;
 @property(nonatomic, copy, readwrite) NSData *requestData;
-
+@property(nonatomic, copy, readwrite) NSString *applicationUsername;
 @end

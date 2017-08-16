@@ -45,8 +45,4 @@
 - (void)cancelDownloads:(NSArray/*<SKDownload *>*/*)downloads;
 - (void)pauseDownloads:(NSArray/*<SKDownload *>*/*)downloads;
 - (void)resumeDownloads:(NSArray/*<SKDownload *>*/ *)downloads;
-
-// FIXME: move to private (for testing)
-- (void)connectToPaymentAPI:(SKPaymentTransaction *)transaction;
-
 @end

@@ -6,7 +6,7 @@
 - (instancetype)initWithPayment:(SKPayment *)payment
 {
     _transactionIdentifier = nil;
-    _payment = payment;
+    _payment = [payment copy];
     _transactionState = SKPaymentTransactionStatePurchasing;
     _transactionDate = nil;
     _error = nil;
