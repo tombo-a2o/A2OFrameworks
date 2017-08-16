@@ -2,7 +2,7 @@
 #import <UIKit/UIKit.h>
 #import <objc/runtime.h>
 #import "SKPaymentTransaction+Internal.h"
-#import "SKSerializedTransactionQueue.h"
+#import "SKPaymentTransactionStore.h"
 #import <tombo_platform.h>
 #import <TomboAFNetworking/TomboAFNetworking.h>
 
@@ -92,7 +92,7 @@ static NSDate* parseDate(NSString* dateString)
 
 @implementation SKPaymentQueue {
     NSMutableArray *_transactionObservers;
-    SKSerializedTransactionQueue *_serializedTransactionQueue;
+    SKPaymentTransactionStore *_transactionStore;
     BOOL _onConnect;
 }
 
@@ -100,7 +100,7 @@ static NSDate* parseDate(NSString* dateString)
     self = [super init];
 
     _transactionObservers = [[NSMutableArray alloc] init];
-    _serializedTransactionQueue = [SKSerializedTransactionQueue defaultQueue];
+    _transactionStore = [SKPaymentTransactionStore defaultStore];
 
     return self;
 }
@@ -152,7 +152,7 @@ static NSDate* parseDate(NSString* dateString)
                 }
 
                 transaction.error = error;
-                [_serializedTransactionQueue update:transaction];
+                [_transactionStore update:transaction];
                 NSArray *updatedTransactions = [NSArray arrayWithObject:transaction];
                 for (id<SKPaymentTransactionObserver> observer in _transactionObservers) {
                     [observer paymentQueue:self updatedTransactions:updatedTransactions];
@@ -168,7 +168,7 @@ static NSDate* parseDate(NSString* dateString)
                 BOOL updated = [transaction updateWithResponseJSON:transactionDict];
                 if(updated) {
                     [updatedTransactions addObject:transaction];
-                    [_serializedTransactionQueue update:transaction];
+                    [_transactionStore update:transaction];
                 }
             }
 
@@ -234,7 +234,7 @@ static const char* transactionKey = "transactionKey";
             [observer paymentQueue:self updatedTransactions:updatedTransactions];
         }
     } else {
-        [_serializedTransactionQueue push:transaction];
+        [_transactionStore push:transaction];
         [self postPaymentTransaction:transaction];
     }
 }

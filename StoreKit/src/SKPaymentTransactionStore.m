@@ -1,5 +1,5 @@
 #import <StoreKit/StoreKit.h>
-#import "SKSerializedTransactionQueue.h"
+#import "SKPaymentTransactionStore.h"
 #import "SKPaymentTransaction+Internal.h"
 #import <sqlite3.h>
 
@@ -21,7 +21,7 @@
 #define INSERT_STATEMENT "insert into transaction_queue values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
 #define UPDATE_STATEMENT "update transaction_queue set transactionState = ?, transactionIdentifier = ?, transactionDate = ?, transactionReceipt = ?, error = ? where requestId = ?;"
 
-@implementation SKSerializedTransactionQueue {
+@implementation SKPaymentTransactionStore {
     sqlite3 *_db;
     sqlite3_stmt *_selectStatementByState;
     sqlite3_stmt *_selectStatementById;
@@ -29,9 +29,9 @@
     sqlite3_stmt *_updateStatement;
 }
 
-+ (instancetype)defaultQueue
++ (instancetype)defaultStore
 {
-    return [[SKSerializedTransactionQueue alloc] init];
+    return [[SKPaymentTransactionStore alloc] init];
 }
 
 - (NSString*)queueStorage
