@@ -68,9 +68,9 @@ static NSDate* parseDate(NSString* dateString)
         Deferred       | ?       | ?             | ?               | ?
     */
 
-    SKDebugLog(@"%s %d %@ %@", __FUNCTION__, status, requestId, self);
+    SKDebugLog(@"%d %@ %@", status, requestId, self);
 
-    if(![self.requestId isEqualToString:requestId]) {
+    if(![self.requestId.lowercaseString isEqualToString:requestId.lowercaseString]) {
         // TODO log error
         return NO;
     }
@@ -102,7 +102,6 @@ static NSDate* parseDate(NSString* dateString)
 @implementation SKPaymentQueue {
     NSMutableArray *_transactionObservers;
     SKPaymentTransactionStore *_transactionStore;
-    BOOL _onConnect;
 }
 
 - (instancetype)init {
@@ -163,7 +162,7 @@ static NSDate* parseDate(NSString* dateString)
 - (void)postPaymentTransaction:(SKPaymentTransaction *)transaction completionHandler:(void (^)(void))completionHandler
 {
     // TODO: show detailed log
-    SKDebugLog(@"%s transaction: %@", __FUNCTION__, transaction);
+    SKDebugLog(@"transaction: %@", transaction);
 
     [self connectToPaymentAPI:[transaction requestJSON] completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
         SKDebugLog(@"TomboAPI::postPayments error: %@ response: %@, responseObject:%@", error, response, responseObject);
@@ -312,6 +311,7 @@ static const char* transactionKey = "transactionKey";
 {
     SKPaymentTransaction* transaction = [_transactionStore incompleteTransaction];
     if(transaction) {
+        SKDebugLog(@"%@", transaction);
         [self postPaymentTransaction:transaction completionHandler:^{
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self processRemainings];

@@ -5,11 +5,11 @@
 
 #define CREATE_TABLE_STATEMENT "create table if not exists transaction_queue(" \
     "requestId TEXT PRIMARY KEY," \
-    "productIdentifier TEXT," \
-    "quantity TEXT," \
+    "productIdentifier TEXT NOT NULL," \
+    "quantity TEXT NOT NULL," \
     "requestData TEXT," \
     "applicationUsername TEXT," \
-    "transactionState INTEGER," \
+    "transactionState INTEGER NOT NULL," \
     "transactionIdentifier TEXT," \
     "transactionDate REAL," \
     "transactionReceipt DATA," \
@@ -154,6 +154,8 @@ static int bind_nsdate_nullable(sqlite3_stmt *stmt, int idx, NSDate *date)
 
 -(void)update:(SKPaymentTransaction*)transaction
 {
+    SKDebugLog(@"%@", transaction);
+
     NSString *requestId = transaction.requestId;
     NSString *transactionIdentifier = transaction.transactionIdentifier;
     NSDate *transactionDate = transaction.transactionDate;
@@ -165,13 +167,13 @@ static int bind_nsdate_nullable(sqlite3_stmt *stmt, int idx, NSDate *date)
     assert(result == SQLITE_OK);
     result = sqlite3_bind_int(_updateStatement, 1, transaction.transactionState);
     assert(result == SQLITE_OK);
-    result = bind_nsstring_nullable(_insertStatement, 2, transactionIdentifier);
+    result = bind_nsstring_nullable(_updateStatement, 2, transactionIdentifier);
     assert(result == SQLITE_OK);
-    result = transactionDate ? sqlite3_bind_double(_insertStatement, 3, transactionDate.timeIntervalSinceReferenceDate) : sqlite3_bind_null(_insertStatement, 3);
+    result = bind_nsdate_nullable(_updateStatement, 3, transactionDate);
     assert(result == SQLITE_OK);
-    result = bind_nsdata_nullable(_insertStatement, 4, transactionReceipt);
+    result = bind_nsdata_nullable(_updateStatement, 4, transactionReceipt);
     assert(result == SQLITE_OK);
-    result = bind_nsdata_nullable(_insertStatement, 5, errorData);
+    result = bind_nsdata_nullable(_updateStatement, 5, errorData);
     assert(result == SQLITE_OK);
     result = bind_nsstring(_updateStatement, 6, requestId);
     assert(result == SQLITE_OK);
@@ -254,35 +256,33 @@ static SKPaymentTransaction* parseRow(sqlite3_stmt *stmt)
     assert(result == SQLITE_OK);
     result = bind_nsstring(_selectStatementById, 1, requestId);
     assert(result == SQLITE_OK);
-    
+
     result = sqlite3_step(_selectStatementById);
-    
+
     if(result != SQLITE_ROW) {
         NSLog(@"%s result: %d %s", __FUNCTION__, result, sqlite3_errmsg(_db));
         return nil;
     }
     SKPaymentTransaction *transaction = parseRow(_selectStatementById);
-    
+
     return transaction;
 }
 
 -(SKPaymentTransaction*)incompleteTransaction
 {
-    NSMutableArray* transactions = [[NSMutableArray alloc] init];
-    
     int result;
     result = sqlite3_reset(_selectStatementByState);
     assert(result == SQLITE_OK);
     result = sqlite3_bind_int(_selectStatementByState, 1, SKPaymentTransactionStatePurchasing);
     assert(result == SQLITE_OK);
-    
+
     result = sqlite3_step(_selectStatementByState);
-    
+
     if(result != SQLITE_ROW) {
         return nil;
     }
     SKPaymentTransaction *transaction = parseRow(_selectStatementByState);
-    
+
     return transaction;
 }
 

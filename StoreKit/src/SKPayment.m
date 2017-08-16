@@ -2,16 +2,16 @@
 
 @implementation SKPayment
 
-- (instancetype)init
-{
-    _quantity = 1;
-    return [super init];
-}
-
 - (instancetype)initWithProductIdentifier:(NSString *)productIdentifier
 {
-    _productIdentifier = [productIdentifier copy];
-    return [self init];
+    if(!productIdentifier) return nil;
+
+    self = [self init];
+    if(self) {
+        _productIdentifier = [productIdentifier copy];
+        _quantity = 1;
+    }
+    return self;
 }
 
 // Returns a new payment for the specified product.

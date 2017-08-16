@@ -109,4 +109,45 @@
     XCTAssertEqualObjects(transactions[1].requestId, transaction2.requestId);
 }
 
+- (void)testNoIncomplete {
+    SKPaymentTransaction *transaction = [_store incompleteTransaction];
+    
+    XCTAssertNil(transaction);
+}
+
+- (void)testNoIncompletes {
+    NSArray<SKPaymentTransaction*> *transactions = [_store incompleteTransactions];
+    
+    XCTAssertNotNil(transactions);
+    XCTAssertEqual(transactions.count, 0);
+}
+
+
+- (void)testUpdate {
+    SKPayment *payment = [SKPayment paymentWithProductIdentifier:@"productIdentifier1"];
+    SKPaymentTransaction *transaction1 = [[SKPaymentTransaction alloc] initWithPayment:payment];
+    [_store insert:transaction1];
+    
+    transaction1.transactionState = SKPaymentTransactionStatePurchased;
+    transaction1.transactionDate = [NSDate date];
+    transaction1.transactionIdentifier = @"transactionIdentifier1";
+    
+    [_store update:transaction1];
+    
+    SKPaymentTransaction *transaction2 = [_store transactionWithRequestId:transaction1.requestId];
+    
+    XCTAssertNotNil(transaction2);
+    XCTAssertEqualObjects(transaction1.requestId, transaction2.requestId);
+    XCTAssertEqualObjects(transaction1.payment.productIdentifier, transaction2.payment.productIdentifier);
+    XCTAssertEqual(transaction1.payment.quantity, transaction2.payment.quantity);
+    XCTAssertEqualObjects(transaction1.payment.requestData, transaction2.payment.requestData);
+    XCTAssertEqualObjects(transaction1.payment.applicationUsername, transaction2.payment.applicationUsername);
+    XCTAssertEqual(transaction1.transactionState, transaction2.transactionState);
+    XCTAssertEqualObjects(transaction1.transactionDate, transaction2.transactionDate);
+    XCTAssertEqualObjects(transaction1.transactionReceipt, transaction2.transactionReceipt);
+    XCTAssertEqualObjects(transaction1.error, transaction2.error);
+}
+
+
+
 @end
