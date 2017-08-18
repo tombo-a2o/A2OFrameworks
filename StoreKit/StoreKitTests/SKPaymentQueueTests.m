@@ -94,10 +94,59 @@
         }
         
         XCTAssertEqual(_transactions.count, 1);
-
+        
         XCTAssertEqualObjects(_transactions[0].transactionIdentifier, @"transactionIdentifier1");
         XCTAssertEqual(_transactions[0].transactionDate.timeIntervalSince1970, 322088297);
+        
+        for (SKPaymentTransaction *transaction in _transactions) {
+            [queue finishTransaction:transaction];
+        }
+    }];
+}
 
+- (void)testConnectToPaymentAPIOnError {
+    stubRequest(@"POST", @"https://api.tombo.io/payments").
+    withBody(@"{\"payment\":{\"quantity\":1,\"requestData\":null,\"applicationUsername\":null,\"productIdentifier\":\"product1\",\"requestId\":\"request1\"},\"user_jwt\":\"dummy_jwt\"}").
+    andReturn(400).
+    withHeaders(@{@"Content-Type": @"application/json"}).
+    withBody([NSJSONSerialization dataWithJSONObject:
+              @{
+                @"errors": @[
+                        @{
+                            @"detail" : @"errordetail"
+                            
+                            }
+                        ]
+                } options:NSJSONWritingPrettyPrinted error:nil]);
+    
+    SKPaymentQueue *queue = [SKPaymentQueue defaultQueue];
+    [queue addTransactionObserver:self];
+    
+    SKProduct *product = [[SKProduct alloc] initWithProductIdentifier:@"product1" localizedTitle:@"title" localizedDescription:@"desc" price:[[NSDecimalNumber alloc] initWithInt:101] priceLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"ja_JP"]];
+    SKPayment *payment = [SKPayment paymentWithProduct:product];
+    SKPaymentTransaction *transaction = [[SKPaymentTransaction alloc] initWithPayment:payment];
+    transaction.requestId = @"request1";
+    
+    _expectation = [self expectationWithDescription:@"SKPaymentTransactionObserver"];
+    
+    [queue postPaymentTransaction:transaction completionHandler:nil];
+    
+    [self waitForExpectationsWithTimeout:5 handler:^(NSError *error) {
+        if (error != nil) {
+            XCTFail(@"Timeout: %@", error);
+            return;
+        }
+        
+        XCTAssertEqual(_transactions.count, 1);
+        
+        SKPaymentTransaction *result = _transactions[0];
+        
+        XCTAssertNil(result.transactionIdentifier);
+        XCTAssertNil(result.transactionDate);
+        XCTAssertNotNil(result.error);
+        XCTAssertEqualObjects(result.error.domain, SKServerErrorDomain);
+        XCTAssertEqualObjects(result.error.userInfo[NSLocalizedDescriptionKey], @"errordetail");
+        
         for (SKPaymentTransaction *transaction in _transactions) {
             [queue finishTransaction:transaction];
         }

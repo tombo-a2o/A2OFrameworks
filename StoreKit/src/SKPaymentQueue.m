@@ -171,12 +171,16 @@ static NSDate* parseDate(NSString* dateString)
             if(responseObject) {
                 NSArray *errors = [responseObject objectForKey:@"errors"];
                 if(errors) {
-                    NSString *errorMessage = errors[0];
-                    error = [NSError errorWithDomain:SKServerErrorDomain code:0 userInfo:@{
-                        NSLocalizedDescriptionKey: errorMessage
-                    }];
+                    NSDictionary *errorDic = errors[0];
+                    NSString *errorDetail = [errorDic objectForKey:@"detail"];
+                    if(errorDetail) {
+                        error = [NSError errorWithDomain:SKServerErrorDomain code:0 userInfo:@{
+                            NSLocalizedDescriptionKey: errorDetail
+                        }];
+                    }
                 }
 
+                transaction.transactionState = SKPaymentTransactionStateFailed;
                 transaction.error = error;
                 [_transactionStore update:transaction];
                 [self notifyUpdatedTransaction:transaction];
