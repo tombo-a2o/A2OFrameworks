@@ -237,7 +237,6 @@ static const char* transactionKey = "transactionKey";
                                           otherButtonTitles:@"Buy", nil];
 
     SKPaymentTransaction *transaction = [[SKPaymentTransaction alloc] initWithPayment:payment];
-    [_transactionStore insert:transaction];
 
     objc_setAssociatedObject(alert, transactionKey, transaction, OBJC_ASSOCIATION_RETAIN);
     [alert show];
@@ -246,11 +245,14 @@ static const char* transactionKey = "transactionKey";
 -(void)alertView:(UIAlertView*)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
     SKPaymentTransaction* transaction = objc_getAssociatedObject(alertView, transactionKey);
     if(buttonIndex == 0) {
+        // Cancel
         transaction.transactionState = SKPaymentTransactionStateFailed;
         transaction.error = [NSError errorWithDomain:SKErrorDomain code:0 userInfo:nil];
-        [_transactionStore update:transaction];
+        [_transactionStore insert:transaction];
         [self notifyUpdatedTransaction:transaction];
     } else {
+        // Buy
+        [_transactionStore insert:transaction];
         [self postPaymentTransaction:transaction completionHandler:nil];
     }
 }
