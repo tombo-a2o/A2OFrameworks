@@ -60,35 +60,33 @@
     withHeaders(@{@"Content-Type": @"application/json"}).
     withBody([NSJSONSerialization dataWithJSONObject:
               @{
-                @"data": @[
-                        @{
-                            @"type": @"payments",
-                            @"id": @"transactionIdentifier1",
-                            @"attributes": @{
-                                    @"request_id": @"request1",
-                                    @"product_identifier": @"product1",
-                                    @"quantity": @"1",
-                                    @"application_username": [NSNull null],
-                                    @"status": @"2",
-                                    @"created_at": @"1980-03-17T05:58:17.000+09:00",
-                                    @"updated_at": @"1980-03-17T05:58:17.000+09:00",
-                                    },
-                            },
-                        ]
+                @"data": @{
+                        @"type": @"payments",
+                        @"id": @"transactionIdentifier1",
+                        @"attributes": @{
+                                @"request_id": @"request1",
+                                @"product_identifier": @"product1",
+                                @"quantity": @"1",
+                                @"application_username": [NSNull null],
+                                @"status": @"2",
+                                @"created_at": @"1980-03-17T05:58:17.000+09:00",
+                                @"updated_at": @"1980-03-17T05:58:17.000+09:00",
+                                },
+                        }
                 } options:NSJSONWritingPrettyPrinted error:nil]);
     
     SKPaymentQueue *queue = [SKPaymentQueue defaultQueue];
     [queue addTransactionObserver:self];
-
+    
     SKProduct *product = [[SKProduct alloc] initWithProductIdentifier:@"product1" localizedTitle:@"title" localizedDescription:@"desc" price:[[NSDecimalNumber alloc] initWithInt:101] priceLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"ja_JP"]];
     SKPayment *payment = [SKPayment paymentWithProduct:product];
     SKPaymentTransaction *transaction = [[SKPaymentTransaction alloc] initWithPayment:payment];
     transaction.requestId = @"request1";
-
+    
     _expectation = [self expectationWithDescription:@"SKPaymentTransactionObserver"];
-
+    
     [queue postPaymentTransaction:transaction completionHandler:nil];
-
+    
     [self waitForExpectationsWithTimeout:5 handler:^(NSError *error) {
         if (error != nil) {
             XCTFail(@"Timeout: %@", error);

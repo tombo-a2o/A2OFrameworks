@@ -188,13 +188,11 @@ static NSDate* parseDate(NSString* dateString)
                 });
             }
         } else {
-            NSArray *data = [responseObject objectForKey:@"data"];
-            for(NSDictionary *transactionDict in data) {
-                BOOL updated = [transaction updateWithResponseJSON:transactionDict];
-                if(updated) {
-                    [_transactionStore update:transaction];
-                    [self notifyUpdatedTransaction:transaction];
-                }
+            NSDictionary *transactionDict = [responseObject objectForKey:@"data"];
+            BOOL updated = [transaction updateWithResponseJSON:transactionDict];
+            if(updated) {
+                [_transactionStore update:transaction];
+                [self notifyUpdatedTransaction:transaction];
             }
             if(completionHandler) completionHandler();
         }
