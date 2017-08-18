@@ -1,5 +1,6 @@
 #import <XCTest/XCTest.h>
 #import "StoreKit.h"
+#import "Nocilla.h"
 
 @interface SKProductsRequestTests : XCTestCase <SKProductsRequestDelegate> {
     XCTestExpectation *_expectationDidFinish;
@@ -14,7 +15,52 @@
 
 @implementation SKProductsRequestTests
 
+- (void)setUp
+{
+    [super setUp];
+    [[LSNocilla sharedInstance] start];
+}
+
+- (void)tearDown
+{
+    [[LSNocilla sharedInstance] stop];
+    [super tearDown];
+}
+
 - (void)testStart {
+    stubRequest(@"GET", @"https://api.tombo.io/products?product_identifiers=productIdentifier1%2CproductIdentifier2&user_jwt=dummy_jwt").
+    andReturn(200).
+    withHeaders(@{@"Content-Type": @"application/json"}).
+    withBody([NSJSONSerialization dataWithJSONObject:@{
+                                                       @"data": @[
+                                                               @{
+                                                                   @"attributes": @{
+                                                                           @"product_identifier": @"productIdentifier1",
+                                                                           @"downloadable": @1,
+                                                                           @"title": @"product 1",
+                                                                           @"description": @"description of product 1",
+                                                                           @"price": @"101",
+                                                                           @"language": @"ja_JP"
+                                                                           },
+                                                                   @"type": @"products",
+                                                                   @"id": @"xxxxx"
+                                                                   },
+                                                               @{
+                                                                   @"attributes": @{
+                                                                           @"product_identifier": @"productIdentifier2",
+                                                                           @"downloadable": @1,
+                                                                           @"title": @"product 2",
+                                                                           @"description": @"description of product 2",
+                                                                           @"price": @"102",
+                                                                           @"language": @"en_US"
+                                                                           },
+                                                                   @"type": @"products",
+                                                                   @"id": @"xxxxx"
+                                                                   },
+                                                               ]
+                                                       } options:NSJSONWritingPrettyPrinted error:nil]);
+    
+    
     NSSet *set = [NSSet setWithObjects:@"productIdentifier1", @"productIdentifier2", nil];
     SKProductsRequest *productsRequest = [[SKProductsRequest alloc] initWithProductIdentifiers:set];
     productsRequest.delegate = self;

@@ -22,7 +22,13 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		4D4C650D1F2F481C003A8FB3 /* TomboKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D4C650A1F2F4817003A8FB3 /* TomboKit.framework */; };
+		384813E1185DC6173BDD6DB0 /* libPods-StoreKitTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6EB731003551FC09860DE136 /* libPods-StoreKitTests.a */; };
+		4D88496B1F4454D800AC9378 /* SKPaymentTransaction+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D8849681F4454D800AC9378 /* SKPaymentTransaction+Internal.h */; };
+		4D88496C1F4454D800AC9378 /* SKPaymentTransactionStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D8849691F4454D800AC9378 /* SKPaymentTransactionStore.h */; };
+		4D88496D1F4454D800AC9378 /* SKPaymentTransactionStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D88496A1F4454D800AC9378 /* SKPaymentTransactionStore.m */; };
+		4D88496F1F44574D00AC9378 /* libsqlite3.0.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D88496E1F44574D00AC9378 /* libsqlite3.0.tbd */; };
+		4D8849781F44590700AC9378 /* TomboAFNetworking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D8849771F44590300AC9378 /* TomboAFNetworking.framework */; };
+		4D88497C1F4463D800AC9378 /* SKPaymentTransactionStoreTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D88497B1F4463D800AC9378 /* SKPaymentTransactionStoreTest.m */; };
 		D90769011C33E308005EBBDB /* SKRequestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D90769001C33E308005EBBDB /* SKRequestTests.m */; };
 		D94BB96C1C5C5ACD00816E24 /* SKDownload.m in Sources */ = {isa = PBXBuildFile; fileRef = D923A6BE1C09177700EC5559 /* SKDownload.m */; };
 		D94BB96D1C5C5ACD00816E24 /* SKPayment.m in Sources */ = {isa = PBXBuildFile; fileRef = D923A6BF1C09177700EC5559 /* SKPayment.m */; };
@@ -46,26 +52,19 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		4D4C65091F2F4817003A8FB3 /* PBXContainerItemProxy */ = {
+		4D8849761F44590300AC9378 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 4D4C65001F2F4816003A8FB3 /* TomboKit.xcodeproj */;
+			containerPortal = 4D8849721F44590300AC9378 /* TomboAFNetworking.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 4D4C63B71F2F428E003A8FB3;
-			remoteInfo = TomboKit;
+			remoteGlobalIDString = 4D4C63731F2F4184003A8FB3;
+			remoteInfo = TomboAFNetworking;
 		};
-		4D4C650B1F2F4817003A8FB3 /* PBXContainerItemProxy */ = {
+		4D8849791F44592600AC9378 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 4D4C65001F2F4816003A8FB3 /* TomboKit.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 4D4C63C01F2F428E003A8FB3;
-			remoteInfo = TomboKitTests;
-		};
-		4D4C651A1F2F6855003A8FB3 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4D4C65001F2F4816003A8FB3 /* TomboKit.xcodeproj */;
+			containerPortal = 4D8849721F44590300AC9378 /* TomboAFNetworking.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 4D4C63B61F2F428E003A8FB3;
-			remoteInfo = TomboKit;
+			remoteGlobalIDString = 4D4C63721F2F4184003A8FB3;
+			remoteInfo = TomboAFNetworking;
 		};
 		D96106661C643E65008255F7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -96,7 +95,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		4D4C65001F2F4816003A8FB3 /* TomboKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TomboKit.xcodeproj; path = ../TomboKit/TomboKit.xcodeproj; sourceTree = "<group>"; };
+		4D8849681F4454D800AC9378 /* SKPaymentTransaction+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SKPaymentTransaction+Internal.h"; sourceTree = "<group>"; };
+		4D8849691F4454D800AC9378 /* SKPaymentTransactionStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKPaymentTransactionStore.h; sourceTree = "<group>"; };
+		4D88496A1F4454D800AC9378 /* SKPaymentTransactionStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKPaymentTransactionStore.m; sourceTree = "<group>"; };
+		4D88496E1F44574D00AC9378 /* libsqlite3.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.0.tbd; path = usr/lib/libsqlite3.0.tbd; sourceTree = SDKROOT; };
+		4D8849721F44590300AC9378 /* TomboAFNetworking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TomboAFNetworking.xcodeproj; path = ../TomboAFNetworking/TomboAFNetworking.xcodeproj; sourceTree = "<group>"; };
+		4D88497B1F4463D800AC9378 /* SKPaymentTransactionStoreTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKPaymentTransactionStoreTest.m; sourceTree = "<group>"; };
 		6EB731003551FC09860DE136 /* libPods-StoreKitTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-StoreKitTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B0FE193336247A647DB3F10A /* Pods-StoreKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StoreKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-StoreKitTests/Pods-StoreKitTests.release.xcconfig"; sourceTree = "<group>"; };
 		BEF4F5F23192AA48E291D5F1 /* Pods-StoreKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StoreKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-StoreKitTests/Pods-StoreKitTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -130,6 +134,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4D88496F1F44574D00AC9378 /* libsqlite3.0.tbd in Frameworks */,
+				384813E1185DC6173BDD6DB0 /* libPods-StoreKitTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -137,7 +143,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4D4C650D1F2F481C003A8FB3 /* TomboKit.framework in Frameworks */,
+				4D8849781F44590700AC9378 /* TomboAFNetworking.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -147,17 +153,17 @@
 		0B16BA49E0EE6360B1E86B6E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				4D4C65001F2F4816003A8FB3 /* TomboKit.xcodeproj */,
+				4D8849721F44590300AC9378 /* TomboAFNetworking.xcodeproj */,
+				4D88496E1F44574D00AC9378 /* libsqlite3.0.tbd */,
 				6EB731003551FC09860DE136 /* libPods-StoreKitTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		4D4C65011F2F4816003A8FB3 /* Products */ = {
+		4D8849731F44590300AC9378 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				4D4C650A1F2F4817003A8FB3 /* TomboKit.framework */,
-				4D4C650C1F2F4817003A8FB3 /* TomboKitTests.xctest */,
+				4D8849771F44590300AC9378 /* TomboAFNetworking.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -183,6 +189,9 @@
 		D923A6BD1C09175F00EC5559 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				4D8849681F4454D800AC9378 /* SKPaymentTransaction+Internal.h */,
+				4D8849691F4454D800AC9378 /* SKPaymentTransactionStore.h */,
+				4D88496A1F4454D800AC9378 /* SKPaymentTransactionStore.m */,
 				D923A6BE1C09177700EC5559 /* SKDownload.m */,
 				D923A6BF1C09177700EC5559 /* SKPayment.m */,
 				D923A6C01C09177700EC5559 /* SKPaymentQueue.m */,
@@ -222,6 +231,7 @@
 			children = (
 				D9D753981C212C7300C40E06 /* Info.plist */,
 				D90769001C33E308005EBBDB /* SKRequestTests.m */,
+				4D88497B1F4463D800AC9378 /* SKPaymentTransactionStoreTest.m */,
 				D9901E091C292AA6001609FB /* SKPaymentQueueTests.m */,
 			);
 			path = StoreKitTests;
@@ -244,8 +254,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				D9DB9EB31C5A06D700139AB5 /* StoreKit.h in Headers */,
+				4D88496B1F4454D800AC9378 /* SKPaymentTransaction+Internal.h in Headers */,
 				D9DB9EAA1C5A06D700139AB5 /* SKBase.h in Headers */,
 				D9DB9EAB1C5A06D700139AB5 /* SKDownload.h in Headers */,
+				4D88496C1F4454D800AC9378 /* SKPaymentTransactionStore.h in Headers */,
 				D9DB9EAC1C5A06D700139AB5 /* SKPayment.h in Headers */,
 				D9DB9EAD1C5A06D700139AB5 /* SKPaymentQueue.h in Headers */,
 				D9DB9EAE1C5A06D700139AB5 /* SKPaymentTransaction.h in Headers */,
@@ -263,9 +275,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D9D7539E1C212C7300C40E06 /* Build configuration list for PBXNativeTarget "StoreKitTests" */;
 			buildPhases = (
+				0CC91E52123DF4F70D11A6D7 /* [CP] Check Pods Manifest.lock */,
 				D9D753901C212C7300C40E06 /* Sources */,
 				D9D753911C212C7300C40E06 /* Frameworks */,
 				D9D753921C212C7300C40E06 /* Resources */,
+				96134A93B1400C78C16D0A8F /* [CP] Embed Pods Frameworks */,
+				86E4DED74C41CA4500667F22 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -290,7 +305,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				4D4C651B1F2F6855003A8FB3 /* PBXTargetDependency */,
+				4D88497A1F44592600AC9378 /* PBXTargetDependency */,
 			);
 			name = StoreKit;
 			productName = StoreKit;
@@ -329,8 +344,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 4D4C65011F2F4816003A8FB3 /* Products */;
-					ProjectRef = 4D4C65001F2F4816003A8FB3 /* TomboKit.xcodeproj */;
+					ProductGroup = 4D8849731F44590300AC9378 /* Products */;
+					ProjectRef = 4D8849721F44590300AC9378 /* TomboAFNetworking.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -343,18 +358,11 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		4D4C650A1F2F4817003A8FB3 /* TomboKit.framework */ = {
+		4D8849771F44590300AC9378 /* TomboAFNetworking.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
-			path = TomboKit.framework;
-			remoteRef = 4D4C65091F2F4817003A8FB3 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		4D4C650C1F2F4817003A8FB3 /* TomboKitTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = TomboKitTests.xctest;
-			remoteRef = 4D4C650B1F2F4817003A8FB3 /* PBXContainerItemProxy */;
+			path = TomboAFNetworking.framework;
+			remoteRef = 4D8849761F44590300AC9378 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -370,6 +378,51 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		0CC91E52123DF4F70D11A6D7 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		86E4DED74C41CA4500667F22 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-StoreKitTests/Pods-StoreKitTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		96134A93B1400C78C16D0A8F /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-StoreKitTests/Pods-StoreKitTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		D9DB9EB41C5A075500139AB5 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -405,6 +458,7 @@
 			files = (
 				D90769011C33E308005EBBDB /* SKRequestTests.m in Sources */,
 				D9901E0A1C292AA6001609FB /* SKPaymentQueueTests.m in Sources */,
+				4D88497C1F4463D800AC9378 /* SKPaymentTransactionStoreTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -419,6 +473,7 @@
 				D94BB9701C5C5ACD00816E24 /* SKProduct.m in Sources */,
 				D94BB9711C5C5ACD00816E24 /* SKProductsResponse.m in Sources */,
 				D94BB9721C5C5ACD00816E24 /* SKRequest.m in Sources */,
+				4D88496D1F4454D800AC9378 /* SKPaymentTransactionStore.m in Sources */,
 				D94BB9731C5C5ACD00816E24 /* SKStoreProductViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -426,10 +481,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		4D4C651B1F2F6855003A8FB3 /* PBXTargetDependency */ = {
+		4D88497A1F44592600AC9378 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = TomboKit;
-			targetProxy = 4D4C651A1F2F6855003A8FB3 /* PBXContainerItemProxy */;
+			name = TomboAFNetworking;
+			targetProxy = 4D8849791F44592600AC9378 /* PBXContainerItemProxy */;
 		};
 		D96106671C643E65008255F7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

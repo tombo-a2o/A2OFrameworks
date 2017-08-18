@@ -5,12 +5,14 @@
 
 - (instancetype)initWithPayment:(SKPayment *)payment
 {
+    if(!payment) return nil;
+
     _transactionIdentifier = nil;
-    _payment = payment;
+    _payment = [payment copy];
     _transactionState = SKPaymentTransactionStatePurchasing;
     _transactionDate = nil;
     _error = nil;
-    _requestId = [NSUUID UUID].UUIDString;
+    _requestId = [NSUUID UUID].UUIDString.lowercaseString;
 
     return self;
 }

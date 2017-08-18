@@ -2,6 +2,8 @@
 
 typedef NSInteger SKPaymentTransactionState;
 
+@class SKPayment;
+
 @interface SKPaymentTransaction : NSObject
 
 // Getting Information About the Transaction
