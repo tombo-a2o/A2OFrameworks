@@ -164,7 +164,7 @@ static NSDate* parseDate(NSString* dateString)
     // TODO: show detailed log
     SKDebugLog(@"transaction: %@", transaction);
 
-    [self connectToPaymentAPI:[transaction requestJSON] completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
+    [self connectToPaymentAPI:[transaction requestJSON] path:@"/payments" method:@"POST" completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
         SKDebugLog(@"TomboAPI::postPayments error: %@ response: %@, responseObject:%@", error, response, responseObject);
         if (error) {
             NSLog(@"Error(%@): %@", NSStringFromClass([self class]), error);
@@ -203,7 +203,7 @@ static NSDate* parseDate(NSString* dateString)
     }];
 }
 
-- (void)connectToPaymentAPI:(NSDictionary *)parameters completionHandler:(void (^)(NSURLResponse *response, id responseObject, NSError *error))completionHandler
+- (void)connectToPaymentAPI:(NSDictionary *)parameters path:(NSString*)path method:(NSString*)method completionHandler:(void (^)(NSURLResponse *response, id responseObject, NSError *error))completionHandler
 {
     NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
     TomboAFURLSessionManager *_URLSessionManager = [[TomboAFURLSessionManager alloc] initWithSessionConfiguration:configuration];
@@ -213,9 +213,9 @@ static NSDate* parseDate(NSString* dateString)
     SKDebugLog(@"ALLOW INVALID CERTIFICATES");
 #endif
 
-    NSString *urlString = [getTomboAPIServerUrlString() stringByAppendingString:@"/payments"];
+    NSString *urlString = [getTomboAPIServerUrlString() stringByAppendingString:path];
     NSError *serializerError = nil;
-    NSMutableURLRequest *request = [[TomboAFJSONRequestSerializer serializer] requestWithMethod:@"POST" URLString:urlString parameters:parameters error:&serializerError];
+    NSMutableURLRequest *request = [[TomboAFJSONRequestSerializer serializer] requestWithMethod:method URLString:urlString parameters:parameters error:&serializerError];
     _URLSessionManager.responseSerializer = [TomboAFJSONResponseSerializer serializer];
 
     NSURLSessionDataTask *dataTask = [_URLSessionManager dataTaskWithRequest:request completionHandler:completionHandler];
@@ -261,12 +261,43 @@ static const char* transactionKey = "transactionKey";
     }
 }
 
+- (void)finishPaymentTransaction:(SKPaymentTransaction *)transaction completionHandler:(void (^)(void))completionHandler
+{
+    // TODO: show detailed log
+    SKDebugLog(@"transaction: %@", transaction);
+
+    NSString *path = [@"/payments/" stringByAppendingString:transaction.transactionIdentifier];
+    NSDictionary *params = @{@"user_jwt": getUserJwtString()};
+
+    [self connectToPaymentAPI:params path:path method:@"PATCH" completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
+        SKDebugLog(@"TomboAPI::postPayments error: %@ response: %@, responseObject:%@", error, response, responseObject);
+        if (error) {
+            NSLog(@"Error(%@): %@", NSStringFromClass([self class]), error);
+            if(responseObject) {
+                // ignore error
+                if(completionHandler) completionHandler();
+            } else {
+                // Network error
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3.0f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                    [self postPaymentTransaction:transaction completionHandler:completionHandler];
+                });
+            }
+        } else {
+            NSDictionary *transactionDict = [responseObject objectForKey:@"data"];
+            BOOL updated = [transaction updateWithResponseJSON:transactionDict];
+            if(updated) {
+                [_transactionStore update:transaction];
+                [self notifyUpdatedTransaction:transaction];
+            }
+            if(completionHandler) completionHandler();
+        }
+    }];
+}
+
 // Completes a pending transaction.
 - (void)finishTransaction:(SKPaymentTransaction *)transaction
 {
-    // TODO: Support a "real" queue. Now we don't use a queue. An added payment is immediately executed.
-
-    // currently do nothing
+    [self finishPaymentTransaction:transaction completionHandler:nil];
 }
 
 // Asks the payment queue to restore previously completed purchases.
