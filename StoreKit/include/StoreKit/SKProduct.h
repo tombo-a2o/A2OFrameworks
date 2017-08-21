@@ -11,7 +11,7 @@
 
 // Getting Downloadable Content Information
 @property(readonly) BOOL downloadable;
-@property(nonatomic, readonly) NSArray/*<NSNumber *>*/ *downloadContentLengths;
+@property(nonatomic, readonly) NSArray<NSNumber *> *downloadContentLengths;
 @property(nonatomic, readonly) NSString *downloadContentVersion;
 
 // FIXME: move to private

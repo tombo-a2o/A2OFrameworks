@@ -7,15 +7,15 @@
 @protocol SKPaymentTransactionObserver <NSObject>
 
 // Handing Transactions
-- (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray/*<SKPaymentTransaction *>*/ *)transactions;
-- (void)paymentQueue:(SKPaymentQueue *)queue removedTransactions:(NSArray/*<SKPaymentTransaction *>*/ *)transactions;
+- (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray<SKPaymentTransaction *> *)transactions;
+- (void)paymentQueue:(SKPaymentQueue *)queue removedTransactions:(NSArray<SKPaymentTransaction *> *)transactions;
 
 // Handling Restored Transactions
 - (void)paymentQueue:(SKPaymentQueue *)queue restoreCompletedTransactionsFailedWithError:(NSError *)error;
 - (void)paymentQueueRestoreCompletedTransactionsFinished:(SKPaymentQueue *)queue;
 
 // Handling Download Actions
-- (void)paymentQueue:(SKPaymentQueue *)queue updatedDownloads:(NSArray/*<SKDownload *>*/ *)downloads;
+- (void)paymentQueue:(SKPaymentQueue *)queue updatedDownloads:(NSArray<SKDownload *> *)downloads;
 
 @end
 
@@ -41,8 +41,8 @@
 - (void)restoreCompletedTransactionsWithApplicationUsername:(NSString *)username;
 
 // Downloading Content
-- (void)startDownloads:(NSArray/*<SKDownload *>*/*)downloads;
-- (void)cancelDownloads:(NSArray/*<SKDownload *>*/*)downloads;
-- (void)pauseDownloads:(NSArray/*<SKDownload *>*/*)downloads;
-- (void)resumeDownloads:(NSArray/*<SKDownload *>*/ *)downloads;
+- (void)startDownloads:(NSArray<SKDownload *>*)downloads;
+- (void)cancelDownloads:(NSArray<SKDownload *>*)downloads;
+- (void)pauseDownloads:(NSArray<SKDownload *>*)downloads;
+- (void)resumeDownloads:(NSArray<SKDownload *> *)downloads;
 @end

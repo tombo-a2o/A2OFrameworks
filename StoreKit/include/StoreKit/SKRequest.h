@@ -39,7 +39,7 @@
 @interface SKProductsRequest : SKRequest
 
 // Initializing a Products Request
-- (instancetype)initWithProductIdentifiers:(NSSet/*<NSString *>*/ *)productIdentifiers;
+- (instancetype)initWithProductIdentifiers:(NSSet<NSString *> *)productIdentifiers;
 
 // Settings the Delegate
 @property(nonatomic, assign) id< SKProductsRequestDelegate > delegate;
@@ -49,8 +49,8 @@
 @interface SKReceiptRefreshRequest : SKRequest
 
 // Working with Receipt Refresh Requests
-- (instancetype)initWithReceiptProperties:(NSDictionary/*<NSString *, id>*/ *)properties;
-@property (nonatomic, readonly) NSDictionary/*<NSString *, id>*/ *receiptProperties;
+- (instancetype)initWithReceiptProperties:(NSDictionary<NSString *, id> *)properties;
+@property (nonatomic, readonly) NSDictionary<NSString *, id> *receiptProperties;
 
 @end
 

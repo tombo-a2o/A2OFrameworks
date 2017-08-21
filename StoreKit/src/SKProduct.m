@@ -18,7 +18,7 @@
 
 // TODO: implement setter method for downloadable content information
 //       @property(readonly) BOOL downloadable;
-//       @property(nonatomic, readonly) NSArray/*<NSNumber *>*/ *downloadContentLengths;
+//       @property(nonatomic, readonly) NSArray<NSNumber *> *downloadContentLengths;
 //       @property(nonatomic, readonly) NSString *downloadContentVersion;
 
 - (NSString*)description

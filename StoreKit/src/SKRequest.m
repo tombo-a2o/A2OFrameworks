@@ -151,7 +151,7 @@ NSString * const SKReceiptPropertyIsVolumePurchase = @"vpp";
 @dynamic delegate;
 
 // Initialized a receipt refresh request with optional properties.
-- (instancetype)initWithReceiptProperties:(NSDictionary/*<NSString *, id>*/ *)properties
+- (instancetype)initWithReceiptProperties:(NSDictionary<NSString *, id> *)properties
 {
     // FIXME: implement
     [self doesNotRecognizeSelector:_cmd];
