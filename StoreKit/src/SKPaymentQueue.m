@@ -297,7 +297,9 @@ static const char* transactionKey = "transactionKey";
 // Completes a pending transaction.
 - (void)finishTransaction:(SKPaymentTransaction *)transaction
 {
-    [self finishPaymentTransaction:transaction completionHandler:nil];
+    if(transaction.transactionState == SKPaymentTransactionStatePurchased) {
+        [self finishPaymentTransaction:transaction completionHandler:nil];
+    }
 }
 
 // Asks the payment queue to restore previously completed purchases.
