@@ -74,6 +74,27 @@
                                 },
                         }
                 } options:NSJSONWritingPrettyPrinted error:nil]);
+
+    stubRequest(@"PATCH", @"https://api.tombo.io/payments/transactionIdentifier1").
+    withBody(@"{\"user_jwt\":\"dummy_jwt\"}").
+    andReturn(200).
+    withHeaders(@{@"Content-Type": @"application/json"}).
+    withBody([NSJSONSerialization dataWithJSONObject:
+              @{
+                @"data": @{
+                        @"type": @"payments",
+                        @"id": @"transactionIdentifier1",
+                        @"attributes": @{
+                                @"request_id": @"request1",
+                                @"product_identifier": @"product1",
+                                @"quantity": @"1",
+                                @"application_username": [NSNull null],
+                                @"status": @"3",
+                                @"created_at": @"1980-03-17T05:58:17.000+09:00",
+                                @"updated_at": @"1980-03-17T05:58:17.000+09:00",
+                                },
+                        }
+                } options:NSJSONWritingPrettyPrinted error:nil]);
     
     SKPaymentQueue *queue = [SKPaymentQueue defaultQueue];
     [queue addTransactionObserver:self];
