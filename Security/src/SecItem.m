@@ -19,7 +19,7 @@ NSArray<NSString *>* attributeKeys(void){
     return _attributeKeys;
 }
 
-bool checkTableExists(sqlite3 *db) {
+static bool checkTableExists(sqlite3 *db) {
     sqlite3_stmt *stmt;
     int result;
 
@@ -34,7 +34,7 @@ bool checkTableExists(sqlite3 *db) {
     return count == 1;
 }
 
-void createTableIfNotExists(sqlite3 *db) {
+static void createTableIfNotExists(sqlite3 *db) {
     if(checkTableExists(db)) return;
 
     sqlite3_stmt *stmt;
