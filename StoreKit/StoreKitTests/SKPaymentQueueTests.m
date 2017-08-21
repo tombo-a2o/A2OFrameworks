@@ -7,14 +7,59 @@
 - (void)postPaymentTransaction:(SKPaymentTransaction *)transaction completionHandler:(void (^)(void))completionHandler;
 @end
 
-@interface SKPaymentQueueTests : XCTestCase <SKPaymentTransactionObserver>
+@interface SKPaymentQueueDelegate : NSObject<SKPaymentTransactionObserver>
++(instancetype)delegateWithExpectation:(XCTestExpectation*)expectation;
+@property NSArray<SKPaymentTransaction *> *transactions;
+@end
+
+@implementation SKPaymentQueueDelegate {
+    XCTestExpectation *_expectation;
+}
+
++(instancetype)delegateWithExpectation:(XCTestExpectation*)expectation
+{
+    SKPaymentQueueDelegate *delegate = [[SKPaymentQueueDelegate alloc] init];
+    delegate->_expectation = expectation;
+    return delegate;
+}
+
+#pragma mark - SKPaymentTransactionObserver
+
+// Handing Transactions
+- (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray/*<SKPaymentTransaction *>*/ *)transactions
+{
+    _transactions = [transactions copy];
+    [_expectation fulfill];
+}
+
+- (void)paymentQueue:(SKPaymentQueue *)queue removedTransactions:(NSArray/*<SKPaymentTransaction *>*/ *)transactions
+{
+    [_expectation fulfill];
+}
+
+// Handling Restored Transactions
+- (void)paymentQueue:(SKPaymentQueue *)queue restoreCompletedTransactionsFailedWithError:(NSError *)error
+{
+    [_expectation fulfill];
+}
+
+- (void)paymentQueueRestoreCompletedTransactionsFinished:(SKPaymentQueue *)queue
+{
+    [_expectation fulfill];
+}
+
+// Handling Download Actions
+- (void)paymentQueue:(SKPaymentQueue *)queue updatedDownloads:(NSArray/*<SKDownload *>*/ *)downloads
+{
+    [_expectation fulfill];
+}
 
 @end
 
-@implementation SKPaymentQueueTests {
-    XCTestExpectation *_expectation;
-    NSArray<SKPaymentTransaction *> *_transactions;
-}
+@interface SKPaymentQueueTests : XCTestCase
+@end
+
+@implementation SKPaymentQueueTests
 
 - (void)setUp
 {
@@ -43,8 +88,8 @@
 - (void)testAddAndRemoveTransactionObserver {
     SKPaymentQueue *queue = [SKPaymentQueue defaultQueue];
 
-    SKPaymentQueueTests *observer1 = [[SKPaymentQueueTests alloc] init];
-    SKPaymentQueueTests *observer2 = [[SKPaymentQueueTests alloc] init];
+    SKPaymentQueueDelegate *observer1 = [[SKPaymentQueueDelegate alloc] init];
+    SKPaymentQueueDelegate *observer2 = [[SKPaymentQueueDelegate alloc] init];
 
     [queue addTransactionObserver:observer1];
     [queue addTransactionObserver:observer2];
@@ -96,15 +141,15 @@
                         }
                 } options:NSJSONWritingPrettyPrinted error:nil]);
     
+    SKPaymentQueueDelegate *delegate = [SKPaymentQueueDelegate delegateWithExpectation:[self expectationWithDescription:@"SKPaymentTransactionObserver"]];
     SKPaymentQueue *queue = [SKPaymentQueue defaultQueue];
-    [queue addTransactionObserver:self];
+    [queue addTransactionObserver:delegate];
     
     SKProduct *product = [[SKProduct alloc] initWithProductIdentifier:@"product1" localizedTitle:@"title" localizedDescription:@"desc" price:[[NSDecimalNumber alloc] initWithInt:101] priceLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"ja_JP"]];
     SKPayment *payment = [SKPayment paymentWithProduct:product];
     SKPaymentTransaction *transaction = [[SKPaymentTransaction alloc] initWithPayment:payment];
     transaction.requestId = @"request1";
     
-    _expectation = [self expectationWithDescription:@"SKPaymentTransactionObserver"];
     
     [queue postPaymentTransaction:transaction completionHandler:nil];
     
@@ -114,14 +159,17 @@
             return;
         }
         
-        XCTAssertEqual(_transactions.count, 1);
+        NSArray<SKPaymentTransaction *> *transactions = delegate.transactions;
         
-        XCTAssertEqualObjects(_transactions[0].transactionIdentifier, @"transactionIdentifier1");
-        XCTAssertEqual(_transactions[0].transactionDate.timeIntervalSince1970, 322088297);
+        XCTAssertEqual(transactions.count, 1);
         
-        for (SKPaymentTransaction *transaction in _transactions) {
+        XCTAssertEqualObjects(transactions[0].transactionIdentifier, @"transactionIdentifier1");
+        XCTAssertEqual(transactions[0].transactionDate.timeIntervalSince1970, 322088297);
+        
+        for (SKPaymentTransaction *transaction in transactions) {
             [queue finishTransaction:transaction];
         }
+        [queue removeTransactionObserver:delegate];
     }];
 }
 
@@ -140,15 +188,14 @@
                         ]
                 } options:NSJSONWritingPrettyPrinted error:nil]);
     
+    SKPaymentQueueDelegate *delegate = [SKPaymentQueueDelegate delegateWithExpectation:[self expectationWithDescription:@"SKPaymentTransactionObserver2"]];
     SKPaymentQueue *queue = [SKPaymentQueue defaultQueue];
-    [queue addTransactionObserver:self];
+    [queue addTransactionObserver:delegate];
     
     SKProduct *product = [[SKProduct alloc] initWithProductIdentifier:@"product1" localizedTitle:@"title" localizedDescription:@"desc" price:[[NSDecimalNumber alloc] initWithInt:101] priceLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"ja_JP"]];
     SKPayment *payment = [SKPayment paymentWithProduct:product];
     SKPaymentTransaction *transaction = [[SKPaymentTransaction alloc] initWithPayment:payment];
     transaction.requestId = @"request1";
-    
-    _expectation = [self expectationWithDescription:@"SKPaymentTransactionObserver"];
     
     [queue postPaymentTransaction:transaction completionHandler:nil];
     
@@ -158,9 +205,11 @@
             return;
         }
         
-        XCTAssertEqual(_transactions.count, 1);
+        NSArray<SKPaymentTransaction *> *transactions = delegate.transactions;
         
-        SKPaymentTransaction *result = _transactions[0];
+        XCTAssertEqual(transactions.count, 1);
+        
+        SKPaymentTransaction *result = transactions[0];
         
         XCTAssertNil(result.transactionIdentifier);
         XCTAssertNil(result.transactionDate);
@@ -168,41 +217,11 @@
         XCTAssertEqualObjects(result.error.domain, SKServerErrorDomain);
         XCTAssertEqualObjects(result.error.userInfo[NSLocalizedDescriptionKey], @"errordetail");
         
-        for (SKPaymentTransaction *transaction in _transactions) {
+        for (SKPaymentTransaction *transaction in transactions) {
             [queue finishTransaction:transaction];
         }
+        [queue removeTransactionObserver:delegate];
     }];
-}
-
-#pragma mark - SKPaymentTransactionObserver
-
-// Handing Transactions
-- (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray/*<SKPaymentTransaction *>*/ *)transactions
-{
-    _transactions = [transactions copy];
-    [_expectation fulfill];
-}
-
-- (void)paymentQueue:(SKPaymentQueue *)queue removedTransactions:(NSArray/*<SKPaymentTransaction *>*/ *)transactions
-{
-    [_expectation fulfill];
-}
-
-// Handling Restored Transactions
-- (void)paymentQueue:(SKPaymentQueue *)queue restoreCompletedTransactionsFailedWithError:(NSError *)error
-{
-    [_expectation fulfill];
-}
-
-- (void)paymentQueueRestoreCompletedTransactionsFinished:(SKPaymentQueue *)queue
-{
-    [_expectation fulfill];
-}
-
-// Handling Download Actions
-- (void)paymentQueue:(SKPaymentQueue *)queue updatedDownloads:(NSArray/*<SKDownload *>*/ *)downloads
-{
-    [_expectation fulfill];
 }
 
 @end
