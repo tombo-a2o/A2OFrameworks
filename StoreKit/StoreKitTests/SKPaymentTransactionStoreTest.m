@@ -148,6 +148,18 @@
     XCTAssertEqualObjects(transaction1.error, transaction2.error);
 }
 
+- (void)testRemove {
+    SKPayment *payment = [SKPayment paymentWithProductIdentifier:@"productIdentifier1"];
+    SKPaymentTransaction *transaction1 = [[SKPaymentTransaction alloc] initWithPayment:payment];
+    [_store insert:transaction1];
+    
+    [_store remove:transaction1];
+    
+    SKPaymentTransaction *transaction2 = [_store transactionWithRequestId:transaction1.requestId];
+    
+    XCTAssertNil(transaction2);
+}
+
 
 
 @end

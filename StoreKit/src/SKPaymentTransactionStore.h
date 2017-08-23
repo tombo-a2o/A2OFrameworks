@@ -7,7 +7,9 @@
 + (instancetype)defaultStore;
 - (void)insert:(SKPaymentTransaction*)transaction;
 - (void)update:(SKPaymentTransaction*)transaction;
+- (void)remove:(SKPaymentTransaction*)transaction;
 - (SKPaymentTransaction*)transactionWithRequestId:(NSString*)requestId;
 - (SKPaymentTransaction*)incompleteTransaction;
 - (NSArray<SKPaymentTransaction*>*)incompleteTransactions;
+- (NSArray<SKPaymentTransaction*>*)allTransactions;
 @end

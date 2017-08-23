@@ -18,15 +18,23 @@
 
 #define SELECT_STATEMENT_BY_STATE "select requestId, productIdentifier, quantity, requestData, applicationUsername, transactionState, transactionIdentifier, transactionDate, transactionReceipt, error from transaction_queue where transactionState = ?;"
 #define SELECT_STATEMENT_BY_ID "select requestId, productIdentifier, quantity, requestData, applicationUsername, transactionState, transactionIdentifier, transactionDate, transactionReceipt, error from transaction_queue where requestId = ?;"
+#define SELECT_STATEMENT_ALL "select requestId, productIdentifier, quantity, requestData, applicationUsername, transactionState, transactionIdentifier, transactionDate, transactionReceipt, error from transaction_queue;"
 #define INSERT_STATEMENT "insert into transaction_queue values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
 #define UPDATE_STATEMENT "update transaction_queue set transactionState = ?, transactionIdentifier = ?, transactionDate = ?, transactionReceipt = ?, error = ? where requestId = ?;"
+#define DELETE_STATEMENT "delete from transaction_queue where requestId = ?;"
+
+#define SQL_ASSERT2(cond,db) do{if(!(cond)) NSLog(@"%s result: %d %s", __FUNCTION__, result, sqlite3_errmsg(db)); assert(cond);}while(0)
+#define SQL_ASSERT(cond) SQL_ASSERT2(cond,_db)
 
 @implementation SKPaymentTransactionStore {
     sqlite3 *_db;
     sqlite3_stmt *_selectStatementByState;
     sqlite3_stmt *_selectStatementById;
+    sqlite3_stmt *_selectStatementAll;
     sqlite3_stmt *_insertStatement;
     sqlite3_stmt *_updateStatement;
+    sqlite3_stmt *_deleteStatement;
+    NSArray<SKPaymentTransaction*>* _transactions;
 }
 
 + (instancetype)defaultStore
@@ -39,15 +47,17 @@ static void createTableIfNotExists(sqlite3 *db) {
     int result;
 
     result = sqlite3_prepare(db, CREATE_TABLE_STATEMENT, -1, &stmt, NULL);
-    assert(result == SQLITE_OK);
+    SQL_ASSERT2(result == SQLITE_OK, db);
     result = sqlite3_step(stmt);
-    assert(result == SQLITE_DONE);
+    SQL_ASSERT2(result == SQLITE_DONE, db);
     result = sqlite3_finalize(stmt);
-    assert(result == SQLITE_OK);
+    SQL_ASSERT2(result == SQLITE_OK, db);
 }
 
 - (instancetype)initWithStoragePath:(NSString*)path
 {
+    SKDebugLog(@"path %@", path);
+    
     self = [super init];
 
     int result = sqlite3_open([path UTF8String], &_db);
@@ -59,13 +69,17 @@ static void createTableIfNotExists(sqlite3 *db) {
     createTableIfNotExists(_db);
 
     result = sqlite3_prepare_v2(_db, SELECT_STATEMENT_BY_STATE, -1, &_selectStatementByState, NULL);
-    assert(result == SQLITE_OK);
+    SQL_ASSERT(result == SQLITE_OK);
     result = sqlite3_prepare_v2(_db, SELECT_STATEMENT_BY_ID, -1, &_selectStatementById, NULL);
-    assert(result == SQLITE_OK);
+    SQL_ASSERT(result == SQLITE_OK);
+    result = sqlite3_prepare_v2(_db, SELECT_STATEMENT_ALL, -1, &_selectStatementAll, NULL);
+    SQL_ASSERT(result == SQLITE_OK);
     result = sqlite3_prepare_v2(_db, INSERT_STATEMENT, -1, &_insertStatement, NULL);
-    assert(result == SQLITE_OK);
+    SQL_ASSERT(result == SQLITE_OK);
     result = sqlite3_prepare_v2(_db, UPDATE_STATEMENT, -1, &_updateStatement, NULL);
-    assert(result == SQLITE_OK);
+    SQL_ASSERT(result == SQLITE_OK);
+    result = sqlite3_prepare_v2(_db, DELETE_STATEMENT, -1, &_deleteStatement, NULL);
+    SQL_ASSERT(result == SQLITE_OK);
 
     return self;
 }
@@ -74,7 +88,10 @@ static void createTableIfNotExists(sqlite3 *db) {
 {
     sqlite3_finalize(_selectStatementByState);
     sqlite3_finalize(_selectStatementById);
+    sqlite3_finalize(_selectStatementAll);
+    sqlite3_finalize(_insertStatement);
     sqlite3_finalize(_updateStatement);
+    sqlite3_finalize(_deleteStatement);
     sqlite3_close(_db);
 }
 
@@ -123,27 +140,27 @@ static int bind_nsdate_nullable(sqlite3_stmt *stmt, int idx, NSDate *date)
 
     int result;
     result = sqlite3_reset(_insertStatement);
-    assert(result == SQLITE_OK);
+    SQL_ASSERT(result == SQLITE_OK);
     result = bind_nsstring(_insertStatement, 1, requestId);
-    assert(result == SQLITE_OK);
+    SQL_ASSERT(result == SQLITE_OK);
     result = bind_nsstring(_insertStatement, 2, productIdentifier);
-    assert(result == SQLITE_OK);
+    SQL_ASSERT(result == SQLITE_OK);
     result = sqlite3_bind_int(_insertStatement, 3, payment.quantity);
-    assert(result == SQLITE_OK);
+    SQL_ASSERT(result == SQLITE_OK);
     result = bind_nsdata_nullable(_insertStatement, 4, requestData);
-    assert(result == SQLITE_OK);
+    SQL_ASSERT(result == SQLITE_OK);
     result = bind_nsstring_nullable(_insertStatement, 5, applicationUsername);
-    assert(result == SQLITE_OK);
+    SQL_ASSERT(result == SQLITE_OK);
     result = sqlite3_bind_int(_insertStatement, 6, transaction.transactionState);
-    assert(result == SQLITE_OK);
+    SQL_ASSERT(result == SQLITE_OK);
     result = bind_nsstring_nullable(_insertStatement, 7, transactionIdentifier);
-    assert(result == SQLITE_OK);
+    SQL_ASSERT(result == SQLITE_OK);
     result = bind_nsdate_nullable(_insertStatement, 8, transactionDate);
-    assert(result == SQLITE_OK);
+    SQL_ASSERT(result == SQLITE_OK);
     result = bind_nsdata_nullable(_insertStatement, 9, transactionReceipt);
-    assert(result == SQLITE_OK);
+    SQL_ASSERT(result == SQLITE_OK);
     result = bind_nsdata_nullable(_insertStatement, 10, errorData);
-    assert(result == SQLITE_OK);
+    SQL_ASSERT(result == SQLITE_OK);
 
     result = sqlite3_step(_insertStatement);
 
@@ -164,21 +181,39 @@ static int bind_nsdate_nullable(sqlite3_stmt *stmt, int idx, NSDate *date)
 
     int result;
     result = sqlite3_reset(_updateStatement);
-    assert(result == SQLITE_OK);
+    SQL_ASSERT(result == SQLITE_OK);
     result = sqlite3_bind_int(_updateStatement, 1, transaction.transactionState);
-    assert(result == SQLITE_OK);
+    SQL_ASSERT(result == SQLITE_OK);
     result = bind_nsstring_nullable(_updateStatement, 2, transactionIdentifier);
-    assert(result == SQLITE_OK);
+    SQL_ASSERT(result == SQLITE_OK);
     result = bind_nsdate_nullable(_updateStatement, 3, transactionDate);
-    assert(result == SQLITE_OK);
+    SQL_ASSERT(result == SQLITE_OK);
     result = bind_nsdata_nullable(_updateStatement, 4, transactionReceipt);
-    assert(result == SQLITE_OK);
+    SQL_ASSERT(result == SQLITE_OK);
     result = bind_nsdata_nullable(_updateStatement, 5, errorData);
-    assert(result == SQLITE_OK);
+    SQL_ASSERT(result == SQLITE_OK);
     result = bind_nsstring(_updateStatement, 6, requestId);
-    assert(result == SQLITE_OK);
+    SQL_ASSERT(result == SQLITE_OK);
 
     result = sqlite3_step(_updateStatement);
+
+    if(result != SQLITE_DONE) {
+        NSLog(@"%s result: %d", __FUNCTION__, result);
+    }
+}
+
+-(void)remove:(SKPaymentTransaction*)transaction
+{
+    SKDebugLog(@"%@", transaction);
+
+    NSString *requestId = transaction.requestId;
+
+    int result;
+    result = sqlite3_reset(_deleteStatement);
+    result = bind_nsstring(_deleteStatement, 1, requestId);
+    SQL_ASSERT(result == SQLITE_OK);
+
+    result = sqlite3_step(_deleteStatement);
 
     if(result != SQLITE_DONE) {
         NSLog(@"%s result: %d", __FUNCTION__, result);
@@ -253,9 +288,9 @@ static SKPaymentTransaction* parseRow(sqlite3_stmt *stmt)
 {
     int result;
     result = sqlite3_reset(_selectStatementById);
-    assert(result == SQLITE_OK);
+    SQL_ASSERT(result == SQLITE_OK);
     result = bind_nsstring(_selectStatementById, 1, requestId);
-    assert(result == SQLITE_OK);
+    SQL_ASSERT(result == SQLITE_OK);
 
     result = sqlite3_step(_selectStatementById);
 
@@ -272,9 +307,9 @@ static SKPaymentTransaction* parseRow(sqlite3_stmt *stmt)
 {
     int result;
     result = sqlite3_reset(_selectStatementByState);
-    assert(result == SQLITE_OK);
+    SQL_ASSERT(result == SQLITE_OK);
     result = sqlite3_bind_int(_selectStatementByState, 1, SKPaymentTransactionStatePurchasing);
-    assert(result == SQLITE_OK);
+    SQL_ASSERT(result == SQLITE_OK);
 
     result = sqlite3_step(_selectStatementByState);
 
@@ -292,9 +327,9 @@ static SKPaymentTransaction* parseRow(sqlite3_stmt *stmt)
 
     int result;
     result = sqlite3_reset(_selectStatementByState);
-    assert(result == SQLITE_OK);
+    SQL_ASSERT(result == SQLITE_OK);
     result = sqlite3_bind_int(_selectStatementByState, 1, SKPaymentTransactionStatePurchasing);
-    assert(result == SQLITE_OK);
+    SQL_ASSERT(result == SQLITE_OK);
 
     result = sqlite3_step(_selectStatementByState);
 
