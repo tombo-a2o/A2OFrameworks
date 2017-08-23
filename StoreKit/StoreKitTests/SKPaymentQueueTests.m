@@ -12,6 +12,7 @@
 @property XCTestExpectation *purchasedExpectation;
 @property XCTestExpectation *failedExpectation;
 @property XCTestExpectation *removedExpectation;
+@property XCTestExpectation *restoreExpectation;
 @property NSArray<SKPaymentTransaction *> *transactions;
 @end
 
@@ -31,6 +32,9 @@
                 break;
             case SKPaymentTransactionStateFailed:
                 [_failedExpectation fulfill];
+                break;
+            case SKPaymentTransactionStateRestored:
+                [_restoreExpectation fulfill];
                 break;
         }
     }
@@ -162,6 +166,7 @@
         for (SKPaymentTransaction *transaction in transactions) {
             [queue finishTransaction:transaction];
         }
+        XCTAssertEqual(queue.transactions.count, 0);
         [queue removeTransactionObserver:delegate];
     }];
 }
@@ -217,8 +222,85 @@
         for (SKPaymentTransaction *transaction in transactions) {
             [queue finishTransaction:transaction];
         }
+        XCTAssertEqual(queue.transactions.count, 0);
         [queue removeTransactionObserver:delegate];
     }];
 }
+
+
+- (void)testConnectToRestore {
+    stubRequest(@"GET", @"https://api.tombo.io/payments/restorable?user_jwt=dummy_jwt").
+    andReturn(200).
+    withHeaders(@{@"Content-Type": @"application/json"}).
+    withBody([NSJSONSerialization dataWithJSONObject:
+              @{
+                @"data": @[
+                        @{
+                            @"type": @"payments",
+                            @"id": @"transactionIdentifier1",
+                            @"attributes": @{
+                                    @"id": @"transactionIdentifier1",
+                                    @"request_id": @"req1",
+                                    @"product_identifier": @"product1",
+                                    @"quantity": @"1",
+                                    @"application_username": [NSNull null],
+                                    @"status": @"2",
+                                    @"created_at": @"1980-03-17T05:58:17.000+09:00",
+                                    @"updated_at": @"1980-03-17T05:58:17.000+09:00",
+                                    },
+                            },
+                        @{
+                            @"type": @"payments",
+                            @"id": @"transactionIdentifier2",
+                            @"attributes": @{
+                                    @"id": @"transactionIdentifier1",
+                                    @"request_id": @"reg2",
+                                    @"product_identifier": @"product2",
+                                    @"quantity": @"2",
+                                    @"application_username": [NSNull null],
+                                    @"status": @"2",
+                                    @"created_at": @"2017-03-17T05:58:17.000+09:00",
+                                    @"updated_at": @"2017-03-17T05:58:17.000+09:00",
+                                    },
+                            }
+                        ]
+                } options:NSJSONWritingPrettyPrinted error:nil]);
+    
+    SKPaymentQueueDelegate *delegate = [[SKPaymentQueueDelegate alloc] init];
+    delegate.restoreExpectation = [self expectationWithDescription:@"restore"];
+    delegate.restoreExpectation.expectedFulfillmentCount = 2;
+    SKPaymentQueue *queue = [SKPaymentQueue defaultQueue];
+    [queue addTransactionObserver:delegate];
+    
+    [queue restoreCompletedTransactions];
+    
+    [self waitForExpectationsWithTimeout:5 handler:^(NSError *error) {
+        if (error != nil) {
+            XCTFail(@"Timeout: %@", error);
+            return;
+        }
+        
+        NSArray<SKPaymentTransaction *> *transactions = delegate.transactions;
+        
+        XCTAssertEqual(transactions.count, 2);
+        
+        SKPaymentTransaction *result = transactions[0];
+        SKPaymentTransaction *original = result.originalTransaction;
+        
+        XCTAssertNotEqualObjects(result.transactionIdentifier, @"transactionIdentifier1");
+        XCTAssertEqual(result.transactionState, SKPaymentTransactionStateRestored);
+        
+        XCTAssertNotNil(original);
+        XCTAssertEqualObjects(original.transactionIdentifier, @"transactionIdentifier1");
+        XCTAssertEqual(original.transactionDate.timeIntervalSince1970, 322088297);
+
+        for (SKPaymentTransaction *transaction in transactions) {
+            [queue finishTransaction:transaction];
+        }
+        XCTAssertEqual(queue.transactions.count, 0);
+        [queue removeTransactionObserver:delegate];
+    }];
+}
+
 
 @end

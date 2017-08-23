@@ -53,6 +53,24 @@ static NSDate* parseDate(NSString* dateString)
     return [dateFormatter dateFromString:dateString];
 }
 
+- (instancetype)initWithResponseJSON:(NSDictionary*)json
+{
+    self = [super init];
+
+    NSDictionary* attributes = [json objectForKey:@"attributes"];
+
+    SKMutablePayment *payment = [[SKPayment paymentWithProductIdentifier:[attributes objectForKey:@"product_identifier"]] mutableCopy];
+    payment.quantity = [[attributes objectForKey:@"quantity"] integerValue];
+
+    self.payment = [payment copy];
+    self.transactionIdentifier = [json objectForKey:@"id"];
+    self.transactionState = [[attributes objectForKey:@"status"] integerValue];
+    self.transactionDate = parseDate([attributes objectForKey:@"created_at"]);
+    self.requestId = [attributes objectForKey:@"request_id"];
+
+    return self;
+}
+
 - (BOOL)updateWithResponseJSON:(NSDictionary*)json
 {
     NSDictionary* attributes = [json objectForKey:@"attributes"];
@@ -151,12 +169,15 @@ static NSDate* parseDate(NSString* dateString)
 
 - (void)notifyUpdatedTransaction:(SKPaymentTransaction*)transaction
 {
-    NSArray *updatedTransactions = [NSArray arrayWithObject:transaction];
+    [self notifyUpdatedTransactions:[NSArray arrayWithObject:transaction]];
+}
 
-    SKDebugLog(@"updatedTransactions: %@", updatedTransactions);
+- (void)notifyUpdatedTransactions:(NSArray<SKPaymentTransaction*>*)transactions
+{
+    SKDebugLog(@"updatedTransactions: %@", transactions);
 
     for (id<SKPaymentTransactionObserver> observer in _transactionObservers) {
-        [observer paymentQueue:self updatedTransactions:updatedTransactions];
+        [observer paymentQueue:self updatedTransactions:transactions];
     }
 }
 
@@ -167,7 +188,29 @@ static NSDate* parseDate(NSString* dateString)
     SKDebugLog(@"updatedTransactions: %@", removedTransactions);
 
     for (id<SKPaymentTransactionObserver> observer in _transactionObservers) {
-        [observer paymentQueue:self removedTransactions:removedTransactions];
+        if([observer respondsToSelector:@selector(paymentQueue:removedTransactions:)]) {
+            [observer paymentQueue:self removedTransactions:removedTransactions];
+        }
+    }
+}
+
+- (void)notifyRestoreCompletion
+{
+    for (id<SKPaymentTransactionObserver> observer in _transactionObservers) {
+        if([observer respondsToSelector:@selector(paymentQueueRestoreCompletedTransactionsFinished:)]) {
+            [observer paymentQueueRestoreCompletedTransactionsFinished:self];
+        }
+    }
+}
+
+- (void)notifyRestoreFailed:(NSError*)error
+{
+    SKDebugLog(@"error: %@", error);
+
+    for (id<SKPaymentTransactionObserver> observer in _transactionObservers) {
+        if([observer respondsToSelector:@selector(paymentQueue:restoreCompletedTransactionsFailedWithError:)]) {
+            [observer paymentQueue:self restoreCompletedTransactionsFailedWithError:error];
+        }
     }
 }
 
@@ -288,6 +331,8 @@ static const char* transactionKey = "transactionKey";
 
 - (void)showTransactionCompleteAlert
 {
+    // "You're all set."
+    // "Your puchase was successful."
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"完了しました。"
                                                     message:@"購入手続きが完了しました。"
                                                    delegate:nil
@@ -312,8 +357,29 @@ static const char* transactionKey = "transactionKey";
 // Asks the payment queue to restore previously completed purchases.
 - (void)restoreCompletedTransactions
 {
-    // FIXME: implement
-    [self doesNotRecognizeSelector:_cmd];
+    [self connectToPaymentAPI:@{@"user_jwt": getUserJwtString()}
+                         path:@"/payments/restorable"
+                       method:@"GET"
+            completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
+                SKDebugLog(@"TomboAPI::postPayments error: %@ response: %@, responseObject:%@", error, response, responseObject);
+                if (error) {
+                    [self notifyRestoreFailed:error];
+                } else {
+                    NSArray *transactionsDict = [responseObject objectForKey:@"data"];
+                    NSMutableArray *transactions = [[NSMutableArray alloc] init];
+                    for(NSDictionary *dict in transactionsDict) {
+                        SKPaymentTransaction *originalTransaction = [[SKPaymentTransaction alloc] initWithResponseJSON:dict];
+                        SKPaymentTransaction *transaction = [[SKPaymentTransaction alloc] initWithPayment:originalTransaction.payment];
+                        transaction.originalTransaction = originalTransaction;
+                        transaction.transactionIdentifier = [NSUUID UUID].UUIDString.lowercaseString;
+                        transaction.transactionState = SKPaymentTransactionStateRestored;
+                        transaction.transactionDate = [NSDate date];
+                        [transactions addObject:transaction];
+                    }
+                    [self notifyUpdatedTransactions:transactions];
+                    [self notifyRestoreCompletion];
+                }
+            }];
 }
 
 // Asks the payment queue to restore previously completed purchases, providing an opaque identifier for the user’s account.
