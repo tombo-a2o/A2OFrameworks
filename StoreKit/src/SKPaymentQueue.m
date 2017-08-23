@@ -3,17 +3,18 @@
 #import <objc/runtime.h>
 #import "SKPaymentTransaction+Internal.h"
 #import "SKPaymentTransactionStore.h"
-#if defined(A2O_EMSCRIPTEN)
-#import <tombo_platform.h>
-#else
-static inline NSString *getTomboAPIServerUrlString(void) {
-    return @"https://api.tombo.io";
-}
-static inline NSString *getUserJwtString(void) {
-    return @"dummy_jwt";
-}
-#endif
 #import <TomboAFNetworking/TomboAFNetworking.h>
+
+#if defined(A2O_EMSCRIPTEN)
+    #import <tombo_platform.h>
+#else
+    static inline NSString *getTomboAPIServerUrlString(void) {
+        return @"https://api.tombo.io";
+    }
+    static inline NSString *getUserJwtString(void) {
+        return @"dummy_jwt";
+    }
+#endif
 
 static SKPaymentQueue* _defaultQueue;
 
@@ -159,7 +160,18 @@ static NSDate* parseDate(NSString* dateString)
     }
 }
 
-- (void)postPaymentTransaction:(SKPaymentTransaction *)transaction completionHandler:(void (^)(void))completionHandler
+- (void)notifyRemovedTransaction:(SKPaymentTransaction*)transaction
+{
+    NSArray *removedTransactions = [NSArray arrayWithObject:transaction];
+
+    SKDebugLog(@"updatedTransactions: %@", removedTransactions);
+
+    for (id<SKPaymentTransactionObserver> observer in _transactionObservers) {
+        [observer paymentQueue:self removedTransactions:removedTransactions];
+    }
+}
+
+- (void)postPaymentTransaction:(SKPaymentTransaction *)transaction completionHandler:(void (^)(BOOL))completionHandler
 {
     // TODO: show detailed log
     SKDebugLog(@"transaction: %@", transaction);
@@ -184,7 +196,7 @@ static NSDate* parseDate(NSString* dateString)
                 transaction.error = error;
                 [_transactionStore update:transaction];
                 [self notifyUpdatedTransaction:transaction];
-                if(completionHandler) completionHandler();
+                if(completionHandler) completionHandler(NO);
             } else {
                 // Network error
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3.0f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
@@ -198,13 +210,14 @@ static NSDate* parseDate(NSString* dateString)
                 [_transactionStore update:transaction];
                 [self notifyUpdatedTransaction:transaction];
             }
-            if(completionHandler) completionHandler();
+            if(completionHandler) completionHandler(YES);
         }
     }];
 }
 
 - (void)connectToPaymentAPI:(NSDictionary *)parameters path:(NSString*)path method:(NSString*)method completionHandler:(void (^)(NSURLResponse *response, id responseObject, NSError *error))completionHandler
 {
+    SKDebugLog(@"params %@ path %@ method %@", parameters, path, method);
     NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
     TomboAFURLSessionManager *_URLSessionManager = [[TomboAFURLSessionManager alloc] initWithSessionConfiguration:configuration];
 #ifdef DEBUG
@@ -241,9 +254,18 @@ static const char* transactionKey = "transactionKey";
                                           otherButtonTitles:@"Buy", nil];
 
     SKPaymentTransaction *transaction = [[SKPaymentTransaction alloc] initWithPayment:payment];
+    [_transactionStore insert:transaction];
+    [self notifyUpdatedTransaction:transaction];
 
     objc_setAssociatedObject(alert, transactionKey, transaction, OBJC_ASSOCIATION_RETAIN);
     [alert show];
+}
+
+- (void)addTransactionForTest:(SKPaymentTransaction *)transaction
+{
+    [_transactionStore insert:transaction];
+    [self notifyUpdatedTransaction:transaction];
+    [self postPaymentTransaction:transaction completionHandler:nil];
 }
 
 -(void)alertView:(UIAlertView*)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
@@ -252,54 +274,39 @@ static const char* transactionKey = "transactionKey";
         // Cancel
         transaction.transactionState = SKPaymentTransactionStateFailed;
         transaction.error = [NSError errorWithDomain:SKErrorDomain code:0 userInfo:nil];
-        [_transactionStore insert:transaction];
         [self notifyUpdatedTransaction:transaction];
+        [self notifyRemovedTransaction:transaction];
     } else {
         // Buy
-        [_transactionStore insert:transaction];
-        [self postPaymentTransaction:transaction completionHandler:nil];
+        [self postPaymentTransaction:transaction completionHandler:^(BOOL success){
+            if(success) {
+                [self showTransactionCompleteAlert];
+            }
+        }];
     }
 }
 
-- (void)finishPaymentTransaction:(SKPaymentTransaction *)transaction completionHandler:(void (^)(void))completionHandler
+- (void)showTransactionCompleteAlert
 {
-    // TODO: show detailed log
-    SKDebugLog(@"transaction: %@", transaction);
-
-    NSString *path = [@"/payments/" stringByAppendingString:transaction.transactionIdentifier];
-    NSDictionary *params = @{@"user_jwt": getUserJwtString()};
-
-    [self connectToPaymentAPI:params path:path method:@"PATCH" completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
-        SKDebugLog(@"TomboAPI::postPayments error: %@ response: %@, responseObject:%@", error, response, responseObject);
-        if (error) {
-            NSLog(@"Error(%@): %@", NSStringFromClass([self class]), error);
-            if(responseObject) {
-                // ignore error
-                if(completionHandler) completionHandler();
-            } else {
-                // Network error
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3.0f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                    [self postPaymentTransaction:transaction completionHandler:completionHandler];
-                });
-            }
-        } else {
-            NSDictionary *transactionDict = [responseObject objectForKey:@"data"];
-            BOOL updated = [transaction updateWithResponseJSON:transactionDict];
-            if(updated) {
-                [_transactionStore update:transaction];
-                [self notifyUpdatedTransaction:transaction];
-            }
-            if(completionHandler) completionHandler();
-        }
-    }];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"完了しました。"
+                                                    message:@"購入手続きが完了しました。"
+                                                   delegate:nil
+                                          cancelButtonTitle:nil
+                                          otherButtonTitles:@"Buy", nil];
+    [alert show];
 }
 
 // Completes a pending transaction.
 - (void)finishTransaction:(SKPaymentTransaction *)transaction
 {
-    if(transaction.transactionState == SKPaymentTransactionStatePurchased) {
-        [self finishPaymentTransaction:transaction completionHandler:nil];
+    SKDebugLog(@"transaction: %@", transaction);
+
+    if(transaction.transactionState == SKPaymentTransactionStatePurchasing) {
+        [NSException raise:NSInvalidArgumentException format:@"Cannot finish a purchasing transaction"];
     }
+
+    [_transactionStore remove:transaction];
+    [self notifyRemovedTransaction:transaction];
 }
 
 // Asks the payment queue to restore previously completed purchases.
@@ -349,11 +356,17 @@ static const char* transactionKey = "transactionKey";
     SKPaymentTransaction* transaction = [_transactionStore incompleteTransaction];
     if(transaction) {
         SKDebugLog(@"%@", transaction);
-        [self postPaymentTransaction:transaction completionHandler:^{
+        [self postPaymentTransaction:transaction completionHandler:^(BOOL success){
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self processRemainings];
             });
         }];
     }
 }
+
+- (NSArray*)transactions
+{
+    return [_transactionStore allTransactions];
+}
+
 @end

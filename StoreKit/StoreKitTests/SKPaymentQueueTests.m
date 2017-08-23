@@ -4,54 +4,58 @@
 #import "Nocilla.h"
 
 @interface SKPaymentQueue (Test)
-- (void)postPaymentTransaction:(SKPaymentTransaction *)transaction completionHandler:(void (^)(void))completionHandler;
+- (void)addTransactionForTest:(SKPaymentTransaction *)transaction;
 @end
 
 @interface SKPaymentQueueDelegate : NSObject<SKPaymentTransactionObserver>
-+(instancetype)delegateWithExpectation:(XCTestExpectation*)expectation;
+@property XCTestExpectation *purchasingExpectation;
+@property XCTestExpectation *purchasedExpectation;
+@property XCTestExpectation *failedExpectation;
+@property XCTestExpectation *removedExpectation;
 @property NSArray<SKPaymentTransaction *> *transactions;
 @end
 
-@implementation SKPaymentQueueDelegate {
-    XCTestExpectation *_expectation;
-}
-
-+(instancetype)delegateWithExpectation:(XCTestExpectation*)expectation
-{
-    SKPaymentQueueDelegate *delegate = [[SKPaymentQueueDelegate alloc] init];
-    delegate->_expectation = expectation;
-    return delegate;
-}
-
-#pragma mark - SKPaymentTransactionObserver
+@implementation SKPaymentQueueDelegate
 
 // Handing Transactions
 - (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray<SKPaymentTransaction *> *)transactions
 {
     _transactions = [transactions copy];
-    [_expectation fulfill];
+    for(SKPaymentTransaction *transaction in transactions) {
+        switch(transaction.transactionState) {
+            case SKPaymentTransactionStatePurchasing:
+                [_purchasingExpectation fulfill];
+                break;
+            case SKPaymentTransactionStatePurchased:
+                [_purchasedExpectation fulfill];
+                break;
+            case SKPaymentTransactionStateFailed:
+                [_failedExpectation fulfill];
+                break;
+        }
+    }
 }
 
 - (void)paymentQueue:(SKPaymentQueue *)queue removedTransactions:(NSArray<SKPaymentTransaction *> *)transactions
 {
-    [_expectation fulfill];
+    [_removedExpectation fulfill];
 }
 
 // Handling Restored Transactions
 - (void)paymentQueue:(SKPaymentQueue *)queue restoreCompletedTransactionsFailedWithError:(NSError *)error
 {
-    [_expectation fulfill];
+//    [_expectation fulfill];
 }
 
 - (void)paymentQueueRestoreCompletedTransactionsFinished:(SKPaymentQueue *)queue
 {
-    [_expectation fulfill];
+//    [_expectation fulfill];
 }
 
 // Handling Download Actions
 - (void)paymentQueue:(SKPaymentQueue *)queue updatedDownloads:(NSArray<SKDownload *> *)downloads
 {
-    [_expectation fulfill];
+//    [_expectation fulfill];
 }
 
 @end
@@ -60,6 +64,12 @@
 @end
 
 @implementation SKPaymentQueueTests
+
++ (void)setUp
+{
+    NSString *path = [NSHomeDirectory() stringByAppendingPathComponent:@"transactions.db"];
+    [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
+}
 
 - (void)setUp
 {
@@ -99,8 +109,10 @@
 }
 
 - (void)testConnectToPaymentAPI {
+    NSString *requestId = [NSUUID UUID].UUIDString.lowercaseString;
+
     stubRequest(@"POST", @"https://api.tombo.io/payments").
-    withBody(@"{\"payment\":{\"quantity\":1,\"requestData\":null,\"applicationUsername\":null,\"productIdentifier\":\"product1\",\"requestId\":\"request1\"},\"user_jwt\":\"dummy_jwt\"}").
+    withBody([NSString stringWithFormat:@"{\"payment\":{\"quantity\":1,\"requestData\":null,\"applicationUsername\":null,\"productIdentifier\":\"product1\",\"requestId\":\"%@\"},\"user_jwt\":\"dummy_jwt\"}", requestId]).
     andReturn(200).
     withHeaders(@{@"Content-Type": @"application/json"}).
     withBody([NSJSONSerialization dataWithJSONObject:
@@ -109,7 +121,7 @@
                         @"type": @"payments",
                         @"id": @"transactionIdentifier1",
                         @"attributes": @{
-                                @"request_id": @"request1",
+                                @"request_id": requestId,
                                 @"product_identifier": @"product1",
                                 @"quantity": @"1",
                                 @"application_username": [NSNull null],
@@ -120,38 +132,19 @@
                         }
                 } options:NSJSONWritingPrettyPrinted error:nil]);
 
-    stubRequest(@"PATCH", @"https://api.tombo.io/payments/transactionIdentifier1").
-    withBody(@"{\"user_jwt\":\"dummy_jwt\"}").
-    andReturn(200).
-    withHeaders(@{@"Content-Type": @"application/json"}).
-    withBody([NSJSONSerialization dataWithJSONObject:
-              @{
-                @"data": @{
-                        @"type": @"payments",
-                        @"id": @"transactionIdentifier1",
-                        @"attributes": @{
-                                @"request_id": @"request1",
-                                @"product_identifier": @"product1",
-                                @"quantity": @"1",
-                                @"application_username": [NSNull null],
-                                @"status": @"3",
-                                @"created_at": @"1980-03-17T05:58:17.000+09:00",
-                                @"updated_at": @"1980-03-17T05:58:17.000+09:00",
-                                },
-                        }
-                } options:NSJSONWritingPrettyPrinted error:nil]);
-
-    SKPaymentQueueDelegate *delegate = [SKPaymentQueueDelegate delegateWithExpectation:[self expectationWithDescription:@"SKPaymentTransactionObserver"]];
+    SKPaymentQueueDelegate *delegate = [[SKPaymentQueueDelegate alloc] init];
+    delegate.purchasingExpectation = [self expectationWithDescription:@"purchasing"];
+    delegate.purchasedExpectation = [self expectationWithDescription:@"purchased"];
     SKPaymentQueue *queue = [SKPaymentQueue defaultQueue];
     [queue addTransactionObserver:delegate];
 
     SKProduct *product = [[SKProduct alloc] initWithProductIdentifier:@"product1" localizedTitle:@"title" localizedDescription:@"desc" price:[[NSDecimalNumber alloc] initWithInt:101] priceLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"ja_JP"]];
     SKPayment *payment = [SKPayment paymentWithProduct:product];
     SKPaymentTransaction *transaction = [[SKPaymentTransaction alloc] initWithPayment:payment];
-    transaction.requestId = @"request1";
+    transaction.requestId = requestId;
 
 
-    [queue postPaymentTransaction:transaction completionHandler:nil];
+    [queue addTransactionForTest:transaction];
 
     [self waitForExpectationsWithTimeout:5 handler:^(NSError *error) {
         if (error != nil) {
@@ -174,8 +167,10 @@
 }
 
 - (void)testConnectToPaymentAPIOnError {
+    NSString *requestId = [NSUUID UUID].UUIDString.lowercaseString;
+    
     stubRequest(@"POST", @"https://api.tombo.io/payments").
-    withBody(@"{\"payment\":{\"quantity\":1,\"requestData\":null,\"applicationUsername\":null,\"productIdentifier\":\"product1\",\"requestId\":\"request1\"},\"user_jwt\":\"dummy_jwt\"}").
+    withBody([NSString stringWithFormat:@"{\"payment\":{\"quantity\":1,\"requestData\":null,\"applicationUsername\":null,\"productIdentifier\":\"product1\",\"requestId\":\"%@\"},\"user_jwt\":\"dummy_jwt\"}", requestId]).
     andReturn(400).
     withHeaders(@{@"Content-Type": @"application/json"}).
     withBody([NSJSONSerialization dataWithJSONObject:
@@ -188,16 +183,18 @@
                         ]
                 } options:NSJSONWritingPrettyPrinted error:nil]);
 
-    SKPaymentQueueDelegate *delegate = [SKPaymentQueueDelegate delegateWithExpectation:[self expectationWithDescription:@"SKPaymentTransactionObserver2"]];
+    SKPaymentQueueDelegate *delegate = [[SKPaymentQueueDelegate alloc] init];
+    delegate.purchasingExpectation = [self expectationWithDescription:@"purchasing"];
+    delegate.failedExpectation = [self expectationWithDescription:@"failed"];
     SKPaymentQueue *queue = [SKPaymentQueue defaultQueue];
     [queue addTransactionObserver:delegate];
 
     SKProduct *product = [[SKProduct alloc] initWithProductIdentifier:@"product1" localizedTitle:@"title" localizedDescription:@"desc" price:[[NSDecimalNumber alloc] initWithInt:101] priceLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"ja_JP"]];
     SKPayment *payment = [SKPayment paymentWithProduct:product];
     SKPaymentTransaction *transaction = [[SKPaymentTransaction alloc] initWithPayment:payment];
-    transaction.requestId = @"request1";
+    transaction.requestId = requestId;
 
-    [queue postPaymentTransaction:transaction completionHandler:nil];
+    [queue addTransactionForTest:transaction];
 
     [self waitForExpectationsWithTimeout:5 handler:^(NSError *error) {
         if (error != nil) {
