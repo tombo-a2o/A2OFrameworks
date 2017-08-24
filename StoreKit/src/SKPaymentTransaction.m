@@ -26,9 +26,11 @@
     _payment = [decoder decodeObjectForKey:@"payment"];
     _transactionState = [decoder decodeIntForKey:@"transactionState"];
     _transactionDate = [decoder decodeObjectForKey:@"transactionDate"];
+    _transactionReceipt = [decoder decodeObjectForKey:@"transactionReceipt"];
     _error = [decoder decodeObjectForKey:@"error"];
     _requestId = [decoder decodeObjectForKey:@"requestId"];
     _requested = [decoder decodeBoolForKey:@"requested"];
+
 
     return self;
 }
@@ -39,6 +41,7 @@
     [encoder encodeObject:_payment forKey:@"payment"];
     [encoder encodeInt:_transactionState forKey:@"transactionState"];
     [encoder encodeObject:_transactionDate forKey:@"transactionDate"];
+    [encoder encodeObject:_transactionReceipt forKey:@"transactionReceipt"];
     [encoder encodeObject:_error forKey:@"error"];
     [encoder encodeObject:_requestId forKey:@"requestId"];
     [encoder encodeBool:_requested forKey:@"requested"];
