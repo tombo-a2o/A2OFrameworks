@@ -30,6 +30,7 @@
     _error = [decoder decodeObjectForKey:@"error"];
     _requestId = [decoder decodeObjectForKey:@"requestId"];
     _requested = [decoder decodeBoolForKey:@"requested"];
+    _originalTransaction = [decoder decodeObjectForKey:@"originalTransaction"];
 
 
     return self;
@@ -45,6 +46,7 @@
     [encoder encodeObject:_error forKey:@"error"];
     [encoder encodeObject:_requestId forKey:@"requestId"];
     [encoder encodeBool:_requested forKey:@"requested"];
+    [encoder encodeBool:_originalTransaction forKey:@"originalTransaction"];
 }
 
 - (NSString*)description

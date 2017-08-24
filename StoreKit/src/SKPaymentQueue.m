@@ -78,42 +78,26 @@ static NSDate* parseDate(NSString* dateString)
     NSInteger status = [[attributes objectForKey:@"status"] integerValue];
     NSString *requestId = [attributes objectForKey:@"request_id"];
 
-    /*
-        client \ server| DEFAULT | CHARGE_FAILED | CHARGE_COMPLETE | COMPLETE
-        Purchasing     | ignore  | -> Failed     | -> Purchsed     | error
-        Purchased      | error   | error         | ignore          | ignore
-        Failed         | error   | ignore        | error           | error
-        Restored       | ?       | ?             | ?               | ?
-        Deferred       | ?       | ?             | ?               | ?
-    */
+    SKDebugLog(@"%@ %d %@", self, status, requestId);
 
-    SKDebugLog(@"%d %@ %@", status, requestId, self);
+    if(status != 2 || self.transactionState != SKPaymentTransactionStatePurchasing) {
+        // TODO log error
+        return NO;
+    }
 
     if(![self.requestId.lowercaseString isEqualToString:requestId.lowercaseString]) {
-        // TODO log error
-        return NO;
-    }
-
-    if(self.transactionState != SKPaymentTransactionStatePurchasing) {
-        // TODO log error
-        return NO;
-    }
-
-    switch(status) {
-    case 0: // nothing changed
-        return NO;
-    case 1: // failed
-        self.transactionState = SKPaymentTransactionStateFailed;
-        return YES;
-    case 2: // sucesss
+        // already paid: non consumable
+        self.originalTransaction = [[SKPaymentTransaction alloc] initWithResponseJSON:json];
         self.transactionState = SKPaymentTransactionStatePurchased;
-        self.transactionIdentifier = [json objectForKey:@"id"];
-        self.transactionDate = parseDate([attributes objectForKey:@"created_at"]);
+        self.transactionIdentifier = [NSUUID UUID].UUIDString.lowercaseString; // TODO generate on server
+        self.transactionDate = [NSDate date];
         return YES;
-    default:
-        // TODO log error
-        return NO;
     }
+
+    self.transactionState = SKPaymentTransactionStatePurchased;
+    self.transactionIdentifier = [json objectForKey:@"id"];
+    self.transactionDate = parseDate([attributes objectForKey:@"created_at"]);
+    return YES;
 }
 
 @end
