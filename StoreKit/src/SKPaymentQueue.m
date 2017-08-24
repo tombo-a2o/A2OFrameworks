@@ -129,14 +129,8 @@ static NSDate* parseDate(NSString* dateString)
     _transactionObservers = [[NSMutableArray alloc] init];
     _transactionStore = [SKPaymentTransactionStore defaultStore];
 
+    [self turnRemainingTransactionsFailed];
     return self;
-}
-
-+ (void)load
-{
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5.0f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        [[SKPaymentQueue defaultQueue] processRemainings];
-    });
 }
 
 // Returns whether the user is allowed to make payments.
@@ -158,7 +152,17 @@ static NSDate* parseDate(NSString* dateString)
 // Adds an observer to the payment queue.
 - (void)addTransactionObserver:(id<SKPaymentTransactionObserver>)observer
 {
+    static BOOL firstObserver = YES;
+
     [_transactionObservers addObject:observer];
+
+    if(firstObserver) {
+        firstObserver = NO;
+        NSArray* transactions = [_transactionStore allTransactions];
+        if(transactions.count > 0) {
+            [self notifyUpdatedTransactions:transactions];
+        }
+    }
 }
 
 // Removes an observer from the payment queue.
@@ -218,6 +222,8 @@ static NSDate* parseDate(NSString* dateString)
 {
     // TODO: show detailed log
     SKDebugLog(@"transaction: %@", transaction);
+
+    transaction.requested = YES;
 
     [self connectToPaymentAPI:[transaction requestJSON] path:@"/payments" method:@"POST" completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
         SKDebugLog(@"TomboAPI::postPayments error: %@ response: %@, responseObject:%@", error, response, responseObject);
@@ -337,7 +343,7 @@ static const char* transactionKey = "transactionKey";
                                                     message:@"購入手続きが完了しました。"
                                                    delegate:nil
                                           cancelButtonTitle:nil
-                                          otherButtonTitles:@"Buy", nil];
+                                          otherButtonTitles:@"OK", nil];
     [alert show];
 }
 
@@ -427,6 +433,17 @@ static const char* transactionKey = "transactionKey";
                 [self processRemainings];
             });
         }];
+    }
+}
+
+- (void)turnRemainingTransactionsFailed
+{
+    SKDebugLog(@"remainings %@", [_transactionStore allTransactions]);
+    for(SKPaymentTransaction *transaction in [_transactionStore allTransactions]) {
+        if(transaction.transactionState == SKPaymentTransactionStatePurchasing && transaction.requested == NO) {
+            transaction.transactionState = SKPaymentTransactionStateFailed;
+            // No notifications will be made because no observers are registered on start up.
+        }
     }
 }
 

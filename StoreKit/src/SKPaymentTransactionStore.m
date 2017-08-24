@@ -30,7 +30,8 @@
 
 - (void)saveToFile
 {
-    [NSKeyedArchiver archiveRootObject:_transactions toFile:_path];
+    BOOL success = [NSKeyedArchiver archiveRootObject:_transactions toFile:_path];
+    SKDebugLog(@"success = %d", success);
 }
 
 - (void)insert:(SKPaymentTransaction*)transaction
@@ -71,7 +72,7 @@
 
 - (NSArray<SKPaymentTransaction*>*)incompleteTransactions
 {
-    return [_transactions filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"transactionState == 0"]];
+    return [_transactions filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"transactionState == 0 AND requested == YES"]];
 }
 
 - (NSArray*)allTransactions

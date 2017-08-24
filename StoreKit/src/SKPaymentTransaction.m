@@ -67,7 +67,7 @@
         stateString = @"SKPaymentTransactionStateDeferred";
         break;
     }
-    return [NSString stringWithFormat:@"<%@ 0x%p> {%@, %@, %@, %@, %@, %@}", NSStringFromClass([self class]), self, _transactionIdentifier, _payment, stateString, _transactionDate, _requestId, _error];
+    return [NSString stringWithFormat:@"<%@ 0x%p> {%@, %@, %@, %@, %@, %d, %@}", NSStringFromClass([self class]), self, _transactionIdentifier, _payment, stateString, _transactionDate, _requestId, _requested, _error];
 }
 
 - (BOOL)isEqual:(id)object

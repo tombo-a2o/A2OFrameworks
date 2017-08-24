@@ -87,6 +87,7 @@
 - (void)testIncomplete {
     SKPayment *payment = [SKPayment paymentWithProductIdentifier:@"productIdentifier1"];
     SKPaymentTransaction *transaction1 = [[SKPaymentTransaction alloc] initWithPayment:payment];
+    transaction1.requested = YES;
     [_store insert:transaction1];
     SKPaymentTransaction *transaction2 = [_store incompleteTransaction];
     
@@ -97,9 +98,14 @@
 - (void)testIncompletes {
     SKPayment *payment = [SKPayment paymentWithProductIdentifier:@"productIdentifier1"];
     SKPaymentTransaction *transaction1 = [[SKPaymentTransaction alloc] initWithPayment:payment];
+    transaction1.requested = YES;
     [_store insert:transaction1];
     SKPaymentTransaction *transaction2 = [[SKPaymentTransaction alloc] initWithPayment:payment];
+    transaction2.requested = YES;
     [_store insert:transaction2];
+    SKPaymentTransaction *transaction3 = [[SKPaymentTransaction alloc] initWithPayment:payment];
+    transaction3.requested = NO;
+    [_store insert:transaction3];
     NSArray<SKPaymentTransaction*> *transactions = [_store incompleteTransactions];
     
     XCTAssertNotNil(transactions);
