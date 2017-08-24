@@ -14,6 +14,24 @@
     return self;
 }
 
+- (id)initWithCoder:(NSCoder *)decoder
+{
+    self = [super init];
+    _productIdentifier = [decoder decodeObjectForKey:@"productIdentifier"];
+    _quantity = [decoder decodeIntForKey:@"quantity"];
+    _requestData = [decoder decodeObjectForKey:@"requestData"];
+    _applicationUsername = [decoder decodeObjectForKey:@"applicationUsername"];
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)encoder
+{
+    [encoder encodeObject:_productIdentifier forKey:@"productIdentifier"];
+    [encoder encodeInt:_quantity forKey:@"quantity"];
+    [encoder encodeObject:_requestData forKey:@"requestData"];
+    [encoder encodeObject:_applicationUsername forKey:@"applicationUsername"];
+}
+
 // Returns a new payment for the specified product.
 + (instancetype)paymentWithProduct:(SKProduct *)product
 {

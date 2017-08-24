@@ -1,5 +1,6 @@
 #import <StoreKit/StoreKit.h>
 #import "SKPaymentTransaction+Internal.h"
+#import "SKPayment+Internal.h"
 
 @implementation SKPaymentTransaction
 
@@ -13,8 +14,34 @@
     _transactionDate = nil;
     _error = nil;
     _requestId = [NSUUID UUID].UUIDString.lowercaseString;
+    _requested = NO;
 
     return self;
+}
+
+- (id)initWithCoder:(NSCoder *)decoder
+{
+    self = [super init];
+    _transactionIdentifier = [decoder decodeObjectForKey:@"transactionIdentifier"];
+    _payment = [decoder decodeObjectForKey:@"payment"];
+    _transactionState = [decoder decodeIntForKey:@"transactionState"];
+    _transactionDate = [decoder decodeObjectForKey:@"transactionDate"];
+    _error = [decoder decodeObjectForKey:@"error"];
+    _requestId = [decoder decodeObjectForKey:@"requestId"];
+    _requested = [decoder decodeBoolForKey:@"requested"];
+
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)encoder
+{
+    [encoder encodeObject:_transactionIdentifier forKey:@"transactionIdentifier"];
+    [encoder encodeObject:_payment forKey:@"payment"];
+    [encoder encodeInt:_transactionState forKey:@"transactionState"];
+    [encoder encodeObject:_transactionDate forKey:@"transactionDate"];
+    [encoder encodeObject:_error forKey:@"error"];
+    [encoder encodeObject:_requestId forKey:@"requestId"];
+    [encoder encodeBool:_requested forKey:@"requested"];
 }
 
 - (NSString*)description

@@ -1,7 +1,9 @@
 #import <StoreKit/SKPaymentTransaction.h>
 
-@interface SKPaymentTransaction()
+@interface SKPaymentTransaction() <NSCoding>
 - (instancetype)initWithPayment:(SKPayment *)payment;
+- (void)encodeWithCoder:(NSCoder *)aCoder;
+- (id)initWithCoder:(NSCoder *)aDecoder;
 
 @property(nonatomic, readwrite) NSError *error;
 @property(nonatomic, readwrite) SKPayment *payment;
@@ -12,4 +14,5 @@
 
 @property(nonatomic, readwrite) NSString *requestId;
 @property(nonatomic, readwrite) SKPaymentTransaction *originalTransaction;
+@property(nonatomic, readwrite) BOOL requested;
 @end
