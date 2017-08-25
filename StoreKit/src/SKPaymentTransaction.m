@@ -46,7 +46,7 @@
     [encoder encodeObject:_error forKey:@"error"];
     [encoder encodeObject:_requestId forKey:@"requestId"];
     [encoder encodeBool:_requested forKey:@"requested"];
-    [encoder encodeBool:_originalTransaction forKey:@"originalTransaction"];
+    [encoder encodeObject:_originalTransaction forKey:@"originalTransaction"];
 }
 
 - (NSString*)description

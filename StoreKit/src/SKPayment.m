@@ -1,6 +1,20 @@
 #import <StoreKit/SKPayment.h>
+#import "SKPayment+Internal.h"
 
 @implementation SKPayment
+
+- (instancetype)initWithProduct:(SKProduct*)product
+{
+    if(!product) return nil;
+
+    self = [self init];
+    if(self) {
+        _product = product;
+        _productIdentifier = [product.productIdentifier copy];
+        _quantity = 1;
+    }
+    return self;
+}
 
 - (instancetype)initWithProductIdentifier:(NSString *)productIdentifier
 {
@@ -8,6 +22,7 @@
 
     self = [self init];
     if(self) {
+        _product = nil;
         _productIdentifier = [productIdentifier copy];
         _quantity = 1;
     }
@@ -35,7 +50,7 @@
 // Returns a new payment for the specified product.
 + (instancetype)paymentWithProduct:(SKProduct *)product
 {
-    return [[self alloc] initWithProductIdentifier:product.productIdentifier];
+    return [[self alloc] initWithProduct:product];
 }
 
 // Returns a new payment with the specified product identifier.

@@ -3,6 +3,7 @@
 #import <objc/runtime.h>
 #import "SKPaymentTransaction+Internal.h"
 #import "SKPaymentTransactionStore.h"
+#import "SKPayment+Internal.h"
 #import <TomboAFNetworking/TomboAFNetworking.h>
 
 #if defined(A2O_EMSCRIPTEN)
@@ -231,11 +232,11 @@ static NSDate* parseDate(NSString* dateString)
         } else {
             NSDictionary *transactionDict = [responseObject objectForKey:@"data"];
 
-            NSString *requestId = transactionDict[@"id"];
+            NSString *requestId = transactionDict[@"attributes"][@"request_id"];
 
             if(![transaction.requestId.lowercaseString isEqualToString:requestId.lowercaseString]) {
                 // already paid: non consumable
-                [self showGetAgainNotice:transaction withJson:transactionDict];
+                [self showGetAgainNotice:transaction json:transactionDict completionHandler:completionHandler];
                 return;
             }
 
@@ -249,7 +250,7 @@ static NSDate* parseDate(NSString* dateString)
     }];
 }
 
-- (void)showGetAgainNotice:(SKPaymentTransaction*)transaction withJson:(NSDictionary*)json
+- (void)showGetAgainNotice:(SKPaymentTransaction*)transaction json:(NSDictionary*)json completionHandler:(void (^)(BOOL))completionHandler
 {
     // Show
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"You've already purchaged this!"
@@ -262,6 +263,7 @@ static NSDate* parseDate(NSString* dateString)
                                                      [self notifyUpdatedTransaction:transaction];
                                                      [_transactionStore remove:transaction];
                                                      [self notifyRemovedTransaction:transaction];
+                                                     if(completionHandler) completionHandler(NO);
                                                  } else {
                                                      // OK
                                                      transaction.originalTransaction = [[SKPaymentTransaction alloc] initWithResponseJSON:json];
@@ -270,6 +272,7 @@ static NSDate* parseDate(NSString* dateString)
                                                      transaction.transactionDate = [NSDate date];
                                                      [_transactionStore update:transaction];
                                                      [self notifyUpdatedTransaction:transaction];
+                                                     if(completionHandler) completionHandler(YES);
                                                  }
                                              }
                                             canceledHandler:nil
@@ -302,15 +305,23 @@ static NSDate* parseDate(NSString* dateString)
 // Adds a payment request to the queue.
 - (void)addPayment:(SKPayment *)payment
 {
+    SKProduct *product = payment.product;
+
     __block SKPaymentTransaction *transaction = [[SKPaymentTransaction alloc] initWithPayment:payment];
     [_transactionStore insert:transaction];
     [self notifyUpdatedTransaction:transaction];
 
-    // TODO: Support a "real" queue. Now we don't use a queue. An added payment is immediately executed.
     NSNumberFormatter *quantityFormatter = [[NSNumberFormatter alloc] init];
-    [quantityFormatter setNumberStyle:NSNumberFormatterSpellOutStyle];
+    [quantityFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
+    NSNumberFormatter *priceFormatter = [[NSNumberFormatter alloc] init];
+    [priceFormatter setNumberStyle:NSNumberFormatterCurrencyStyle];
 
-    NSString *confirmationMessage = [NSString stringWithFormat:@"Do you want to buy %@ %@ for %@", [quantityFormatter stringFromNumber:[NSNumber numberWithLong:payment.quantity]], @"TODO: get title", @"TODO: get price"];
+
+    NSString *quantity = [quantityFormatter stringFromNumber:[NSNumber numberWithLong:payment.quantity]];
+    NSString *title = product ? product.localizedTitle : @"(TODO: get title)";
+    NSString *price = product ? [priceFormatter stringFromNumber:product.price] : @"(TODO: get price)";
+
+    NSString *confirmationMessage = [NSString stringWithFormat:@"Do you want to buy %@ %@ for %@", quantity, title, price];
 
     void (^handler)(UIAlertView* view, NSInteger idx) = ^(UIAlertView* view, NSInteger buttonIndex){
         if(buttonIndex == 0) {
