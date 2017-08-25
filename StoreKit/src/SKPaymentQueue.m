@@ -4,6 +4,7 @@
 #import "SKPaymentTransaction+Internal.h"
 #import "SKPaymentTransactionStore.h"
 #import <TomboAFNetworking/TomboAFNetworking.h>
+#import <UIKit/UIAlertView+Blocks.h>
 
 #if defined(A2O_EMSCRIPTEN)
     #import <tombo_platform.h>
@@ -269,28 +270,42 @@ static NSDate* parseDate(NSString* dateString)
     [dataTask resume];
 }
 
-static const char* transactionKey = "transactionKey";
-
 // Adds a payment request to the queue.
 - (void)addPayment:(SKPayment *)payment
 {
+    __block SKPaymentTransaction *transaction = [[SKPaymentTransaction alloc] initWithPayment:payment];
+    [_transactionStore insert:transaction];
+    [self notifyUpdatedTransaction:transaction];
+
     // TODO: Support a "real" queue. Now we don't use a queue. An added payment is immediately executed.
     NSNumberFormatter *quantityFormatter = [[NSNumberFormatter alloc] init];
     [quantityFormatter setNumberStyle:NSNumberFormatterSpellOutStyle];
 
     NSString *confirmationMessage = [NSString stringWithFormat:@"Do you want to buy %@ %@ for %@", [quantityFormatter stringFromNumber:[NSNumber numberWithLong:payment.quantity]], @"TODO: get title", @"TODO: get price"];
 
+    void (^handler)(UIAlertView* view, NSInteger idx) = ^(UIAlertView* view, NSInteger buttonIndex){
+        if(buttonIndex == 0) {
+            // Cancel
+            transaction.transactionState = SKPaymentTransactionStateFailed;
+            transaction.error = [NSError errorWithDomain:SKErrorDomain code:0 userInfo:nil];
+            [self notifyUpdatedTransaction:transaction];
+            [self notifyRemovedTransaction:transaction];
+        } else {
+            // Buy
+            [self postPaymentTransaction:transaction completionHandler:^(BOOL success){
+                if(success) {
+                    [self showTransactionCompleteAlert];
+                }
+            }];
+        }
+    };
+
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Confirm Your In-App Purchase"
                                                     message:confirmationMessage
-                                                   delegate:self
+                                             clickedHandler:handler
+                                            canceledHandler:nil
                                           cancelButtonTitle:@"Cancel"
                                           otherButtonTitles:@"Buy", nil];
-
-    SKPaymentTransaction *transaction = [[SKPaymentTransaction alloc] initWithPayment:payment];
-    [_transactionStore insert:transaction];
-    [self notifyUpdatedTransaction:transaction];
-
-    objc_setAssociatedObject(alert, transactionKey, transaction, OBJC_ASSOCIATION_RETAIN);
     [alert show];
 }
 
@@ -299,24 +314,6 @@ static const char* transactionKey = "transactionKey";
     [_transactionStore insert:transaction];
     [self notifyUpdatedTransaction:transaction];
     [self postPaymentTransaction:transaction completionHandler:nil];
-}
-
--(void)alertView:(UIAlertView*)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-    SKPaymentTransaction* transaction = objc_getAssociatedObject(alertView, transactionKey);
-    if(buttonIndex == 0) {
-        // Cancel
-        transaction.transactionState = SKPaymentTransactionStateFailed;
-        transaction.error = [NSError errorWithDomain:SKErrorDomain code:0 userInfo:nil];
-        [self notifyUpdatedTransaction:transaction];
-        [self notifyRemovedTransaction:transaction];
-    } else {
-        // Buy
-        [self postPaymentTransaction:transaction completionHandler:^(BOOL success){
-            if(success) {
-                [self showTransactionCompleteAlert];
-            }
-        }];
-    }
 }
 
 - (void)showTransactionCompleteAlert
