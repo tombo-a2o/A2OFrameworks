@@ -4,9 +4,9 @@
 #import "SKPaymentTransaction+Internal.h"
 #import "SKPaymentTransactionStore.h"
 #import <TomboAFNetworking/TomboAFNetworking.h>
-#import <UIKit/UIAlertView+Blocks.h>
 
 #if defined(A2O_EMSCRIPTEN)
+    #import <UIKit/UIAlertView+Blocks.h>
     #import <tombo_platform.h>
 #else
     static inline NSString *getTomboAPIServerUrlString(void) {
@@ -33,15 +33,15 @@ NSString * const SKServerErrorDomain = @"io.tombo.storekit.servererror";
 {
     SKPayment *payment = self.payment;
     return @{
-        @"payment": @{
-            @"productIdentifier": payment.productIdentifier,
-            @"quantity": [NSNumber numberWithInteger:payment.quantity],
-            @"requestData": payment.requestData ?: [NSNull null],
-            @"applicationUsername": payment.applicationUsername ?: [NSNull null],
-            @"requestId": self.requestId
-        },
-        @"user_jwt": getUserJwtString()
-    };
+             @"payment": @{
+                     @"productIdentifier": payment.productIdentifier,
+                     @"quantity": [NSNumber numberWithInteger:payment.quantity],
+                     @"requestData": payment.requestData ?: [NSNull null],
+                     @"applicationUsername": payment.applicationUsername ?: [NSNull null],
+                     @"requestId": self.requestId
+                     },
+             @"user_jwt": getUserJwtString()
+             };
 }
 
 static NSDate* parseDate(NSString* dateString)
@@ -84,15 +84,6 @@ static NSDate* parseDate(NSString* dateString)
     if(status != 2 || self.transactionState != SKPaymentTransactionStatePurchasing) {
         // TODO log error
         return NO;
-    }
-
-    if(![self.requestId.lowercaseString isEqualToString:requestId.lowercaseString]) {
-        // already paid: non consumable
-        self.originalTransaction = [[SKPaymentTransaction alloc] initWithResponseJSON:json];
-        self.transactionState = SKPaymentTransactionStatePurchased;
-        self.transactionIdentifier = [NSUUID UUID].UUIDString.lowercaseString; // TODO generate on server
-        self.transactionDate = [NSDate date];
-        return YES;
     }
 
     self.transactionState = SKPaymentTransactionStatePurchased;
@@ -221,8 +212,8 @@ static NSDate* parseDate(NSString* dateString)
                     NSString *errorDetail = [errorDic objectForKey:@"detail"];
                     if(errorDetail) {
                         error = [NSError errorWithDomain:SKServerErrorDomain code:0 userInfo:@{
-                            NSLocalizedDescriptionKey: errorDetail
-                        }];
+                                                                                               NSLocalizedDescriptionKey: errorDetail
+                                                                                               }];
                     }
                 }
 
@@ -239,6 +230,15 @@ static NSDate* parseDate(NSString* dateString)
             }
         } else {
             NSDictionary *transactionDict = [responseObject objectForKey:@"data"];
+
+            NSString *requestId = transactionDict[@"id"];
+
+            if(![transaction.requestId.lowercaseString isEqualToString:requestId.lowercaseString]) {
+                // already paid: non consumable
+                [self showGetAgainNotice:transaction withJson:transactionDict];
+                return;
+            }
+
             BOOL updated = [transaction updateWithResponseJSON:transactionDict];
             if(updated) {
                 [_transactionStore update:transaction];
@@ -247,6 +247,35 @@ static NSDate* parseDate(NSString* dateString)
             if(completionHandler) completionHandler(YES);
         }
     }];
+}
+
+- (void)showGetAgainNotice:(SKPaymentTransaction*)transaction withJson:(NSDictionary*)json
+{
+    // Show
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"You've already purchaged this!"
+                                                    message:@"Would you like to get it again for free?"
+                                             clickedHandler:^(UIAlertView* view, NSInteger buttonIndex) {
+                                                 if(buttonIndex == 0) {
+                                                     // Cancel
+                                                     transaction.transactionState = SKPaymentTransactionStateFailed;
+                                                     transaction.error = [NSError errorWithDomain:SKErrorDomain code:0 userInfo:nil];
+                                                     [self notifyUpdatedTransaction:transaction];
+                                                     [_transactionStore remove:transaction];
+                                                     [self notifyRemovedTransaction:transaction];
+                                                 } else {
+                                                     // OK
+                                                     transaction.originalTransaction = [[SKPaymentTransaction alloc] initWithResponseJSON:json];
+                                                     transaction.transactionState = SKPaymentTransactionStatePurchased;
+                                                     transaction.transactionIdentifier = [NSUUID UUID].UUIDString.lowercaseString; // TODO generate on server
+                                                     transaction.transactionDate = [NSDate date];
+                                                     [_transactionStore update:transaction];
+                                                     [self notifyUpdatedTransaction:transaction];
+                                                 }
+                                             }
+                                            canceledHandler:nil
+                                          cancelButtonTitle:@"Cancel"
+                                          otherButtonTitles:@"OK", nil];
+    [alert show];
 }
 
 - (void)connectToPaymentAPI:(NSDictionary *)parameters path:(NSString*)path method:(NSString*)method completionHandler:(void (^)(NSURLResponse *response, id responseObject, NSError *error))completionHandler
@@ -289,6 +318,7 @@ static NSDate* parseDate(NSString* dateString)
             transaction.transactionState = SKPaymentTransactionStateFailed;
             transaction.error = [NSError errorWithDomain:SKErrorDomain code:0 userInfo:nil];
             [self notifyUpdatedTransaction:transaction];
+            [_transactionStore remove:transaction];
             [self notifyRemovedTransaction:transaction];
         } else {
             // Buy
@@ -423,7 +453,7 @@ static NSDate* parseDate(NSString* dateString)
     for(SKPaymentTransaction *transaction in [_transactionStore allTransactions]) {
         if(transaction.transactionState == SKPaymentTransactionStatePurchasing && transaction.requested == NO) {
             transaction.transactionState = SKPaymentTransactionStateFailed;
-            // No notifications will be made because no observers are registered on start up.
+            [_transactionStore update:transaction];
         }
     }
 }
