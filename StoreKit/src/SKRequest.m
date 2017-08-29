@@ -64,9 +64,18 @@ NSString * const SKReceiptPropertyIsVolumePurchase = @"vpp";
 @implementation SKProductsRequest {
     NSSet *_productIdentifiers;
     TomboAFURLSessionManager *_URLSessionManager;
+    BOOL _respondsToRequestDidFinish;
+    BOOL _respondsToDidFailWithError;
 }
 
 @dynamic delegate;
+
+- (void)setDelegate:(id< SKProductsRequestDelegate >)delegate
+{
+    [super setDelegate:delegate];
+    _respondsToRequestDidFinish = [delegate respondsToSelector:@selector(requestDidFinish:)];
+    _respondsToDidFailWithError = [delegate respondsToSelector:@selector(request:didFailWithError:)];
+}
 
 // Initializes the request with the set of product identifiers.
 - (instancetype)initWithProductIdentifiers:(NSSet<NSString *> *)productIdentifiers
@@ -108,7 +117,7 @@ NSString * const SKReceiptPropertyIsVolumePurchase = @"vpp";
         SKDebugLog(@"TomboAPI::getProducts error: %@ response: %@, responseObject:%@", error, response, responseObject);
         if (error) {
             NSLog(@"Error(%@): %@", NSStringFromClass([self class]), error);
-            if([self.delegate respondsToSelector:@selector(request:didFailWithError:)]) {
+            if(_respondsToDidFailWithError) {
                 [self.delegate request:self didFailWithError:error];
             }
         } else {
@@ -129,7 +138,7 @@ NSString * const SKReceiptPropertyIsVolumePurchase = @"vpp";
 
             // NOTE: I don't know the sequence of calling these notification methods
             [self.delegate productsRequest:self didReceiveResponse:productsResponse];
-            if([self.delegate respondsToSelector:@selector(requestDidFinish:)]) {
+            if(_respondsToRequestDidFinish) {
                 [self.delegate requestDidFinish:self];
             }
         }
