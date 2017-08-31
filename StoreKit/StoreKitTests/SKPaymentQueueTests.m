@@ -5,6 +5,7 @@
 
 @interface SKPaymentQueue (Test)
 - (void)addTransactionForTest:(SKPaymentTransaction *)transaction;
++ (NSString*)confirmationMessage:(SKPayment*)payment;
 @end
 
 @interface SKPaymentQueueDelegate : NSObject<SKPaymentTransactionObserver>
@@ -302,5 +303,15 @@
     }];
 }
 
+- (void)testConfirmationMessage
+{
+    NSDecimalNumber *price = [NSDecimalNumber decimalNumberWithString:@"12345"];
+    SKProduct *product = [[SKProduct alloc] initWithProductIdentifier:@"product1" localizedTitle:@"title1" localizedDescription:@"desc1" price:price priceLocale:[NSLocale localeWithLocaleIdentifier:@"en_US@currency=JPY"]];
+    SKPayment *payment = [SKPayment paymentWithProduct:product];
+    
+    NSString *message = [SKPaymentQueue confirmationMessage:payment];
+    XCTAssertEqualObjects(message, @"Do you want to buy 1 title1 for ¥12,345");
+    
+}
 
 @end

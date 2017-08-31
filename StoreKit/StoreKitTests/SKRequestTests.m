@@ -39,8 +39,9 @@
                                                                            @"downloadable": @1,
                                                                            @"title": @"product 1",
                                                                            @"description": @"description of product 1",
-                                                                           @"price": @"101",
-                                                                           @"language": @"ja_JP"
+                                                                           @"price": @"10100",
+                                                                           @"currency": @"JPY",
+                                                                           @"country": @"JP"
                                                                            },
                                                                    @"type": @"products",
                                                                    @"id": @"xxxxx"
@@ -51,8 +52,9 @@
                                                                            @"downloadable": @1,
                                                                            @"title": @"product 2",
                                                                            @"description": @"description of product 2",
-                                                                           @"price": @"102",
-                                                                           @"language": @"en_US"
+                                                                           @"price": @"10200",
+                                                                           @"currency": @"USD",
+                                                                           @"country": @"US"
                                                                            },
                                                                    @"type": @"products",
                                                                    @"id": @"xxxxx"
@@ -83,13 +85,13 @@
         XCTAssertEqualObjects(products[0].localizedTitle, @"product 1");
         XCTAssertEqualObjects(products[0].localizedDescription, @"description of product 1");
         XCTAssertEqualObjects(products[0].price, [[NSDecimalNumber alloc] initWithInt:101]);
-        XCTAssertEqualObjects([products[0].priceLocale localeIdentifier], @"ja_JP");
+        XCTAssertEqualObjects([products[0].priceLocale localeIdentifier], @"en_JP@currency=JPY");
 
         XCTAssertEqualObjects(products[1].productIdentifier, @"productIdentifier2");
         XCTAssertEqualObjects(products[1].localizedTitle, @"product 2");
         XCTAssertEqualObjects(products[1].localizedDescription, @"description of product 2");
         XCTAssertEqualObjects(products[1].price, [[NSDecimalNumber alloc] initWithInt:102]);
-        XCTAssertEqualObjects([products[1].priceLocale localeIdentifier], @"en_US");
+        XCTAssertEqualObjects([products[1].priceLocale localeIdentifier], @"en_US@currency=USD");
     }];
 }
 

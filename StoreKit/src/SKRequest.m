@@ -37,6 +37,18 @@ NSString * const SKReceiptPropertyIsVolumePurchase = @"vpp";
 @end
 
 @implementation SKProduct (API)
++ (NSLocale*)currencyLocale:(NSLocale*)locale currency:(NSString*)currency country:(NSString*)country
+{
+    NSString *language = [locale objectForKey:NSLocaleLanguageCode];
+    SKDebugLog(@"%@ %@ %@ %@", locale.localeIdentifier, country, language, currency);
+    NSString *identifier = [NSLocale localeIdentifierFromComponents:@{
+                                                                  NSLocaleCountryCode: country,
+                                                                  NSLocaleLanguageCode: language,
+                                                                  NSLocaleCurrencyCode: currency
+                                                                  }];
+    return [NSLocale localeWithLocaleIdentifier:identifier];
+}
+
 - (instancetype)initWithResponseJSON:(NSDictionary*)json
 {
     NSDictionary* attributes = [json objectForKey:@"attributes"];
@@ -45,8 +57,9 @@ NSString * const SKReceiptPropertyIsVolumePurchase = @"vpp";
     NSString *localizedTitle = [attributes objectForKey:@"title"];
     NSString *localizedDescription = [attributes objectForKey:@"description"];
     NSNumber *priceObject = [attributes objectForKey:@"price"];
-    NSDecimalNumber *price = [NSDecimalNumber decimalNumberWithDecimal:[priceObject decimalValue]];
-    NSLocale *priceLocale = [[NSLocale alloc] initWithLocaleIdentifier:[attributes objectForKey:@"language"]];
+    NSDecimalNumber *hundred = [NSDecimalNumber decimalNumberWithString:@"100"];
+    NSDecimalNumber *price = [[NSDecimalNumber decimalNumberWithDecimal:[priceObject decimalValue]] decimalNumberByDividingBy:hundred];
+    NSLocale *priceLocale = [self.class currencyLocale:[NSLocale currentLocale] currency:[attributes objectForKey:@"currency"] country:[attributes objectForKey:@"country"]];
 
     return [self initWithProductIdentifier:productIdentifier localizedTitle:localizedTitle localizedDescription:localizedDescription price:price priceLocale:priceLocale];
 }

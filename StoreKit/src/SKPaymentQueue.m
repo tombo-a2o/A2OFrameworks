@@ -261,33 +261,43 @@ static NSDate* parseDate(NSString* dateString)
 
 - (void)showGetAgainNotice:(SKPaymentTransaction*)transaction json:(NSDictionary*)json completionHandler:(void (^)(BOOL))completionHandler
 {
+    SKDebugLog(@"%@", transaction);
+
+    void (^handler)(UIAlertView* view, NSInteger buttonIndex) = ^(UIAlertView* view, NSInteger buttonIndex) {
+        if(buttonIndex == 0) {
+            // Cancel
+            transaction.transactionState = SKPaymentTransactionStateFailed;
+            transaction.error = [NSError errorWithDomain:SKErrorDomain code:0 userInfo:nil];
+            [self notifyUpdatedTransaction:transaction];
+            [_transactionStore remove:transaction];
+            [self notifyRemovedTransaction:transaction];
+            if(completionHandler) completionHandler(NO);
+        } else {
+            // OK
+            transaction.originalTransaction = [[SKPaymentTransaction alloc] initWithResponseJSON:json];
+            transaction.transactionState = SKPaymentTransactionStatePurchased;
+            transaction.transactionIdentifier = [NSUUID UUID].UUIDString.lowercaseString; // TODO generate on server
+            transaction.transactionDate = [NSDate date];
+            [_transactionStore update:transaction];
+            [self notifyUpdatedTransaction:transaction];
+            if(completionHandler) completionHandler(YES);
+        }
+    };
+
+
+
     // Show
+#if defined(A2O_EMSCRIPTEN)
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"You've already purchaged this!"
                                                     message:@"Would you like to get it again for free?"
-                                             clickedHandler:^(UIAlertView* view, NSInteger buttonIndex) {
-                                                 if(buttonIndex == 0) {
-                                                     // Cancel
-                                                     transaction.transactionState = SKPaymentTransactionStateFailed;
-                                                     transaction.error = [NSError errorWithDomain:SKErrorDomain code:0 userInfo:nil];
-                                                     [self notifyUpdatedTransaction:transaction];
-                                                     [_transactionStore remove:transaction];
-                                                     [self notifyRemovedTransaction:transaction];
-                                                     if(completionHandler) completionHandler(NO);
-                                                 } else {
-                                                     // OK
-                                                     transaction.originalTransaction = [[SKPaymentTransaction alloc] initWithResponseJSON:json];
-                                                     transaction.transactionState = SKPaymentTransactionStatePurchased;
-                                                     transaction.transactionIdentifier = [NSUUID UUID].UUIDString.lowercaseString; // TODO generate on server
-                                                     transaction.transactionDate = [NSDate date];
-                                                     [_transactionStore update:transaction];
-                                                     [self notifyUpdatedTransaction:transaction];
-                                                     if(completionHandler) completionHandler(YES);
-                                                 }
-                                             }
+                                             clickedHandler:handler
                                             canceledHandler:nil
                                           cancelButtonTitle:@"Cancel"
                                           otherButtonTitles:@"OK", nil];
     [alert show];
+#else
+    handler(nil, 1);
+#endif
 }
 
 - (void)connectToPaymentAPI:(NSDictionary *)parameters path:(NSString*)path method:(NSString*)method completionHandler:(void (^)(NSURLResponse *response, id responseObject, NSError *error))completionHandler
@@ -311,26 +321,32 @@ static NSDate* parseDate(NSString* dateString)
     [dataTask resume];
 }
 
-// Adds a payment request to the queue.
-- (void)addPayment:(SKPayment *)payment
++ (NSString*)confirmationMessage:(SKPayment*)payment
 {
     SKProduct *product = payment.product;
 
+    NSNumberFormatter *quantityFormatter = [[NSNumberFormatter alloc] init];
+    quantityFormatter.numberStyle = NSNumberFormatterDecimalStyle;
+    NSNumberFormatter *priceFormatter = [[NSNumberFormatter alloc] init];
+    priceFormatter.numberStyle = NSNumberFormatterCurrencyStyle;
+    priceFormatter.locale = product.priceLocale;
+    NSNumber *quantity = [NSNumber numberWithInteger:payment.quantity];
+    NSDecimalNumber *decimalQuantity = [NSDecimalNumber decimalNumberWithDecimal:[quantity decimalValue]];
+    NSDecimalNumber *totalPrice = [product.price decimalNumberByMultiplyingBy:decimalQuantity];
+
+    NSString *quantityString = [quantityFormatter stringFromNumber:quantity];
+    NSString *title = product ? product.localizedTitle : @"(TODO: get title)";
+    NSString *price = product ? [priceFormatter stringFromNumber:totalPrice] : @"(TODO: get price)";
+
+    return [NSString stringWithFormat:@"Do you want to buy %@ %@ for %@", quantity, title, price];
+}
+
+// Adds a payment request to the queue.
+- (void)addPayment:(SKPayment *)payment
+{
     __block SKPaymentTransaction *transaction = [[SKPaymentTransaction alloc] initWithPayment:payment];
     [_transactionStore insert:transaction];
     [self notifyUpdatedTransaction:transaction];
-
-    NSNumberFormatter *quantityFormatter = [[NSNumberFormatter alloc] init];
-    [quantityFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
-    NSNumberFormatter *priceFormatter = [[NSNumberFormatter alloc] init];
-    [priceFormatter setNumberStyle:NSNumberFormatterCurrencyStyle];
-
-
-    NSString *quantity = [quantityFormatter stringFromNumber:[NSNumber numberWithLong:payment.quantity]];
-    NSString *title = product ? product.localizedTitle : @"(TODO: get title)";
-    NSString *price = product ? [priceFormatter stringFromNumber:product.price] : @"(TODO: get price)";
-
-    NSString *confirmationMessage = [NSString stringWithFormat:@"Do you want to buy %@ %@ for %@", quantity, title, price];
 
     void (^handler)(UIAlertView* view, NSInteger idx) = ^(UIAlertView* view, NSInteger buttonIndex){
         if(buttonIndex == 0) {
@@ -343,6 +359,7 @@ static NSDate* parseDate(NSString* dateString)
         } else {
             // Buy
             [self postPaymentTransaction:transaction completionHandler:^(BOOL success){
+                SKDebugLog(@"success %d", success);
                 if(success) {
                     [self showTransactionCompleteAlert];
                 }
@@ -350,13 +367,17 @@ static NSDate* parseDate(NSString* dateString)
         }
     };
 
+#if defined(A2O_EMSCRIPTEN)
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Confirm Your In-App Purchase"
-                                                    message:confirmationMessage
+                                                    message:[self.class confirmationMessage:payment]
                                              clickedHandler:handler
                                             canceledHandler:nil
                                           cancelButtonTitle:@"Cancel"
                                           otherButtonTitles:@"Buy", nil];
     [alert show];
+#else
+    handler(nil, 1);
+#endif
 }
 
 - (void)addTransactionForTest:(SKPaymentTransaction *)transaction
@@ -368,6 +389,7 @@ static NSDate* parseDate(NSString* dateString)
 
 - (void)showTransactionCompleteAlert
 {
+    SKDebugLog(@"showing alert");
     // "You're all set."
     // "Your puchase was successful."
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"完了しました。"
