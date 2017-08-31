@@ -83,7 +83,7 @@ static NSDate* parseDate(NSString* dateString)
     SKDebugLog(@"%@ %d %@", self, status, requestId);
 
     if(self.transactionState != SKPaymentTransactionStatePurchasing) {
-        // TODO log error
+        SKDebugLog(@"Invalid client transactionState %d", self.transactionState);
         return NO;
     }
 
@@ -98,6 +98,7 @@ static NSDate* parseDate(NSString* dateString)
         self.transactionDate = parseDate([attributes objectForKey:@"created_at"]);
         return YES;
     } else {
+        SKDebugLog(@"Invalid server transactionState %d", status);
         return NO;
     }
 }
@@ -254,7 +255,7 @@ static NSDate* parseDate(NSString* dateString)
                 [_transactionStore update:transaction];
                 [self notifyUpdatedTransaction:transaction];
             }
-            if(completionHandler) completionHandler(YES);
+            if(completionHandler) completionHandler(transaction.transactionState == SKPaymentTransactionStatePurchased);
         }
     }];
 }
@@ -338,7 +339,7 @@ static NSDate* parseDate(NSString* dateString)
     NSString *title = product ? product.localizedTitle : @"(TODO: get title)";
     NSString *price = product ? [priceFormatter stringFromNumber:totalPrice] : @"(TODO: get price)";
 
-    return [NSString stringWithFormat:@"Do you want to buy %@ %@ for %@", quantity, title, price];
+    return [NSString stringWithFormat:@"Do you want to buy %@ %@ for %@", quantityString, title, price];
 }
 
 // Adds a payment request to the queue.
