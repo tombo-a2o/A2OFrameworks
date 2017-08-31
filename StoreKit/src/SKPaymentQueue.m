@@ -82,15 +82,24 @@ static NSDate* parseDate(NSString* dateString)
 
     SKDebugLog(@"%@ %d %@", self, status, requestId);
 
-    if(status != 2 || self.transactionState != SKPaymentTransactionStatePurchasing) {
+    if(self.transactionState != SKPaymentTransactionStatePurchasing) {
         // TODO log error
         return NO;
     }
 
-    self.transactionState = SKPaymentTransactionStatePurchased;
-    self.transactionIdentifier = [json objectForKey:@"id"];
-    self.transactionDate = parseDate([attributes objectForKey:@"created_at"]);
-    return YES;
+    if(status == 2) {
+        self.transactionState = SKPaymentTransactionStatePurchased;
+        self.transactionIdentifier = [json objectForKey:@"id"];
+        self.transactionDate = parseDate([attributes objectForKey:@"created_at"]);
+        return YES;
+    } else if(status == 1){
+        self.transactionState = SKPaymentTransactionStateFailed;
+        self.transactionIdentifier = [json objectForKey:@"id"];
+        self.transactionDate = parseDate([attributes objectForKey:@"created_at"]);
+        return YES;
+    } else {
+        return NO;
+    }
 }
 
 @end
