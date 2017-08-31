@@ -412,6 +412,7 @@ SCNetworkReachabilitySetCallback(SCNetworkReachabilityRef	target,
 				 SCNetworkReachabilityCallBack	callout,
 				 SCNetworkReachabilityContext	*context)
 {
+	SCLog(TRUE, LOG_INFO, CFSTR("%s is not implemented"), __FUNCTION__);
 	return TRUE;
 }
 
@@ -420,6 +421,7 @@ SCNetworkReachabilityScheduleWithRunLoop(SCNetworkReachabilityRef	target,
 					 CFRunLoopRef			runLoop,
 					 CFStringRef			runLoopMode)
 {
+	SCLog(TRUE, LOG_INFO, CFSTR("%s is not implemented"), __FUNCTION__);
     return TRUE;
 }
 
@@ -428,6 +430,7 @@ SCNetworkReachabilityUnscheduleFromRunLoop(SCNetworkReachabilityRef	target,
 					   CFRunLoopRef			runLoop,
 					   CFStringRef			runLoopMode)
 {
+	SCLog(TRUE, LOG_INFO, CFSTR("%s is not implemented"), __FUNCTION__);
     return TRUE;
 }
 
@@ -435,5 +438,6 @@ Boolean
 SCNetworkReachabilitySetDispatchQueue(SCNetworkReachabilityRef	target,
 				      dispatch_queue_t		queue)
 {
+	SCLog(TRUE, LOG_INFO, CFSTR("%s is not implemented"), __FUNCTION__);
     assert(0);
 }
