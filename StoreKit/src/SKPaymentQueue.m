@@ -417,7 +417,12 @@ static NSDate* parseDate(NSString* dateString)
 // Asks the payment queue to restore previously completed purchases.
 - (void)restoreCompletedTransactions
 {
-    [self connectToPaymentAPI:@{@"user_jwt": getUserJwtString()}
+    NSDictionary *params = @{
+        @"user_jwt": getUserJwtString(),
+        @"application_id": getApplicationIdString(),
+    };
+
+    [self connectToPaymentAPI:params
                          path:@"/payments/restorable"
                        method:@"GET"
             completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
