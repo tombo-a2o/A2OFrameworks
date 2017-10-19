@@ -47,6 +47,8 @@ NSString *const UIScreenDidConnectNotification = @"UIScreenDidConnectNotificatio
 NSString *const UIScreenDidDisconnectNotification = @"UIScreenDidDisconnectNotification";
 NSString *const UIScreenModeDidChangeNotification = @"UIScreenModeDidChangeNotification";
 
+extern unsigned int UIKit_shouldPreserveDrawingBuffer(void);
+
 @interface UIScreen()
 @property (nonatomic, readwrite) CGRect bounds;
 @property (nonatomic, readwrite) CGFloat scale;
@@ -102,6 +104,7 @@ NSString *const UIScreenModeDidChangeNotification = @"UIScreenModeDidChangeNotif
         attr.premultipliedAlpha = 0;
         attr.alpha = 0;
         attr.stencil = 1;
+        attr.preserveDrawingBuffer = UIKit_shouldPreserveDrawingBuffer();
         EMSCRIPTEN_WEBGL_CONTEXT_HANDLE webglContext = emscripten_webgl_create_context(0, &attr);
         emscripten_webgl_make_context_current(webglContext);
         UIKit_initScreen();
