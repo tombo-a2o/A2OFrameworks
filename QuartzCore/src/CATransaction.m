@@ -1,3 +1,14 @@
+/*
+ *  CATransaction.m
+ *  A2OFrameworks
+ *
+ *  Copyright (c) 2014- Tombo Inc.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 #import <QuartzCore/CATransaction.h>
 #import <QuartzCore/CALayerContext.h>
 #import <Foundation/Foundation.h>
@@ -14,18 +25,18 @@ NSString * const kCATransactionCompletionBlock=@"kCATransactionCompletionBlock";
 static NSMutableArray *transactionStack(){
    NSMutableDictionary *shared=[[NSThread currentThread] threadDictionary];
    id                   stack=[shared objectForKey:@"CATransactionStack"];
-   
+
    if(stack==nil){
     stack=[NSMutableArray array];
     [shared setObject:stack forKey:@"CATransactionStack"];
    }
-      
+
    return stack;
 }
 
 static CATransactionGroup *currentTransactionGroup(){
    id stack=transactionStack();
-   
+
    CATransactionGroup *result=[stack lastObject];
 
    return result;
@@ -33,15 +44,15 @@ static CATransactionGroup *currentTransactionGroup(){
 
 static CATransactionGroup *createImplicitTransactionGroupIfNeeded(){
    CATransactionGroup *check=currentTransactionGroup();
-   
+
    if(check==nil){
     check=[[CATransactionGroup alloc] init];
-   
+
     [transactionStack() addObject:check];
     [check release];
     [[NSRunLoop currentRunLoop] performSelector:@selector(commit) target:[CATransaction class] argument:nil order:0 modes:[NSArray arrayWithObject:NSDefaultRunLoopMode]];
    }
-   
+
    return check;
 }
 
@@ -64,7 +75,7 @@ static CATransactionGroup *createImplicitTransactionGroupIfNeeded(){
 
 +valueForKey:(NSString *)key {
    CATransactionGroup *group=createImplicitTransactionGroupIfNeeded();
-   
+
    return [group valueForKey:key];
 }
 
@@ -86,13 +97,13 @@ static CATransactionGroup *createImplicitTransactionGroupIfNeeded(){
 
 +(void)setValue:value forKey:(NSString *)key {
    CATransactionGroup *group=createImplicitTransactionGroupIfNeeded();
-   
+
    [group setValue:value forKey:key];
 }
 
 +(void)begin {
    CATransactionGroup *group=[[CATransactionGroup alloc] init];
-   
+
    [transactionStack() addObject:group];
    [group release];
 }
@@ -102,7 +113,7 @@ static CATransactionGroup *createImplicitTransactionGroupIfNeeded(){
    if(block && [self _retainCountCompletionBlock:block] == 0) {
        block();
    }
-   
+
    [transactionStack() removeLastObject];
 }
 

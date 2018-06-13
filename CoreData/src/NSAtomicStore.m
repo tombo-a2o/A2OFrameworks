@@ -1,3 +1,14 @@
+/*
+ *  NSAtomicStore.m
+ *  A2OFrameworks
+ *
+ *  Copyright (c) 2014- Tombo Inc.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 #import <CoreData/NSAtomicStore.h>
 #import <CoreData/NSManagedObject.h>
 #import <CoreData/NSAtomicStoreCacheNode.h>
@@ -69,37 +80,37 @@
     refTable=[NSMutableDictionary dictionary];
     [_objectIDTable setObject:refTable forKey:[entity name]];
    }
-   
+
    NSManagedObjectID *result=[refTable objectForKey:referenceObject];
-   
+
    if(result==nil){
     result=[[[NSManagedObjectID alloc] initWithEntity:entity] autorelease];
-   
+
     [result setReferenceObject:referenceObject];
     [result setStoreIdentifier:[self identifier]];
     [result setPersistentStore:self];
 
     [refTable setObject:result forKey:referenceObject];
    }
-   
+
    return result;
 }
 
 -(void)_uniqueObjectID:(NSManagedObjectID *)objectID {
    NSEntityDescription *entity=[objectID entity];
    NSMutableDictionary *refTable=[_objectIDTable objectForKey:[entity name]];
-   
+
    if(refTable==nil){
     refTable=[NSMutableDictionary dictionary];
     [_objectIDTable setObject:refTable forKey:[entity name]];
    }
-   
+
    id referenceObject=[objectID referenceObject];
 
    [refTable setObject:objectID forKey:referenceObject];
 }
 
--referenceObjectForObjectID:(NSManagedObjectID *)objectID {   
+-referenceObjectForObjectID:(NSManagedObjectID *)objectID {
    return [objectID referenceObject];
 }
 

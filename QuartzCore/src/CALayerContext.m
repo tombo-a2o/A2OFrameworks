@@ -1,3 +1,14 @@
+/*
+ *  CALayerContext.m
+ *  A2OFrameworks
+ *
+ *  Copyright (c) 2014- Tombo Inc.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 #import <QuartzCore/CALayerContext.h>
 #import <QuartzCore/CALayer.h>
 #import <QuartzCore/CALayer+Private.h>
@@ -47,10 +58,10 @@ extern int _legacyGLEmulationEnabled(void);
     GLint cullFaceMode, depthFunc;
     GLboolean vertexArray, textureCoordArray, normalArray, colorArray;
     GLint viewport[4];
-    
+
     // clear user error
     glGetError();
-    
+
     // save state
     glGetIntegerv(GL_CURRENT_PROGRAM, &program);
     GL_ASSERT();

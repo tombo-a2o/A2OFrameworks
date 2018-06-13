@@ -1,3 +1,14 @@
+/*
+ *  O2Shading+PDF.m
+ *  A2OFrameworks
+ *
+ *  Copyright (c) 2014- Tombo Inc.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 #import <Onyx2D/O2Shading+PDF.h>
 #import <Onyx2D/O2PDFDictionary.h>
 #import <Onyx2D/O2PDFArray.h>
@@ -12,7 +23,7 @@
    int              type;
    float            coords[6];
    int              coordsCount;
-   
+
    if([self isAxial]){
     type=2;
     coords[0]=_startPoint.x;
@@ -39,7 +50,7 @@
    [result setObjectForKey:"Domain" value:[O2PDFArray pdfArrayWithNumbers:_domain count:2]];
    [result setObjectForKey:"Function" value:[_function encodeReferenceWithContext:context]];
    O2PDFArray *extend=[O2PDFArray pdfArray];
-   
+
    [extend addBoolean:_extendStart];
    [extend addBoolean:_extendEnd];
    [result setObjectForKey:"Extend" value:extend];
@@ -58,14 +69,14 @@ O2Shading *axialShading(O2PDFDictionary *dictionary,O2ColorSpaceRef colorSpace){
    O2Function *function;
    O2PDFBoolean extendStart=NO;
    O2PDFBoolean extendEnd=NO;
-   
+
 //NSLog(@"axialShading=%@",dictionary);
 
    if(![dictionary getArrayForKey:"Coords" value:&coordsArray]){
     NSLog(@"No Coords entry in axial shader");
     return NULL;
    }
-   else {    
+   else {
     if(![coordsArray getNumberAtIndex:0 value:&start.x]){
      NSLog(@"No real at Coords[0]");
      return NULL;
@@ -83,7 +94,7 @@ O2Shading *axialShading(O2PDFDictionary *dictionary,O2ColorSpaceRef colorSpace){
      return NULL;
     }
    }
-   
+
    if(![dictionary getArrayForKey:"Domain" value:&domainArray])
     domainArray=nil;
    else {
@@ -103,7 +114,7 @@ O2Shading *axialShading(O2PDFDictionary *dictionary,O2ColorSpaceRef colorSpace){
    }
    if((function=[O2Function createFunctionWithDictionary:fnDictionary])==NULL)
     return NULL;
-    
+
    if([dictionary getArrayForKey:"Extend" value:&extendArray]){
     if(![extendArray getBooleanAtIndex:0 value:&extendStart]){
      NSLog(@"Extend dictionary missing boolean at 0");
@@ -114,8 +125,8 @@ O2Shading *axialShading(O2PDFDictionary *dictionary,O2ColorSpaceRef colorSpace){
      return NULL;
     }
    }
-   
-   return [[O2Shading alloc] initWithColorSpace:colorSpace startPoint:start endPoint:end function:function extendStart:extendStart extendEnd:extendEnd domain:domain];    
+
+   return [[O2Shading alloc] initWithColorSpace:colorSpace startPoint:start endPoint:end function:function extendStart:extendStart extendEnd:extendEnd domain:domain];
 }
 
 O2Shading *radialShading(O2PDFDictionary *dictionary,O2ColorSpaceRef colorSpace){
@@ -131,14 +142,14 @@ O2Shading *radialShading(O2PDFDictionary *dictionary,O2ColorSpaceRef colorSpace)
    O2Function *function;
    O2PDFBoolean extendStart=NO;
    O2PDFBoolean extendEnd=NO;
-   
+
 //NSLog(@"axialShading=%@",dictionary);
 
    if(![dictionary getArrayForKey:"Coords" value:&coordsArray]){
     NSLog(@"No Coords entry in radial shader");
     return NULL;
    }
-   else {    
+   else {
     if(![coordsArray getNumberAtIndex:0 value:&start.x]){
      NSLog(@"No real at Coords[0]");
      return NULL;
@@ -164,7 +175,7 @@ O2Shading *radialShading(O2PDFDictionary *dictionary,O2ColorSpaceRef colorSpace)
      return NULL;
     }
    }
-   
+
    if(![dictionary getArrayForKey:"Domain" value:&domainArray])
     domainArray=nil;
    else {
@@ -184,7 +195,7 @@ O2Shading *radialShading(O2PDFDictionary *dictionary,O2ColorSpaceRef colorSpace)
    }
    if((function=[O2Function createFunctionWithDictionary:fnDictionary])==NULL)
     return NULL;
-    
+
    if([dictionary getArrayForKey:"Extend" value:&extendArray]){
     if(![extendArray getBooleanAtIndex:0 value:&extendStart]){
      NSLog(@"Extend dictionary missing boolean at 0");
@@ -195,8 +206,8 @@ O2Shading *radialShading(O2PDFDictionary *dictionary,O2ColorSpaceRef colorSpace)
      return NULL;
     }
    }
-   
-   return [[O2Shading alloc] initWithColorSpace:colorSpace startPoint:start startRadius:startRadius endPoint:end endRadius:endRadius function:function extendStart:extendStart extendEnd:extendEnd domain:domain];        
+
+   return [[O2Shading alloc] initWithColorSpace:colorSpace startPoint:start startRadius:startRadius endPoint:end endRadius:endRadius function:function extendStart:extendStart extendEnd:extendEnd domain:domain];
 }
 
 +(O2Shading *)shadingWithPDFObject:(O2PDFObject *)object {
@@ -205,10 +216,10 @@ O2Shading *radialShading(O2PDFDictionary *dictionary,O2ColorSpaceRef colorSpace)
    O2PDFObject     *colorSpaceObject;
    O2ColorSpace    *colorSpace;
    O2PDFInteger     shadingType;
-   
+
    if(![object checkForType:kO2PDFObjectTypeDictionary value:&dictionary])
     return nil;
-   
+
   // NSLog(@"sh=%@",dictionary);
    if(![dictionary getIntegerForKey:"ShadingType" value:&shadingType]){
     O2PDFError(__FILE__,__LINE__,@"required ShadingType missing");
@@ -221,7 +232,7 @@ O2Shading *radialShading(O2PDFDictionary *dictionary,O2ColorSpaceRef colorSpace)
 
    if((colorSpace=[O2ColorSpace createColorSpaceFromPDFObject:colorSpaceObject])==nil)
     return nil;
-    
+
    switch(shadingType){
     case 1: // Function-base shading
      NSLog(@"Unsupported shading type %d",shadingType);
@@ -248,7 +259,7 @@ O2Shading *radialShading(O2PDFDictionary *dictionary,O2ColorSpaceRef colorSpace)
      NSLog(@"Unknown shading type %d",shadingType);
      break;
    }
-   
+
    return result;
 }
 

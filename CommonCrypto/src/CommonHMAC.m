@@ -1,3 +1,14 @@
+/*
+ *  CommonHMAC.m
+ *  A2OFrameworks
+ *
+ *  Copyright (c) 2014- Tombo Inc.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 #import <CommonCrypto/CommonHMAC.h>
 //#import <Foundation/NSRaise.h>
 #import <string.h>
@@ -28,7 +39,7 @@ void CCHmacUpdate(CCHmacContext *context,const void *bytes,size_t len) {
 
 void CCHmacFinal(CCHmacContext *context,void *macOut) {
    unsigned len=0;
-   
+
    HMAC_Final(context->sslContext,macOut,&len);
    HMAC_CTX_cleanup(context->sslContext);
    free(context->sslContext);
@@ -36,7 +47,7 @@ void CCHmacFinal(CCHmacContext *context,void *macOut) {
 
 void CCHmac(CCHmacAlgorithm algorithm,const void *key,size_t keyLength,const void *data,size_t dataLength,void *macOut) {
    CCHmacContext context;
-   
+
    CCHmacInit(&context,algorithm,key,keyLength);
    CCHmacUpdate(&context,data,dataLength);
    CCHmacFinal(&context,macOut);

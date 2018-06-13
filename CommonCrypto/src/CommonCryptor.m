@@ -1,3 +1,14 @@
+/*
+ *  CommonCryptor.m
+ *  A2OFrameworks
+ *
+ *  Copyright (c) 2014- Tombo Inc.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 #import <CommonCrypto/CommonCryptor.h>
 //#import <Foundation/NSRaise.h>
 #import <openssl/evp.h>
@@ -10,15 +21,15 @@ struct CCCryptor {
 
 CCCryptorStatus CCCryptorCreate(CCOperation operation,CCAlgorithm algorithm,CCOptions options,const void *key,size_t keyLength,const void *initVector,CCCryptorRef *result) {
    CCCryptorRef self=malloc(sizeof(struct CCCryptor));
-   
+
    self->operation=operation;
    self->context=malloc(sizeof(EVP_CIPHER_CTX));
    EVP_CIPHER_CTX_init(self->context);
 
    self->cipher=NULL;
-   
+
    switch(algorithm){
-   
+
     case kCCAlgorithmAES128:
      if(options&kCCOptionECBMode){
       if(keyLength==kCCKeySizeAES128)
@@ -34,7 +45,7 @@ CCCryptorStatus CCCryptorCreate(CCOperation operation,CCAlgorithm algorithm,CCOp
      }
      break;
    }
-   
+
    if(self->cipher==NULL){
     printf("%s %d cipher==NULL",__FILE__,__LINE__);
     return kCCUnimplemented;
@@ -46,9 +57,9 @@ CCCryptorStatus CCCryptorCreate(CCOperation operation,CCAlgorithm algorithm,CCOp
    else {
     EVP_DecryptInit_ex(self->context,self->cipher,NULL,key,initVector);
    }
-   
+
    *result=self;
-   
+
    return kCCSuccess;
 }
 
@@ -61,7 +72,7 @@ CCCryptorStatus CCCryptorRelease(CCCryptorRef self) {
 
 size_t CCCryptorGetOutputLength(CCCryptorRef self,size_t inputLength,bool final) {
    int blockSize=EVP_CIPHER_block_size(self->cipher);
-   
+
    return inputLength+blockSize-1;
 }
 
@@ -77,7 +88,7 @@ CCCryptorStatus CCCryptorUpdate(CCCryptorRef self,const void *dataIn,size_t data
     EVP_DecryptUpdate(self->context,dataOut, &outSize,dataIn,dataInLength);
     * dataOutMoved=outSize;
    }
-   
+
    return kCCSuccess;
 }
 
@@ -92,13 +103,13 @@ CCCryptorStatus CCCryptorFinal(CCCryptorRef self,void *dataOut,size_t dataOutAva
     EVP_DecryptFinal_ex(self->context,dataOut, &outSize);
     * dataOutMoved=outSize;
    }
-   
+
    return kCCSuccess;
 }
 
 CCCryptorStatus CCCrypt(CCOperation operation,CCAlgorithm algorithm,CCOptions options,const void *key,size_t keyLength,const void *initVector,const void *dataIn,size_t dataInLength,void *dataOut,size_t dataOutAvailable,size_t *dataOutMoved) {
    CCCryptorRef cryptor;
-   
+
    CCCryptorCreate(operation,algorithm,options,key,keyLength,initVector,&cryptor);
    CCCryptorUpdate(cryptor,dataIn,dataInLength,dataOut,dataOutAvailable,dataOutMoved);
    size_t dataOutChunk=0;
@@ -106,6 +117,6 @@ CCCryptorStatus CCCrypt(CCOperation operation,CCAlgorithm algorithm,CCOptions op
     CCCryptorFinal(cryptor,dataOut+*dataOutMoved,dataOutAvailable-*dataOutMoved,&dataOutChunk);
     *dataOutMoved+=dataOutChunk;
    }
-   
+
    return kCCSuccess;
 }

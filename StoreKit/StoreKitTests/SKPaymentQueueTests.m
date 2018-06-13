@@ -1,3 +1,14 @@
+/*
+ *  SKPaymentQueueTests.m
+ *  A2OFrameworks
+ *
+ *  Copyright (c) 2014- Tombo Inc.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 #import <XCTest/XCTest.h>
 #import "StoreKit.h"
 #import "SKPaymentTransaction+Internal.h"
@@ -174,7 +185,7 @@
 
 - (void)testConnectToPaymentAPIOnError {
     NSString *requestId = [NSUUID UUID].UUIDString.lowercaseString;
-    
+
     stubRequest(@"POST", @"https://api.tombo.io/payments").
     withBody([NSString stringWithFormat:@"{\"payment\":{\"quantity\":1,\"requestData\":null,\"applicationUsername\":null,\"productIdentifier\":\"product1\",\"requestId\":\"%@\"},\"user_jwt\":\"dummy_jwt\"}", requestId]).
     andReturn(400).
@@ -266,31 +277,31 @@
                             }
                         ]
                 } options:NSJSONWritingPrettyPrinted error:nil]);
-    
+
     SKPaymentQueueDelegate *delegate = [[SKPaymentQueueDelegate alloc] init];
     delegate.restoreExpectation = [self expectationWithDescription:@"restore"];
     delegate.restoreExpectation.expectedFulfillmentCount = 2;
     SKPaymentQueue *queue = [SKPaymentQueue defaultQueue];
     [queue addTransactionObserver:delegate];
-    
+
     [queue restoreCompletedTransactions];
-    
+
     [self waitForExpectationsWithTimeout:5 handler:^(NSError *error) {
         if (error != nil) {
             XCTFail(@"Timeout: %@", error);
             return;
         }
-        
+
         NSArray<SKPaymentTransaction *> *transactions = delegate.transactions;
-        
+
         XCTAssertEqual(transactions.count, 2);
-        
+
         SKPaymentTransaction *result = transactions[0];
         SKPaymentTransaction *original = result.originalTransaction;
-        
+
         XCTAssertNotEqualObjects(result.transactionIdentifier, @"transactionIdentifier1");
         XCTAssertEqual(result.transactionState, SKPaymentTransactionStateRestored);
-        
+
         XCTAssertNotNil(original);
         XCTAssertEqualObjects(original.transactionIdentifier, @"transactionIdentifier1");
         XCTAssertEqual(original.transactionDate.timeIntervalSince1970, 322088297);
@@ -308,10 +319,10 @@
     NSDecimalNumber *price = [NSDecimalNumber decimalNumberWithString:@"12345"];
     SKProduct *product = [[SKProduct alloc] initWithProductIdentifier:@"product1" localizedTitle:@"title1" localizedDescription:@"desc1" price:price priceLocale:[NSLocale localeWithLocaleIdentifier:@"en_US@currency=JPY"]];
     SKPayment *payment = [SKPayment paymentWithProduct:product];
-    
+
     NSString *message = [SKPaymentQueue confirmationMessage:payment];
     XCTAssertEqualObjects(message, @"Do you want to buy 1 title1 for ¥12,345");
-    
+
 }
 
 @end

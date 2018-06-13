@@ -1,3 +1,14 @@
+/*
+ *  stb_image.h
+ *  A2OFrameworks
+ *
+ *  Copyright (c) 2014- Tombo Inc.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 /* stb_image - v2.12 - public domain image loader - http://nothings.org/stb_image.h
                                      no warranty implied; use at your own risk
 
@@ -149,7 +160,7 @@
       2.12  (2016-04-02) fix typo in 2.11 PSD fix that caused crashes
       2.11  (2016-04-02) 16-bit PNGS; enable SSE2 in non-gcc x64
                          RGB-format JPEG; remove white matting in PSD;
-                         allocate large structures on the stack; 
+                         allocate large structures on the stack;
                          correct channel count for PNG & BMP
       2.10  (2016-01-22) avoid warning introduced in 2.09
       2.09  (2016-01-16) 16-bit TGA; comments in PNM files; STBI_REALLOC_SIZED
@@ -4732,7 +4743,7 @@ static void *stbi__bmp_parse_header(stbi__context *s, stbi__bmp_data *info)
    info->offset = stbi__get32le(s);
    info->hsz = hsz = stbi__get32le(s);
    info->mr = info->mg = info->mb = info->ma = 0;
-   
+
    if (hsz != 12 && hsz != 40 && hsz != 56 && hsz != 108 && hsz != 124) return stbi__errpuc("unknown BMP", "BMP type not supported: unknown");
    if (hsz == 12) {
       s->img_x = stbi__get16le(s);
@@ -4816,7 +4827,7 @@ static stbi_uc *stbi__bmp_load(stbi__context *s, int *x, int *y, int *comp, int 
    int flip_vertically, pad, target;
    stbi__bmp_data info;
 
-   info.all_a = 255;   
+   info.all_a = 255;
    if (stbi__bmp_parse_header(s, &info) == NULL)
       return NULL; // error code already set
 
@@ -4931,7 +4942,7 @@ static stbi_uc *stbi__bmp_load(stbi__context *s, int *x, int *y, int *comp, int 
          stbi__skip(s, pad);
       }
    }
-   
+
    // if alpha channel is all 0s, replace with all 255s
    if (target == 4 && all_a == 0)
       for (i=4*s->img_x*s->img_y-1; i >= 0; i -= 4)
@@ -6293,7 +6304,7 @@ static int stbi__bmp_info(stbi__context *s, int *x, int *y, int *comp)
    void *p;
    stbi__bmp_data info;
 
-   info.all_a = 255;   
+   info.all_a = 255;
    p = stbi__bmp_parse_header(s, &info);
    stbi__rewind( s );
    if (p == NULL)

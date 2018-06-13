@@ -1,3 +1,14 @@
+/*
+ *  O2TTFDecoder.m
+ *  A2OFrameworks
+ *
+ *  Copyright (c) 2014- Tombo Inc.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 #if 0
 
 #import <Onyx2D/O2TTFDecoder.h>
@@ -22,7 +33,7 @@ O2TTFDecoderRef O2TTFDecoderCreate(O2DataProviderRef dataProvider) {
        self->_length=CFDataGetLength(self->_data);
        self->_position=0;
     }
-    
+
    return self;
 }
 
@@ -37,7 +48,7 @@ void O2TTFDecoderRelease(O2TTFDecoderRef self) {
 static void dump(O2TTFDecoderRef self,NSString *format,...){
    if(self->_dump){
     va_list arguments;
-    
+
     va_start(arguments,format);
     NSLogv(format,arguments);
     va_end(arguments);
@@ -59,34 +70,34 @@ static uint8_t decode_uint8(O2TTFDecoderRef self){
     dump(self,@"overflow");
     exit(0);
    }
-   
+
    return self->_bytes[self->_position++];
 }
 
 static uint16_t decode_uint16(O2TTFDecoderRef self){
   uint16_t result;
-  
+
   result=decode_uint8(self);
   result<<=8;
   result|=decode_uint8(self);
-  
+
   return result;
 }
 
 static int16_t decode_int16(O2TTFDecoderRef self){
   uint16_t result;
-  
+
   result=decode_uint8(self);
   result<<=8;
   result|=decode_uint8(self);
-  
+
   return result;
 }
 
 
 static uint32_t decode_uint32(O2TTFDecoderRef self){
   uint32_t result;
-  
+
   result=decode_uint8(self);
   result<<=8;
   result|=decode_uint8(self);
@@ -94,17 +105,17 @@ static uint32_t decode_uint32(O2TTFDecoderRef self){
   result|=decode_uint8(self);
   result<<=8;
   result|=decode_uint8(self);
-  
+
   return result;
 }
 
 static longDateTime64 decode_longDateTime64(O2TTFDecoderRef self){
    uint64_t result;
-   
+
    result=decode_uint32(self);
    result<<=32;
    result|=decode_uint32(self);
-   
+
    return result;
 }
 
@@ -127,7 +138,7 @@ void decode_format_4(O2TTFDecoderRef self,O2Glyph **twoLevel){
     uint16_t idDelta;
     uint16_t idRangePosition;
    } *segments;
-   
+
    uint16_t length=decode_uint16(self);
    dump(self,@"length=%d",length);
    uint16_t language=decode_uint16(self);
@@ -143,41 +154,41 @@ void decode_format_4(O2TTFDecoderRef self,O2Glyph **twoLevel){
    uint16_t rangeShift=decode_uint16(self);
    dump(self,@"rangeShift=%d",rangeShift);
    uint16_t i;
-   
+
    for(i=0;i<segCount;i++){
     uint16_t endCode=decode_uint16(self);
     dump(self,@"endCode[%d]=%x",i,endCode);
     segments[i].endCode=endCode;
    }
-   
+
    uint16_t reservedPad=decode_uint16(self);
    dump(self,@"reservedPad=%d",reservedPad);
-   
+
    for(i=0;i<segCount;i++){
     uint16_t startCode=decode_uint16(self);
     dump(self,@"startCode[%d]=%x",i,startCode);
     segments[i].startCode=startCode;
    }
-   
+
    for(i=0;i<segCount;i++){
     uint16_t idDelta=decode_uint16(self);
     dump(self,@"idDelta[%d]=%x",i,idDelta);
-    
+
     segments[i].idDelta=idDelta;
    }
 
    for(i=0;i<segCount;i++){
     uint16_t position=self->_position;
     uint16_t idRangeOffset=decode_uint16(self);
-    
+
     if(idRangeOffset==0)
      segments[i].idRangePosition=0;
     else
      segments[i].idRangePosition=position+idRangeOffset;
-    
+
     dump(self,@"idRangeOffset[%d]=%x",i,idRangeOffset);
    }
-   
+
    for(i=0;i<segCount && segments[i].endCode!=0xFFFF;i++){
     uint16_t code=segments[i].startCode;
 
@@ -186,25 +197,25 @@ void decode_format_4(O2TTFDecoderRef self,O2Glyph **twoLevel){
       uint16_t glyph=segments[i].idDelta+code;
       uint8_t  group=code>>8;
       uint8_t  index=code&0xFF;
-      
+
       if(twoLevel[group]==NULL)
        twoLevel[group]=NSZoneCalloc(NULL,256,sizeof(O2Glyph));
-       
-      twoLevel[group][index]=glyph;      
+
+      twoLevel[group][index]=glyph;
      }
     }
     else {
      self->_position=segments[i].idRangePosition;
-     
+
      for(;code<=segments[i].endCode;code++){
       uint16_t glyph=decode_uint16(self);
       uint8_t  group=code>>8;
       uint8_t  index=code&0xFF;
-      
+
       if(twoLevel[group]==NULL)
        twoLevel[group]=NSZoneCalloc(NULL,256,sizeof(O2Glyph));
-       
-      twoLevel[group][index]=glyph;      
+
+      twoLevel[group][index]=glyph;
      }
     }
    }
@@ -219,58 +230,58 @@ void decode_subtable(O2TTFDecoderRef self,O2Glyph **twoLevel){
    dump(self,@"platformSpecificID=%d",platformSpecificID);
    uint32_t offset=decode_uint32(self);
    dump(self,@"offset=%d",offset);
-   
+
    CFIndex save=self->_position;
    self->_position=offset;
    uint16_t format=decode_uint16(self);
    dump(self,@"format=%d",format);
-   
+
    switch(format){
-   
+
     case 0:
      decode_format_0(self);
      break;
-     
+
     case 2:
      decode_format_2(self);
      break;
-     
+
     case 4:
      decode_format_4(self,twoLevel);
      break;
-     
+
     case 6:
      decode_format_6(self);
      break;
-     
+
     default:
      dump(self,@"unknown format %d",format);
      break;
-     
+
    }
-   
+
    self->_position=save;
 }
 
 O2Glyph **O2TTFecoderTwoLevelUnicode_cmap(O2TTFDecoderRef self){
    O2Glyph **twoLevel=NSZoneCalloc(NULL,256,sizeof(O2Glyph *));
-   
+
    uint16_t version=decode_uint16(self);
    dump(self,@"version=%d",version);
    uint16_t i,subTableCount=decode_uint16(self);
    dump(self,@"subTableCount=%d",subTableCount);
-   
+
    for(i=0;i<subTableCount;i++){
     decode_subtable(self,twoLevel);
    }
-   
+
    return twoLevel;
 }
 
 BOOL seekToTable(O2TTFDecoderRef self,uint32_t seekToTag){
    self->_position=0;
    uint32_t scaler=decode_uint32(self);
-   
+
    if(scaler!=0x00010000 && scaler!=0x74727565){
     dump(self,@"invalid scaler=%08X",scaler);
     return NO;
@@ -281,7 +292,7 @@ BOOL seekToTable(O2TTFDecoderRef self,uint32_t seekToTag){
    uint16_t entrySelector=decode_uint16(self);
    uint16_t rangeShift=decode_uint16(self);
    int i;
-   
+
    for(i=0;i<numTables;i++){
     uint32_t tag=decode_uint32(self);
     uint32_t checkSum=decode_uint32(self);
@@ -293,7 +304,7 @@ BOOL seekToTable(O2TTFDecoderRef self,uint32_t seekToTag){
      return YES;
     }
    }
-   
+
    dump(self,@"unable to find tag %c%c%c%c",seekToTag>>24,(seekToTag>>16)&0xFF,(seekToTag>>8)&0xFF,seekToTag&0xFF);
    return NO;
 }
@@ -564,7 +575,7 @@ static struct {
 
 static void loadMacintoshNameMapping(NSMapTable *table){
    NSInteger i;
-   
+
    for(i=0;i<258;i++)
     NSMapInsert(table,MacintoshNameMapping[i].name,(void *)i);
 }
@@ -584,9 +595,9 @@ NSMapTable *O2TTFDecoderGetPostScriptNameMapTable(O2TTFDecoderRef self,int *numb
    uint32_t maxMemType42=decode_uint32(self);
    uint32_t minMemType1=decode_uint32(self);
    uint32_t maxMemType1=decode_uint32(self);
-      
+
    switch(format){
-   
+
     default:
      NSLog(@"unimplemented 'post' format %08X",format);
      return NULL;
@@ -594,50 +605,50 @@ NSMapTable *O2TTFDecoderGetPostScriptNameMapTable(O2TTFDecoderRef self,int *numb
     case 0x00010000:;
      loadMacintoshNameMapping(result);
      break;
-     
+
     case 0x00020000:;
      uint16_t numberOfGlyphs=decode_uint16(self);
      int      i;
      uint16_t maxIndex=0;
      uint16_t glyphNameIndex[numberOfGlyphs];
-     
+
      for(i=0;i<numberOfGlyphs;i++){
       glyphNameIndex[i]=decode_uint16(self);
-      
+
       maxIndex=MAX(maxIndex,glyphNameIndex[i]);
      }
      maxIndex-=258;
      maxIndex++;
      NSString *names[maxIndex];
-     
+
      for(i=0;i<maxIndex;i++){
       uint8_t length=decode_uint8(self);
       uint8_t buffer[length];
       int     count=0;
-      
+
       for(count=0;count<length;count++)
        buffer[count]=decode_uint8(self);
-       
+
       names[i]=[[NSString alloc] initWithBytes:buffer length:count encoding:NSASCIIStringEncoding];
      }
 
      for(i=0;i<numberOfGlyphs;i++){
       uint16_t nameIndex=glyphNameIndex[i];
-      
+
       if(nameIndex<=257)
        NSMapInsert(result,MacintoshNameMapping[nameIndex].name,(void *)i);
       else {
        nameIndex-=258;
        NSMapInsert(result,names[nameIndex],(void *)i);
-      } 
+      }
      }
-     
+
      for(i=0;i<maxIndex;i++)
       [names[i] release];
      break;
-     
+
    }
-   
+
    return result;
 }
 
@@ -662,26 +673,26 @@ int O2TTFDecoderGetOffsetsAreLong(O2TTFDecoderRef self) {
    int16_t fontDirectionHint=decode_int16(self);
    int16_t indexToLocFormat=decode_int16(self);
    int16_t glyphDataFormat=decode_int16(self);
- 
+
    return indexToLocFormat;
 }
 
 int *O2TTFDecoderGetGlyphLocations(O2TTFDecoderRef self,int numberOfGlyphs) {
    int *result=NSZoneMalloc(NULL,sizeof(int)*numberOfGlyphs);
-   
+
    if(O2TTFDecoderGetOffsetsAreLong(self)){
     if(!seekToTable(self,'loca'))
      return NULL;
-     
+
     int i;
     for(i=0;i<numberOfGlyphs;i++)
      result[i]=decode_uint32(self);
-     
+
    }
    else {
     if(!seekToTable(self,'loca'))
      return NULL;
-     
+
     int i;
     for(i=0;i<numberOfGlyphs;i++)
      result[i]=decode_uint16(self);
@@ -691,35 +702,35 @@ int *O2TTFDecoderGetGlyphLocations(O2TTFDecoderRef self,int numberOfGlyphs) {
 
 O2PathRef O2TTFDecoderGetGlyphOutline(O2TTFDecoderRef self,int glyphLocation) {
    O2PathRef result=O2PathCreateMutable();
-   
+
     if(!seekToTable(self,'glyf'))
      return NULL;
 
    self->_position+=glyphLocation;
-   
+
    int16_t numberOfContours=decode_int16(self);
-   
+
    if(numberOfContours>=0){
     uint16_t endPtsOfContours[numberOfContours];
     int i;
-    
+
     for(i=0;i<numberOfContours;i++)
      endPtsOfContours[i]=decode_uint16(self);
 
     uint16_t instructionLength=decode_uint16(self);
     uint8_t  instructions[instructionLength];
-    
+
     for(i=0;i<instructionLength;i++)
      instructions[i]=decode_uint8(self);
-    
-    
+
+
    }
    else if(numberOfContours==-1){
    }
    else {
     NSLog(@"invalid numberOfContours=%d",numberOfContours);
    }
-   
+
    return result;
 }
 
@@ -730,13 +741,13 @@ void O2TTFDecoderGetNameTable(O2TTFDecoderRef self) {
    }
 
    int      stringTable=self->_position;
-   
+
    uint16_t format=decode_uint16(self);
    uint16_t i,count=decode_uint16(self);
    uint16_t stringOffset=decode_uint16(self);
 
    stringTable+=stringOffset;
-   
+
    for(i=0;i<count;i++){
     uint16_t platformID=decode_uint16(self);
     /*uint16_t platformSpecificID=*/decode_uint16(self);
@@ -744,15 +755,15 @@ void O2TTFDecoderGetNameTable(O2TTFDecoderRef self) {
     uint16_t nameID=decode_uint16(self);
     uint16_t length=decode_uint16(self);
     uint16_t offset=decode_uint16(self);
-    
+
     CFIndex location=stringTable+offset;
-    
+
     NSLog(@"platformID=%d,languageId=%d,nameID=%d",platformID,languageID,nameID);
-    
+
     NSLog(@"position=%ld,stringOffset=%d,offset=%d",self->_position,stringOffset,offset);
-    
+
     NSString *string=[NSString stringWithCString:(const char *)self->_bytes+location length:length];
-    
+
     NSLog(@"platformID=%d,languageID=%d,string=%@",platformID,languageID,string);
    }
 

@@ -1,3 +1,14 @@
+/*
+ *  CALayer.m
+ *  A2OFrameworks
+ *
+ *  Copyright (c) 2014- Tombo Inc.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 #import <QuartzCore/CALayer.h>
 #import <QuartzCore/CAAnimation.h>
 #import <QuartzCore/CATransaction.h>
@@ -160,7 +171,7 @@ NSString * const kCATransition = @"transition";
 -(void)setSublayers:(NSArray *)sublayers {
     _shouldClearPresentationLayer = YES;
     [self _clearZOrderedSublayersCache];
-    
+
     sublayers=[sublayers copy];
     [_sublayers release];
     _sublayers=sublayers;
@@ -189,7 +200,7 @@ NSString * const kCATransition = @"transition";
 
 -(void)setPosition:(CGPoint)value {
     _shouldClearPresentationLayer = YES;
-    
+
    CAAnimation *animation = [self animationForKey:@"position"];
 
    if(animation == nil && ![CATransaction disableActions]){
@@ -209,7 +220,7 @@ NSString * const kCATransition = @"transition";
 
 -(void)setBounds:(CGRect)value {
     _shouldClearPresentationLayer = YES;
-    
+
     value = CGRectStandardize(value);
 
     CAAnimation *animation = [self animationForKey:@"bounds"];
@@ -220,7 +231,7 @@ NSString * const kCATransition = @"transition";
        if(action!=nil) {
            [action runActionForKey:@"bounds" object:self arguments:nil];
        }
-    } 
+    }
 
     if(_bounds.size.width != value.size.width || _bounds.size.height != value.size.height) {
        [self setNeedsLayout];
@@ -243,7 +254,7 @@ NSString * const kCATransition = @"transition";
 }
 
 -(void)setFrame:(CGRect)value {
-    
+
     value = CGRectStandardize(value);
 
     CGPoint position;
@@ -266,7 +277,7 @@ NSString * const kCATransition = @"transition";
 
 -(void)setOpacity:(float)value {
     _shouldClearPresentationLayer = YES;
-    
+
    CAAnimation *animation = [self animationForKey:@"opacity"];
 
    if(animation == nil && ![CATransaction disableActions]){
@@ -296,7 +307,7 @@ NSString * const kCATransition = @"transition";
     if(_contents != value) {
         _shouldClearPresentationLayer = YES;
         _needsUpdateVertexObject = YES;
-        
+
         value = [value retain];
         [_contents release];
         _contents=value;
@@ -310,7 +321,7 @@ NSString * const kCATransition = @"transition";
 
 -(void)setTransform:(CATransform3D)value {
     _shouldClearPresentationLayer = YES;
-    
+
     CAAnimation *animation = [self animationForKey:@"transform"];
 
     if(animation == nil && ![CATransaction disableActions]){
@@ -330,7 +341,7 @@ NSString * const kCATransition = @"transition";
 
 -(void)setSublayerTransform:(CATransform3D)value {
     _shouldClearPresentationLayer = YES;
-    
+
     CAAnimation *animation = [self animationForKey:@"sublayerTransform"];
 
     if(animation == nil && ![CATransaction disableActions]){
@@ -370,11 +381,11 @@ NSString * const kCATransition = @"transition";
 
 -(void)setZPosition:(CGFloat)zPosition {
     _shouldClearPresentationLayer = YES;
-    
+
     if(_superlayer) {
         [_superlayer _clearZOrderedSublayersCache];
     }
-    
+
     _zPosition = zPosition;
 }
 
@@ -404,7 +415,7 @@ NSString * const kCATransition = @"transition";
 
 -(void)setHidden:(BOOL)hidden {
     _shouldClearPresentationLayer = YES;
-    
+
     _hidden = hidden;
 }
 
@@ -417,7 +428,7 @@ NSString * const kCATransition = @"transition";
     if(_backgroundColor) {
         CFRelease(_backgroundColor);
     }
-    
+
     _backgroundColor = CGColorRetain(color);
 }
 
@@ -437,7 +448,7 @@ NSString * const kCATransition = @"transition";
 
 -(void)setContentsScale:(CGFloat)scale {
     _shouldClearPresentationLayer = YES;
-    
+
     _contentsScale = scale;
 }
 
@@ -447,7 +458,7 @@ NSString * const kCATransition = @"transition";
 
 -(void)setBorderWidth:(CGFloat)width {
     _shouldClearPresentationLayer = YES;
-    
+
     _borderWidth = width;
 }
 
@@ -460,7 +471,7 @@ NSString * const kCATransition = @"transition";
     if(_borderColor) {
         CFRelease(_borderColor);
     }
-    
+
     _borderColor = CGColorRetain(color);
 }
 
@@ -470,7 +481,7 @@ NSString * const kCATransition = @"transition";
 
 -(void)setDoubleSided:(BOOL)doubleSided {
     _shouldClearPresentationLayer = YES;
-    
+
     _doubleSided = doubleSided;
 }
 
@@ -489,7 +500,7 @@ NSString * const kCATransition = @"transition";
 
 -(void)addSublayer:(CALayer *)layer {
     NSUInteger current = [_sublayers indexOfObject:layer];
-    
+
     if(current != [_sublayers count] - 1) {
         [self setNeedsLayout];
         [layer setNeedsLayout];
@@ -554,7 +565,7 @@ NSString * const kCATransition = @"transition";
 
 -(void)display {
     if(_bounds.size.width == 0 || _bounds.size.height == 0) return;
-    
+
     if([_delegate respondsToSelector:@selector(displayLayer:)]) {
         [_delegate displayLayer:self];
         _flipTexture = NO;
@@ -624,7 +635,7 @@ NSString * const kCATransition = @"transition";
         [animation _setCompletionBlock:block];
         [CATransaction _retainCompletionBlock:block];
     }
-    
+
     if(key) {
         [_animations setObject:animation forKey:key];
     } else {
@@ -651,14 +662,14 @@ NSString * const kCATransition = @"transition";
 
 // -valueForKey:(NSString *)key {
 //     // FIXME: KVC appears broken for structs
-// 
+//
 //     if([key isEqualToString:@"bounds"])
 //         return [NSValue valueWithRect:_bounds];
 //     if([key isEqualToString:@"frame"])
 //         return [NSValue valueWithRect:[self frame]];
 //     if([key isEqualToString:@"transform"])
 //         return [NSValue valueWithCATransform3D:[self transform]];
-// 
+//
 //     return [super valueForKey:key];
 // }
 
@@ -668,19 +679,19 @@ NSString * const kCATransition = @"transition";
         action = [_delegate actionForLayer:self forKey:key];
     }
     if(action) return [action isEqual:[NSNull null]] ? nil : action;
-    
+
     action = [self.actions objectForKey:key];
     if(action) return [action isEqual:[NSNull null]] ? nil : action;
-    
+
     NSDictionary *style = self.style;
     while(style) {
         NSDictionary *actions = [style objectForKey:@"actions"];
         action = [actions objectForKey:key];
         if(action) return [action isEqual:[NSNull null]] ? nil : action;
-        
+
         style = [style objectForKey:@"style"];
     }
-    
+
     CABasicAnimation *basic=[CABasicAnimation animationWithKeyPath:key];
 
     [basic setFromValue:[self valueForKey:key]];
@@ -709,7 +720,7 @@ NSString * const kCATransition = @"transition";
 
 -(void)_setTextureId:(GLuint)value {
     if(_textureId == value) return;
-    
+
 	if(_textureId && _modelLayer._textureId != _textureId) {
 		glDeleteTextures(1, &_textureId);
 	}
@@ -722,7 +733,7 @@ NSString * const kCATransition = @"transition";
 
 -(void)_setVertexObject:(GLuint)value {
     if(_vertexObject == value) return;
-    
+
 	if(_vertexObject) { //} && _modelLayer._vertexObject != _vertexObject) {
 		glDeleteBuffers(1, &_vertexObject);
 	}
@@ -839,7 +850,7 @@ NSString * const kCATransition = @"transition";
 
 -(BOOL)_generatePresentationLayer {
     BOOL changed = NO;
-    
+
     if(_shouldClearPresentationLayer) {
         [_presentationLayer release];
         _presentationLayer = nil;
@@ -851,11 +862,11 @@ NSString * const kCATransition = @"transition";
         changed = YES;
     }
     assert(_presentationLayer);
-    
+
     for(CALayer *child in _sublayers) {
         changed = [child _generatePresentationLayer] || changed;
     }
-    
+
     if(changed) {
         NSMutableArray *sublayers = [NSMutableArray array];
         for(CALayer *child in self.sublayers) {
@@ -863,20 +874,20 @@ NSString * const kCATransition = @"transition";
         }
         _presentationLayer.sublayers = sublayers;
     }
-    
+
     return changed;
 }
 
 -(void)_updateAnimations:(CFTimeInterval)currentTime {
     assert(!_modelLayer && _presentationLayer); // self should be modelLayer
-    
+
     if([_animations count]) {
         NSMutableArray *toBeRemoved = [NSMutableArray array];
         for(NSString *key in _animations){
             CAAnimation *animation = [self animationForKey:key];
-            
+
             [animation _updateLayer:self currentTime:currentTime];
-            
+
             if([animation _isFinished] && animation.isRemovedOnCompletion){
                 [toBeRemoved addObject:key];
                 _shouldClearPresentationLayer = YES;
@@ -884,12 +895,12 @@ NSString * const kCATransition = @"transition";
         }
         [_animations removeObjectsForKeys:toBeRemoved];
     }
-    
+
     if([_implicitAnimations count]) {
         NSMutableSet *toBeRemoved2 = [NSMutableSet set];
         for(CAAnimation *animation in _implicitAnimations) {
             [animation _updateLayer:self currentTime:currentTime];
-                
+
             if([animation _isFinished] && animation.isRemovedOnCompletion){
                 [toBeRemoved2 addObject:animation];
                 _shouldClearPresentationLayer = YES;
@@ -897,7 +908,7 @@ NSString * const kCATransition = @"transition";
         }
         [_implicitAnimations minusSet:toBeRemoved2];
     }
-    
+
     for(CALayer *child in _sublayers) {
         [child _updateAnimations:currentTime];
     }

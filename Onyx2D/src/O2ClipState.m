@@ -1,3 +1,14 @@
+/*
+ *  O2ClipState.m
+ *  A2OFrameworks
+ *
+ *  Copyright (c) 2014- Tombo Inc.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 #import <Onyx2D/O2ClipState.h>
 #import <Onyx2D/O2ClipPhase.h>
 #import <Onyx2D/O2Path.h>
@@ -22,10 +33,10 @@ O2ClipStateType O2ClipStateGetType(O2ClipState *self) {
 
 O2ClipState *O2ClipStateCreateCopy(O2ClipState *self) {
    O2ClipState *result=NSCopyObject(self,0,NULL);
-   
+
    result->_path=O2PathCreateCopy(self->_path);
    result->_phases=[[NSMutableArray alloc] initWithArray:self->_phases];
-   
+
    return result;
 }
 
@@ -57,7 +68,7 @@ O2Path *O2ClipStateOnePath(O2ClipState *self) {
 // FIXME: EVEN ODD IS WRONG, merging for even odd clip is wrong, should prob. be separate merges
 
    switch(_type){
-   
+
     case O2ClipStateTypeNone:
      if(pathIsRect){
       _type=O2ClipStateTypeOneRect;
@@ -69,7 +80,7 @@ O2Path *O2ClipStateOnePath(O2ClipState *self) {
       _path=O2PathCreateCopy(path);
      }
      break;
-     
+
     case O2ClipStateTypeOneRect:
      if(pathIsRect)
       _rect=O2RectIntersection(_rect,rect);
@@ -79,7 +90,7 @@ O2Path *O2ClipStateOnePath(O2ClipState *self) {
       _path=O2PathCreateCopy(path);
      }
      break;
-    
+
     case O2ClipStateTypeOnePath:
      if(pathIsRect){
       _type=O2ClipStateTypeOneRectOnePath;
@@ -89,14 +100,14 @@ O2Path *O2ClipStateOnePath(O2ClipState *self) {
       _type=O2ClipStateTypeManyPaths;
      }
      break;
-     
+
     case O2ClipStateTypeOneRectOnePath:
      if(pathIsRect)
       _rect=O2RectIntersection(_rect,rect);
      else
       _type=O2ClipStateTypeOneRectManyPaths;
      break;
-     
+
     case O2ClipStateTypeOneRectManyPaths:
     case O2ClipStateTypeManyPaths:
     case O2ClipStateTypeManyPathsAndMasks:
@@ -104,19 +115,19 @@ O2Path *O2ClipStateOnePath(O2ClipState *self) {
    }
 
    O2ClipPhase *phase;
-   
+
    if(evenOdd)
     phase=[[O2ClipPhase allocWithZone:NULL] initWithEOPath:path];
    else
     phase=O2ClipPhaseInitWithNonZeroPath([O2ClipPhase allocWithZone:NULL],path);
- 
+
    if(_phases==nil)
     _phases=[[NSMutableArray alloc] init];
-    
+
    [_phases addObject:phase];
-   
+
    [phase release];
-   
+
    O2PathRelease(path);
  }
 
@@ -130,7 +141,7 @@ O2Path *O2ClipStateOnePath(O2ClipState *self) {
 
 -(void)addMask:(O2Image *)image inRect:(O2Rect)rect transform:(O2AffineTransform)transform {
    O2ClipPhase *phase=[[O2ClipPhase alloc] initWithMask:image rect:rect transform:transform];
-   
+
    if(_phases==nil)
     _phases=[[NSMutableArray alloc] init];
 

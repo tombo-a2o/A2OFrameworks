@@ -1,3 +1,14 @@
+/*
+ *  O2Encoder_JPG.m
+ *  A2OFrameworks
+ *
+ *  Copyright (c) 2014- Tombo Inc.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 #import <Onyx2D/O2Encoder_JPG.h>
 #import <Onyx2D/O2ImageDestination.h>
 
@@ -25,23 +36,23 @@ static void pack_argb8u_as_rgb8u(O2argb8u *imageRow,size_t width,uint8_t *rowbuf
 		*rowbuffer++=pixel.b;
 	}
 }
-void O2JPGEncoderWriteImage(O2JPGEncoderRef self,O2ImageRef image,CFDictionaryRef props) 
+void O2JPGEncoderWriteImage(O2JPGEncoderRef self,O2ImageRef image,CFDictionaryRef props)
 {
 	NSDictionary *properties = (NSDictionary *)props;
-	
+
 	unsigned long length = 0;
 	size_t width = O2ImageGetWidth(image);
 	size_t height = O2ImageGetHeight(image);
-	
+
 	uint8_t* outbuffer = NULL;
-	
+
 	struct jpeg_compress_struct cinfo = {0};
 	struct jpeg_error_mgr jerr;
-	
+
 	cinfo.err = jpeg_std_error(&jerr);
 	jpeg_create_compress(&cinfo);
 	jpeg_mem_dest(&cinfo, &outbuffer, &length);
-	
+
 	cinfo.image_width = width;
 	cinfo.image_height = height;
 	cinfo.input_components = 3;
@@ -62,9 +73,9 @@ void O2JPGEncoderWriteImage(O2JPGEncoderRef self,O2ImageRef image,CFDictionaryRe
 		jpeg_set_quality(&cinfo, 100*[compression floatValue], TRUE);
 	}
 	cinfo.dct_method = JDCT_FASTEST;
-	
+
 	jpeg_start_compress(&cinfo, TRUE);
-	
+
 	O2argb8u imageRowBuffer[width];						 // a ARGB pixel row
 	uint8_t rgbdata[width*cinfo.input_components];       // a RGB pixel row
 	JSAMPROW row_pointer[1];							 // Array of a single row
@@ -76,16 +87,16 @@ void O2JPGEncoderWriteImage(O2JPGEncoderRef self,O2ImageRef image,CFDictionaryRe
 			imageRow=imageRowBuffer;
 		}
 		pack_argb8u_as_rgb8u(imageRow, width, rgbdata);
-		
+
 		jpeg_write_scanlines(&cinfo, row_pointer, 1);
 	}
-	
+
 	jpeg_finish_compress(&cinfo);
-	
+
 	O2DataConsumerPutBytes(self->_consumer,outbuffer,length);
-	
+
 	jpeg_destroy_compress(&cinfo);
-	
+
 	free(outbuffer);
 }
 

@@ -1,3 +1,14 @@
+/*
+ *  NSManagedObjectID.m
+ *  A2OFrameworks
+ *
+ *  Copyright (c) 2014- Tombo Inc.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 #import <CoreData/NSManagedObjectID.h>
 #import <CoreData/NSEntityDescription.h>
 #import <CoreData/NSManagedObjectModel.h>
@@ -11,11 +22,11 @@
    _entity=[entity retain];
    _isTemporaryID=YES;
    _storeIdentifier=nil;
-   
+
    CFUUIDRef uuid=CFUUIDCreate(NULL);
    _referenceObject=(NSString *)CFUUIDCreateString(NULL,uuid);
    CFRelease(uuid);
-   
+
    return self;
 }
 
@@ -29,7 +40,7 @@
 /* NSManagedObjectID is hashed/equal by ptr value, they are uniqued per persistent store and should be the same instance for all
    references to the same underlying NSManagedObject
  */
- 
+
 -copyWithZone:(NSZone *)zone {
    return [self retain];
 }
@@ -53,7 +64,7 @@
 -(NSURL *)URIRepresentation {
    NSString *path=[[_entity name] stringByAppendingPathComponent:_referenceObject];
    NSString *host=_isTemporaryID?@"":_storeIdentifier;
-   
+
    return [[[NSURL alloc] initWithScheme:@"x-coredata" host:host path:path] autorelease];
 }
 

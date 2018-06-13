@@ -1,3 +1,14 @@
+/*
+ *  AudioFile.h
+ *  A2OFrameworks
+ *
+ *  Copyright (c) 2014- Tombo Inc.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 #ifndef __AudioFile__
 #define __AudioFile__
 
@@ -11,7 +22,7 @@ typedef struct OpaqueAudioFileID *AudioFileID;
 enum {
     kAudioFileReadPermission      = 0x01,
     kAudioFileWritePermission     = 0x02,
-    kAudioFileReadWritePermission = 0x03 
+    kAudioFileReadWritePermission = 0x03
 };
 typedef UInt32 AudioFilePermissions;
 

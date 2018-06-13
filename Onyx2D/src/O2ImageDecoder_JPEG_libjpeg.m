@@ -1,3 +1,14 @@
+/*
+ *  O2ImageDecoder_JPEG_libjpeg.m
+ *  A2OFrameworks
+ *
+ *  Copyright (c) 2014- Tombo Inc.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 #import "O2ImageDecoder_JPEG_libjpeg.h"
 
 //#import "O2Defines_libjpeg.h"
@@ -17,10 +28,10 @@ jmp_buf jmp; // Additional info about where to go on error
 static void o2error_exit(j_common_ptr cinfo)
 {
 	o2jpg_error_mgr *o2err = (o2jpg_error_mgr *)cinfo->err;
-    
+
 	// Doesn't hurt to display what went wrong
 	(*cinfo->err->output_message)(cinfo);
-	
+
 	// Jump to our error handling code
 	longjmp(o2err->jmp, 1);
 }
@@ -29,9 +40,9 @@ static unsigned char *stbi_jpeg_load_from_memory(const uint8_t const *buffer, in
 {
 	struct jpeg_decompress_struct cinfo;
 	jpeg_create_decompress(&cinfo);
-	
+
 	o2jpg_error_mgr jerr;
-    
+
 	cinfo.err = jpeg_std_error(&jerr.err);
 	// Use our own exit routine - we don't want to exit the app when something goes wrong
 	jerr.err.error_exit = o2error_exit;
@@ -41,13 +52,13 @@ static unsigned char *stbi_jpeg_load_from_memory(const uint8_t const *buffer, in
 		jpeg_destroy_decompress(&cinfo);
 		return 0;
 	}
-	
+
 	/// Read the data from our memory buffer
 	jpeg_mem_src( &cinfo, (unsigned char *)buffer, len );
-    
+
 	// Setup the jpeg header and set the decompress options
 	jpeg_read_header(&cinfo, TRUE);
-    
+
 	// We only support RGBA format for the output format
 	if (cinfo.jpeg_color_space == JCS_CMYK || cinfo.jpeg_color_space == JCS_YCCK) {
 		// libjpeg doesn't know how to do the CMYK->RGBx conversion - we'll have to do it
@@ -62,15 +73,15 @@ static unsigned char *stbi_jpeg_load_from_memory(const uint8_t const *buffer, in
 #endif
 	}
     int wantedPixelSize = cinfo.output_components = cinfo.out_color_components = 4;
-	
-	
+
+
 	jpeg_start_decompress( &cinfo );
 	*x = cinfo.output_width;
 	*y = cinfo.output_height;
-	
+
 	// Number of bytes in a decompressed row
 	int bytesPerRow = cinfo.output_width*wantedPixelSize;
-	
+
 	// Buffer for the final decompressed data
 	unsigned char *outputImage = (unsigned char*)malloc(bytesPerRow*cinfo.output_height);
 	if (outputImage) {
@@ -81,7 +92,7 @@ static unsigned char *stbi_jpeg_load_from_memory(const uint8_t const *buffer, in
         // Scanline buffers
         JSAMPARRAY scanlineBuffer = (*cinfo.mem->alloc_sarray)((j_common_ptr) &cinfo, JPOOL_IMAGE, bytesPerRow, cinfo.rec_outbuf_height);
 #endif
-        
+
         while(cinfo.output_scanline < cinfo.image_height) {
             int currentLine = cinfo.output_scanline;
 #ifdef JCS_ALPHA_EXTENSIONS
@@ -102,7 +113,7 @@ static unsigned char *stbi_jpeg_load_from_memory(const uint8_t const *buffer, in
                         int r = (c*k)/255;
                         int g = (m*k)/255;
                         int b = (y*k)/255;
-                        
+
                         *out++ = r;
                         *out++ = g;
                         *out++ = b;
@@ -125,7 +136,7 @@ static unsigned char *stbi_jpeg_load_from_memory(const uint8_t const *buffer, in
                         int r = (c*k)/255;
                         int g = (m*k)/255;
                         int b = (y*k)/255;
-                        
+
                         *out++ = r;
                         *out++ = g;
                         *out++ = b;
@@ -145,33 +156,33 @@ static unsigned char *stbi_jpeg_load_from_memory(const uint8_t const *buffer, in
 	// We're done - do some cleanup
 	jpeg_finish_decompress( &cinfo );
 	jpeg_destroy_decompress( &cinfo );
-	
+
 	return outputImage;
 }
 
 -initWithDataProvider:(O2DataProviderRef)dataProvider {
-    
+
     _compressionType=O2ImageCompressionJPEG;
     _dataProvider=[dataProvider retain];
-    
+
     CFDataRef encodedData=O2DataProviderCopyData(dataProvider);
     CFIndex encodedLength=CFDataGetLength(encodedData);
     const uint8_t *encodedBytes=CFDataGetBytePtr(encodedData);
-    
+
     int      comp;
     uint8_t *bitmap;
-    
+
     int width,height;
-    
+
     bitmap=stbi_jpeg_load_from_memory(encodedBytes,encodedLength,&width,&height);
-    
+
     CFRelease(encodedData);
-    
+
     if(bitmap==NULL){
         [self dealloc];
         return nil;
     }
-    
+
     _width=width;
     _height=height;
     _bitsPerComponent=8;
@@ -179,9 +190,9 @@ static unsigned char *stbi_jpeg_load_from_memory(const uint8_t const *buffer, in
     _bytesPerRow=(_bitsPerPixel/(sizeof(char)*8))*_width;
     _colorSpace=O2ColorSpaceCreateDeviceRGB();
     _bitmapInfo=kO2BitmapByteOrder32Big|kO2ImageAlphaPremultipliedLast;
-    
+
     _pixelData=(CFDataRef)[[NSData alloc] initWithBytesNoCopy:bitmap length:_bytesPerRow*_height freeWhenDone:YES];
-    
+
     return self;
 }
 

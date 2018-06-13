@@ -1,3 +1,14 @@
+/*
+ *  AVAudioPlayer.m
+ *  A2OFrameworks
+ *
+ *  Copyright (c) 2014- Tombo Inc.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 #import <AVFoundation/AVAudioPlayer.h>
 
 extern int audioPlayer_create(const char* path);
@@ -26,7 +37,7 @@ extern float audioPlayer_getPosition(int playerId);
     if(!self) {
         return nil;
     }
-    
+
     if(!url) {
         if(outError) *outError = [NSError errorWithDomain:NSCocoaErrorDomain code:1 userInfo:nil];
         return nil;
@@ -42,7 +53,7 @@ extern float audioPlayer_getPosition(int playerId);
     _rate = 1.0;
     _enableRate = NO;
     _numberOfLoops = 0;
-    
+
     DEBUGLOG(@"%s %d %s", __FUNCTION__, _playerId, _url.fileSystemRepresentation);
     return self;
 }
@@ -53,13 +64,13 @@ extern float audioPlayer_getPosition(int playerId);
 //     if(!self) {
 //         return nil;
 //     }
-//     
+//
 //     if(!data) {
 //         if(outError) *outError = [NSError errorWithDomain:NSCocoaErrorDomain code:0 userInfo:nil];
 //         return nil;
 //     }
 //     _data = data;
-//     
+//
 //     return self;
 // }
 

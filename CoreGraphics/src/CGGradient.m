@@ -1,3 +1,14 @@
+/*
+ *  CGGradient.m
+ *  A2OFrameworks
+ *
+ *  Copyright (c) 2014- Tombo Inc.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 #import <CoreGraphics/CGGradient.h>
 #import <CoreGraphics/CGColor.h>
 #import <Foundation/NSString.h>
@@ -10,15 +21,15 @@ CGGradientRef CGGradientCreateWithColors(CGColorSpaceRef colorSpace,CFArrayRef c
    CFIndex i,count=CFArrayGetCount(colors);
    size_t  numberOfComponents=CGColorSpaceGetNumberOfComponents(colorSpace)+1;
    CGFloat components[count*numberOfComponents];
-   
+
    for(i=0;i<count;i++){
     CGColorRef color=(CGColorRef)CFArrayGetValueAtIndex(colors,i);
     size_t     checkNumberOfComponents=CGColorGetNumberOfComponents(color);
     size_t     j;
-    
+
     if(checkNumberOfComponents==numberOfComponents){
      const CGFloat *copy=CGColorGetComponents(color);
-     
+
      for(j=0;j<numberOfComponents;j++)
       components[i*numberOfComponents+j]=components[j];
     }
@@ -27,22 +38,22 @@ CGGradientRef CGGradientCreateWithColors(CGColorSpaceRef colorSpace,CFArrayRef c
      for(j=0;j<numberOfComponents;j++)
       components[i*numberOfComponents+j]=0;
     }
-    
+
    }
-   
+
    return CGGradientCreateWithColorComponents(colorSpace,components,locations,count);
 }
 
 void CGGradientRelease(CGGradientRef self) {
    if(self==NULL)
     return;
-   
+
    CFRelease(self);
 }
 
 CGGradientRef CGGradientRetain(CGGradientRef self) {
    if(self==NULL)
     return NULL;
-   
+
    return (CGGradientRef)CFRetain(self);
 }

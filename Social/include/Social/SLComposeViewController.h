@@ -1,3 +1,14 @@
+/*
+ *  SLComposeViewController.h
+ *  A2OFrameworks
+ *
+ *  Copyright (c) 2014- Tombo Inc.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 // https://developer.apple.com/library/ios/documentation/NetworkingInternet/Reference/SLComposeViewController_Class/index.html
 
 #import <UIKit/UIViewController.h>
@@ -10,7 +21,7 @@ extern NSString *const SLServiceTypeTencentWeibo;
 
 typedef NS_ENUM (NSInteger, SLComposeViewControllerResult ) {
     SLComposeViewControllerResultCancelled,
-    SLComposeViewControllerResultDone 
+    SLComposeViewControllerResultDone
 };
 
 typedef void (^SLComposeViewControllerCompletionHandler) (SLComposeViewControllerResult result);

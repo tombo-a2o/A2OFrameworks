@@ -1,3 +1,14 @@
+/*
+ *  CIVector.m
+ *  A2OFrameworks
+ *
+ *  Copyright (c) 2014- Tombo Inc.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 #import <QuartzCore/CIVector.h>
 #import <Foundation/NSException.h>
 #import <Foundation/NSString.h>
@@ -27,11 +38,11 @@
 -initWithValues:(const CGFloat *)values count:(size_t)count {
    _count=count;
    _values=NSZoneMalloc(NULL,sizeof(CGFloat)*count);
-   
+
    int i;
    for(i=0;i<count;i++)
     _values[i]=values[i];
-    
+
    return self;
 }
 
@@ -68,7 +79,7 @@
     [NSException raise:NSInvalidArgumentException format:@"index %d is beyond count %d",index,_count];
     return 0;
    }
-   
+
    return _values[index];
 }
 

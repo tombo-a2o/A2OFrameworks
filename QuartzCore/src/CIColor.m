@@ -1,6 +1,17 @@
+/*
+ *  CIColor.m
+ *  A2OFrameworks
+ *
+ *  Copyright (c) 2014- Tombo Inc.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 #import <QuartzCore/CIColor.h>
 
-@implementation CIColor 
+@implementation CIColor
 
 +(CIColor *)colorWithCGColor:(CGColorRef)cgColor {
    return [[[self alloc] initWithCGColor:cgColor] autorelease];
@@ -9,18 +20,18 @@
 +(CIColor *)colorWithRed:(CGFloat)red green:(CGFloat)green blue:(CGFloat)blue {
    CGColorRef cgColor=CGColorCreateGenericRGB(red,green,blue,1.0);
    CIColor   *result=[self colorWithCGColor:cgColor];
-   
+
    CGColorRelease(cgColor);
-   
+
    return result;
 }
 
 +(CIColor *)colorWithRed:(CGFloat)red green:(CGFloat)green blue:(CGFloat)blue alpha:(CGFloat)alpha {
    CGColorRef cgColor=CGColorCreateGenericRGB(red,green,blue,alpha);
    CIColor   *result=[self colorWithCGColor:cgColor];
-   
+
    CGColorRelease(cgColor);
-   
+
    return result;
 }
 

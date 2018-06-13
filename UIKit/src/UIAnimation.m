@@ -1,3 +1,14 @@
+/*
+ *  UIAnimation.m
+ *  A2OFrameworks
+ *
+ *  Copyright (c) 2014- Tombo Inc.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 #import <QuartzCore/QuartzCore.h>
 #import "UIAnimation.h"
 
@@ -22,7 +33,7 @@ static NSArray* getValues(int f2b, int clockwise)
         double tz = clockwise ? 160 : -160;
         CATransform3D perspective = CATransform3DIdentity;
         perspective.m34 = -1.0/1000;
-        
+
         for(int i = 0; i < STEP; i++) {
             CATransform3D rotation = CATransform3DMakeRotation(start + delta * i, 0, 1, 0);
             CATransform3D translation = CATransform3DMakeTranslation(0, 0, tz * sinf(delta*i));
@@ -30,7 +41,7 @@ static NSArray* getValues(int f2b, int clockwise)
             t = CATransform3DConcat(t, perspective);
             [arr addObject:[NSValue valueWithCATransform3D:t]];
         }
-        
+
         values[f2b][clockwise] = [arr copy];
     }
     return values[f2b][clockwise];

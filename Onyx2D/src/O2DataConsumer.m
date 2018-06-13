@@ -1,3 +1,14 @@
+/*
+ *  O2DataConsumer.m
+ *  A2OFrameworks
+ *
+ *  Copyright (c) 2014- Tombo Inc.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 #import <Onyx2D/O2DataConsumer.h>
 #import <Onyx2D/O2Exceptions.h>
 #import <Foundation/NSURL.h>
@@ -42,7 +53,7 @@ static void O2DataConsumerFileReleaseInfoCallback(void *info)
 }
 
 
--initWithInfo:(void *)info callbacks:(const O2DataConsumerCallbacks *)callbacks 
+-initWithInfo:(void *)info callbacks:(const O2DataConsumerCallbacks *)callbacks
 {
 	if ((self = [super init])) {
 		_info = info;
@@ -53,25 +64,25 @@ static void O2DataConsumerFileReleaseInfoCallback(void *info)
 	return self;
 }
 
--initWithMutableData:(NSMutableData *)data 
+-initWithMutableData:(NSMutableData *)data
 {
 	data=[data retain]; // Will be released by the release callback
-	O2DataConsumerCallbacks callbacks = { 
+	O2DataConsumerCallbacks callbacks = {
 		O2DataConsumerDataPutBytesCallback,
 		O2DataConsumerDataReleaseInfoCallback
 	};
 	return [self initWithInfo:data callbacks:&callbacks];
 }
 
--initWithURL:(NSURL *)url 
+-initWithURL:(NSURL *)url
 {
 	if ([url isFileURL]) {
 		NSString *path = [url path];
 		// Create the file and get an handle on it
 		[[NSFileManager defaultManager] createFileAtPath:path contents:nil attributes:nil];
 		NSFileHandle *fileHandle = [NSFileHandle fileHandleForWritingAtPath:path];
-		
-		O2DataConsumerCallbacks callbacks = { 
+
+		O2DataConsumerCallbacks callbacks = {
 			O2DataConsumerFilePutBytesCallback,
 			O2DataConsumerFileReleaseInfoCallback
 		};

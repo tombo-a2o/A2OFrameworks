@@ -1,3 +1,14 @@
+/*
+ *  SKRequestTests.m
+ *  A2OFrameworks
+ *
+ *  Copyright (c) 2014- Tombo Inc.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 #import <XCTest/XCTest.h>
 #import "StoreKit.h"
 #import "Nocilla.h"
@@ -61,8 +72,8 @@
                                                                    },
                                                                ]
                                                        } options:NSJSONWritingPrettyPrinted error:nil]);
-    
-    
+
+
     NSSet *set = [NSSet setWithObjects:@"productIdentifier1", @"productIdentifier2", nil];
     SKProductsRequest *productsRequest = [[SKProductsRequest alloc] initWithProductIdentifiers:set];
     productsRequest.delegate = self;
@@ -76,7 +87,7 @@
             XCTFail(@"Timeout: %@", error);
             return;
         }
-        
+
         XCTAssertNotNil(_response);
 
         NSArray <SKProduct *> *products = _response.products;

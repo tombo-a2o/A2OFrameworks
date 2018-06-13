@@ -1,3 +1,14 @@
+/*
+ *  CAPropertyAnimation.m
+ *  A2OFrameworks
+ *
+ *  Copyright (c) 2014- Tombo Inc.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 #import <QuartzCore/CAAnimation.h>
 #import <QuartzCore/CALayer.h>
 #import "CAAnimation+Private.h"
@@ -51,12 +62,12 @@ static CGFloat _interpolateFloat(float x, float y, float ratio)
 static CATransform3D _interpolateTransform3D(CATransform3D t1, CATransform3D t2, float ratio)
 {
     CATransform3D resultTransform = CATransform3DIdentity;
-    
+
     CGFloat det1, det2;
-    
+
     det1 = t1.m11*t1.m22 - t1.m12*t1.m21;
     det2 = t2.m11*t2.m22 - t2.m12*t2.m21;
-    
+
 #define EPS 1e-5
     if(abs(det1) < EPS || abs(det2) < EPS) {
         // linear
@@ -68,24 +79,24 @@ static CATransform3D _interpolateTransform3D(CATransform3D t1, CATransform3D t2,
         // |a b|  = |cos -sin| |1  skew| |sx  0 |
         // |c d|    |sin  cos| |0  1   | |0   sy|
         // http://math.stackexchange.com/questions/78137/decomposition-of-a-nonsquare-affine-matrix
-        
+
         CGFloat rot, rot1, rot2;
         CGFloat skew, skew1, skew2;
         CGFloat sx, sx1, sx2;
         CGFloat sy, sy1, sy2;
-        
+
         sx1 = sqrt(t1.m11*t1.m11 + t1.m21*t1.m21);
         sx2 = sqrt(t2.m11*t2.m11 + t2.m21*t2.m21);
-        
+
         sy1 = det1 / sx1;
         sy2 = det2 / sx2;
-        
+
         rot1 = atan2(t1.m21, t1.m11);
         rot2 = atan2(t2.m21, t2.m11);
-        
+
         skew1 = (t1.m11*t1.m12+t1.m21*t1.m22) / det1;
         skew2 = (t2.m11*t2.m12+t2.m21*t2.m22) / det2;
-        
+
         sx = sx1 + (sx2-sx1) * ratio;
         sy = sy1 + (sy2-sy1) * ratio;
         CGFloat d = rot2 - rot1;
@@ -93,7 +104,7 @@ static CATransform3D _interpolateTransform3D(CATransform3D t1, CATransform3D t2,
         if(d < -M_PI) d += M_PI*2;
         rot = rot1 + d * ratio;
         skew = skew1 + (skew2-skew1) * ratio;
-        
+
         resultTransform.m11 = sx * cos(rot);
         resultTransform.m12 = sy * (skew*cos(rot) - sin(rot));
         resultTransform.m21 = sx * sin(rot);

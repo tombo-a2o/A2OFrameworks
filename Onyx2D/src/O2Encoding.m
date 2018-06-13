@@ -1,10 +1,21 @@
+/*
+ *  O2Encoding.m
+ *  A2OFrameworks
+ *
+ *  Copyright (c) 2014- Tombo Inc.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 #import "O2Encoding.h"
 
 @implementation O2Encoding
 
 -initWithGlyphs:(const O2Glyph *)glyphs unicode:(unichar *)unicode {
    int i;
-   
+
    for(i=0;i<256;i++){
     _glyphs[i]=glyphs[i];
     _unicode[i]=unicode[i];
@@ -22,28 +33,28 @@
 
 -(void)getGlyphs:(O2Glyph *)glyphs {
    int i;
-   
+
    for(i=0;i<256;i++)
     glyphs[i]=_glyphs[i];
 }
 
 -(void)getUnicode:(uint16_t *)unicode {
    int i;
-   
+
    for(i=0;i<256;i++)
     unicode[i]=_unicode[i];
 }
 
 void O2EncodingGetGlyphsForBytes(O2Encoding *self,O2Glyph *glyphs,const uint8_t *bytes,unsigned length) {
    int i;
-   
+
    for(i=0;i<length;i++)
     glyphs[i]=self->_glyphs[bytes[i]];
 }
 
 void O2EncodingGetUnicodeForBytes(O2Encoding *self,uint16_t *unicode,const uint8_t *bytes,unsigned length) {
    int i;
-   
+
    for(i=0;i<length;i++)
     unicode[i]=self->_unicode[bytes[i]];
 }
@@ -84,7 +95,7 @@ void O2EncodingGetMacRomanUnicode(unichar *codes) {
     0x00AF,0x02D8,0x02D9,0x02DA,0x00B8,0x02DD,0x02DB,0x02C7,
    };
    int i;
-   
+
    for(i=0;i<256;i++)
     codes[i]=MacRoman[i];
 }
@@ -129,14 +140,14 @@ void O2EncodingGetWinAnsiUnicode(unichar *codes) {
     0x00F8,0x00F9,0x00FA,0x00FB,0x00FC,0x00FD,0x00FE,0x00FF,
    };
    int i;
-   
+
    for(i=0;i<256;i++)
     codes[i]=WinAnsi[i];
 }
 
 @end
 
-@implementation O2MutableEncoding 
+@implementation O2MutableEncoding
 
 -copyWithZone:(NSZone *)zone {
    return [[O2Encoding alloc] initWithGlyphs:_glyphs unicode:_unicode];
@@ -147,7 +158,7 @@ void O2EncodingGetWinAnsiUnicode(unichar *codes) {
     NSLog(@"%s %d, index (%d) out of range",__FILE__,__LINE__,index);
     return;
    }
-   
+
    _glyphs[index]=glyph;
    _unicode[index]=code;
 }

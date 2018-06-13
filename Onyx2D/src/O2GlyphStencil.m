@@ -1,3 +1,14 @@
+/*
+ *  O2GlyphStencil.m
+ *  A2OFrameworks
+ *
+ *  Copyright (c) 2014- Tombo Inc.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 #import <Onyx2D/O2GlyphStencil.h>
 
 O2GlyphStencilRef O2GlyphStencilCreate(size_t width,size_t height,uint8_t *coverage,size_t bytesPerRow,size_t left,size_t top) {
@@ -7,17 +18,17 @@ O2GlyphStencilRef O2GlyphStencilCreate(size_t width,size_t height,uint8_t *cover
    self->_left=left;
    self->_top=top;
    self->_coverage=(uint8_t *)NSZoneMalloc(NULL,width*height);
-   
+
    int r,c,i=0;
-   
+
    for(r=0;r<height;r++){
-   
+
     for(c=0;c<width;c++)
      self->_coverage[i++]=coverage[c];
-    
+
     coverage+=bytesPerRow;
    }
-   
+
    return self;
 }
 

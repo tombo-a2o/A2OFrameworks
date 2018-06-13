@@ -1,3 +1,14 @@
+/*
+ *  O2Context_builtin_FT.m
+ *  A2OFrameworks
+ *
+ *  Copyright (c) 2014- Tombo Inc.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 #import "O2Context_builtin_FT.h"
 #import <Onyx2D/O2GraphicsState.h>
 #import "O2Font_FT.h"
@@ -162,7 +173,7 @@ static void drawFreeTypeBitmap(O2Context_builtin_FT *self, O2Surface *surface, u
     int width, height, left, top;
     NSString *fontName = (NSString*)O2FontCopyFullName(font);
     uint8_t *bitmap = a2o_renderFontToBitmapBuffer([fontName UTF8String], gState->_pointSize, [text UTF8String], transform.a, transform.b, transform.c, transform.d, &width, &height, &left, &top);
-    
+
     if(bitmap) {
 /*
         printf("%s %d %d %d %d\n", __FUNCTION__, width, height, (int)(point.x+left), (int)(point.y - top));

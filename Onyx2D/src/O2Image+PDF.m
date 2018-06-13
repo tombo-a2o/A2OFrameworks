@@ -1,3 +1,14 @@
+/*
+ *  O2Image+PDF.m
+ *  A2OFrameworks
+ *
+ *  Copyright (c) 2014- Tombo Inc.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 #import <Onyx2D/O2Image+PDF.h>
 #import <Onyx2D/O2ColorSpace+PDF.h>
 #import <Onyx2D/O2DataProvider.h>
@@ -20,7 +31,7 @@
 O2ColorRenderingIntent O2ImageRenderingIntentWithName(const char *name) {
    if(name==NULL)
     return kO2RenderingIntentDefault;
-    
+
    if(strcmp(name,"AbsoluteColorimetric")==0)
     return kO2RenderingIntentAbsoluteColorimetric;
    else if(strcmp(name,"RelativeColorimetric")==0)
@@ -35,7 +46,7 @@ O2ColorRenderingIntent O2ImageRenderingIntentWithName(const char *name) {
 
 const char *O2ImageNameWithIntent(O2ColorRenderingIntent intent){
    switch(intent){
-   
+
     case kO2RenderingIntentAbsoluteColorimetric:
      return "AbsoluteColorimetric";
 
@@ -44,12 +55,12 @@ const char *O2ImageNameWithIntent(O2ColorRenderingIntent intent){
 
     case kO2RenderingIntentSaturation:
      return "Saturation";
-     
+
     default:
     case kO2RenderingIntentDefault:
     case kO2RenderingIntentPerceptual:
      return "Perceptual";
-   } 
+   }
 }
 
 -(O2PDFObject *)encodeReferenceWithContext:(O2PDFContext *)context {
@@ -75,47 +86,47 @@ const char *O2ImageNameWithIntent(O2ColorRenderingIntent intent){
         // If the image is JPEG compressed, we can put the JPEG data in the PDF, using a DCTDecode filter
         O2DataProviderRef dataProvider=O2ImageDecoderGetDataProvider(_decoder);
         CFDataRef dctData=O2DataProviderCopyData(dataProvider);
-        
+
         [dictionary setNameForKey:"Filter" value:"DCTDecode"];
-        
+
         [[result mutableData] appendData:(NSData *)dctData];
         CFRelease(dctData);
     } else {
 #define CHUNK 65536
-        
+
         // Input buffer for image data
         uint8_t in[CHUNK + 3]; // CHUNK size + some additional room for rgb
         int idx = 0;
-        
+
 #if ZLIB_PRESENT
         // Put ZLIB compressed data in the PDF, using a DCTDecode filter
         [dictionary setNameForKey:"Filter" value:"FlateDecode"];
-        
+
         // allocate deflate state
         unsigned have;
         z_stream strm;
         strm.zalloc = Z_NULL;
         strm.zfree = Z_NULL;
         strm.opaque = Z_NULL;
-        
+
         deflateInit(&strm, 9);
-        
+
         // Compressed output buffer
         uint8_t out[CHUNK + 3];
 #else
         // No compression : out buffer = in buffer
         uint8_t *out = in;
 #endif
-        
+
         const void *bytes = [self directBytes];
-        
+
         /* FIX, generate soft mask for alpha data
          [dictionary setObjectForKey:"SMask" value:[softMask encodeReferenceWithContext:context]];
          */
-        
+
         // It would be nice if jpg data would stay jpg data (instead of an uncompress stream), as it does
         // with Quartz and CGImage
-        
+
         // Export RGB bytes, without the alpha data, in the expected order
         // TODO : support non 32 bits pixels, respect the premultiplied state, non-RGB pixels...
         const uint8_t *ptr = (const uint8_t *)bytes;
@@ -135,7 +146,7 @@ const char *O2ImageNameWithIntent(O2ColorRenderingIntent intent){
                  (ARGB and BGRA are both Alpha First formats)
                  AlphaLast => The Alpha channel is next to the Blue channel
                  (RGBA and ABGR are both Alpha Last formats)
-                 
+
                  LittleEndian => Blue comes before Red
                  (BGRA and ABGR are Little endian formats)
                  BigEndian => Red comes before Blue
@@ -164,12 +175,12 @@ const char *O2ImageNameWithIntent(O2ColorRenderingIntent intent){
                     strm.avail_in = idx;
                     flush = ((i == _height - 1 && j == _width - 1)) ? Z_FINISH : Z_NO_FLUSH;
                     strm.next_in = in;
-                    
+
                     // run deflate() on input until the output buffer is not full
                     do {
                         strm.avail_out = idx;
                         strm.next_out = out;
-                        deflate(&strm, flush); 
+                        deflate(&strm, flush);
                         have = idx - strm.avail_out;
                         [[result mutableData] appendBytes:out length: have];
                     } while (strm.avail_out == 0);
@@ -206,7 +217,7 @@ const char *O2ImageNameWithIntent(O2ColorRenderingIntent intent){
    BOOL              interpolate;
    O2PDFStream *softMaskStream=nil;
    O2Image *softMask=NULL;
-    
+
    if(![dictionary getIntegerForKey:"Width" value:&width]){
     O2PDFError(__FILE__,__LINE__,@"Image has no Width");
     return NULL;
@@ -215,20 +226,20 @@ const char *O2ImageNameWithIntent(O2ColorRenderingIntent intent){
     O2PDFError(__FILE__,__LINE__,@"Image has no Height");
     return NULL;
    }
-    
+
    if(![dictionary getIntegerForKey:"BitsPerComponent" value:&bitsPerComponent]){
     O2PDFError(__FILE__,__LINE__,@"Image has no BitsPerComponent");
     return NULL;
    }
-          
+
    if(![dictionary getNameForKey:"Intent" value:&intent])
     intent=NULL;
-     
+
    [dictionary getBooleanForKey:"ImageMask" value:&isImageMask];
-    
+
    if(isImageMask)
     O2PDFFix(__FILE__,__LINE__,@"ImageMask present");
-    
+
    if([dictionary getObjectForKey:"Mask" value:&imageMaskObject]){
     O2PDFFix(__FILE__,__LINE__,@"Mask present");
    }
@@ -239,12 +250,12 @@ const char *O2ImageNameWithIntent(O2ColorRenderingIntent intent){
      return NULL;
     }
    }
-   
+
    if(!isImageMask && colorSpace==NULL){
     O2PDFError(__FILE__,__LINE__,@"Image has no ColorSpace %@",dictionary);
     return NULL;
    }
-  
+
    if(colorSpace==NULL)
     componentsPerPixel=1;
    else
@@ -254,37 +265,37 @@ const char *O2ImageNameWithIntent(O2ColorRenderingIntent intent){
     decode=NULL;
    else {
     unsigned count;
-     
+
     if(![decodeArray getNumbers:&decode count:&count]){
      O2PDFError(__FILE__,__LINE__,@"Unable to read decode array %@",decodeArray);
      return NULL;
     }
-    
+
     if(count!=componentsPerPixel*2){
      O2PDFError(__FILE__,__LINE__,@"Invalid decode array, count=%d, should be %d",count,componentsPerPixel*2);
       return NULL;
      }
     }
-    
+
    if(![dictionary getBooleanForKey:"Interpolate" value:&interpolate])
     interpolate=NO;
-    
+
    if([dictionary getStreamForKey:"SMask" value:&softMaskStream]){
     softMask=[self imageWithPDFObject:softMaskStream];
    }
-    
+
     int               bitsPerPixel=componentsPerPixel*bitsPerComponent;
     int               bytesPerRow=((width*bitsPerPixel)+7)/8;
     NSData           *data=[stream data];
     O2DataProvider * provider;
     O2Image *image=NULL;
-       
+
 //     NSLog(@"width=%d,height=%d,bpc=%d,bpp=%d,bpr=%d,cpp=%d",width,height,bitsPerComponent,bitsPerPixel,bytesPerRow,componentsPerPixel);
-     
+
     if(height*bytesPerRow!=[data length]){
     O2PDFError(__FILE__,__LINE__,@"Invalid data length=%d,should be %d=%d",[data length],height*bytesPerRow,[data length]-height*bytesPerRow);
    }
-   
+
    if(height*bytesPerRow>[data length]){
     // provide some gray data
      NSMutableData *mutable_=[NSMutableData dataWithLength:height*bytesPerRow];
@@ -292,12 +303,12 @@ const char *O2ImageNameWithIntent(O2ColorRenderingIntent intent){
       int i;
       for(i=0;i<height*bytesPerRow;i++)
      mbytes[i]=i;
-       
+
      data=mutable_;
     }
-        
+
     provider=O2DataProviderCreateWithCFData((CFDataRef)data);
-    if(isImageMask){      
+    if(isImageMask){
      image=[[O2Image alloc] initMaskWithWidth:width height:height bitsPerComponent:bitsPerComponent bitsPerPixel:bitsPerPixel bytesPerRow:bytesPerRow provider:provider decode:decode interpolate:interpolate];
     }
     else {
@@ -309,10 +320,10 @@ const char *O2ImageNameWithIntent(O2ColorRenderingIntent intent){
 
    if(decode!=NULL)
     NSZoneFree(NULL,decode);
-    
+
    O2DataProviderRelease(provider);
    O2ColorSpaceRelease(colorSpace);
-   
+
 	return image;
    }
 

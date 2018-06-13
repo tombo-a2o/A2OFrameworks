@@ -1,3 +1,14 @@
+/*
+ *  O2ImageDecoder_JPEG_stb.m
+ *  A2OFrameworks
+ *
+ *  Copyright (c) 2014- Tombo Inc.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 #import "O2ImageDecoder_JPEG_stb.h"
 
 /*  JPEG decode is based on the public domain implementation by Sean Barrett  http://www.nothings.org/stb_image.c  V 1.14 */
@@ -15,7 +26,7 @@ typedef struct
 {
     uint32 img_x, img_y;
     int img_n, img_out_n;
-    
+
 #ifndef STBI_NO_STDIO
     FILE  *img_file;
 #endif
@@ -45,12 +56,12 @@ typedef struct
     huffman huff_dc[4];
     huffman huff_ac[4];
     uint8 dequant[4][64];
-    
+
     // sizes for components, interleaved MCUs
     int img_h_max, img_v_max;
     int img_mcu_x, img_mcu_y;
     int img_mcu_w, img_mcu_h;
-    
+
     // definition of jpeg image component
     struct
     {
@@ -59,28 +70,28 @@ typedef struct
         int tq;
         int hd,ha;
         int dc_pred;
-        
+
         int x,y,w2,h2;
         uint8 *data;
         void *raw_data;
         uint8 *linebuf;
     } img_comp[4];
-    
+
     uint32         code_buffer; // jpeg entropy-coded buffer
     int            code_bits;   // number of valid bits
     unsigned char  marker;      // marker seen while filling entropy buffer
     int            nomore;      // flag if we saw a marker so must stop
-    
+
     int scan_n, order[4];
     int restart_interval, todo;
 } jpeg;
 
 @implementation O2ImageDecoder_JPEG_stb
-    
+
 enum
 {
 	STBI_default = 0, // only used for req_comp
-	
+
 	STBI_grey       = 1,
 	STBI_grey_alpha = 2,
 	STBI_rgb        = 3,
@@ -137,7 +148,7 @@ static int get8(stbi *s)
 
 static int at_eof(stbi *s)
 {
-    return s->img_buffer >= s->img_buffer_end;   
+    return s->img_buffer >= s->img_buffer_end;
 }
 
 static uint8 get8u(stbi *s)
@@ -193,7 +204,7 @@ static int build_huffman(huffman *h, int *count)
         for (j=0; j < count[i]; ++j)
             h->size[k++] = (uint8) (i+1);
     h->size[k] = 0;
-    
+
     // compute actual symbols (from jpeg spec)
     code = 0;
     k = 0;
@@ -210,7 +221,7 @@ static int build_huffman(huffman *h, int *count)
         code <<= 1;
     }
     h->maxcode[j] = 0xffffffff;
-    
+
     // build non-spec acceleration table; 255 is flag for not-accelerated
     memset(h->fast, 255, 1 << FAST_BITS);
     for (i=0; i < k; ++i) {
@@ -251,9 +262,9 @@ static int decode(jpeg *j, huffman *h)
 {
     unsigned int temp;
     int c,k;
-    
+
     if (j->code_bits < 16) grow_buffer_unsafe(j);
-    
+
     // look at the top FAST_BITS and determine what symbol ID it is,
     // if the code is <= FAST_BITS
     c = (j->code_buffer >> (j->code_bits - FAST_BITS)) & ((1 << FAST_BITS)-1);
@@ -264,7 +275,7 @@ static int decode(jpeg *j, huffman *h)
         j->code_bits -= h->size[k];
         return h->values[k];
     }
-    
+
     // naive test is to shift the code_buffer down so k bits are
     // valid, then test against maxcode. To speed this up, we've
     // preshifted maxcode left so that it has (16-k) 0s at the
@@ -283,14 +294,14 @@ static int decode(jpeg *j, huffman *h)
         j->code_bits -= 16;
         return -1;
     }
-    
+
     if (k > j->code_bits)
         return -1;
-    
+
     // convert the huffman code to the symbol id
     c = ((j->code_buffer >> (j->code_bits - k)) & bmask[k]) + h->delta[k];
     assert((((j->code_buffer) >> (j->code_bits - h->size[c])) & bmask[h->size[c]]) == h->code[c]);
-    
+
     // convert the id to a symbol
     j->code_bits -= k;
     return h->values[c];
@@ -337,15 +348,15 @@ static int decode_block(jpeg *j, short data[64], huffman *hdc, huffman *hac, int
     int diff,dc,k;
     int t = decode(j, hdc);
     if (t < 0) return e("bad huffman code","Corrupt JPEG");
-    
+
     // 0 all the ac values now so we can do it 32-bits at a time
     memset(data,0,64*sizeof(data[0]));
-    
+
     diff = t ? extend_receive(j, t) : 0;
     dc = j->img_comp[b].dc_pred + diff;
     j->img_comp[b].dc_pred = dc;
     data[0] = (short) dc;
-    
+
     // decode AC components, see JPEG spec
     k = 1;
     do {
@@ -426,7 +437,7 @@ static void idct_block(uint8 *out, int out_stride, short data[64], uint8 *dequan
     int i,val[64],*v=val;
     uint8 *o,*dq = dequantize;
     short *d = data;
-    
+
     // columns
     for (i=0; i < 8; ++i,++d,++dq, ++v) {
         // if all zeroes, shortcut -- this avoids dequantizing 0s and IDCTing
@@ -454,7 +465,7 @@ static void idct_block(uint8 *out, int out_stride, short data[64], uint8 *dequan
             v[32] = (x3-t0) >> 10;
         }
     }
-    
+
     for (i=0, v=val, o=out; i < 8; ++i,v+=8,o+=out_stride) {
         // no fast case since the first 1D IDCT spread components out
         IDCT_1D(v[0],v[1],v[2],v[3],v[4],v[5],v[6],v[7])
@@ -479,7 +490,7 @@ static void idct_block(uint8 *out, int out_stride, short data[64], unsigned shor
     uint8 *o;
     unsigned short *dq = dequantize;
     short *d = data;
-    
+
     // columns
     for (i=0; i < 8; ++i,++d,++dq, ++v) {
         // if all zeroes, shortcut -- this avoids dequantizing 0s and IDCTing
@@ -507,7 +518,7 @@ static void idct_block(uint8 *out, int out_stride, short data[64], unsigned shor
             v[32] = (x3-t0) >> 10;
         }
     }
-    
+
     for (i=0, v=val, o=out; i < 8; ++i,v+=8,o+=out_stride) {
         // no fast case since the first 1D IDCT spread components out
         IDCT_1D(v[0],v[1],v[2],v[3],v[4],v[5],v[6],v[7])
@@ -644,15 +655,15 @@ static int process_marker(jpeg *z, int m)
     switch (m) {
         case MARKER_none: // no marker found
             return e("expected marker","Corrupt JPEG");
-            
+
         case 0xC2: // SOF - progressive
             return e("progressive jpeg","JPEG format not supported (progressive)");
-            
+
         case 0xDD: // DRI - specify restart interval
             if (get16(&z->s) != 4) return e("bad DRI len","Corrupt JPEG");
             z->restart_interval = get16(&z->s);
             return 1;
-            
+
         case 0xDB: // DQT - define quantization table
             L = get16(&z->s)-2;
             while (L > 0) {
@@ -670,7 +681,7 @@ static int process_marker(jpeg *z, int m)
                 L -= 65;
             }
             return L==0;
-            
+
         case 0xC4: // DHT - define huffman table
             L = get16(&z->s)-2;
             while (L > 0) {
@@ -699,20 +710,20 @@ static int process_marker(jpeg *z, int m)
             return L==0;
     }
     // check for comment block or APP blocks
-    
+
     if ((m >= 0xE0 && m <= 0xEF) || m == 0xFE) {
         int size=get16(&z->s);
-        
+
         // in progress
-        // Exif is stored as an embedded TIFF file 
+        // Exif is stored as an embedded TIFF file
         if(m==0xE1){
 #if 0
             int i;
             NSData *data=[NSData dataWithBytes:z->s.img_buffer+6 length:size-6];
-            
+
             O2ImageSource *tiffSource=[[O2ImageSource_TIFF alloc] initWithData:data options:nil];
             O2Image       *image=[tiffSource imageAtIndex:0 options:nil];
-#endif       
+#endif
             // skip(&z->s, size-2);
         }
         skip(&z->s, size-2);
@@ -743,7 +754,7 @@ static int process_scan_header(jpeg *z)
     if (get8(&z->s) != 0) return e("bad SOS","Corrupt JPEG");
     get8(&z->s); // should be 63, but might be 0
     if (get8(&z->s) != 0) return e("bad SOS","Corrupt JPEG");
-    
+
     return 1;
 }
 
@@ -757,9 +768,9 @@ static int process_frame_header(jpeg *z, int scan)
     s->img_x = get16(s);   if (s->img_x == 0) return e("0 width","Corrupt JPEG"); // JPEG requires
     s->img_n = get8(s);
     if (s->img_n != 3 && s->img_n != 1) return e("bad component count","Corrupt JPEG");    // JFIF requires
-    
+
     if (Lf != 8+3*s->img_n) return e("bad SOF len","Corrupt JPEG");
-    
+
     for (i=0; i < s->img_n; ++i) {
         z->img_comp[i].id = get8(s);
         if (z->img_comp[i].id != i+1)   // JFIF requires
@@ -770,16 +781,16 @@ static int process_frame_header(jpeg *z, int scan)
         z->img_comp[i].v = q & 15;    if (!z->img_comp[i].v || z->img_comp[i].v > 4) return e("bad V","Corrupt JPEG");
         z->img_comp[i].tq = get8(s);  if (z->img_comp[i].tq > 3) return e("bad TQ","Corrupt JPEG");
     }
-    
+
     if (scan != SCAN_load) return 1;
-    
+
     if ((1 << 30) / s->img_x / s->img_n < s->img_y) return e("too large", "Image too large to decode");
-    
+
     for (i=0; i < s->img_n; ++i) {
         if (z->img_comp[i].h > h_max) h_max = z->img_comp[i].h;
         if (z->img_comp[i].v > v_max) v_max = z->img_comp[i].v;
     }
-    
+
     // compute interleaved mcu info
     z->img_h_max = h_max;
     z->img_v_max = v_max;
@@ -787,7 +798,7 @@ static int process_frame_header(jpeg *z, int scan)
     z->img_mcu_h = v_max * 8;
     z->img_mcu_x = (s->img_x + z->img_mcu_w-1) / z->img_mcu_w;
     z->img_mcu_y = (s->img_y + z->img_mcu_h-1) / z->img_mcu_h;
-    
+
     for (i=0; i < s->img_n; ++i) {
         // number of effective pixels (e.g. for non-interleaved MCU)
         z->img_comp[i].x = (s->img_x * z->img_comp[i].h + h_max-1) / h_max;
@@ -810,7 +821,7 @@ static int process_frame_header(jpeg *z, int scan)
         z->img_comp[i].data = (uint8*) (((size_t) z->img_comp[i].raw_data + 15) & ~15);
         z->img_comp[i].linebuf = NULL;
     }
-    
+
     return 1;
 }
 
@@ -891,7 +902,7 @@ static uint8*  resample_row_h_2(uint8 *out, uint8 *in_near, uint8 *in_far, int w
         out[0] = out[1] = input[0];
         return out;
     }
-    
+
     out[0] = input[0];
     out[1] = div4(input[0]*3 + input[1] + 2);
     for (i=1; i < w-1; ++i) {
@@ -914,7 +925,7 @@ static uint8 *resample_row_hv_2(uint8 *out, uint8 *in_near, uint8 *in_far, int w
         out[0] = out[1] = div4(3*in_near[0] + in_far[0] + 2);
         return out;
     }
-    
+
     t1 = 3*in_near[0] + in_far[0];
     out[0] = div4(t1+2);
     for (i=1; i < w; ++i) {
@@ -997,7 +1008,7 @@ typedef struct
     resample_row_func resample;
     uint8 *line0,*line1;
     int hs,vs;   // expansion factor in each axis
-    int w_lores; // horizontal pixels pre-expansion 
+    int w_lores; // horizontal pixels pre-expansion
     int ystep;   // how far through vertical expansion we are
     int ypos;    // which pre-expansion row we're on
 } stbi_resample;
@@ -1007,53 +1018,53 @@ static uint8 *load_jpeg_image(jpeg *z, int *out_x, int *out_y, int *comp, int re
     int n, decode_n;
     // validate req_comp
     if (req_comp < 0 || req_comp > 4) return epuc("bad req_comp", "Internal error");
-    
+
     // load a jpeg image from whichever source
     if (!decode_jpeg_image(z)) { cleanup_jpeg(z); return NULL; }
-    
+
     // determine actual number of components to generate
     n = req_comp ? req_comp : z->s.img_n;
-    
+
     if (z->s.img_n == 3 && n < 3)
         decode_n = 1;
     else
         decode_n = z->s.img_n;
-    
+
     // resample and color-convert
     {
         int k;
         uint i,j;
         uint8 *output;
         uint8 *coutput[4];
-        
+
         stbi_resample res_comp[4];
-        
+
         for (k=0; k < decode_n; ++k) {
             stbi_resample *r = &res_comp[k];
-            
+
             // allocate line buffer big enough for upsampling off the edges
             // with upsample factor of 4
             z->img_comp[k].linebuf = (uint8 *) malloc(z->s.img_x + 3);
             if (!z->img_comp[k].linebuf) { cleanup_jpeg(z); return epuc("outofmem", "Out of memory"); }
-            
+
             r->hs      = z->img_h_max / z->img_comp[k].h;
             r->vs      = z->img_v_max / z->img_comp[k].v;
             r->ystep   = r->vs >> 1;
             r->w_lores = (z->s.img_x + r->hs-1) / r->hs;
             r->ypos    = 0;
             r->line0   = r->line1 = z->img_comp[k].data;
-            
+
             if      (r->hs == 1 && r->vs == 1) r->resample = resample_row_1;
             else if (r->hs == 1 && r->vs == 2) r->resample = resample_row_v_2;
             else if (r->hs == 2 && r->vs == 1) r->resample = resample_row_h_2;
             else if (r->hs == 2 && r->vs == 2) r->resample = resample_row_hv_2;
             else                               r->resample = resample_row_generic;
         }
-        
+
         // can't error after this so, this is safe
         output = (uint8 *) malloc(n * z->s.img_x * z->s.img_y + 1);
         if (!output) { cleanup_jpeg(z); return epuc("outofmem", "Out of memory"); }
-        
+
         // now go ahead and resample
         for (j=0; j < z->s.img_y; ++j) {
             uint8 *out = output + n * z->s.img_x * j;
@@ -1109,29 +1120,29 @@ static unsigned char *stbi_jpeg_load_from_memory(jpeg *j,stbi_uc const *buffer, 
 // clang-format on
 
 -initWithDataProvider:(O2DataProviderRef)dataProvider {
-    
+
     _compressionType=O2ImageCompressionJPEG;
     _dataProvider=[dataProvider retain];
-    
+
     CFDataRef encodedData=O2DataProviderCopyData(dataProvider);
     CFIndex encodedLength=CFDataGetLength(encodedData);
     const uint8_t *encodedBytes=CFDataGetBytePtr(encodedData);
-    
+
     int      comp;
     uint8_t *bitmap;
-    
+
     jpeg jpeg_decoder;
     int width,height;
-    
+
     bitmap=stbi_jpeg_load_from_memory(&jpeg_decoder,encodedBytes,encodedLength,&width,&height,&comp,STBI_rgb_alpha);
-    
+
     CFRelease(encodedData);
 
     if(bitmap==NULL){
         [self dealloc];
         return nil;
     }
-    
+
     _width=width;
     _height=height;
     _bitsPerComponent=8;
@@ -1139,7 +1150,7 @@ static unsigned char *stbi_jpeg_load_from_memory(jpeg *j,stbi_uc const *buffer, 
     _bytesPerRow=(_bitsPerPixel/(sizeof(char)*8))*_width;
     _colorSpace=O2ColorSpaceCreateDeviceRGB();
     _bitmapInfo=kO2BitmapByteOrder32Big|kO2ImageAlphaPremultipliedLast;
-    
+
     _pixelData=CFDataCreateWithBytesNoCopy(NULL, bitmap, _bytesPerRow*_height, NULL);
     _pixelData=(CFDataRef)[[NSData alloc] initWithBytesNoCopy:bitmap length:_bytesPerRow*_height freeWhenDone:YES];
 

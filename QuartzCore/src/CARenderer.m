@@ -1,3 +1,14 @@
+/*
+ *  CARenderer.m
+ *  A2OFrameworks
+ *
+ *  Copyright (c) 2014- Tombo Inc.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 #import <QuartzCore/CARenderer.h>
 #import <QuartzCore/CALayer.h>
 #import <QuartzCore/CALayer+Private.h>
@@ -25,7 +36,7 @@
     GLint _unifBorderColor;
     GLint _unifBackgroundColor;
     GLuint _ibo;
-    
+
     GLint _stencilBits;
 }
 
@@ -123,7 +134,7 @@ static const char *fragmentShaderSource =
    assert(_unifBorderWidth >= 0);
    assert(_unifBorderColor >= 0);
    assert(_unifBackgroundColor >= 0);
-   
+
    glGetIntegerv(GL_STENCIL_BITS, &_stencilBits);
 
    return self;
@@ -339,7 +350,7 @@ static void calculateTexCoord(GLfloat *x, GLfloat *y, int length, CGFloat dw, CG
         NSLog(@"unexpected contentsGravity %@", contentsGravity);
         assert(0);
     }
-    
+
     for(int i = 0; i < length; i++) {
         float ss = x[i] * ax + bx;
         float tt = y[i] * ay + by;
@@ -355,18 +366,18 @@ static void prepareTexture(CALayer *layer) {
         glBindTexture(GL_TEXTURE_2D, texture);
         return;
     }
-    
+
     // Load pixel data to texture
     id image = layer.contents;
-    
+
     glGenTextures(1, &texture);
     [layer _setTextureId:texture];
-    
+
     CALayer *modelLayer = (CALayer*)layer.modelLayer;
     if(image == modelLayer.contents) {
         [modelLayer _setTextureId:texture];
     }
-    
+
     glBindTexture(GL_TEXTURE_2D, texture);
     GL_ASSERT();
 
@@ -426,10 +437,10 @@ static void prepareTexture(CALayer *layer) {
     }
     glBindBuffer(GL_ARRAY_BUFFER, vertexObject);
     GL_ASSERT();
-    
+
     if([layer _needsUpdateVertexObject]) {
         [layer _clearNeedsUpdateVertexObject];
-        
+
         CGSize  layerSize = layer.bounds.size;
         CGSize  contentsSize = [layer _contentsSize];
 
@@ -479,7 +490,7 @@ static void prepareTexture(CALayer *layer) {
     CATransform3D t2 = CATransform3DConcat(t1, layer.transform);
     CATransform3D t3 = CATransform3DConcat(t2, CATransform3DMakeTranslation(position.x, position.y, 0));
     CATransform3D t4  = CATransform3DConcat(t3, transform);
-    
+
     glUniformMatrix4fv(_unifTransform, 1, GL_FALSE, &t4);
     GL_ASSERT();
     glUniform1i(_unifTexture, 0);
@@ -498,7 +509,7 @@ static void prepareTexture(CALayer *layer) {
     getColorComponents(layer.backgroundColor, backgroundColor);
     glUniform4fv(_unifBackgroundColor, 1, backgroundColor);
     GL_ASSERT();
-    
+
     if(layer.isDoubleSided) {
         glDisable(GL_CULL_FACE);
         GL_ASSERT();
@@ -508,7 +519,7 @@ static void prepareTexture(CALayer *layer) {
         glCullFace(GL_BACK);
         GL_ASSERT();
     }
-    
+
     int mask1000 = 1 << mask;
     int mask0111 = mask1000 - 1;
     int mask1111 = mask1000 | mask0111;
@@ -516,7 +527,7 @@ static void prepareTexture(CALayer *layer) {
     GL_ASSERT();
     glStencilFunc(GL_EQUAL, mask1111, mask0111);
     GL_ASSERT();
-    
+
     if(layer.masksToBounds) {
         mask++;
         if(mask > _stencilBits) {
@@ -542,7 +553,7 @@ static void prepareTexture(CALayer *layer) {
     for(CALayer *child in [layer _zOrderedSublayers]) {
         [self _renderLayer:child z:z+1 mask:mask transform:ts];
     }
-    
+
     if(layer.masksToBounds) {
         glClear(GL_STENCIL_BUFFER_BIT);
         GL_ASSERT();
@@ -578,7 +589,7 @@ static void prepareTexture(CALayer *layer) {
     projection.m22 = -2.0/bounds.size.height;
     projection.m41 = -1.0;
     projection.m42 = 1.0;
-    
+
     [rootLayer _generatePresentationLayer];
     [rootLayer _updateAnimations:CACurrentMediaTime()];
     [self _renderLayer:rootLayer.presentationLayer z:0 mask:0 transform:projection];
@@ -587,7 +598,7 @@ static void prepareTexture(CALayer *layer) {
     GL_ASSERT();
     glUseProgram(0);
     GL_ASSERT();
-    
+
     glFlush();
     GL_ASSERT();
 }

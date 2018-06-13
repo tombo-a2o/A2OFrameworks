@@ -1,3 +1,14 @@
+/*
+ *  CoreAudioTypes.h
+ *  A2OFrameworks
+ *
+ *  Copyright (c) 2014- Tombo Inc.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 #ifndef __CoreAudio__
 #define __CoreAudio__
 
@@ -68,13 +79,13 @@ enum {
 };
 
 enum {
-    kAudioFormatFlagIsFloat                  = (1 << 0),    // 0x1 
-    kAudioFormatFlagIsBigEndian              = (1 << 1),    // 0x2 
-    kAudioFormatFlagIsSignedInteger          = (1 << 2),    // 0x4 
-    kAudioFormatFlagIsPacked                 = (1 << 3),    // 0x8 
-    kAudioFormatFlagIsAlignedHigh            = (1 << 4),    // 0x10 
-    kAudioFormatFlagIsNonInterleaved         = (1 << 5),    // 0x20 
-    kAudioFormatFlagIsNonMixable             = (1 << 6),    // 0x40 
+    kAudioFormatFlagIsFloat                  = (1 << 0),    // 0x1
+    kAudioFormatFlagIsBigEndian              = (1 << 1),    // 0x2
+    kAudioFormatFlagIsSignedInteger          = (1 << 2),    // 0x4
+    kAudioFormatFlagIsPacked                 = (1 << 3),    // 0x8
+    kAudioFormatFlagIsAlignedHigh            = (1 << 4),    // 0x10
+    kAudioFormatFlagIsNonInterleaved         = (1 << 5),    // 0x20
+    kAudioFormatFlagIsNonMixable             = (1 << 6),    // 0x40
     kAudioFormatFlagsAreAllClear             = (1 << 31),
 
     kLinearPCMFormatFlagIsFloat              = kAudioFormatFlagIsFloat,
@@ -95,21 +106,21 @@ enum {
 };
 
 enum {
-#if TARGET_RT_BIG_ENDIAN 
+#if TARGET_RT_BIG_ENDIAN
     kAudioFormatFlagsNativeEndian       = kAudioFormatFlagIsBigEndian,
-#else 
+#else
     kAudioFormatFlagsNativeEndian       = 0,
-#endif 
+#endif
 
-#if !CA_PREFER_FIXED_POINT 
+#if !CA_PREFER_FIXED_POINT
     kAudioFormatFlagsCanonical          =   kAudioFormatFlagIsFloat | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked,
     kAudioFormatFlagsAudioUnitCanonical =   kAudioFormatFlagIsFloat | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked | kAudioFormatFlagIsNonInterleaved,
-#else 
+#else
     kAudioFormatFlagsCanonical          =   kAudioFormatFlagIsSignedInteger | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked,
     kAudioFormatFlagsAudioUnitCanonical =   kAudioFormatFlagIsSignedInteger | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked | kAudioFormatFlagIsNonInterleaved | (kAudioUnitSampleFractionBits << kLinearPCMFormatFlagsSampleFractionShift ),
 
-#endif 
-    kAudioFormatFlagsNativeFloatPacked  =   kAudioFormatFlagIsFloat | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked 
+#endif
+    kAudioFormatFlagsNativeFloatPacked  =   kAudioFormatFlagIsFloat | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked
 };
 
 #define TestAudioFormatNativeEndian(f) ( (f.mFormatID == kAudioFormatLinearPCM) && ((f.mFormatFlags & kAudioFormatFlagIsBigEndian) == kAudioFormatFlagsNativeEndian) )

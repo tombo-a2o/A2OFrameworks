@@ -1,3 +1,14 @@
+/*
+ *  KTFont+PDF.m
+ *  A2OFrameworks
+ *
+ *  Copyright (c) 2014- Tombo Inc.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 #import "KTFont+PDF.h"
 #import "KGPDFArray.h"
 #import "KGPDFDictionary.h"
@@ -11,7 +22,7 @@
 -(void)getBytes:(unsigned char *)bytes forGlyphs:(const CGGlyph *)glyphs length:(unsigned)length {
    unichar  characters[length];
    unsigned i;
-   
+
    [self getCharacters:characters forGlyphs:glyphs length:length];
    for(i=0;i<length;i++)
     if(characters[i]<0xFF)
@@ -26,7 +37,7 @@
    CGGlyph       glyphs[256];
    CGSize        advancements[256];
    int           i;
-   
+
    for(i=0;i<256;i++)
     characters[i]=i;
 
@@ -38,10 +49,10 @@
 // FIX, probably not entirely accurate, you can get precise widths out of the TrueType data
    for(i=0;i<255;i++){
     KGPDFReal width=(advancements[i].width/_size)*1000;
-    
+
     [result addNumber:width];
    }
-   
+
    return result;
 }
 
@@ -55,10 +66,10 @@
    [result setNameForKey:"Type" value:"FontDescriptor"];
    [result setNameForKey:"FontName" value:[self pdfFontName]];
    [result setIntegerForKey:"Flags" value:4];
-   
+
    KGPDFReal bbox[4];
    CGRect    boundingRect=[self boundingRect];
-   
+
    bbox[0]=boundingRect.origin.x;
    bbox[1]=boundingRect.origin.y;
    bbox[2]=boundingRect.size.width;
@@ -70,13 +81,13 @@
    [result setIntegerForKey:"CapHeight" value:[self capHeight]];
    [result setIntegerForKey:"StemV" value:0];
    [result setIntegerForKey:"StemH" value:0];
-   
+
    return result;
 }
 
 -(KGPDFObject *)encodeReferenceWithContext:(KGPDFContext *)context {
    KGPDFObject *reference=[context referenceForFontWithName:[self name] size:_size];
-   
+
    if(reference==nil){
     KGPDFDictionary *result=[KGPDFDictionary pdfDictionary];
 
@@ -93,7 +104,7 @@
     reference=[context encodeIndirectPDFObject:result];
     [context setReference:reference forFontWithName:[self name] size:_size];
    }
-   
+
    return reference;
 }
 

@@ -1,3 +1,14 @@
+/*
+ *  CAKeyframeAnimation.m
+ *  A2OFrameworks
+ *
+ *  Copyright (c) 2014- Tombo Inc.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 #import <QuartzCore/CAAnimation.h>
 #import <QuartzCore/CALayer.h>
 #import "CAAnimation+Private.h"
@@ -14,14 +25,14 @@ NSString * const kCAAnimationCubicPaced = @"kCAAnimationCubicPaced";
 
 -(void)_updateLayer:(CALayer*)layer currentTime:(CFTimeInterval)currentTime {
     [super _updateLayer:layer currentTime:currentTime];
-    
+
     if(_path) {
         NSAssert(0, @"path is not implemented");
     }
     if(_calculationMode != kCAAnimationDiscrete) {
         NSAssert(0, @"calculationMode other than kCAAnimationDiscrete is not implemented");
     }
-    
+
     if(!_keyTimes) {
         if(_calculationMode == kCAAnimationDiscrete) {
             int count = [_values count]+1;
@@ -32,7 +43,7 @@ NSString * const kCAAnimationCubicPaced = @"kCAAnimationCubicPaced";
             _keyTimes = [arr copy];
         }
     }
-    
+
     NSValue *value = nil;
     if(_calculationMode == kCAAnimationDiscrete) {
         assert([[_keyTimes firstObject] floatValue] == 0.0);
